@@ -1,0 +1,461 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use v5.10.0;
+
+# on Cygwin:
+#     apt-cyg install libpaper1 libpaper-bin
+# to list all paper sizes and their widths and heights:
+#     paperconf -a -n -s
+# to get the default paper size:
+#     paperconf
+
+our $opt_papersize;
+our $opt_width;
+our $opt_height;
+
+use Getopt::Long;
+use Data::Dumper;
+use Carp::Always;
+
+Getopt::Long::Configure(qw(bundling gnu_compat));
+Getopt::Long::GetOptions(
+    "M|p|media|paper|paper-size=s" => \$opt_papersize,
+    "w|width=s"                    => \$opt_width,
+    "h|height=s"                   => \$opt_height,
+    "h|help" => sub {
+        usage();
+        exit(0);
+    }
+) or die("Type '$0 --help' for help.\n");
+
+my $p = My::Printable->new();
+$p->set_papersize($opt_papersize) if defined $opt_papersize;
+$p->set_width($opt_width)         if defined $opt_width;
+$p->set_height($opt_height)       if defined $opt_height;
+
+$p->generate_line_dot_grid_paper;
+
+package My::Printable {
+
+    sub exclude(\@@);
+
+    use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
+
+    use Class::Thingy;
+    INIT {
+        public papersize, default => "letter";
+        public width,     default => 612;
+        public height,    default => 792;
+    }
+
+    use XML::LibXML;
+
+    our $units;
+    BEGIN {
+        $units = {
+            "pt" => {
+                to_pt => 1,
+                type => "imperial",
+            },
+            "in" => {
+                to_pt => 72,    # 1 in = 72 pt
+                type => "imperial",
+            },
+            "cm" => {
+                to_pt => (72 / 2.54), # 1 cm ~= 28.3465 pt
+                type => "metric",
+            },
+            "mm" => {
+                to_pt => (72 / 25.4), # 1 cm ~= 2.83465 pt
+                type => "metric",
+            },
+            "px" => {
+                to_pt => (72 / 96), # 1 px = 0.75 pt
+                type => "imperial"
+            },
+            "pd" => {
+                to_pt => (72 / 300), # 1pd = 1 dot on a 300dpi laser printer = 1/300 in
+                type => "imperial"
+            }
+        };
+    }
+
+    our $color_schemes;
+    our $thickness_schemes;
+    BEGIN {
+        $color_schemes = {
+            color => {
+                default => "#b3b3ff"
+            },
+            gray => {
+                default => "#b3b3b3"
+            }
+        };
+        $thickness_schemes = {
+            thin => {
+                dot => "1px",
+                index_dot => "2px",
+                line => "1/3px",
+                index_line => "2/3px"
+            },
+            medium => {
+                dot => "2px",
+                index_dot => "4px",
+                line => "2/3px",
+                index_line => "4/3px"
+            },
+            thick => {
+                dot => "4px",
+                index_dot => "8px",
+                line => "4/3px",
+                index_line => "8/3px"
+            }
+        };
+    }
+
+    our $rx_units;
+    our $rx_number;
+    BEGIN {
+        $rx_units = qr{in|px|pt|cm|mm|pd}ix;
+        $rx_number = qr{\d+(?:\.\d*)?|\.\d+}ix;
+    }
+
+    sub set_papersize {
+        my ($self, $spec) = @_;
+        my ($papersize, $width, $height) = $self->read_papersize($spec);
+        $self->papersize($papersize);
+        $self->width($width);
+        $self->height($height);
+    }
+
+    sub set_width {
+        my ($self, $width) = @_;
+        my $result = $self->convert_to_pt($width);
+        $self->width($result);
+    }
+
+    sub set_height {
+        my ($self, $height) = @_;
+        my $result = $self->convert_to_pt($height);
+        $self->height($result);
+    }
+
+    sub convert_to_pt {
+        my ($self, $value) = @_;
+        if ($value =~ m{\A
+                        \s*
+                        ($rx_number)
+                        (?:
+                            \s*
+                            /
+                            \s*
+                            ($rx_number)
+                        )?
+                        \s*
+                        ($rx_units)?
+                        \s*
+                        \z}xi) {
+            my ($number, $denominator, $unit) = ($1, $2, $3);
+            if (defined $denominator) {
+                $number /= $denominator;
+            }
+            if (!defined $unit || $unit eq "") {
+                return $number;
+            }
+            return $number * $units->{$unit}->{to_pt};
+        } else {
+            die("Invalid size specification: $value\n");
+        }
+    }
+
+    sub read_papersize {
+        my ($self, $papersize) = @_;
+
+        if (defined $papersize && $papersize =~ m{\A
+                                                  ($rx_number)
+                                                  (?:
+                                                      \s*
+                                                      /
+                                                      \s*
+                                                      ($rx_number)
+                                                  )?
+                                                  \s*
+                                                  ($rx_units)?
+                                                  \s*
+                                                  (?:\*|x)
+                                                  \s*
+                                                  ($rx_number)
+                                                  (?:
+                                                      \s*
+                                                      /
+                                                      \s*
+                                                      ($rx_number)
+                                                  )?
+                                                  \s*
+                                                  ($rx_units)?
+                                                  \z}xi) {
+            my ($number1, $denominator1, $unit1,
+                $number2, $denominator2, $unit2) = ($1, $2, $3, $4, $5, $6);
+            $number1 /= $denominator1 if defined $denominator1;
+            $number2 /= $denominator2 if defined $denominator2;
+            if (!defined $unit2 || $unit2 eq "") {
+                $unit2 = "pt";
+            }
+            if (!defined $unit1 || $unit1 eq "") {
+                $unit1 = $unit2;
+            }
+            $number1 *= $units->{$unit1}->{to_pt};
+            $number2 *= $units->{$unit2}->{to_pt};
+            return (undef, $number1, $number2);
+        }
+
+        my $ph;
+        my @cmd;
+        if (defined $papersize) {
+            @cmd = ("paperconf", "-p", $papersize, "-n", "-s");
+        } else {
+            @cmd = ("paperconf", "-n", "-s");
+        }
+        if (!open($ph, "-|", @cmd)) {
+            die("exec paperconf: $!");
+        }
+        local $/ = undef;
+        my $result = <$ph>;
+        if (!close($ph)) {
+            die("paperconf failed: $!");
+        }
+        $result =~ s{\A\s+}{};
+        $result =~ s{\s+\z}{};
+        my ($papersizename, $width, $height) = split(' ', $result);
+        if (wantarray) {
+            return ($papersizename, $width, $height);
+        }
+        return {
+            papersize => $papersizename,
+            width => $width,
+            height => $height
+        };
+    }
+
+    sub generate_line_dot_grid_paper {
+        my ($self) = @_;
+
+        my $width = $self->width;
+        my $height = $self->height;
+
+        my $left_margin = 0;
+        my $right_margin = $width;
+
+        my $bottom_margin = 0;
+        my $top_margin = $height;
+
+        my $x_origin = $width / 2;
+        my $y_origin = $height / 2;
+
+        my $x_spacing = $self->convert_to_pt("5/16in");
+        my $y_spacing = $self->convert_to_pt("5/16in");
+
+        my $left_margin_line = $self->convert_to_pt("1.25in");
+
+        my $line_stroke_width      = $self->convert_to_pt("0.666667px");
+        my $light_dot_stroke_width = $self->convert_to_pt("0.666667px");
+        my $dot_stroke_width       = $self->convert_to_pt("2px");
+
+        # Compute the points.
+
+        my @x_points = $self->get_points(
+            spacing => $x_spacing,
+            min     => 0,
+            max     => $width,
+            origin  => $x_origin,
+            nearest_margin_line => $left_margin_line
+        );
+
+        my @y_points = $self->get_points(
+            spacing => $y_spacing,
+            min     => 0,
+            max     => $height,
+            origin  => $y_origin,
+            ends_nearest_margins => 1
+        );
+
+        my @y_dot_points = $self->get_points(
+            spacing => $y_spacing / 4,
+            min     => 0,
+            max     => $height,
+            origin  => $y_origin
+        );
+        @y_dot_points = exclude(@y_dot_points, @y_points);
+
+        my $real_left_margin_line = $self->point_nearest($left_margin_line, @x_points);
+
+        my @x_dot_points = @x_points;
+        # @x_dot_points = exclude(@x_points, $real_left_margin_line);
+
+        # Draw the paper.
+
+        my $doc = XML::LibXML::Document->new("1.0", "UTF-8");
+
+        my $viewBox = sprintf("%f %f %f %f", 0, 0, $width, $height);
+
+        my $root = $doc->createElement("svg");
+        $root->setAttribute("width", $width . "pt");
+        $root->setAttribute("height", $height . "pt");
+        $root->setAttribute("viewBox", $viewBox);
+        $root->setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        $doc->setDocumentElement($root);
+
+        my $style = $doc->createElement("style");
+        my $css = <<"EOF";
+            .line {
+                stroke: #b3b3ff;
+                stroke-linecap: round;
+                stroke-width: ${line_stroke_width}pt;
+            }
+            .dot {
+                stroke: #b3b3ff;
+                stroke-linecap: round;
+                stroke-width: ${dot_stroke_width}pt;
+            }
+            .light-dot {
+                stroke: #b3b3ff;
+                stroke-linecap: round;
+                stroke-width: ${light_dot_stroke_width}pt;
+            }
+            .margin-line {
+                stroke: #b30000;
+                stroke-linecap: round;
+                stroke-width: ${line_stroke_width}pt;
+                opacity: 0.2;
+            }
+EOF
+        $style->appendText($css);
+        $root->appendChild($style);
+
+        my $horizontal_lines = $doc->createElement("g");
+        my $vertical_lines   = $doc->createElement("g");
+        my $margin_lines     = $doc->createElement("g");
+        my $dots             = $doc->createElement("g");
+
+        $horizontal_lines->setAttribute("id", "horizontal-lines");
+        $vertical_lines->setAttribute("id", "vertical-lines");
+        $margin_lines->setAttribute("id", "margin-lines");
+        $dots->setAttribute("id", "dots");
+
+        $root->appendChild($horizontal_lines);
+        $root->appendChild($vertical_lines);
+        $root->appendChild($margin_lines);
+        $root->appendChild($dots);
+
+        foreach my $y (@y_points) {
+            my $x1 = $left_margin;
+            my $x2 = $right_margin;
+            my $line = $doc->createElement("line");
+            $line->setAttribute("x1", $x1);
+            $line->setAttribute("x2", $x2);
+            $line->setAttribute("y1", $y);
+            $line->setAttribute("y2", $y);
+            $line->setAttribute("class", "line");
+            $horizontal_lines->appendChild($line);
+        }
+
+        foreach my $x (@x_dot_points) {
+            foreach my $y (@y_dot_points) {
+                my $line = $doc->createElement("line");
+                $line->setAttribute("x1", $x);
+                $line->setAttribute("x2", $x);
+                $line->setAttribute("y1", $y);
+                $line->setAttribute("y2", $y);
+                $line->setAttribute("class", "light-dot");
+                $horizontal_lines->appendChild($line);
+            }
+        }
+
+        my $mline = $doc->createElement("line");
+        $mline->setAttribute("x1", $real_left_margin_line);
+        $mline->setAttribute("x2", $real_left_margin_line);
+        $mline->setAttribute("y1", $bottom_margin);
+        $mline->setAttribute("y2", $top_margin);
+        $mline->setAttribute("class", "margin-line");
+        $margin_lines->appendChild($mline);
+
+        print $doc->toString(1);
+    }
+
+    sub get_points {
+        my ($self, %args) = @_;
+        my $spacing = $args{spacing};
+        my $origin  = $args{origin};
+        my $min     = $args{min};
+        my $max     = $args{max};
+        my $ends_nearest_margins = delete $args{ends_nearest_margins};
+        my $nearest_margin_line = delete $args{nearest_margin_line};
+
+        if ($ends_nearest_margins) {
+            my @points1 = $self->get_points(%args);
+            my %args2 = %args;
+            $args2{origin} += $spacing / 2;
+            if ($args2{origin} > $max) {
+                $args2{origin} -= $spacing;
+            }
+            my @points2 = $self->get_points(%args2);
+            my $min1 = $points1[0];
+
+            my $min2 = $points2[0];
+            if ($min1 < $min2) {
+                return @points1;
+            }
+            return @points2;
+        }
+
+        if ($nearest_margin_line) {
+            my @points1 = $self->get_points(%args);
+            my %args2 = %args;
+            $args2{origin} += $spacing / 2;
+            if ($args2{origin} > $max) {
+                $args2{origin} -= $spacing;
+            }
+            my @points2 = $self->get_points(%args2);
+            my $point1 = $self->point_nearest($nearest_margin_line, @points1);
+            my $point2 = $self->point_nearest($nearest_margin_line, @points2);
+            my $dist1 = abs($point1 - $nearest_margin_line);
+            my $dist2 = abs($point2 - $nearest_margin_line);
+            if ($dist1 < $dist2) {
+                return @points1;
+            }
+            return @points2;
+        }
+
+        my @points = ($origin);
+        $spacing = $self->convert_to_pt($spacing);
+        my $x;
+        for ($x = $origin + $spacing; $x <= $max; $x += $spacing) {
+            push(@points, $x);
+        }
+        for ($x = $origin - $spacing; $x >= $min; $x -= $spacing) {
+            unshift(@points, $x);
+        }
+        return @points;
+    }
+
+    use List::Util qw(min);
+
+    sub point_nearest {
+        my ($self, $x, @points) = @_;
+        my @dist = map { abs($x - $_) } @points;
+        my $mindist = min(@points);
+        for (my $i = 0; $i < scalar @points; $i += 1) {
+            if ($mindist == $dist[$i]) {
+                return $points[$i];
+            }
+        }
+        return undef;
+    }
+
+    sub exclude(\@@) {
+        my ($a, @b) = @_;
+        my %b = map { ($_, 1) } @b;
+        return grep { !$b{$_} } @$a;
+    }
+};
