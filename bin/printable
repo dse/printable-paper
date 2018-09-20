@@ -23,7 +23,7 @@ Getopt::Long::GetOptions(
     "M|p|media|paper|paper-size=s" => \$opt_papersize,
     "w|width=s"                    => \$opt_width,
     "h|height=s"                   => \$opt_height,
-    "?|help" => sub {
+    "help|?" => sub {
         usage();
         exit(0);
     }
