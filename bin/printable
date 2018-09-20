@@ -371,7 +371,7 @@ package My::Printable {
         my $real_left_margin_line = $self->point_nearest($left_margin_line, @x_points);
 
         my @x_dot_points = @x_points;
-        @x_dot_points = exclude(@x_points, $real_left_margin_line);
+        # @x_dot_points = exclude(@x_points, $real_left_margin_line);
 
         my $real_last_y_point = $self->point_nearest($last_y_point, @y_points);
         @y_points     = grep { $_ <= $real_last_y_point } @y_points;
