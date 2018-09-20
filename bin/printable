@@ -337,10 +337,12 @@ package My::Printable {
 
         my $x_spacing = $self->convert_to_pt("5/16in");
         my $y_spacing = $self->convert_to_pt("5/16in");
+        my $y_dot_spacing = $y_spacing / 4;
 
         my $left_margin_line = $self->convert_to_pt("1.25in");
 
-        my $last_y_point = $height - $self->convert_to_pt("1in");
+        my $top_y_point    = $height - $self->convert_to_pt("1.5in");
+        my $bottom_y_point = $self->convert_to_pt("1in");
 
         # Compute the points.
 
@@ -361,21 +363,29 @@ package My::Printable {
         );
 
         my @y_dot_points = $self->get_points(
-            spacing => $y_spacing / 4,
+            spacing => $y_dot_spacing,
             min     => 0,
             max     => $height,
             origin  => $y_origin
         );
-        @y_dot_points = exclude(@y_dot_points, @y_points);
 
         my $real_left_margin_line = $self->point_nearest($left_margin_line, @x_points);
 
         my @x_dot_points = @x_points;
-        # @x_dot_points = exclude(@x_points, $real_left_margin_line);
 
-        my $real_last_y_point = $self->point_nearest($last_y_point, @y_points);
-        @y_points     = grep { $_ <= $real_last_y_point } @y_points;
-        @y_dot_points = grep { $_ <= $real_last_y_point } @y_dot_points;
+        # my $additional_dots_above = 3; # thin lines above for seyes/french ruling
+        # my $additional_dots_below = 2; # thin lines below for seyes/french ruling
+
+        my $real_top_y_point    = $self->point_nearest($top_y_point,    @y_points);
+        my $real_bottom_y_point = $self->point_nearest($bottom_y_point, @y_points);
+
+        @y_points     = grep { $_ <= $real_top_y_point    } @y_points;
+        @y_points     = grep { $_ >= $real_bottom_y_point } @y_points;
+
+        # @y_dot_points = grep { $_ <= $real_top_y_point    + ($additional_dots_above + 0.5) * $y_spacing / 4 } @y_dot_points;
+        # @y_dot_points = grep { $_ >= $real_bottom_y_point - ($additional_dots_below + 0.5) * $y_spacing / 4 } @y_dot_points;
+
+        @y_dot_points = exclude(@y_dot_points, @y_points);
 
         # Draw the paper.
 
@@ -485,13 +495,13 @@ package My::Printable {
     sub point_nearest {
         my ($self, $x, @points) = @_;
         my @dist = map { abs($x - $_) } @points;
-        my $mindist = min(@points);
+        my $mindist = min(@dist);
         for (my $i = 0; $i < scalar @points; $i += 1) {
             if ($mindist == $dist[$i]) {
                 return $points[$i];
             }
         }
-        return undef;
+        return undef;           # should NEVER happen.
     }
 
     sub create_line {
