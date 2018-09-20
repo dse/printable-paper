@@ -2,15 +2,19 @@ INKSCAPE = inkscape
 
 default: svg pdf
 
-ps:  templates/line-dot-grid-letter.ps
+ps:  templates/line-dot-grid-letter.ps  templates/dot-grid-letter.ps
 
-pdf: templates/line-dot-grid-letter.pdf
+pdf: templates/line-dot-grid-letter.pdf templates/dot-grid-letter.pdf
 
-svg: templates/line-dot-grid-letter.svg
+svg: templates/line-dot-grid-letter.svg templates/dot-grid-letter.svg
 
 templates/line-dot-grid-letter.svg: bin/printable
 	mkdir -p templates
-	bin/printable >templates/line-dot-grid-letter.svg
+	bin/printable line-dot-grid  >templates/line-dot-grid-letter.svg
+
+templates/dot-grid-letter.svg: bin/printable
+	mkdir -p templates
+	bin/printable dot-grid >templates/dot-grid-letter.svg
 
 # templates/line-dot-grid-letter-2page.pdf: templates/line-dot-grid-letter.pdf
 # poppler
