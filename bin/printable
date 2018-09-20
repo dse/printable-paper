@@ -50,18 +50,22 @@ foreach my $arg (@ARGV) {
 
 package My::Printable {
 
-    sub exclude(\@@);
-
     use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-
     use Class::Thingy;
     INIT {
         public papersize, default => "letter";
         public width,     default => 612;
         public height,    default => 792;
+        public doc;
     }
 
     use XML::LibXML;
+    use List::Util qw(min);
+
+    # use My::Printable::Util qw(exclude);
+    INIT {
+        import My::Printable::Util qw(exclude);
+    }
 
     our $units;
     BEGIN {
@@ -112,12 +116,14 @@ package My::Printable {
         my ($self, $width) = @_;
         my $result = $self->convert_to_pt($width);
         $self->width($result);
+        $self->papersize(undef);
     }
 
     sub set_height {
         my ($self, $height) = @_;
         my $result = $self->convert_to_pt($height);
         $self->height($result);
+        $self->papersize(undef);
     }
 
     sub convert_to_pt {
@@ -148,9 +154,8 @@ package My::Printable {
         }
     }
 
-    sub read_papersize {
+    sub parse_custom_papersize {
         my ($self, $papersize) = @_;
-
         if (defined $papersize && $papersize =~ m{\A
                                                   ($rx_number)
                                                   (?:
@@ -174,21 +179,31 @@ package My::Printable {
                                                   \s*
                                                   ($rx_units)?
                                                   \z}xi) {
-            my ($number1, $denominator1, $unit1,
-                $number2, $denominator2, $unit2) = ($1, $2, $3, $4, $5, $6);
-            $number1 /= $denominator1 if defined $denominator1;
-            $number2 /= $denominator2 if defined $denominator2;
-            if (!defined $unit2 || $unit2 eq "") {
-                $unit2 = "pt";
+            my ($width, $width_denominator, $x_unit,
+                $height, $height_denominator, $y_unit) = ($1, $2, $3, $4, $5, $6);
+            $width /= $width_denominator if defined $width_denominator;
+            $height /= $height_denominator if defined $height_denominator;
+            if (!defined $y_unit || $y_unit eq "") {
+                $y_unit = "pt";
             }
-            if (!defined $unit1 || $unit1 eq "") {
-                $unit1 = $unit2;
+            if (!defined $x_unit || $x_unit eq "") {
+                $x_unit = $y_unit;
             }
-            $number1 *= $units->{$unit1}->{to_pt};
-            $number2 *= $units->{$unit2}->{to_pt};
-            return (undef, $number1, $number2);
+            $width *= $units->{$x_unit}->{to_pt};
+            $height *= $units->{$y_unit}->{to_pt};
+            if (wantarray) {
+                return (undef, $width, $height);
+            }
+            return {
+                width => $width,
+                height => $height
+            };
         }
+        return;
+    }
 
+    sub get_papersize {
+        my ($self, $papersize) = @_;
         my $ph;
         my @cmd;
         if (defined $papersize) {
@@ -217,6 +232,21 @@ package My::Printable {
         };
     }
 
+    sub read_papersize {
+        my ($self, $papersize) = @_;
+        my ($x, $y) = $self->parse_custom_papersize($papersize);
+        if (defined $x && defined $y) {
+            if (wantarray) {
+                return (undef, $x, $y);
+            }
+            return {
+                width => $x,
+                height => $y
+            };
+        }
+        return $self->get_papersize($papersize);
+    }
+
     sub generate_line_dot_grid_paper {
         my ($self, %args) = @_;
 
@@ -240,6 +270,8 @@ package My::Printable {
         my $line_stroke_width      = $self->convert_to_pt("0.666667px");
         my $light_dot_stroke_width = $self->convert_to_pt("1.333333px");
         my $dot_stroke_width       = $self->convert_to_pt("2px");
+
+        my $last_y_point = $height - $self->convert_to_pt("1in");
 
         # Compute the points.
 
@@ -272,9 +304,13 @@ package My::Printable {
         my @x_dot_points = @x_points;
         @x_dot_points = exclude(@x_points, $real_left_margin_line);
 
+        my $real_last_y_point = $self->point_nearest($last_y_point, @y_points);
+        @y_points     = grep { $_ <= $real_last_y_point } @y_points;
+        @y_dot_points = grep { $_ <= $real_last_y_point } @y_dot_points;
+
         # Draw the paper.
 
-        my $doc = XML::LibXML::Document->new("1.0", "UTF-8");
+        my $doc = $self->doc(XML::LibXML::Document->new("1.0", "UTF-8"));
 
         my $viewBox = sprintf("%f %f %f %f", 0, 0, $width, $height);
 
@@ -338,33 +374,28 @@ EOF
         foreach my $y (@y_points) {
             my $x1 = $left_margin;
             my $x2 = $right_margin;
-            my $line = $doc->createElement("line");
-            $line->setAttribute("x1", $x1);
-            $line->setAttribute("x2", $x2);
-            $line->setAttribute("y1", $y);
-            $line->setAttribute("y2", $y);
-            $line->setAttribute("class", "line");
+            my $line = $self->create_line(
+                x1 => $x1, x2 => $x2, y => $y,
+                class => "line"
+            );
             $horizontal_lines->appendChild($line);
         }
 
         foreach my $x (@x_dot_points) {
             foreach my $y (@y_dot_points) {
-                my $line = $doc->createElement("line");
-                $line->setAttribute("x1", $x);
-                $line->setAttribute("x2", $x);
-                $line->setAttribute("y1", $y);
-                $line->setAttribute("y2", $y);
-                $line->setAttribute("class", "light-dot");
+                my $line = $self->create_line(
+                    x => $x, y => $y, class => "light-dot"
+                );
                 $horizontal_lines->appendChild($line);
             }
         }
 
-        my $mline = $doc->createElement("line");
-        $mline->setAttribute("x1", $real_left_margin_line);
-        $mline->setAttribute("x2", $real_left_margin_line);
-        $mline->setAttribute("y1", $bottom_margin);
-        $mline->setAttribute("y2", $top_margin);
-        $mline->setAttribute("class", "margin-line");
+        my $mline = $self->create_line(
+            x => $real_left_margin_line,
+            y1 => $bottom_margin,
+            y2 => $top_margin,
+            class => "margin-line"
+        );
         $margin_lines->appendChild($mline);
 
         print $doc->toString(1);
@@ -426,7 +457,6 @@ EOF
         return @points;
     }
 
-    use List::Util qw(min);
 
     sub point_nearest {
         my ($self, $x, @points) = @_;
@@ -440,9 +470,34 @@ EOF
         return undef;
     }
 
+    sub create_line {
+        my ($self, %args) = @_;
+        my $doc = $self->doc;
+        my $line = $doc->createElement("line");
+        my $x1 = $args{x1} // $args{x};
+        my $x2 = $args{x2} // $args{x};
+        my $y1 = $args{y1} // $args{y};
+        my $y2 = $args{y2} // $args{y};
+        $y1 = $self->height - $y1;
+        $y2 = $self->height - $y2;
+        $line->setAttribute("x1", $x1);
+        $line->setAttribute("x2", $x2);
+        $line->setAttribute("y1", $y1);
+        $line->setAttribute("y2", $y2);
+        $line->setAttribute("class", $args{class}) if defined $args{class};
+        return $line;
+    }
+};
+
+package My::Printable::Util {
+    use base "Exporter";
+    our @EXPORT_OK;
+    BEGIN {
+        push(@EXPORT_OK, 'exclude');
+    }
     sub exclude(\@@) {
         my ($a, @b) = @_;
         my %b = map { ($_, 1) } @b;
         return grep { !$b{$_} } @$a;
     }
-};
+}
