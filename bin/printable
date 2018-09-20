@@ -81,39 +81,6 @@ package My::Printable {
         };
     }
 
-    our $color_schemes;
-    our $thickness_schemes;
-    BEGIN {
-        $color_schemes = {
-            color => {
-                default => "#b3b3ff"
-            },
-            gray => {
-                default => "#b3b3b3"
-            }
-        };
-        $thickness_schemes = {
-            thin => {
-                dot => "1px",
-                index_dot => "2px",
-                line => "1/3px",
-                index_line => "2/3px"
-            },
-            medium => {
-                dot => "2px",
-                index_dot => "4px",
-                line => "2/3px",
-                index_line => "4/3px"
-            },
-            thick => {
-                dot => "4px",
-                index_dot => "8px",
-                line => "4/3px",
-                index_line => "8/3px"
-            }
-        };
-    }
-
     our $rx_units;
     our $rx_number;
     BEGIN {
