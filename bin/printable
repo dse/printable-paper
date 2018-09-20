@@ -74,6 +74,10 @@ package My::Printable {
                 to_pt => 1,
                 type => "imperial",
             },
+            "pc" => {
+                to_pt => 12,    # 1 pc = 12 pt
+                type => "imperial",
+            },
             "in" => {
                 to_pt => 72,    # 1 in = 72 pt
                 type => "imperial",
@@ -90,8 +94,8 @@ package My::Printable {
                 to_pt => (72 / 96), # 1 px = 0.75 pt
                 type => "imperial"
             },
-            "pd" => {
-                to_pt => (72 / 300), # 1pd = 1 dot on a 300dpi laser printer = 1/300 in
+            "pd" => {           # pixel dots
+                to_pt => (72 / 300), # 1 pd = 1 dot on a 300dpi laser printer = 1/300 in = 72/300 pt
                 type => "imperial"
             }
         };
