@@ -34,7 +34,19 @@ $p->set_papersize($opt_papersize) if defined $opt_papersize;
 $p->set_width($opt_width)         if defined $opt_width;
 $p->set_height($opt_height)       if defined $opt_height;
 
-$p->generate_line_dot_grid_paper;
+if (!scalar @ARGV) {
+    @ARGV = ("line-dot-grid-paper");
+}
+
+foreach my $arg (@ARGV) {
+    if ($arg eq "line-dot-grid-paper") {
+        $p->generate_line_dot_grid_paper;
+    } elsif ($arg eq "line-dot-grid-paper-odd") {
+        $p->generate_line_dot_grid_paper;
+    } elsif ($arg eq "line-dot-grid-paper-even") {
+        $p->generate_line_dot_grid_paper(even => 1);
+    }
+}
 
 package My::Printable {
 
@@ -206,7 +218,7 @@ package My::Printable {
     }
 
     sub generate_line_dot_grid_paper {
-        my ($self) = @_;
+        my ($self, %args) = @_;
 
         my $width = $self->width;
         my $height = $self->height;
@@ -273,27 +285,36 @@ package My::Printable {
         $root->setAttribute("xmlns", "http://www.w3.org/2000/svg");
         $doc->setDocumentElement($root);
 
+        # ff = 255
+        # b3 = 179
+        # 67 = 103
+        # #b3b3ff => #6767ff
+        # #b30000 => #670000
         my $style = $doc->createElement("style");
         my $css = <<"EOF";
             .line {
-                stroke: #b3b3ff;
+                stroke: #6767ff;
                 stroke-linecap: round;
                 stroke-width: ${line_stroke_width}pt;
+                opacity: 0.5;
             }
             .dot {
-                stroke: #b3b3ff;
+                stroke: #6767ff;
                 stroke-linecap: round;
                 stroke-width: ${dot_stroke_width}pt;
+                opacity: 0.5;
             }
             .light-dot {
-                stroke: #b3b3ff;
+                stroke: #6767ff;
                 stroke-linecap: round;
                 stroke-width: ${light_dot_stroke_width}pt;
+                opacity: 0.5;
             }
             .margin-line {
-                stroke: #b30000;
+                stroke: #670000;
                 stroke-linecap: round;
                 stroke-width: ${line_stroke_width}pt;
+                opacity: 0.5;
             }
 EOF
         $style->appendText($css);
