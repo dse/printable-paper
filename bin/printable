@@ -39,12 +39,10 @@ if (!scalar @ARGV) {
 }
 
 foreach my $arg (@ARGV) {
-    if ($arg eq "line-dot-grid-paper") {
+    if ($arg eq "dot-grid") {
+        $p->generate_dot_grid_paper;
+    } elsif ($arg eq "line-dot-grid") {
         $p->generate_line_dot_grid_paper;
-    } elsif ($arg eq "line-dot-grid-paper-odd") {
-        $p->generate_line_dot_grid_paper;
-    } elsif ($arg eq "line-dot-grid-paper-even") {
-        $p->generate_line_dot_grid_paper(even => 1);
     }
 }
 
@@ -57,12 +55,14 @@ package My::Printable {
         public width,     default => 612;
         public height,    default => 792;
         public doc;
+        public root;
     }
 
     use XML::LibXML;
     use List::Util qw(min);
 
     # use My::Printable::Util qw(exclude);
+    sub exclude(\@@);      # for embedded package subs with prototypes
     INIT {
         import My::Printable::Util qw(exclude);
     }
@@ -251,6 +251,75 @@ package My::Printable {
         return $self->get_papersize($papersize);
     }
 
+    sub generate_dot_grid_paper {
+        my ($self, %args) = @_;
+
+        my $width = $self->width;
+        my $height = $self->height;
+
+        my $left_margin = 0;
+        my $right_margin = $width;
+
+        my $bottom_margin = 0;
+        my $top_margin = $height;
+
+        my $x_origin = $width / 2;
+        my $y_origin = $height / 2;
+
+        my $x_spacing = $self->convert_to_pt("1/4in");
+        my $y_spacing = $self->convert_to_pt("1/4in");
+
+        my $left_margin_line = $self->convert_to_pt("1.25in");
+
+        my @x_dot_points = $self->get_points(
+            spacing => $x_spacing,
+            min     => 0,
+            max     => $width,
+            origin  => $x_origin,
+            nearest_margin_line => $left_margin_line
+        );
+
+        my @y_dot_points = $self->get_points(
+            spacing => $y_spacing,
+            min     => 0,
+            max     => $height,
+            origin  => $y_origin
+        );
+
+        my $real_left_margin_line = $self->point_nearest($left_margin_line, @x_dot_points);
+
+        my $doc = $self->create_document;
+        my $root = $self->root;
+
+        my $style = $self->create_style_element;
+        $root->appendChild($style);
+
+        my $margin_lines     = $self->create_g_element("margin-lines");
+        my $dots             = $self->create_g_element("dots");
+
+        $root->appendChild($margin_lines);
+        $root->appendChild($dots);
+
+        foreach my $x (@x_dot_points) {
+            foreach my $y (@y_dot_points) {
+                my $line = $self->create_line(
+                    x => $x, y => $y, class => "dot"
+                );
+                $dots->appendChild($line);
+            }
+        }
+
+        my $mline = $self->create_line(
+            x => $real_left_margin_line,
+            y1 => $bottom_margin,
+            y2 => $top_margin,
+            class => "margin-line"
+        );
+        $margin_lines->appendChild($mline);
+
+        print $doc->toString(1);
+    }
+
     sub generate_line_dot_grid_paper {
         my ($self, %args) = @_;
 
@@ -270,10 +339,6 @@ package My::Printable {
         my $y_spacing = $self->convert_to_pt("5/16in");
 
         my $left_margin_line = $self->convert_to_pt("1.25in");
-
-        my $line_stroke_width      = $self->convert_to_pt("0.666667px");
-        my $light_dot_stroke_width = $self->convert_to_pt("1.333333px");
-        my $dot_stroke_width       = $self->convert_to_pt("2px");
 
         my $last_y_point = $height - $self->convert_to_pt("1in");
 
@@ -314,61 +379,16 @@ package My::Printable {
 
         # Draw the paper.
 
-        my $doc = $self->doc(XML::LibXML::Document->new("1.0", "UTF-8"));
+        my $doc = $self->create_document;
+        my $root = $self->root;
 
-        my $viewBox = sprintf("%f %f %f %f", 0, 0, $width, $height);
-
-        my $root = $doc->createElement("svg");
-        $root->setAttribute("width", $width . "pt");
-        $root->setAttribute("height", $height . "pt");
-        $root->setAttribute("viewBox", $viewBox);
-        $root->setAttribute("xmlns", "http://www.w3.org/2000/svg");
-        $doc->setDocumentElement($root);
-
-        # ff = 255
-        # b3 = 179
-        # 67 = 103
-        # #b3b3ff => #6767ff
-        # #b30000 => #670000
-        my $style = $doc->createElement("style");
-        my $css = <<"EOF";
-            .line {
-                stroke: #6767ff;
-                stroke-linecap: round;
-                stroke-width: ${line_stroke_width}pt;
-                opacity: 0.5;
-            }
-            .dot {
-                stroke: #6767ff;
-                stroke-linecap: round;
-                stroke-width: ${dot_stroke_width}pt;
-                opacity: 0.5;
-            }
-            .light-dot {
-                stroke: #6767ff;
-                stroke-linecap: round;
-                stroke-width: ${light_dot_stroke_width}pt;
-                opacity: 0.5;
-            }
-            .margin-line {
-                stroke: #670000;
-                stroke-linecap: round;
-                stroke-width: ${line_stroke_width}pt;
-                opacity: 0.5;
-            }
-EOF
-        $style->appendText($css);
+        my $style = $self->create_style_element;
         $root->appendChild($style);
 
-        my $horizontal_lines = $doc->createElement("g");
-        my $vertical_lines   = $doc->createElement("g");
-        my $margin_lines     = $doc->createElement("g");
-        my $dots             = $doc->createElement("g");
-
-        $horizontal_lines->setAttribute("id", "horizontal-lines");
-        $vertical_lines->setAttribute("id", "vertical-lines");
-        $margin_lines->setAttribute("id", "margin-lines");
-        $dots->setAttribute("id", "dots");
+        my $horizontal_lines = $self->create_g_element("horizontal-lines");
+        my $vertical_lines   = $self->create_g_element("vertical-lines");
+        my $margin_lines     = $self->create_g_element("margin-lines");
+        my $dots             = $self->create_g_element("dots");
 
         $root->appendChild($horizontal_lines);
         $root->appendChild($vertical_lines);
@@ -380,7 +400,7 @@ EOF
             my $x2 = $right_margin;
             my $line = $self->create_line(
                 x1 => $x1, x2 => $x2, y => $y,
-                class => "line"
+                class => "line light"
             );
             $horizontal_lines->appendChild($line);
         }
@@ -388,9 +408,9 @@ EOF
         foreach my $x (@x_dot_points) {
             foreach my $y (@y_dot_points) {
                 my $line = $self->create_line(
-                    x => $x, y => $y, class => "light-dot"
+                    x => $x, y => $y, class => "dot light"
                 );
-                $horizontal_lines->appendChild($line);
+                $dots->appendChild($line);
             }
         }
 
@@ -491,14 +511,99 @@ EOF
         $line->setAttribute("class", $args{class}) if defined $args{class};
         return $line;
     }
+
+    sub create_document {
+        my ($self) = @_;
+        my $width = $self->width;
+        my $height = $self->height;
+        my $viewBox = sprintf("%f %f %f %f", 0, 0, $width, $height);
+        my $doc = $self->doc(XML::LibXML::Document->new("1.0", "UTF-8"));
+        my $root = $self->root($doc->createElement("svg"));
+        $root->setAttribute("width", $width . "pt");
+        $root->setAttribute("height", $height . "pt");
+        $root->setAttribute("viewBox", $viewBox);
+        $root->setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        $doc->setDocumentElement($root);
+        return $doc;
+    }
+
+    # ff = 255
+    # b3 = 179
+    # 67 = 103
+    # #b3b3ff => #6767ff
+    # #b30000 => #670000
+    sub create_style_element {
+        my ($self, $css) = @_;
+        my $light_line_stroke_width = $self->convert_to_pt("1/300in");
+        my $line_stroke_width       = $self->convert_to_pt("2/300in");
+        my $heavy_line_stroke_width = $self->convert_to_pt("3/300in");
+        my $light_dot_stroke_width  = $self->convert_to_pt("4/300in");
+        my $dot_stroke_width        = $self->convert_to_pt("6/300in");
+        my $heavy_dot_stroke_width  = $self->convert_to_pt("9/300in");
+        $css //= <<"EOF";
+            .line {
+                stroke: #6767ff;
+                stroke-linecap: round;
+                stroke-width: ${line_stroke_width}pt;
+                opacity: 0.5;
+            }
+            .dot {
+                stroke: #6767ff;
+                stroke-linecap: round;
+                stroke-width: ${dot_stroke_width}pt;
+                opacity: 0.5;
+            }
+            .margin-line {
+                stroke: #670000;
+                stroke-linecap: round;
+                stroke-width: ${line_stroke_width}pt;
+                opacity: 0.5;
+            }
+            .line.light {
+                stroke-width: ${light_line_stroke_width}pt;
+            }
+            .line.heavy {
+                stroke-width: ${heavy_line_stroke_width}pt;
+            }
+            .dot.light {
+                stroke-width: ${light_dot_stroke_width}pt;
+            }
+            .dot.heavy {
+                stroke-width: ${heavy_dot_stroke_width}pt;
+            }
+            .margin-line.light {
+                stroke-width: ${light_line_stroke_width}pt;
+            }
+            .margin-line.heavy {
+                stroke-width: ${heavy_line_stroke_width}pt;
+            }
+EOF
+        my $doc = $self->doc;
+        my $style = $doc->createElement("style");
+        $style->appendText($css);
+        return $style;
+    }
+
+    sub create_g_element {
+        my ($self, $id) = @_;
+        my $doc = $self->doc;
+        my $g = $doc->createElement("g");
+        $g->setAttribute("id", $id);
+        return $g;
+    }
 };
 
 package My::Printable::Util {
     use base "Exporter";
+
     our @EXPORT_OK;
     BEGIN {
         push(@EXPORT_OK, 'exclude');
     }
+
+    use Data::Dumper;
+
+    sub exclude(\@@);
     sub exclude(\@@) {
         my ($a, @b) = @_;
         my %b = map { ($_, 1) } @b;
