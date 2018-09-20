@@ -226,7 +226,7 @@ package My::Printable {
         my $left_margin_line = $self->convert_to_pt("1.25in");
 
         my $line_stroke_width      = $self->convert_to_pt("0.666667px");
-        my $light_dot_stroke_width = $self->convert_to_pt("0.666667px");
+        my $light_dot_stroke_width = $self->convert_to_pt("1.333333px");
         my $dot_stroke_width       = $self->convert_to_pt("2px");
 
         # Compute the points.
@@ -258,7 +258,7 @@ package My::Printable {
         my $real_left_margin_line = $self->point_nearest($left_margin_line, @x_points);
 
         my @x_dot_points = @x_points;
-        # @x_dot_points = exclude(@x_points, $real_left_margin_line);
+        @x_dot_points = exclude(@x_points, $real_left_margin_line);
 
         # Draw the paper.
 
@@ -294,7 +294,6 @@ package My::Printable {
                 stroke: #b30000;
                 stroke-linecap: round;
                 stroke-width: ${line_stroke_width}pt;
-                opacity: 0.2;
             }
 EOF
         $style->appendText($css);
