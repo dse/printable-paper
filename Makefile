@@ -27,14 +27,6 @@ templates/dot-grid-letter.svg: bin/printable
 	mkdir -p templates
 	bin/printable dot-grid >templates/dot-grid-letter.svg
 
-templates/line-dot-grid-letter-2page.pdf: templates/line-dot-grid-letter.pdf
-	if which pdfunite >/dev/null 2>/dev/null ; then \
-		pdfunite templates/line-dot-grid-letter.pdf templates/line-dot-grid-letter.pdf "$@.tmp.pdf" ; \
-	else \
-		false ; \
-	fi
-	mv "$@.tmp.pdf" "$@"
-
 %.2page.pdf: %.pdf
 	if which pdfunite >/dev/null 2>/dev/null ; then \
 		pdfunite "$<" "$<" "$@.tmp.pdf" ; \
