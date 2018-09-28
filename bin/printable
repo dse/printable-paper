@@ -130,27 +130,31 @@ package My::Printable {
                 dot_grid => {
                     x_spacing => "1/4in",
                     y_spacing => "1/4in",
+                    class => "blue dot",
                 },
                 left_margin_line => {
                     x => "1.25in",
                     nearest => "dot-grid",
+                    class => "red margin-line",
                 },
             },
             five_sixteenths_inch_line_dot_grid => {
                 dot_grid => {
                     x_spacing => "5/16in",
                     y_spacing => "5/64in",
-                    y_exclude => "horizontal-lines",
+                    class => "light blue dot",
                 },
                 horizontal_lines => {
                     y_spacing => "5/16in",
                     ends_nearest_margins => 1,
                     bottom => "1in",
                     top => "1.5in",
+                    class => "light blue line",
                 },
                 left_margin_line => {
                     x => "1.25in",
-                    nearest => "dot-grid"
+                    nearest => "dot-grid",
+                    class => "red margin-line",
                 },
             },
         };
@@ -331,7 +335,7 @@ package My::Printable {
 
     sub generate_dot_grid_paper {
         my ($self, %args) = @_;
-        $self->generate_paper("one_quarter_inch_line_dot_grid", %args);
+        $self->generate_paper("one_quarter_inch_dot_grid", %args);
     }
 
     sub generate_paper {
@@ -455,7 +459,8 @@ package My::Printable {
             foreach my $x (@{$dot_grid->{x}}) {
                 foreach my $y (@{$dot_grid->{y}}) {
                     my $line = $self->create_line(
-                        x => $x, y => $y, class => "dot light"
+                        x => $x, y => $y,
+                        class => $ruling->{dot_grid}->{class} // "light blue dot"
                     );
                     $dot_grid_layer->appendChild($line);
                 }
@@ -470,7 +475,7 @@ package My::Printable {
                 my $x2 = $right_margin;
                 my $line = $self->create_line(
                     x1 => $x1, x2 => $x2, y => $y,
-                    class => "line light"
+                    class => $ruling->{horizontal_lines}->{class} // "light blue line"
                 );
                 $horizontal_lines_layer->appendChild($line);
             }
@@ -483,7 +488,7 @@ package My::Printable {
                 x => $margin_lines->{left}->{x},
                 y1 => $bottom_margin,
                 y2 => $top_margin,
-                class => "margin-line"
+                class => $ruling->{left_margin_line}->{class} // "red margin-line"
             );
             $margin_lines_layer->appendChild($margin_line);
         }
@@ -605,32 +610,46 @@ package My::Printable {
     # #b30000 => #670000
     sub create_style_element {
         my ($self, $css) = @_;
+
         my $super_light_line_stroke_width = $self->convert_to_pt("1/600in");
         my $light_line_stroke_width       = $self->convert_to_pt("1/300in");
         my $line_stroke_width             = $self->convert_to_pt("2/300in");
         my $heavy_line_stroke_width       = $self->convert_to_pt("3/300in");
+
         my $light_dot_stroke_width        = $self->convert_to_pt("4/300in");
         my $dot_stroke_width              = $self->convert_to_pt("6/300in");
         my $heavy_dot_stroke_width        = $self->convert_to_pt("9/300in");
+
         $css //= <<"EOF";
             .line {
-                stroke: #6767ff;
                 stroke-linecap: round;
                 stroke-width: ${line_stroke_width}pt;
-                opacity: 0.5;
             }
             .dot {
-                stroke: #6767ff;
                 stroke-linecap: round;
                 stroke-width: ${dot_stroke_width}pt;
-                opacity: 0.5;
             }
             .margin-line {
-                stroke: #670000;
                 stroke-linecap: round;
                 stroke-width: ${line_stroke_width}pt;
+            }
+
+            .blue {
+                stroke: #b3b3ff;
+            }
+            .red {
+                stroke: #b30000;
+            }
+
+            .opaque-blue {
+                stroke: #6767ff;
                 opacity: 0.5;
             }
+            .opaque-red {
+                stroke: #670000;
+                opacity: 0.5;
+            }
+
             .line.super-light {
                 stroke-width: ${super_light_line_stroke_width}pt;
             }
@@ -640,12 +659,14 @@ package My::Printable {
             .line.heavy {
                 stroke-width: ${heavy_line_stroke_width}pt;
             }
+
             .dot.light {
                 stroke-width: ${light_dot_stroke_width}pt;
             }
             .dot.heavy {
                 stroke-width: ${heavy_dot_stroke_width}pt;
             }
+
             .margin-line.light {
                 stroke-width: ${light_line_stroke_width}pt;
             }
