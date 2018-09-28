@@ -123,6 +123,39 @@ package My::Printable {
         };
     }
 
+    our $RULINGS;
+    BEGIN {
+        $RULINGS = {
+            one_quarter_inch_dot_grid => {
+                dot_grid => {
+                    x_spacing => "1/4in",
+                    y_spacing => "1/4in",
+                },
+                left_margin_line => {
+                    x => "1.25in",
+                    nearest => "dot-grid",
+                },
+            },
+            five_sixteenths_inch_line_dot_grid => {
+                dot_grid => {
+                    x_spacing => "5/16in",
+                    y_spacing => "5/64in",
+                    y_exclude => "horizontal-lines",
+                },
+                horizontal_lines => {
+                    y_spacing => "5/16in",
+                    ends_nearest_margins => 1,
+                    bottom => "1in",
+                    top => "1.5in",
+                },
+                left_margin_line => {
+                    x => "1.25in",
+                    nearest => "dot-grid"
+                },
+            },
+        };
+    }
+
     our $rx_units;
     our $rx_number;
     BEGIN {
@@ -150,6 +183,24 @@ package My::Printable {
         my $result = $self->convert_to_pt($height);
         $self->height($result);
         $self->papersize(undef);
+    }
+
+    sub convert_x_to_pt {
+        my ($self, $value) = @_;
+        if ($value =~ m{\A \s* ($rx_number) \s* \% \s* $}xi) {
+            my $percentage = $1;
+            return $self->width * $percentage / 100;
+        }
+        return $self->convert_to_pt($value);
+    }
+
+    sub convert_y_to_pt {
+        my ($self, $value) = @_;
+        if ($value =~ m{\A \s* ($rx_number) \s* \% \s* $}xi) {
+            my $percentage = $1;
+            return $self->height * $percentage / 100;
+        }
+        return $self->convert_to_pt($value);
     }
 
     sub convert_to_pt {
@@ -273,143 +324,32 @@ package My::Printable {
         return $self->get_papersize($papersize);
     }
 
-    sub generate_dot_grid_paper {
-        my ($self, %args) = @_;
-
-        my $width = $self->width;
-        my $height = $self->height;
-
-        my $left_margin = 0;
-        my $right_margin = $width;
-
-        my $bottom_margin = 0;
-        my $top_margin = $height;
-
-        my $x_origin = $width / 2;
-        my $y_origin = $height / 2;
-
-        my $x_spacing = $self->convert_to_pt("1/4in");
-        my $y_spacing = $self->convert_to_pt("1/4in");
-
-        my $left_margin_line = $self->convert_to_pt("1.25in");
-
-        my @x_dot_points = $self->get_points(
-            spacing => $x_spacing,
-            min     => 0,
-            max     => $width,
-            origin  => $x_origin,
-            nearest_margin_line => $left_margin_line
-        );
-
-        my @y_dot_points = $self->get_points(
-            spacing => $y_spacing,
-            min     => 0,
-            max     => $height,
-            origin  => $y_origin
-        );
-
-        my $real_left_margin_line = $self->point_nearest($left_margin_line, @x_dot_points);
-
-        my $doc = $self->create_document;
-        my $root = $self->root;
-
-        my $style = $self->create_style_element;
-        $root->appendChild($style);
-
-        my $margin_lines     = $self->create_g_element("margin-lines");
-        my $dots             = $self->create_g_element("dots");
-
-        $root->appendChild($margin_lines);
-        $root->appendChild($dots);
-
-        foreach my $x (@x_dot_points) {
-            foreach my $y (@y_dot_points) {
-                my $line = $self->create_line(
-                    x => $x, y => $y, class => "dot"
-                );
-                $dots->appendChild($line);
-            }
-        }
-
-        my $mline = $self->create_line(
-            x => $real_left_margin_line,
-            y1 => $bottom_margin,
-            y2 => $top_margin,
-            class => "margin-line"
-        );
-        $margin_lines->appendChild($mline);
-
-        print $doc->toString(1);
-    }
-
     sub generate_line_dot_grid_paper {
         my ($self, %args) = @_;
+        $self->generate_paper("five_sixteenths_inch_line_dot_grid", %args);
+    }
 
-        my $width = $self->width;
+    sub generate_dot_grid_paper {
+        my ($self, %args) = @_;
+        $self->generate_paper("one_quarter_inch_line_dot_grid", %args);
+    }
+
+    sub generate_paper {
+        my ($self, $ruling_name, %args) = @_;
+
+        my $ruling = $RULINGS->{$ruling_name};
+
+        my $width  = $self->width;
         my $height = $self->height;
 
-        my $left_margin = 0;
-        my $right_margin = $width;
+        my $left_margin  = $self->convert_to_pt($ruling->{left_margin} // 0);
+        my $right_margin = $width - $self->convert_to_pt($ruling->{right_margin} // 0);
 
-        my $bottom_margin = 0;
-        my $top_margin = $height;
+        my $bottom_margin = $self->convert_to_pt($ruling->{bottom_margin} // 0);
+        my $top_margin    = $height - $self->convert_to_pt($ruling->{top_margin} // 0);
 
-        my $x_origin = $width / 2;
-        my $y_origin = $height / 2;
-
-        my $x_spacing = $self->convert_to_pt("5/16in");
-        my $y_spacing = $self->convert_to_pt("5/16in");
-        my $y_dot_spacing = $y_spacing / 4;
-
-        my $left_margin_line = $self->convert_to_pt("1.25in");
-
-        my $top_y_point    = $height - $self->convert_to_pt("1.5in");
-        my $bottom_y_point = $self->convert_to_pt("1in");
-
-        # Compute the points.
-
-        my @x_points = $self->get_points(
-            spacing => $x_spacing,
-            min     => 0,
-            max     => $width,
-            origin  => $x_origin,
-            nearest_margin_line => $left_margin_line
-        );
-
-        my @y_points = $self->get_points(
-            spacing => $y_spacing,
-            min     => 0,
-            max     => $height,
-            origin  => $y_origin,
-            ends_nearest_margins => 1
-        );
-
-        my @y_dot_points = $self->get_points(
-            spacing => $y_dot_spacing,
-            min     => 0,
-            max     => $height,
-            origin  => $y_origin
-        );
-
-        my $real_left_margin_line = $self->point_nearest($left_margin_line, @x_points);
-
-        my @x_dot_points = @x_points;
-
-        # my $additional_dots_above = 3; # thin lines above for seyes/french ruling
-        # my $additional_dots_below = 2; # thin lines below for seyes/french ruling
-
-        my $real_top_y_point    = $self->point_nearest($top_y_point,    @y_points);
-        my $real_bottom_y_point = $self->point_nearest($bottom_y_point, @y_points);
-
-        @y_points     = grep { $_ <= $real_top_y_point    } @y_points;
-        @y_points     = grep { $_ >= $real_bottom_y_point } @y_points;
-
-        # @y_dot_points = grep { $_ <= $real_top_y_point    + ($additional_dots_above + 0.5) * $y_spacing / 4 } @y_dot_points;
-        # @y_dot_points = grep { $_ >= $real_bottom_y_point - ($additional_dots_below + 0.5) * $y_spacing / 4 } @y_dot_points;
-
-        @y_dot_points = exclude(@y_dot_points, @y_points);
-
-        # Draw the paper.
+        my $x_origin = $self->convert_x_to_pt($ruling->{x_origin} // "50%");
+        my $y_origin = $self->convert_y_to_pt($ruling->{y_origin} // "50%");
 
         my $doc = $self->create_document;
         my $root = $self->root;
@@ -417,42 +357,136 @@ package My::Printable {
         my $style = $self->create_style_element;
         $root->appendChild($style);
 
-        my $horizontal_lines = $self->create_g_element("horizontal-lines");
-        my $vertical_lines   = $self->create_g_element("vertical-lines");
-        my $margin_lines     = $self->create_g_element("margin-lines");
-        my $dots             = $self->create_g_element("dots");
+        my $layers = {};
+        my $dot_grid = {};
+        my $horizontal_lines = {};
+        my $margin_lines = {};
 
-        $root->appendChild($horizontal_lines);
-        $root->appendChild($vertical_lines);
-        $root->appendChild($margin_lines);
-        $root->appendChild($dots);
+        # Compute points
 
-        foreach my $y (@y_points) {
-            my $x1 = $left_margin;
-            my $x2 = $right_margin;
-            my $line = $self->create_line(
-                x1 => $x1, x2 => $x2, y => $y,
-                class => "line light"
+        if ($ruling->{dot_grid}) {
+            my $x_spacing = $dot_grid->{x_spacing} = $self->convert_to_pt($ruling->{dot_grid}->{x_spacing});
+            my $y_spacing = $dot_grid->{y_spacing} = $self->convert_to_pt($ruling->{dot_grid}->{y_spacing});
+            $dot_grid->{x} = $self->get_points(
+                spacing => $x_spacing,
+                min => $left_margin,
+                max => $right_margin,
+                origin => $x_origin,
+                ends_nearest_margins => 1
             );
-            $horizontal_lines->appendChild($line);
+            $dot_grid->{y} = $self->get_points(
+                spacing => $y_spacing,
+                min => $bottom_margin,
+                max => $top_margin,
+                origin => $y_origin,
+                ends_nearest_margins => 1
+            );
         }
 
-        foreach my $x (@x_dot_points) {
-            foreach my $y (@y_dot_points) {
-                my $line = $self->create_line(
-                    x => $x, y => $y, class => "dot light"
-                );
-                $dots->appendChild($line);
+        if ($ruling->{horizontal_lines}) {
+            my $y_spacing = $horizontal_lines->{y_spacing} = $self->convert_to_pt($ruling->{horizontal_lines}->{y_spacing});
+            my $our_y_origin = $y_origin;
+            if ($ruling->{dot_grid}) {
+                $our_y_origin = $dot_grid->{y}->[0];
+            }
+            $horizontal_lines->{y} = $self->get_points(
+                spacing => $y_spacing,
+                min => $bottom_margin,
+                max => $top_margin,
+                origin => $our_y_origin,
+                ends_nearest_margins => 1
+            );
+        }
+
+        if ($ruling->{left_margin_line}) {
+            $margin_lines->{left}->{x} = $self->convert_to_pt($ruling->{left_margin_line}->{x});
+        }
+
+        # Stop horizontal lines near top and/or bottom.
+
+        if ($ruling->{horizontal_lines}) {
+            my $y = $horizontal_lines->{y};
+
+            my $bottom = $ruling->{horizontal_lines}->{bottom};
+            if (defined $bottom) {
+                my $bottom_y = $self->convert_to_pt($bottom);
+                $bottom_y = $self->point_nearest($bottom_y, @$y);
+                @$y = grep { $_ >= $bottom_y } @$y;
+            }
+
+            my $top = $ruling->{horizontal_lines}->{top};
+            if (defined $top) {
+                my $top_y = $height - $self->convert_to_pt($top);
+                $top_y = $self->point_nearest($top_y, @$y);
+                @$y = grep { $_ <= $top_y } @$y;
             }
         }
 
-        my $mline = $self->create_line(
-            x => $real_left_margin_line,
-            y1 => $bottom_margin,
-            y2 => $top_margin,
-            class => "margin-line"
-        );
-        $margin_lines->appendChild($mline);
+        # Relocate left margin line
+
+        if ($ruling->{left_margin_line}) {
+            if ($ruling->{dot_grid}) {
+                my $nearest = $ruling->{left_margin_line}->{nearest};
+                if (defined $nearest && $nearest eq "dot-grid") {
+                    $margin_lines->{left}->{x} = $self->point_nearest($margin_lines->{left}->{x},
+                                                                      @{$dot_grid->{x}});
+                }
+            }
+        }
+
+        # Exclude horizontal lines from grid points.
+
+        if ($ruling->{dot_grid}) {
+            my $x = $dot_grid->{x};
+            my $y = $dot_grid->{y};
+            if ($ruling->{horizontal_lines}) {
+                @$y = exclude(@$y, @{$horizontal_lines->{y}});
+            }
+            if ($ruling->{left_margin_line}) {
+                @$x = exclude(@$x, ($margin_lines->{left}->{x}));
+            }
+        }
+
+        # Draw everything.
+
+        if ($ruling->{dot_grid}) {
+            my $dot_grid_layer = $layers->{dot_grid} = $self->create_g_element("dot-grid");
+            $root->appendChild($dot_grid_layer);
+            foreach my $x (@{$dot_grid->{x}}) {
+                foreach my $y (@{$dot_grid->{y}}) {
+                    my $line = $self->create_line(
+                        x => $x, y => $y, class => "dot light"
+                    );
+                    $dot_grid_layer->appendChild($line);
+                }
+            }
+        }
+
+        if ($ruling->{horizontal_lines}) {
+            my $horizontal_lines_layer = $layers->{horizontal_lines} = $self->create_g_element("horizontal-lines");
+            $root->appendChild($horizontal_lines_layer);
+            foreach my $y (@{$horizontal_lines->{y}}) {
+                my $x1 = $left_margin;
+                my $x2 = $right_margin;
+                my $line = $self->create_line(
+                    x1 => $x1, x2 => $x2, y => $y,
+                    class => "line light"
+                );
+                $horizontal_lines_layer->appendChild($line);
+            }
+        }
+
+        if ($ruling->{left_margin_line}) {
+            my $margin_lines_layer = $self->create_g_element("margin-lines");
+            $root->appendChild($margin_lines_layer);
+            my $margin_line = $self->create_line(
+                x => $margin_lines->{left}->{x},
+                y1 => $bottom_margin,
+                y2 => $top_margin,
+                class => "margin-line"
+            );
+            $margin_lines_layer->appendChild($margin_line);
+        }
 
         print $doc->toString(1);
     }
@@ -478,9 +512,11 @@ package My::Printable {
 
             my $min2 = $points2[0];
             if ($min1 < $min2) {
-                return @points1;
+                return @points1 if wantarray;
+                return \@points1;
             }
-            return @points2;
+            return @points2 if wantarray;
+            return \@points2;
         }
 
         if ($nearest_margin_line) {
@@ -496,9 +532,11 @@ package My::Printable {
             my $dist1 = abs($point1 - $nearest_margin_line);
             my $dist2 = abs($point2 - $nearest_margin_line);
             if ($dist1 < $dist2) {
-                return @points1;
+                return @points1 if wantarray;
+                return \@points1;
             }
-            return @points2;
+            return @points2 if wantarray;
+            return \@points2;
         }
 
         my @points = ($origin);
@@ -510,7 +548,8 @@ package My::Printable {
         for ($x = $origin - $spacing; $x >= $min; $x -= $spacing) {
             unshift(@points, $x);
         }
-        return @points;
+        return @points if wantarray;
+        return \@points;
     }
 
 
@@ -566,12 +605,13 @@ package My::Printable {
     # #b30000 => #670000
     sub create_style_element {
         my ($self, $css) = @_;
-        my $light_line_stroke_width = $self->convert_to_pt("1/300in");
-        my $line_stroke_width       = $self->convert_to_pt("2/300in");
-        my $heavy_line_stroke_width = $self->convert_to_pt("3/300in");
-        my $light_dot_stroke_width  = $self->convert_to_pt("4/300in");
-        my $dot_stroke_width        = $self->convert_to_pt("6/300in");
-        my $heavy_dot_stroke_width  = $self->convert_to_pt("9/300in");
+        my $super_light_line_stroke_width = $self->convert_to_pt("1/600in");
+        my $light_line_stroke_width       = $self->convert_to_pt("1/300in");
+        my $line_stroke_width             = $self->convert_to_pt("2/300in");
+        my $heavy_line_stroke_width       = $self->convert_to_pt("3/300in");
+        my $light_dot_stroke_width        = $self->convert_to_pt("4/300in");
+        my $dot_stroke_width              = $self->convert_to_pt("6/300in");
+        my $heavy_dot_stroke_width        = $self->convert_to_pt("9/300in");
         $css //= <<"EOF";
             .line {
                 stroke: #6767ff;
@@ -590,6 +630,9 @@ package My::Printable {
                 stroke-linecap: round;
                 stroke-width: ${line_stroke_width}pt;
                 opacity: 0.5;
+            }
+            .line.super-light {
+                stroke-width: ${super_light_line_stroke_width}pt;
             }
             .line.light {
                 stroke-width: ${light_line_stroke_width}pt;
