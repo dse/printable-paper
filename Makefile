@@ -1,3 +1,4 @@
+SHELL = bash
 INKSCAPE = inkscape
 
 # darwin: inkscape invokes an app installed in /Applications which
