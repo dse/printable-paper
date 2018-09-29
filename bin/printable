@@ -96,9 +96,9 @@ package My::Printable {
         import My::Printable::Util qw(exclude);
     }
 
-    our $units;
+    our $UNITS;
     BEGIN {
-        $units = {
+        $UNITS = {
             "pt" => {
                 to_pt => 1,
                 type => "imperial",
@@ -265,7 +265,7 @@ package My::Printable {
             if (!defined $unit || $unit eq "") {
                 return $number;
             }
-            return $number * $units->{$unit}->{to_pt};
+            return $number * $UNITS->{$unit}->{to_pt};
         } else {
             die("Invalid size specification: $value\n");
         }
@@ -306,8 +306,8 @@ package My::Printable {
             if (!defined $x_unit || $x_unit eq "") {
                 $x_unit = $y_unit;
             }
-            $width *= $units->{$x_unit}->{to_pt};
-            $height *= $units->{$y_unit}->{to_pt};
+            $width *= $UNITS->{$x_unit}->{to_pt};
+            $height *= $UNITS->{$y_unit}->{to_pt};
             if (wantarray) {
                 return (undef, $width, $height);
             }
