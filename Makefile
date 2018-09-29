@@ -13,20 +13,34 @@ PATHNAME = $(shell \
 
 default: svg pdf
 
-ps:  templates/line-dot-grid-letter.ps  templates/dot-grid-letter.ps
+RULINGS = line-dot-grid-letter dot-grid-letter seyes-letter
 
-pdf: templates/line-dot-grid-letter.pdf       templates/dot-grid-letter.pdf \
-     templates/line-dot-grid-letter.2page.pdf templates/dot-grid-letter.2page.pdf \
+PS_FILES	= $(patsubst %,templates/%.ps,$(RULINGS))
+PDF_FILES	= $(patsubst %,templates/%.pdf,$(RULINGS))
+PDF_2PAGE_FILES = $(patsubst %,templates/%.2page.pdf,$(RULINGS))
+SVG_FILES	= $(patsubst %,templates/%.svg,$(RULINGS))
 
-svg: templates/line-dot-grid-letter.svg templates/dot-grid-letter.svg
+ps:  $(PS_FILES)
+pdf: $(PDF_FILES) $(PDF_2PAGE_FILES)
+svg: $(SVG_FILES)
+
+clean:
+	rm $(PS_FILES) $(PDF_FILES) $(PDF_2PAGE_FILES) $(SVG_FILES) || true
 
 templates/line-dot-grid-letter.svg: bin/printable Makefile
 	mkdir -p templates
-	bin/printable line-dot-grid  >templates/line-dot-grid-letter.svg
+	bin/printable five-sixteenths-inch-line-dot-grid >"$@.tmp.svg"
+	mv "$@.tmp.svg" "$@"
 
 templates/dot-grid-letter.svg: bin/printable
 	mkdir -p templates
-	bin/printable dot-grid >templates/dot-grid-letter.svg
+	bin/printable one-quarter-inch-dot-grid >"$@.tmp.svg"
+	mv "$@.tmp.svg" "$@"
+
+templates/seyes-letter.svg: bin/printable
+	mkdir -p templates
+	bin/printable seyes-ruling >"$@.tmp.svg"
+	mv "$@.tmp.svg" "$@"
 
 %.2page.pdf: %.pdf
 	if which pdfunite >/dev/null 2>/dev/null ; then \
