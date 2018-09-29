@@ -13,7 +13,13 @@ PATHNAME = $(shell \
 
 default: svg pdf
 
-RULINGS = line-dot-grid-letter dot-grid-letter seyes-letter
+RULINGS = \
+	seyes--five-sixteenths-inch--letter \
+	line-dot-grid--five-sixteenths-inch--letter \
+        dot-grid--one-quarter-inch--letter
+#	seyes--8mm--a4 \
+#	line-dot-grid--8mm--a4 \
+#	dot-grid--6mm--a4
 
 PS_FILES	= $(patsubst %,templates/%.ps,$(RULINGS))
 PDF_FILES	= $(patsubst %,templates/%.pdf,$(RULINGS))
@@ -26,20 +32,16 @@ svg: $(SVG_FILES)
 
 clean:
 	rm $(PS_FILES) $(PDF_FILES) $(PDF_2PAGE_FILES) $(SVG_FILES) || true
+	find . -type f \( -name '*.tmp' -o -name '*.tmp.*' \) -exec rm {} + || true
 
-templates/line-dot-grid-letter.svg: bin/printable Makefile
+templates/%--letter.svg: bin/printable Makefile
 	mkdir -p templates
-	bin/printable five-sixteenths-inch-line-dot-grid >"$@.tmp.svg"
+	bin/printable -M letter $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
-templates/dot-grid-letter.svg: bin/printable
+templates/%--a4.svg: bin/printable Makefile
 	mkdir -p templates
-	bin/printable one-quarter-inch-dot-grid >"$@.tmp.svg"
-	mv "$@.tmp.svg" "$@"
-
-templates/seyes-letter.svg: bin/printable
-	mkdir -p templates
-	bin/printable seyes-ruling >"$@.tmp.svg"
+	bin/printable -M a4 $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
 %.2page.pdf: %.pdf

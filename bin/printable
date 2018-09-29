@@ -18,7 +18,7 @@ use Getopt::Long;
 use Data::Dumper;
 use Carp::Always;
 
-Getopt::Long::Configure(qw(bundling gnu_compat));
+Getopt::Long::Configure(qw(bundling gnu_compat no_ignore_case));
 Getopt::Long::GetOptions(
     "M|p|media|paper|paper-size=s" => \$opt_papersize,
     "w|width=s"                    => \$opt_width,
@@ -133,7 +133,8 @@ package My::Printable {
     our $RULINGS;
     BEGIN {
         $RULINGS = {
-            one_quarter_inch_dot_grid => {
+            dot_grid__one_quarter_inch => {
+                unit => "1/4in",
                 dot_grid => {
                     x_spacing => "1/4in",
                     y_spacing => "1/4in",
@@ -145,7 +146,8 @@ package My::Printable {
                     class => "red margin-line",
                 },
             },
-            five_sixteenths_inch_line_dot_grid => {
+            line_dot_grid__five_sixteenths_inch => {
+                unit => "5/16in",
                 dot_grid => {
                     x_spacing => "5/16in",
                     y_spacing => "5/64in",
@@ -164,7 +166,8 @@ package My::Printable {
                     class => "red margin-line",
                 },
             },
-            seyes_ruling => {
+            seyes__five_sixteenths_inch => {
+                unit => "5/16in",
                 horizontal_lines => {
                     y_spacing => "5/16in",
                     bottom => "1in",
@@ -318,24 +321,35 @@ package My::Printable {
 
     sub get_papersize {
         my ($self, $papersize) = @_;
-        my $ph;
-        my @cmd;
-        if (defined $papersize) {
-            @cmd = ("paperconf", "-p", $papersize, "-n", "-s");
+        my $papersizename;
+        my $width;
+        my $height;
+        if (lc $papersize eq "letter") {
+            ($papersizename, $width, $height) = ("letter", 612, 792);
+        } elsif (lc $papersize eq "a4") {
+            $papersizename = "a4";
+            $width  = 210 / 25.4 * 72;
+            $height = 297 / 25.4 * 72;
         } else {
-            @cmd = ("paperconf", "-n", "-s");
+            my $ph;
+            my @cmd;
+            if (defined $papersize) {
+                @cmd = ("paperconf", "-p", $papersize, "-n", "-s");
+            } else {
+                @cmd = ("paperconf", "-n", "-s");
+            }
+            if (!open($ph, "-|", @cmd)) {
+                die("exec paperconf: $!");
+            }
+            local $/ = undef;
+            my $result = <$ph>;
+            if (!close($ph)) {
+                die("paperconf failed: $!");
+            }
+            $result =~ s{\A\s+}{};
+            $result =~ s{\s+\z}{};
+            ($papersizename, $width, $height) = split(' ', $result);
         }
-        if (!open($ph, "-|", @cmd)) {
-            die("exec paperconf: $!");
-        }
-        local $/ = undef;
-        my $result = <$ph>;
-        if (!close($ph)) {
-            die("paperconf failed: $!");
-        }
-        $result =~ s{\A\s+}{};
-        $result =~ s{\s+\z}{};
-        my ($papersizename, $width, $height) = split(' ', $result);
         if (wantarray) {
             return ($papersizename, $width, $height);
         }
