@@ -5,6 +5,9 @@ use v5.10.0;
 
 # on Cygwin:
 #     apt-cyg install libpaper1 libpaper-bin
+# on other systems:
+#     it's part of something called libpaper.
+#     git@github.com:naota/libpaper.git
 # to list all paper sizes and their widths and heights:
 #     paperconf -a -n -s
 # to get the default paper size:
@@ -89,6 +92,7 @@ package My::Printable {
     use XML::LibXML;
     use List::Util qw(min max);
     use Data::Dumper;
+    use POSIX qw(round);
 
     # use My::Printable::Util qw(exclude);
     sub exclude(\@@);      # for embedded package subs with prototypes
@@ -205,7 +209,7 @@ package My::Printable {
 
     sub set_papersize {
         my ($self, $spec) = @_;
-        my ($papersize, $width, $height) = $self->read_papersize($spec);
+        my ($papersize, $width, $height, $type) = $self->read_papersize($spec);
         $self->papersize($papersize);
         $self->width($width);
         $self->height($height);
@@ -213,14 +217,14 @@ package My::Printable {
 
     sub set_width {
         my ($self, $width) = @_;
-        my $result = $self->convert_to_pt($width);
+        my ($result, $type) = $self->convert_to_pt($width);
         $self->width($result);
         $self->papersize(undef);
     }
 
     sub set_height {
         my ($self, $height) = @_;
-        my $result = $self->convert_to_pt($height);
+        my ($result, $type) = $self->convert_to_pt($height);
         $self->height($result);
         $self->papersize(undef);
     }
@@ -244,31 +248,69 @@ package My::Printable {
     }
 
     sub convert_to_pt {
-        my ($self, $value) = @_;
-        if ($value =~ m{\A
-                        \s*
-                        ($rx_number)
-                        (?:
-                            \s*
-                            /
+        my $self = (scalar @_ && ref $_) ? shift : __PACKAGE__;
+
+        my ($value, $unit) = @_;
+        my ($numerator, $denominator);
+
+        if (defined $unit) {
+            if ($value =~ m{\A
                             \s*
                             ($rx_number)
-                        )?
-                        \s*
-                        ($rx_units)?
-                        \s*
-                        \z}xi) {
-            my ($number, $denominator, $unit) = ($1, $2, $3);
-            if (defined $denominator) {
-                $number /= $denominator;
+                            (?:
+                                \s*
+                                /
+                                \s*
+                                ($rx_number)
+                            )?
+                            \s*
+                            \z}xi) {
+                ($numerator, $denominator) = ($1, $2);
+            } else {
+                die("Invalid size specification: $value $unit\n");
             }
-            if (!defined $unit || $unit eq "") {
-                return $number;
-            }
-            return $number * $UNITS->{$unit}->{to_pt};
         } else {
-            die("Invalid size specification: $value\n");
+            if ($value =~ m{\A
+                            \s*
+                            ($rx_number)
+                            (?:
+                                \s*
+                                /
+                                \s*
+                                ($rx_number)
+                            )?
+                            \s*
+                            ($rx_units)?
+                            \s*
+                            \z}xi) {
+                ($numerator, $denominator, $unit) = ($1, $2, $3);
+            } else {
+                die("Invalid size specification: $value\n");
+            }
         }
+
+        my $number;
+        if (defined $denominator) {
+            $number = $numerator / $denominator;
+        } else {
+            $number = $numerator;
+        }
+
+        if (!defined $unit || $unit eq "") {
+            return ($number, "imperial") if wantarray;
+            return $number;
+        }
+
+        my $unit_info = $UNITS->{$unit};
+        if (!defined $unit_info) {
+            die("Invalid size specification: $value $unit\n");
+        }
+
+        my $result_pt   = $number * $unit_info->{to_pt};
+        my $result_type = $unit_info->{type};
+
+        return ($result_pt, $result_type) if wantarray;
+        return $result_pt;
     }
 
     sub parse_custom_papersize {
@@ -308,15 +350,33 @@ package My::Printable {
             }
             $width *= $UNITS->{$x_unit}->{to_pt};
             $height *= $UNITS->{$y_unit}->{to_pt};
+            my $type = $UNITS->{$x_unit}->{type} // $UNITS->{$y_unit}->{type};
             if (wantarray) {
-                return (undef, $width, $height);
+                return (undef, $width, $height, $type);
             }
             return {
-                width => $width,
-                height => $height
+                width  => $width,
+                height => $height,
+                type   => $type
             };
         }
         return;
+    }
+
+    our $SIZES;
+    BEGIN {
+        $SIZES = {
+            letter => {
+                width  => convert_to_pt(8.5, "in"),
+                height => convert_to_pt(11, "in").
+                type   => "imperial",
+            },
+            a4 => {
+                width  => convert_to_pt(250 / sqrt(sqrt(2)), "mm"),
+                height => convert_to_pt(250 * sqrt(sqrt(2)), "mm"),
+                type   => "metric"
+            },
+        };
     }
 
     sub get_papersize {
@@ -324,12 +384,13 @@ package My::Printable {
         my $papersizename;
         my $width;
         my $height;
-        if (lc $papersize eq "letter") {
-            ($papersizename, $width, $height) = ("letter", 612, 792);
-        } elsif (lc $papersize eq "a4") {
-            $papersizename = "a4";
-            $width  = 210 / 25.4 * 72;
-            $height = 297 / 25.4 * 72;
+        my $type;
+        my $lc_papersize = lc $papersize;
+        if (exists $SIZES->{$lc_papersize}) {
+            $papersizename = $lc_papersize;
+            $width  = $SIZES->{$lc_papersize}->{width};
+            $height = $SIZES->{$lc_papersize}->{height};
+            $type   = $SIZES->{$lc_papersize}->{type};
         } else {
             my $ph;
             my @cmd;
@@ -349,20 +410,26 @@ package My::Printable {
             $result =~ s{\A\s+}{};
             $result =~ s{\s+\z}{};
             ($papersizename, $width, $height) = split(' ', $result);
+            if ($width == round($width) && $height == round($height)) {
+                $type = "imperial";
+            } else {
+                $type = "metric";
+            }
         }
         if (wantarray) {
-            return ($papersizename, $width, $height);
+            return ($papersizename, $width, $height, $type);
         }
         return {
             papersize => $papersizename,
-            width => $width,
-            height => $height
+            width     => $width,
+            height    => $height,
+            type      => $type
         };
     }
 
     sub read_papersize {
         my ($self, $papersize) = @_;
-        my ($x, $y) = $self->parse_custom_papersize($papersize);
+        my ($x, $y, $type) = $self->parse_custom_papersize($papersize);
         if (defined $x && defined $y) {
             if (wantarray) {
                 return (undef, $x, $y);
@@ -461,7 +528,7 @@ package My::Printable {
         if ($ruling->{dot_grid}) {
             my $x_spacing = $dot_grid->{x_spacing} = $self->convert_to_pt($ruling->{dot_grid}->{x_spacing});
             my $y_spacing = $dot_grid->{y_spacing} = $self->convert_to_pt($ruling->{dot_grid}->{y_spacing});
-            $dot_grid->{x} = $self->get_points(
+$dot_grid->{x} = $self->get_points(
                 spacing => $x_spacing,
                 min => $self->left_margin,
                 max => $self->right_margin,
@@ -485,7 +552,7 @@ package My::Printable {
         my $dot_grid = $self->canvas->{dot_grid};
         if ($ruling->{horizontal_lines}) {
             my $y_spacing = $horizontal_lines->{y_spacing} = $self->convert_to_pt($ruling->{horizontal_lines}->{y_spacing});
-            my $our_y_origin = $self->y_origin;
+my $our_y_origin = $self->y_origin;
             if ($ruling->{dot_grid}) {
                 $our_y_origin = $dot_grid->{y}->[0];
             }
@@ -853,6 +920,7 @@ package My::Printable {
     }
 
     # ff = 255
+    # d9 = 217
     # b3 = 179
     # 67 = 103
     # #b3b3ff => #6767ff
@@ -984,4 +1052,4 @@ package My::Printable::Util {
         my %b = map { ($_, 1) } @b;
         return grep { !$b{$_} } @$a;
     }
-}
+};
