@@ -206,8 +206,8 @@ package My::Printable {
 
     sub set_papersize {
         my ($self, $spec) = @_;
-        my ($papersize, $width, $height, $type) = $self->read_papersize($spec);
-        $self->papersize($papersize);
+        my ($name, $width, $height, $type) = My::Printable::PaperSizes->parse($spec);
+        $self->papersize($name);
         $self->width($width);
         $self->height($height);
         $self->unit_x->set_percentage_basis($width);
@@ -228,54 +228,6 @@ package My::Printable {
         $self->height($pt);
         $self->papersize(undef);
         $self->unit_y->set_percentage_basis($pt);
-    }
-
-    sub parse_custom_papersize {
-        my ($self, $papersize) = @_;
-
-        my $rx_number = $self->unit->rx_number;
-        my $rx_units  = $self->unit->rx_units;
-
-    }
-
-    sub get_papersize {
-        my ($self, $spec) = @_;
-        my $result = My::Printable::PaperSizes->parse($spec);
-        if (!$result) {
-            die("Invalid paper size specification: $spec\n");
-        }
-        if (wantarray) {
-            return ($result->{name},
-                    $result->{width},
-                    $result->{height},
-                    $result->{type});
-        }
-        return $result;
-    }
-
-    sub read_papersize {
-        my ($self, $papersize) = @_;
-        my ($x, $y, $type) = $self->parse_custom_papersize($papersize);
-        if (defined $x && defined $y) {
-            if (wantarray) {
-                return (undef, $x, $y);
-            }
-            return {
-                width => $x,
-                height => $y
-            };
-        }
-        return $self->get_papersize($papersize);
-    }
-
-    sub generate_line_dot_grid_paper {
-        my ($self, %args) = @_;
-        $self->generate_paper("five_sixteenths_inch_line_dot_grid", %args);
-    }
-
-    sub generate_dot_grid_paper {
-        my ($self, %args) = @_;
-        $self->generate_paper("one_quarter_inch_dot_grid", %args);
     }
 
     sub generate_paper {
