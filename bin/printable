@@ -117,8 +117,8 @@ package My::Printable {
             dot_grid__one_quarter_inch => {
                 unit => "1/4in",
                 dot_grid => {
-                    x_spacing => "1/4in",
-                    y_spacing => "1/4in",
+                    x_spacing => "1unit",
+                    y_spacing => "1unit",
                     class => "blue dot",
                 },
                 left_margin_line => {
@@ -130,12 +130,12 @@ package My::Printable {
             line_dot_grid__five_sixteenths_inch => {
                 unit => "5/16in",
                 dot_grid => {
-                    x_spacing => "5/16in",
-                    y_spacing => "5/64in",
+                    x_spacing => "1unit",
+                    y_spacing => "1/4unit",
                     class => "thin blue dot",
                 },
                 horizontal_lines => {
-                    y_spacing => "5/16in",
+                    y_spacing => "1unit",
                     ends_nearest_margins => 1,
                     bottom => "1in",
                     top => "1.5in",
@@ -150,7 +150,7 @@ package My::Printable {
             seyes__five_sixteenths_inch => {
                 unit => "5/16in",
                 horizontal_lines => {
-                    y_spacing => "5/16in",
+                    y_spacing => "1unit",
                     bottom => "1in",
                     top => "1.5in",
                     class => "thin blue line",
@@ -164,7 +164,7 @@ package My::Printable {
                     },
                 },
                 vertical_lines => {
-                    x_spacing => "5/16in",
+                    x_spacing => "1unit",
                     ends_nearest_margins => 1,
                     class => "super-thin light blue line",
                 },
@@ -177,7 +177,7 @@ package My::Printable {
             seyes_gray__five_sixteenths_inch => {
                 unit => "5/16in",
                 horizontal_lines => {
-                    y_spacing => "5/16in",
+                    y_spacing => "1unit",
                     bottom => "1in",
                     top => "1.5in",
                     class => "gray line",
@@ -191,7 +191,7 @@ package My::Printable {
                     },
                 },
                 vertical_lines => {
-                    x_spacing => "5/16in",
+                    x_spacing => "1unit",
                     ends_nearest_margins => 1,
                     class => "thin gray line",
                 },
@@ -286,6 +286,16 @@ package My::Printable {
         my $ruling = $RULINGS->{$ruling_name};
         if (!$ruling) {
             die("No such ruling: $ruling_name\n");
+        }
+
+        $self->unit->delete_unit("unit");
+        $self->unit_x->delete_unit("unit");
+        $self->unit_y->delete_unit("unit");
+        if (defined $ruling->{unit}) {
+            my $unit_pt = $self->unit->convert_to_pt($ruling->{unit});
+            $self->unit->add_unit("unit", $unit_pt);
+            $self->unit_x->add_unit("unit", $unit_pt);
+            $self->unit_y->add_unit("unit", $unit_pt);
         }
 
         my $width  = $self->width;
@@ -943,6 +953,11 @@ package My::Printable::Unit {
             to_pt => $pt,
             type => $type
         };
+    }
+
+    sub delete_unit {
+        my ($self, $unit) = @_;
+        delete $self->{units}->{$unit};
     }
 
     sub rx_units {
