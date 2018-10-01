@@ -71,6 +71,7 @@ package My::Printable {
 
     use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
     use Class::Thingy;
+
     INIT {
         public papersize, default => "letter";
         public width,     default => 612;
@@ -87,6 +88,17 @@ package My::Printable {
         public top_margin;
         public x_origin;
         public y_origin;
+
+        public unit;
+        public unit_x;
+        public unit_y;
+    }
+
+    sub init {
+        my ($self) = @_;
+        $self->unit(My::Printable::Unit->new);
+        $self->unit_x(My::Printable::Unit->new);
+        $self->unit_y(My::Printable::Unit->new);
     }
 
     use XML::LibXML;
@@ -98,40 +110,6 @@ package My::Printable {
     sub exclude(\@@);      # for embedded package subs with prototypes
     INIT {
         import My::Printable::Util qw(exclude);
-    }
-
-    our $UNITS;
-    BEGIN {
-        $UNITS = {
-            "pt" => {
-                to_pt => 1,
-                type => "imperial",
-            },
-            "pc" => {
-                to_pt => 12,    # 1 pc = 12 pt
-                type => "imperial",
-            },
-            "in" => {
-                to_pt => 72,    # 1 in = 72 pt
-                type => "imperial",
-            },
-            "cm" => {
-                to_pt => (72 / 2.54), # 1 cm ~= 28.3465 pt
-                type => "metric",
-            },
-            "mm" => {
-                to_pt => (72 / 25.4), # 1 cm ~= 2.83465 pt
-                type => "metric",
-            },
-            "px" => {
-                to_pt => (72 / 96), # 1 px = 0.75 pt
-                type => "imperial"
-            },
-            "pd" => {           # pixel dots
-                to_pt => (72 / 300), # 1 pd = 1 dot on a 300dpi laser printer = 1/300 in = 72/300 pt
-                type => "imperial"
-            }
-        };
     }
 
     our $RULINGS;
@@ -197,14 +175,34 @@ package My::Printable {
                     class => "red margin-line"
                 }
             },
+            seyes_gray__five_sixteenths_inch => {
+                unit => "5/16in",
+                horizontal_lines => {
+                    y_spacing => "5/16in",
+                    bottom => "1in",
+                    top => "1.5in",
+                    class => "gray line",
+                    minor => {
+                        every => 4,
+                        extra => {
+                            bottom => 2,
+                            top => 3,
+                        },
+                        class => "thin gray line",
+                    },
+                },
+                vertical_lines => {
+                    x_spacing => "5/16in",
+                    ends_nearest_margins => 1,
+                    class => "thin gray line",
+                },
+                left_margin_line => {
+                    x => "1.25in",
+                    nearest => "vertical-lines",
+                    class => "dark gray margin-line"
+                }
+            },
         };
-    }
-
-    our $rx_units;
-    our $rx_number;
-    BEGIN {
-        $rx_units = qr{in|px|pt|cm|mm|pd}ix;
-        $rx_number = qr{\d+(?:\.\d*)?|\.\d+}ix;
     }
 
     sub set_papersize {
@@ -213,108 +211,33 @@ package My::Printable {
         $self->papersize($papersize);
         $self->width($width);
         $self->height($height);
+        $self->unit_x->set_percentage_basis($width);
+        $self->unit_y->set_percentage_basis($height);
     }
 
     sub set_width {
-        my ($self, $width) = @_;
-        my ($result, $type) = $self->convert_to_pt($width);
-        $self->width($result);
+        my ($self, $value, $unit) = @_;
+        my ($pt, $type) = $self->unit->convert_to_pt($value, $unit);
+        $self->width($pt);
         $self->papersize(undef);
+        $self->unit_x->set_percentage_basis($pt);
     }
 
     sub set_height {
-        my ($self, $height) = @_;
-        my ($result, $type) = $self->convert_to_pt($height);
-        $self->height($result);
+        my ($self, $value, $unit) = @_;
+        my ($pt, $type) = $self->unit->convert_to_pt($value, $unit);
+        $self->height($pt);
         $self->papersize(undef);
-    }
-
-    sub convert_x_to_pt {
-        my ($self, $value) = @_;
-        if ($value =~ m{\A \s* ($rx_number) \s* \% \s* $}xi) {
-            my $percentage = $1;
-            return $self->width * $percentage / 100;
-        }
-        return $self->convert_to_pt($value);
-    }
-
-    sub convert_y_to_pt {
-        my ($self, $value) = @_;
-        if ($value =~ m{\A \s* ($rx_number) \s* \% \s* $}xi) {
-            my $percentage = $1;
-            return $self->height * $percentage / 100;
-        }
-        return $self->convert_to_pt($value);
-    }
-
-    sub convert_to_pt {
-        my $self = (scalar @_ && ref $_) ? shift : __PACKAGE__;
-
-        my ($value, $unit) = @_;
-        my ($numerator, $denominator);
-
-        if (defined $unit) {
-            if ($value =~ m{\A
-                            \s*
-                            ($rx_number)
-                            (?:
-                                \s*
-                                /
-                                \s*
-                                ($rx_number)
-                            )?
-                            \s*
-                            \z}xi) {
-                ($numerator, $denominator) = ($1, $2);
-            } else {
-                die("Invalid size specification: $value $unit\n");
-            }
-        } else {
-            if ($value =~ m{\A
-                            \s*
-                            ($rx_number)
-                            (?:
-                                \s*
-                                /
-                                \s*
-                                ($rx_number)
-                            )?
-                            \s*
-                            ($rx_units)?
-                            \s*
-                            \z}xi) {
-                ($numerator, $denominator, $unit) = ($1, $2, $3);
-            } else {
-                die("Invalid size specification: $value\n");
-            }
-        }
-
-        my $number;
-        if (defined $denominator) {
-            $number = $numerator / $denominator;
-        } else {
-            $number = $numerator;
-        }
-
-        if (!defined $unit || $unit eq "") {
-            return ($number, "imperial") if wantarray;
-            return $number;
-        }
-
-        my $unit_info = $UNITS->{$unit};
-        if (!defined $unit_info) {
-            die("Invalid size specification: $value $unit\n");
-        }
-
-        my $result_pt   = $number * $unit_info->{to_pt};
-        my $result_type = $unit_info->{type};
-
-        return ($result_pt, $result_type) if wantarray;
-        return $result_pt;
+        $self->unit_y->set_percentage_basis($pt);
     }
 
     sub parse_custom_papersize {
         my ($self, $papersize) = @_;
+
+
+        my $rx_number = $self->unit->rx_number;
+        my $rx_units  = $self->unit->rx_units;
+
         if (defined $papersize && $papersize =~ m{\A
                                                   ($rx_number)
                                                   (?:
@@ -340,17 +263,22 @@ package My::Printable {
                                                   \z}xi) {
             my ($width, $width_denominator, $x_unit,
                 $height, $height_denominator, $y_unit) = ($1, $2, $3, $4, $5, $6);
-            $width /= $width_denominator if defined $width_denominator;
+            $width  /= $width_denominator  if defined $width_denominator;
             $height /= $height_denominator if defined $height_denominator;
+
             if (!defined $y_unit || $y_unit eq "") {
                 $y_unit = "pt";
             }
             if (!defined $x_unit || $x_unit eq "") {
                 $x_unit = $y_unit;
             }
-            $width *= $UNITS->{$x_unit}->{to_pt};
-            $height *= $UNITS->{$y_unit}->{to_pt};
-            my $type = $UNITS->{$x_unit}->{type} // $UNITS->{$y_unit}->{type};
+
+            my $x_type;
+            my $y_type;
+            ($width,  $x_type) = $self->unit_x->convert_to_pt($width,  $x_unit);
+            ($height, $y_type) = $self->unit_y->convert_to_pt($height, $y_unit);
+
+            my $type = $x_type // $y_type;
             if (wantarray) {
                 return (undef, $width, $height, $type);
             }
@@ -364,17 +292,17 @@ package My::Printable {
     }
 
     our $SIZES;
-    BEGIN {
+    INIT {
         $SIZES = {
             letter => {
-                width  => convert_to_pt(8.5, "in"),
-                height => convert_to_pt(11, "in").
+                width  => scalar(My::Printable::Unit->convert_to_pt(8.5, "in")),
+                height => scalar(My::Printable::Unit->convert_to_pt(11, "in")),
                 type   => "imperial",
             },
             a4 => {
-                width  => convert_to_pt(250 / sqrt(sqrt(2)), "mm"),
-                height => convert_to_pt(250 * sqrt(sqrt(2)), "mm"),
-                type   => "metric"
+                width  => scalar(My::Printable::Unit->convert_to_pt(250 / sqrt(sqrt(2)), "mm")),
+                height => scalar(My::Printable::Unit->convert_to_pt(250 * sqrt(sqrt(2)), "mm")),
+                type   => "metric",
             },
         };
     }
@@ -465,14 +393,14 @@ package My::Printable {
         my $width  = $self->width;
         my $height = $self->height;
 
-        my $left_margin  = $self->convert_to_pt($ruling->{left_margin} // 0);
-        my $right_margin = $width - $self->convert_to_pt($ruling->{right_margin} // 0);
+        my $left_margin  = $self->unit_x->convert_to_pt($ruling->{left_margin} // 0);
+        my $right_margin = $self->width - $self->unit_x->convert_to_pt($ruling->{right_margin} // 0);
 
-        my $bottom_margin = $self->convert_to_pt($ruling->{bottom_margin} // 0);
-        my $top_margin    = $height - $self->convert_to_pt($ruling->{top_margin} // 0);
+        my $bottom_margin = $self->unit_y->convert_to_pt($ruling->{bottom_margin} // 0);
+        my $top_margin    = $self->height - $self->unit_y->convert_to_pt($ruling->{top_margin} // 0);
 
-        my $x_origin = $self->convert_x_to_pt($ruling->{x_origin} // "50%");
-        my $y_origin = $self->convert_y_to_pt($ruling->{y_origin} // "50%");
+        my $x_origin = $self->unit_x->convert_to_pt($ruling->{x_origin} // "50%");
+        my $y_origin = $self->unit_y->convert_to_pt($ruling->{y_origin} // "50%");
 
         $self->left_margin($left_margin);
         $self->right_margin($right_margin);
@@ -526,8 +454,8 @@ package My::Printable {
         my $ruling = $self->ruling;
         my $dot_grid = $self->canvas->{dot_grid};
         if ($ruling->{dot_grid}) {
-            my $x_spacing = $dot_grid->{x_spacing} = $self->convert_to_pt($ruling->{dot_grid}->{x_spacing});
-            my $y_spacing = $dot_grid->{y_spacing} = $self->convert_to_pt($ruling->{dot_grid}->{y_spacing});
+            my $x_spacing = $dot_grid->{x_spacing} = $self->unit_x->convert_to_pt($ruling->{dot_grid}->{x_spacing});
+            my $y_spacing = $dot_grid->{y_spacing} = $self->unit_y->convert_to_pt($ruling->{dot_grid}->{y_spacing});
 $dot_grid->{x} = $self->get_points(
                 spacing => $x_spacing,
                 min => $self->left_margin,
@@ -551,7 +479,7 @@ $dot_grid->{x} = $self->get_points(
         my $horizontal_lines = $self->canvas->{horizontal_lines};
         my $dot_grid = $self->canvas->{dot_grid};
         if ($ruling->{horizontal_lines}) {
-            my $y_spacing = $horizontal_lines->{y_spacing} = $self->convert_to_pt($ruling->{horizontal_lines}->{y_spacing});
+            my $y_spacing = $horizontal_lines->{y_spacing} = $self->unit_y->convert_to_pt($ruling->{horizontal_lines}->{y_spacing});
 my $our_y_origin = $self->y_origin;
             if ($ruling->{dot_grid}) {
                 $our_y_origin = $dot_grid->{y}->[0];
@@ -572,7 +500,7 @@ my $our_y_origin = $self->y_origin;
         my $vertical_lines = $self->canvas->{vertical_lines};
         my $dot_grid = $self->canvas->{dot_grid};
         if ($ruling->{vertical_lines}) {
-            my $x_spacing = $vertical_lines->{x_spacing} = $self->convert_to_pt($ruling->{vertical_lines}->{x_spacing});
+            my $x_spacing = $vertical_lines->{x_spacing} = $self->unit_x->convert_to_pt($ruling->{vertical_lines}->{x_spacing});
             my $our_x_origin = $self->x_origin;
             if ($ruling->{dot_grid}) {
                 $our_x_origin = $dot_grid->{x}->[0];
@@ -592,7 +520,7 @@ my $our_y_origin = $self->y_origin;
         my $ruling = $self->ruling;
         my $margin_lines = $self->canvas->{margin_lines};
         if ($ruling->{left_margin_line}) {
-            $margin_lines->{left}->{x} = $self->convert_to_pt($ruling->{left_margin_line}->{x});
+            $margin_lines->{left}->{x} = $self->unit_x->convert_to_pt($ruling->{left_margin_line}->{x});
         }
     }
 
@@ -606,14 +534,14 @@ my $our_y_origin = $self->y_origin;
 
             my $bottom = $ruling->{horizontal_lines}->{bottom};
             if (defined $bottom) {
-                my $bottom_y = $self->convert_to_pt($bottom);
+                my $bottom_y = $self->unit_y->convert_to_pt($bottom);
                 $bottom_y = $self->point_nearest($bottom_y, @$y);
                 @$y = grep { $_ >= $bottom_y } @$y;
             }
 
             my $top = $ruling->{horizontal_lines}->{top};
             if (defined $top) {
-                my $top_y = $height - $self->convert_to_pt($top);
+                my $top_y = $height - $self->unit_y->convert_to_pt($top);
                 $top_y = $self->point_nearest($top_y, @$y);
                 @$y = grep { $_ <= $top_y } @$y;
             }
@@ -630,14 +558,14 @@ my $our_y_origin = $self->y_origin;
 
             my $left = $ruling->{vertical_lines}->{left};
             if (defined $left) {
-                my $left_x = $self->convert_to_pt($left);
+                my $left_x = $self->unit_x->convert_to_pt($left);
                 $left_x = $self->point_nearest($left_x, @$x);
                 @$x = grep { $_ >= $left_x } @$x;
             }
 
             my $right = $ruling->{vertical_lines}->{right};
             if (defined $right) {
-                my $right_x = $width - $self->convert_to_pt($right);
+                my $right_x = $width - $self->unit_x->convert_to_pt($right);
                 $right_x = $self->point_nearest($right_x, @$x);
                 @$x = grep { $_ <= $right_x } @$x;
             }
@@ -861,7 +789,7 @@ my $our_y_origin = $self->y_origin;
         }
 
         my @points = ($origin);
-        $spacing = $self->convert_to_pt($spacing);
+        $spacing = $self->unit->convert_to_pt($spacing);
         my $x;
         for ($x = $origin + $spacing; $x <= $max; $x += $spacing) {
             push(@points, $x);
@@ -928,14 +856,14 @@ my $our_y_origin = $self->y_origin;
     sub create_style_element {
         my ($self, $css) = @_;
 
-        my $super_thin_line_stroke_width = $self->convert_to_pt("1/600in");
-        my $thin_line_stroke_width       = $self->convert_to_pt("1/300in");
-        my $line_stroke_width             = $self->convert_to_pt("2/300in");
-        my $thick_line_stroke_width       = $self->convert_to_pt("3/300in");
+        my $super_thin_line_stroke_width = $self->unit->convert_to_pt("1/600in");
+        my $thin_line_stroke_width       = $self->unit->convert_to_pt("1/300in");
+        my $line_stroke_width             = $self->unit->convert_to_pt("2/300in");
+        my $thick_line_stroke_width       = $self->unit->convert_to_pt("3/300in");
 
-        my $thin_dot_stroke_width        = $self->convert_to_pt("4/300in");
-        my $dot_stroke_width              = $self->convert_to_pt("6/300in");
-        my $thick_dot_stroke_width        = $self->convert_to_pt("9/300in");
+        my $thin_dot_stroke_width        = $self->unit->convert_to_pt("4/300in");
+        my $dot_stroke_width              = $self->unit->convert_to_pt("6/300in");
+        my $thick_dot_stroke_width        = $self->unit->convert_to_pt("9/300in");
 
         $css //= <<"EOF";
             .line {
@@ -960,6 +888,9 @@ my $our_y_origin = $self->y_origin;
             .green {
                 stroke: #b3ffb3;
             }
+            .gray {
+                stroke: #b3b3b3;
+            }
 
             .light.blue {
                 stroke: #d9d9ff;
@@ -969,6 +900,22 @@ my $our_y_origin = $self->y_origin;
             }
             .light.green {
                 stroke: #d9ffd9;
+            }
+            .light.gray {
+                stroke: #d9d9d9;
+            }
+
+            .dark.blue {
+                stroke: #6767ff;
+            }
+            .dark.red {
+                stroke: #670000;
+            }
+            .dark.green {
+                stroke: #67ff67;
+            }
+            .dark.gray {
+                stroke: #676767;
             }
 
             .alternate-blue {
@@ -981,6 +928,10 @@ my $our_y_origin = $self->y_origin;
             }
             .alternate-green {
                 stroke: #67ff67;
+                opacity: 0.5;
+            }
+            .alternate-gray {
+                stroke: #676767;
                 opacity: 0.5;
             }
 
@@ -1033,6 +984,165 @@ EOF
         $layer = $self->create_g_element($id);
         $root->appendChild($layer);
         return $layer;
+    }
+};
+
+package My::Printable::Unit {
+
+    use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
+    use Class::Thingy;
+
+    our $UNITS;
+    BEGIN {
+        $UNITS = {
+            "pt" => {
+                to_pt => 1,
+                type => "imperial",
+            },
+            "pc" => {
+                to_pt => 12,    # 1 pc = 12 pt
+                type => "imperial",
+            },
+            "in" => {
+                to_pt => 72,    # 1 in = 72 pt
+                type => "imperial",
+            },
+            "cm" => {
+                to_pt => (72 / 2.54), # 1 cm ~= 28.3465 pt
+                type => "metric",
+            },
+            "mm" => {
+                to_pt => (72 / 25.4), # 1 cm ~= 2.83465 pt
+                type => "metric",
+            },
+            "px" => {
+                to_pt => (72 / 96), # 1 px = 0.75 pt
+                type => "imperial"
+            },
+            "pd" => {           # pixel dots
+                to_pt => (72 / 300), # 1 pd = 1 dot on a 300dpi laser printer = 1/300 in = 72/300 pt
+                type => "imperial"
+            }
+        };
+    }
+
+    sub init {
+        my ($self) = @_;
+        $self->{units} = { %$UNITS }; # shallow copy
+    }
+
+    sub set_percentage_basis {
+        my ($self, $value, $unit) = @_;
+        delete $self->{units}->{'%'};
+        $self->add_unit('%', $value / 100, $unit);
+    }
+
+    sub add_unit {
+        my ($self, $unit, $value, $value_unit) = @_;
+        die("Unit already defined: $unit\n") if exists $self->{units}->{$unit};
+        my ($pt, $type) = $self->convert_to_pt($value, $value_unit);
+        $self->{units}->{$unit} = {
+            to_pt => $pt,
+            type => $type
+        };
+    }
+
+    sub rx_units {
+        my ($self) = @_;
+        $self = object($self);
+
+        my @units = sort keys %{$self->{units}};
+        my $units = join('|', map { quotemeta($_) } @units);
+        return qr{$units}xi;
+    }
+
+    sub rx_number {
+        my ($self) = @_;
+        $self = object($self);
+
+        return qr{\d+(?:\.\d*)?|\.\d+}ix;
+    }
+
+    sub convert_to_pt {
+        my ($self, $value, $unit) = @_;
+        $self = object($self);
+
+        my ($numerator, $denominator);
+
+        my $rx_units  = $self->rx_units;
+        my $rx_number = $self->rx_number;
+        my $spec;
+
+        if (defined $unit) {
+            $spec = "$value $unit";
+            if ($value =~ m{\A
+                            \s*
+                            ($rx_number)
+                            (?:
+                                \s*
+                                /
+                                \s*
+                                ($rx_number)
+                            )?
+                            \s*
+                            \z}xi) {
+                ($numerator, $denominator) = ($1, $2);
+            } else {
+                die("Invalid size specification: $value $unit\n");
+            }
+        } else {
+            $spec = "$value";
+            if ($value =~ m{\A
+                            \s*
+                            ($rx_number)
+                            (?:
+                                \s*
+                                /
+                                \s*
+                                ($rx_number)
+                            )?
+                            \s*
+                            ($rx_units)?
+                            \s*
+                            \z}xi) {
+                ($numerator, $denominator, $unit) = ($1, $2, $3);
+            } else {
+                die("Invalid size specification: $spec\n");
+            }
+        }
+
+        my $number;
+        if (defined $denominator) {
+            $number = $numerator / $denominator;
+        } else {
+            $number = $numerator;
+        }
+
+        if (!defined $unit || $unit eq "") {
+            return ($number, "imperial") if wantarray;
+            return $number;
+        }
+
+        my $unit_info = $self->{units}->{$unit};
+        if (!defined $unit_info) {
+            die("Invalid size specification: $spec\n");
+        }
+
+        my $result_pt   = $number * $unit_info->{to_pt};
+        my $result_type = $unit_info->{type};
+
+        return ($result_pt, $result_type) if wantarray;
+        return $result_pt;
+    }
+
+    our $SINGLETON;
+
+    sub object {
+        my ($self) = @_;
+        if (!ref $self) {
+            $self = ($SINGLETON //= __PACKAGE__->new);
+        }
+        return $self;
     }
 };
 
