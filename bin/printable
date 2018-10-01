@@ -51,7 +51,6 @@ examples:
     --width=8.5in       --paper-size='8.5in x 11in'     --paper-size=letter
     --width=612         --paper-size='612*792'
     --height=297mm      --paper-size='210.224x297.302mm'
-###############################################################################
 EOF
 
 my $p = My::Printable->new();
@@ -216,7 +215,7 @@ package My::Printable {
 
     sub set_width {
         my ($self, $value, $unit) = @_;
-        my ($pt, $type) = $self->unit->convert_to_pt($value, $unit);
+        my ($pt, $type) = $self->unit->pt($value, $unit);
         $self->width($pt);
         $self->papersize(undef);
         $self->unit_x->set_percentage_basis($pt);
@@ -224,7 +223,7 @@ package My::Printable {
 
     sub set_height {
         my ($self, $value, $unit) = @_;
-        my ($pt, $type) = $self->unit->convert_to_pt($value, $unit);
+        my ($pt, $type) = $self->unit->pt($value, $unit);
         $self->height($pt);
         $self->papersize(undef);
         $self->unit_y->set_percentage_basis($pt);
@@ -244,7 +243,7 @@ package My::Printable {
         $self->unit_x->delete_unit("unit");
         $self->unit_y->delete_unit("unit");
         if (defined $ruling->{unit}) {
-            my $unit_pt = $self->unit->convert_to_pt($ruling->{unit});
+            my $unit_pt = $self->unit->pt($ruling->{unit});
             $self->unit->add_unit("unit", $unit_pt);
             $self->unit_x->add_unit("unit", $unit_pt);
             $self->unit_y->add_unit("unit", $unit_pt);
@@ -253,14 +252,14 @@ package My::Printable {
         my $width  = $self->width;
         my $height = $self->height;
 
-        my $left_margin  = $self->unit_x->convert_to_pt($ruling->{left_margin} // 0);
-        my $right_margin = $self->width - $self->unit_x->convert_to_pt($ruling->{right_margin} // 0);
+        my $left_margin  = $self->unit_x->pt($ruling->{left_margin} // 0);
+        my $right_margin = $self->width - $self->unit_x->pt($ruling->{right_margin} // 0);
 
-        my $bottom_margin = $self->unit_y->convert_to_pt($ruling->{bottom_margin} // 0);
-        my $top_margin    = $self->height - $self->unit_y->convert_to_pt($ruling->{top_margin} // 0);
+        my $bottom_margin = $self->unit_y->pt($ruling->{bottom_margin} // 0);
+        my $top_margin    = $self->height - $self->unit_y->pt($ruling->{top_margin} // 0);
 
-        my $x_origin = $self->unit_x->convert_to_pt($ruling->{x_origin} // "50%");
-        my $y_origin = $self->unit_y->convert_to_pt($ruling->{y_origin} // "50%");
+        my $x_origin = $self->unit_x->pt($ruling->{x_origin} // "50%");
+        my $y_origin = $self->unit_y->pt($ruling->{y_origin} // "50%");
 
         $self->left_margin($left_margin);
         $self->right_margin($right_margin);
@@ -314,8 +313,8 @@ package My::Printable {
         my $ruling = $self->ruling;
         my $dot_grid = $self->canvas->{dot_grid};
         if ($ruling->{dot_grid}) {
-            my $x_spacing = $dot_grid->{x_spacing} = $self->unit_x->convert_to_pt($ruling->{dot_grid}->{x_spacing});
-            my $y_spacing = $dot_grid->{y_spacing} = $self->unit_y->convert_to_pt($ruling->{dot_grid}->{y_spacing});
+            my $x_spacing = $dot_grid->{x_spacing} = $self->unit_x->pt($ruling->{dot_grid}->{x_spacing});
+            my $y_spacing = $dot_grid->{y_spacing} = $self->unit_y->pt($ruling->{dot_grid}->{y_spacing});
 $dot_grid->{x} = $self->get_points(
                 spacing => $x_spacing,
                 min => $self->left_margin,
@@ -339,7 +338,7 @@ $dot_grid->{x} = $self->get_points(
         my $horizontal_lines = $self->canvas->{horizontal_lines};
         my $dot_grid = $self->canvas->{dot_grid};
         if ($ruling->{horizontal_lines}) {
-            my $y_spacing = $horizontal_lines->{y_spacing} = $self->unit_y->convert_to_pt($ruling->{horizontal_lines}->{y_spacing});
+            my $y_spacing = $horizontal_lines->{y_spacing} = $self->unit_y->pt($ruling->{horizontal_lines}->{y_spacing});
 my $our_y_origin = $self->y_origin;
             if ($ruling->{dot_grid}) {
                 $our_y_origin = $dot_grid->{y}->[0];
@@ -360,7 +359,7 @@ my $our_y_origin = $self->y_origin;
         my $vertical_lines = $self->canvas->{vertical_lines};
         my $dot_grid = $self->canvas->{dot_grid};
         if ($ruling->{vertical_lines}) {
-            my $x_spacing = $vertical_lines->{x_spacing} = $self->unit_x->convert_to_pt($ruling->{vertical_lines}->{x_spacing});
+            my $x_spacing = $vertical_lines->{x_spacing} = $self->unit_x->pt($ruling->{vertical_lines}->{x_spacing});
             my $our_x_origin = $self->x_origin;
             if ($ruling->{dot_grid}) {
                 $our_x_origin = $dot_grid->{x}->[0];
@@ -380,7 +379,7 @@ my $our_y_origin = $self->y_origin;
         my $ruling = $self->ruling;
         my $margin_lines = $self->canvas->{margin_lines};
         if ($ruling->{left_margin_line}) {
-            $margin_lines->{left}->{x} = $self->unit_x->convert_to_pt($ruling->{left_margin_line}->{x});
+            $margin_lines->{left}->{x} = $self->unit_x->pt($ruling->{left_margin_line}->{x});
         }
     }
 
@@ -394,14 +393,14 @@ my $our_y_origin = $self->y_origin;
 
             my $bottom = $ruling->{horizontal_lines}->{bottom};
             if (defined $bottom) {
-                my $bottom_y = $self->unit_y->convert_to_pt($bottom);
+                my $bottom_y = $self->unit_y->pt($bottom);
                 $bottom_y = $self->point_nearest($bottom_y, @$y);
                 @$y = grep { $_ >= $bottom_y } @$y;
             }
 
             my $top = $ruling->{horizontal_lines}->{top};
             if (defined $top) {
-                my $top_y = $height - $self->unit_y->convert_to_pt($top);
+                my $top_y = $height - $self->unit_y->pt($top);
                 $top_y = $self->point_nearest($top_y, @$y);
                 @$y = grep { $_ <= $top_y } @$y;
             }
@@ -418,14 +417,14 @@ my $our_y_origin = $self->y_origin;
 
             my $left = $ruling->{vertical_lines}->{left};
             if (defined $left) {
-                my $left_x = $self->unit_x->convert_to_pt($left);
+                my $left_x = $self->unit_x->pt($left);
                 $left_x = $self->point_nearest($left_x, @$x);
                 @$x = grep { $_ >= $left_x } @$x;
             }
 
             my $right = $ruling->{vertical_lines}->{right};
             if (defined $right) {
-                my $right_x = $width - $self->unit_x->convert_to_pt($right);
+                my $right_x = $width - $self->unit_x->pt($right);
                 $right_x = $self->point_nearest($right_x, @$x);
                 @$x = grep { $_ <= $right_x } @$x;
             }
@@ -649,7 +648,7 @@ my $our_y_origin = $self->y_origin;
         }
 
         my @points = ($origin);
-        $spacing = $self->unit->convert_to_pt($spacing);
+        $spacing = $self->unit->pt($spacing);
         my $x;
         for ($x = $origin + $spacing; $x <= $max; $x += $spacing) {
             push(@points, $x);
@@ -716,14 +715,14 @@ my $our_y_origin = $self->y_origin;
     sub create_style_element {
         my ($self, $css) = @_;
 
-        my $super_thin_line_stroke_width = $self->unit->convert_to_pt("1/600in");
-        my $thin_line_stroke_width       = $self->unit->convert_to_pt("1/300in");
-        my $line_stroke_width             = $self->unit->convert_to_pt("2/300in");
-        my $thick_line_stroke_width       = $self->unit->convert_to_pt("3/300in");
+        my $super_thin_line_stroke_width = $self->unit->pt("1/600in");
+        my $thin_line_stroke_width       = $self->unit->pt("1/300in");
+        my $line_stroke_width             = $self->unit->pt("2/300in");
+        my $thick_line_stroke_width       = $self->unit->pt("3/300in");
 
-        my $thin_dot_stroke_width        = $self->unit->convert_to_pt("4/300in");
-        my $dot_stroke_width              = $self->unit->convert_to_pt("6/300in");
-        my $thick_dot_stroke_width        = $self->unit->convert_to_pt("9/300in");
+        my $thin_dot_stroke_width        = $self->unit->pt("4/300in");
+        my $dot_stroke_width              = $self->unit->pt("6/300in");
+        my $thick_dot_stroke_width        = $self->unit->pt("9/300in");
 
         $css //= <<"EOF";
             .line {
@@ -900,7 +899,7 @@ package My::Printable::Unit {
     sub add_unit {
         my ($self, $unit, $value, $value_unit) = @_;
         die("Unit already defined: $unit\n") if exists $self->{units}->{$unit};
-        my ($pt, $type) = $self->convert_to_pt($value, $value_unit);
+        my ($pt, $type) = $self->pt($value, $value_unit);
         $self->{units}->{$unit} = {
             to_pt => $pt,
             type => $type
@@ -928,7 +927,7 @@ package My::Printable::Unit {
         return qr{\d+(?:\.\d*)?|\.\d+}ix;
     }
 
-    sub convert_to_pt {
+    sub pt {
         my ($self, $value, $unit) = @_;
         $self = object($self);
 
@@ -1022,13 +1021,13 @@ package My::Printable::PaperSizes {
     INIT {
         $SIZES = {
             letter => {
-                width  => scalar(My::Printable::Unit->convert_to_pt(8.5, "in")),
-                height => scalar(My::Printable::Unit->convert_to_pt(11, "in")),
+                width  => scalar(My::Printable::Unit->pt(8.5, "in")),
+                height => scalar(My::Printable::Unit->pt(11, "in")),
                 type   => "imperial",
             },
             a4 => {
-                width  => scalar(My::Printable::Unit->convert_to_pt(250 / sqrt(sqrt(2)), "mm")),
-                height => scalar(My::Printable::Unit->convert_to_pt(250 * sqrt(sqrt(2)), "mm")),
+                width  => scalar(My::Printable::Unit->pt(250 / sqrt(sqrt(2)), "mm")),
+                height => scalar(My::Printable::Unit->pt(250 * sqrt(sqrt(2)), "mm")),
                 type   => "metric",
             },
         };
@@ -1075,12 +1074,14 @@ package My::Printable::PaperSizes {
             @cmd = ("paperconf", "-n", "-s");
         }
         if (!open($ph, "-|", @cmd)) {
-            die("exec paperconf: $!");
+            warn("exec paperconf: $!");
+            return;
         }
         local $/ = undef;
         my $result = <$ph>;
         if (!close($ph)) {
-            die("paperconf failed: $!");
+            warn("paperconf failed: $!");
+            return;
         }
         $result =~ s{\A\s+}{};
         $result =~ s{\s+\z}{};
@@ -1150,8 +1151,8 @@ package My::Printable::PaperSizes {
 
             my $x_type;
             my $y_type;
-            ($width,  $x_type) = My::Printable::Unit->convert_to_pt($width,  $x_unit);
-            ($height, $y_type) = My::Printable::Unit->convert_to_pt($height, $y_unit);
+            ($width,  $x_type) = My::Printable::Unit->pt($width,  $x_unit);
+            ($height, $y_type) = My::Printable::Unit->pt($height, $y_unit);
 
             warn("[$width] [$x_type] [$height] [$y_type]\n");
 
