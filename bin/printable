@@ -16,6 +16,8 @@ use v5.10.0;
 our $opt_papersize;
 our $opt_width;
 our $opt_height;
+our $opt_unit_modifier;
+our $opt_color_modifier;
 
 use Getopt::Long;
 use Data::Dumper;
@@ -23,9 +25,13 @@ use Carp::Always;
 
 Getopt::Long::Configure(qw(bundling gnu_compat no_ignore_case));
 Getopt::Long::GetOptions(
-    "M|p|media|paper|paper-size=s" => \$opt_papersize,
-    "w|width=s"                    => \$opt_width,
-    "h|height=s"                   => \$opt_height,
+    "M|p|media|paper|paper-size=s"    => \$opt_papersize,
+    "w|width=s"                       => \$opt_width,
+    "h|height=s"                      => \$opt_height,
+    "g|gray|grey|grayscale|greyscale" => sub { $opt_color_modifier = "grayscale"; },
+    "c|color|colour"                  => sub { $opt_color_modifier = undef;       },
+    "m|metric"                        => sub { $opt_unit_modifier = "metric";     },
+    "i|imperial"                      => sub { $opt_unit_modifier = "imperial";   },
     "help|?" => sub {
         usage();
         exit(0);
@@ -57,6 +63,7 @@ my $p = My::Printable->new();
 $p->set_papersize($opt_papersize) if defined $opt_papersize;
 $p->set_width($opt_width)         if defined $opt_width;
 $p->set_height($opt_height)       if defined $opt_height;
+$p->set_modifiers($opt_unit_modifier, $opt_color_modifier);
 
 if (!scalar @ARGV) {
     die("No paper ruling argument specified.\n");
@@ -91,6 +98,8 @@ package My::Printable {
         public unit;
         public unit_x;
         public unit_y;
+
+        public modifiers;
     }
 
     sub init {
@@ -251,6 +260,12 @@ package My::Printable {
         $self->height($pt);
         $self->papersize(undef);
         $self->unit_y->set_percentage_basis($pt);
+    }
+
+    sub set_modifiers {
+        my ($self, @modifiers) = @_;
+        @modifiers = grep { defined $_ } @modifiers;
+        $self->modifiers(\@modifiers);
     }
 
     sub generate_paper {
