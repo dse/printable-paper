@@ -731,12 +731,6 @@ package My::Printable {
         return $doc;
     }
 
-    # ff = 255
-    # d9 = 217
-    # b3 = 179
-    # 67 = 103
-    # #b3b3ff => #6767ff
-    # #b30000 => #670000
     sub create_style_element {
         my ($self, $css) = @_;
 
@@ -764,58 +758,58 @@ package My::Printable {
             }
 
             .blue {
-                stroke: #b3b3ff;
+                stroke: #ccccff;
             }
             .red {
-                stroke: #b30000;
+                stroke: #cc0000;
             }
             .green {
-                stroke: #b3ffb3;
+                stroke: #ccffcc;
             }
             .gray {
-                stroke: #b3b3b3;
+                stroke: #cccccc;
             }
 
             .light.blue {
-                stroke: #d9d9ff;
+                stroke: #e6e6ff;
             }
             .light.red {
-                stroke: #d98080;
+                stroke: #e68080;
             }
             .light.green {
-                stroke: #d9ffd9;
+                stroke: #e6ffe6;
             }
             .light.gray {
-                stroke: #d9d9d9;
+                stroke: #e6e6e6;
             }
 
             .dark.blue {
-                stroke: #6767ff;
+                stroke: #9999ff;
             }
             .dark.red {
-                stroke: #670000;
+                stroke: #990000;
             }
             .dark.green {
-                stroke: #67ff67;
+                stroke: #99ff99;
             }
             .dark.gray {
-                stroke: #676767;
+                stroke: #999999;
             }
 
             .alternate-blue {
-                stroke: #6767ff;
+                stroke: #9999ff;
                 opacity: 0.5;
             }
             .alternate-red {
-                stroke: #670000;
+                stroke: #990000;
                 opacity: 0.5;
             }
             .alternate-green {
-                stroke: #67ff67;
+                stroke: #99ff99;
                 opacity: 0.5;
             }
             .alternate-gray {
-                stroke: #676767;
+                stroke: #999999;
                 opacity: 0.5;
             }
 
