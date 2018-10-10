@@ -14,12 +14,12 @@ PATHNAME = $(shell \
 default: svg pdf
 
 RULINGS = \
-	seyes--five-sixteenths-inch--letter \
-	line-dot-grid--five-sixteenths-inch--letter \
-        dot-grid--one-quarter-inch--letter
-#	seyes--8mm--a4 \
-#	line-dot-grid--8mm--a4 \
-#	dot-grid--6mm--a4
+	seyes--letter \
+	line-dot-grid--letter \
+	dot-grid--letter \
+	seyes--a4 \
+	line-dot-grid--a4 \
+	dot-grid--a4
 
 PS_FILES	= $(patsubst %,templates/%.ps,$(RULINGS))
 PDF_FILES	= $(patsubst %,templates/%.pdf,$(RULINGS))
@@ -36,12 +36,12 @@ clean:
 
 templates/%--letter.svg: bin/printable Makefile
 	mkdir -p templates
-	bin/printable -M letter $* >"$@.tmp.svg"
+	bin/printable -M letter --imperial $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
 templates/%--a4.svg: bin/printable Makefile
 	mkdir -p templates
-	bin/printable -M a4 $* >"$@.tmp.svg"
+	bin/printable -M a4 --metric $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
 %.2page.pdf: %.pdf
