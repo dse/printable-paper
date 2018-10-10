@@ -183,7 +183,7 @@ package My::Printable {
                         metric => "40mm",
                     },
                     class => {
-                        DEFAULT => "thin blue line",
+                        DEFAULT => "blue line",
                         grayscale => "gray line",
                     },
                     minor => {
@@ -193,7 +193,7 @@ package My::Printable {
                             top => 3,
                         },
                         class => {
-                            DEFAULT => "super-thin light blue line",
+                            DEFAULT => "thin blue line",
                             grayscale => "thin gray line",
                         },
                     },
@@ -202,7 +202,7 @@ package My::Printable {
                     x_spacing => "1unit",
                     ends_nearest_margins => 1,
                     class => {
-                        DEFAULT => "super-thin light blue line",
+                        DEFAULT => "thin blue line",
                         grayscale => "thin gray line",
                     },
                 },
@@ -740,14 +740,14 @@ package My::Printable {
     sub create_style_element {
         my ($self, $css) = @_;
 
-        my $super_thin_line_stroke_width = $self->unit->pt("1/600in");
-        my $thin_line_stroke_width       = $self->unit->pt("1/300in");
-        my $line_stroke_width             = $self->unit->pt("2/300in");
-        my $thick_line_stroke_width       = $self->unit->pt("3/300in");
+        my $super_thin_line_stroke_width = $self->unit->pt("3/600in");
+        my $thin_line_stroke_width       = $self->unit->pt("4/600in");
+        my $line_stroke_width            = $self->unit->pt("6/600in");
+        my $thick_line_stroke_width      = $self->unit->pt("9/600in");
 
         my $thin_dot_stroke_width        = $self->unit->pt("4/300in");
-        my $dot_stroke_width              = $self->unit->pt("6/300in");
-        my $thick_dot_stroke_width        = $self->unit->pt("9/300in");
+        my $dot_stroke_width             = $self->unit->pt("6/300in");
+        my $thick_dot_stroke_width       = $self->unit->pt("9/300in");
 
         $css //= <<"EOF";
             .line {
