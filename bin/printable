@@ -468,8 +468,6 @@ package My::Printable {
                 my $extra = $self->value($minor->{extra});
                 my $extra_bottom = ($extra && $self->value($extra->{bottom})) // 0;
                 my $extra_top    = ($extra && $self->value($extra->{top}))    // 0;
-                warn $extra_bottom;
-                warn $extra_top;
                 my $y_bottom = min @$y;
                 my $y_top    = max @$y;
                 my $y_spacing = $horizontal_lines->{y_spacing} / $every;
