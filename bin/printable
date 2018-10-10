@@ -29,7 +29,7 @@ Getopt::Long::GetOptions(
     "w|width=s"                       => \$opt_width,
     "h|height=s"                      => \$opt_height,
     "g|gray|grey|grayscale|greyscale" => sub { $opt_color_modifier = "grayscale"; },
-    "c|color|colour"                  => sub { $opt_color_modifier = undef;       },
+    "c|color|colour"                  => sub { $opt_color_modifier = "color";     },
     "m|metric"                        => sub { $opt_unit_modifier = "metric";     },
     "i|imperial"                      => sub { $opt_unit_modifier = "imperial";   },
     "help|?" => sub {
@@ -122,7 +122,7 @@ package My::Printable {
     our $RULINGS;
     BEGIN {
         $RULINGS = {
-            dot_grid__one_quarter_inch => {
+            dot_grid => {
                 unit => "1/4in",
                 dot_grid => {
                     x_spacing => "1unit",
@@ -135,9 +135,9 @@ package My::Printable {
                     class => "red margin-line",
                 },
             },
-            line_dot_grid__five_sixteenths_inch => {
+            line_dot_grid => {
                 unit => {
-                    default => "5/16in",
+                    DEFAULT => "5/16in",
                     metric => "8mm",
                 },
                 dot_grid => {
@@ -149,89 +149,74 @@ package My::Printable {
                     y_spacing => "1unit",
                     ends_nearest_margins => 1,
                     bottom => {
-                        default => "1in",
+                        DEFAULT => "1in",
                         metric => "24mm",
                     },
                     top => {
-                        default => "1.5in",
+                        DEFAULT => "1.5in",
                         metric => "40mm",
                     },
                     class => "thin blue line",
                 },
                 left_margin_line => {
                     x => {
-                        default => "1.25in",
-                        metric => "32mm"
+                        DEFAULT => "1.25in",
+                        metric => "32mm",
                     },
                     nearest => "dot-grid",
                     class => "red margin-line",
                 },
             },
-            seyes__five_sixteenths_inch => {
+            seyes => {
                 unit => {
-                    default => "5/16in",
-                    metric => "8mm"
+                    DEFAULT => "5/16in",
+                    metric => "8mm",
                 },
                 horizontal_lines => {
                     y_spacing => "1unit",
                     bottom => {
-                        default => "1in",
+                        DEFAULT => "1in",
                         metric => "24mm",
                     },
                     top => {
-                        default => "1.5in",
+                        DEFAULT => "1.5in",
                         metric => "40mm",
                     },
-                    class => "thin blue line",
+                    class => {
+                        DEFAULT => "thin blue line",
+                        grayscale => "gray line",
+                    },
                     minor => {
                         every => 4,
                         extra => {
                             bottom => 2,
                             top => 3,
                         },
-                        class => "super-thin light blue line",
+                        class => {
+                            DEFAULT => "super-thin light blue line",
+                            grayscale => "thin gray line",
+                        },
                     },
                 },
                 vertical_lines => {
                     x_spacing => "1unit",
                     ends_nearest_margins => 1,
-                    class => "super-thin light blue line",
+                    class => {
+                        DEFAULT => "super-thin light blue line",
+                        grayscale => "thin gray line",
+                    },
                 },
                 left_margin_line => {
                     x => {
-                        default => "1.25in",
-                        metric => "32mm"
+                        DEFAULT => "1.25in",
+                        metric => "32mm",
                     },
                     nearest => "vertical-lines",
-                    class => "red margin-line"
-                }
-            },
-            seyes_gray__five_sixteenths_inch => {
-                unit => "5/16in",
-                horizontal_lines => {
-                    y_spacing => "1unit",
-                    bottom => "1in",
-                    top => "1.5in",
-                    class => "gray line",
-                    minor => {
-                        every => 4,
-                        extra => {
-                            bottom => 2,
-                            top => 3,
-                        },
-                        class => "thin gray line",
+                    class => {
+                        DEFAULT => "red margin-line",
+                        grayscale => "dark gray margin-line",
                     },
                 },
-                vertical_lines => {
-                    x_spacing => "1unit",
-                    ends_nearest_margins => 1,
-                    class => "thin gray line",
-                },
-                left_margin_line => {
-                    x => "1.25in",
-                    nearest => "vertical-lines",
-                    class => "dark gray margin-line"
-                }
             },
         };
     }
@@ -483,6 +468,8 @@ package My::Printable {
                 my $extra = $self->value($minor->{extra});
                 my $extra_bottom = ($extra && $self->value($extra->{bottom})) // 0;
                 my $extra_top    = ($extra && $self->value($extra->{top}))    // 0;
+                warn $extra_bottom;
+                warn $extra_top;
                 my $y_bottom = min @$y;
                 my $y_top    = max @$y;
                 my $y_spacing = $horizontal_lines->{y_spacing} / $every;
@@ -888,9 +875,10 @@ EOF
     sub value {
         my ($self, $value) = @_;
         return $value if ref $value ne "HASH";
+        return $value if !exists $value->{DEFAULT};
         my $valuehash = $value;
-        $value = $valuehash->{default};
-        foreach my $modifier (@{$self->{modifiers}}) {
+        $value = $valuehash->{DEFAULT};
+        foreach my $modifier (@{$self->modifiers}) {
             if (exists $valuehash->{$modifier}) {
                 $value = $valuehash->{$modifier};
             }
@@ -1200,14 +1188,10 @@ package My::Printable::PaperSizes {
                 $x_unit = $y_unit;
             }
 
-            warn("[$width] [$height]\n");
-
             my $x_type;
             my $y_type;
             ($width,  $x_type) = My::Printable::Unit->pt($width,  $x_unit);
             ($height, $y_type) = My::Printable::Unit->pt($height, $y_unit);
-
-            warn("[$width] [$x_type] [$height] [$y_type]\n");
 
             my $type = $x_type // $y_type;
             if (wantarray) {
