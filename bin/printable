@@ -213,8 +213,8 @@ package My::Printable {
                     },
                     nearest => "vertical-lines",
                     class => {
-                        DEFAULT => "red margin-line",
-                        grayscale => "dark gray margin-line",
+                        DEFAULT => "thick red margin-line",
+                        grayscale => "thick gray margin-line",
                     },
                 },
             },
@@ -744,98 +744,36 @@ package My::Printable {
         my $thick_dot_stroke_width       = $self->unit->pt("9/300in");
 
         $css //= <<"EOF";
-            .line {
-                stroke-linecap: round;
-                stroke-width: ${line_stroke_width}pt;
-            }
-            .dot {
-                stroke-linecap: round;
-                stroke-width: ${dot_stroke_width}pt;
-            }
-            .margin-line {
-                stroke-linecap: round;
-                stroke-width: ${line_stroke_width}pt;
-            }
+            .line, .dot { stroke-linecap: round; }
 
-            .blue {
-                stroke: #ccccff;
-            }
-            .red {
-                stroke: #cc0000;
-            }
-            .green {
-                stroke: #ccffcc;
-            }
-            .gray {
-                stroke: #cccccc;
-            }
+            .line            { stroke-width: ${line_stroke_width}pt; }
+            .line.super-thin { stroke-width: ${super_thin_line_stroke_width}pt; }
+            .line.thin       { stroke-width: ${thin_line_stroke_width}pt; }
+            .line.thick      { stroke-width: ${thick_line_stroke_width}pt; }
 
-            .light.blue {
-                stroke: #e6e6ff;
-            }
-            .light.red {
-                stroke: #e68080;
-            }
-            .light.green {
-                stroke: #e6ffe6;
-            }
-            .light.gray {
-                stroke: #e6e6e6;
-            }
+            .dot       { stroke-width: ${dot_stroke_width}pt; }
+            .dot.thin  { stroke-width: ${thin_dot_stroke_width}pt; }
+            .dot.thick { stroke-width: ${thick_dot_stroke_width}pt; }
 
-            .dark.blue {
-                stroke: #9999ff;
-            }
-            .dark.red {
-                stroke: #990000;
-            }
-            .dark.green {
-                stroke: #99ff99;
-            }
-            .dark.gray {
-                stroke: #999999;
-            }
+            .blue  { stroke: #b3b3ff; }
+            .red   { stroke: #ff9999; }
+            .green { stroke: #b3ffb3; }
+            .gray  { stroke: #b3b3b3; }
 
-            .alternate-blue {
-                stroke: #9999ff;
-                opacity: 0.5;
-            }
-            .alternate-red {
-                stroke: #990000;
-                opacity: 0.5;
-            }
-            .alternate-green {
-                stroke: #99ff99;
-                opacity: 0.5;
-            }
-            .alternate-gray {
-                stroke: #999999;
-                opacity: 0.5;
-            }
+            .light.blue  { stroke: #d9d9ff; }
+            .light.red   { stroke: #ffcccc; }
+            .light.green { stroke: #d9ffd9; }
+            .light.gray  { stroke: #d9d9d9; }
 
-            .line.super-thin {
-                stroke-width: ${super_thin_line_stroke_width}pt;
-            }
-            .line.thin {
-                stroke-width: ${thin_line_stroke_width}pt;
-            }
-            .line.thick {
-                stroke-width: ${thick_line_stroke_width}pt;
-            }
+            .dark.blue  { stroke: #6767ff; }
+            .dark.red   { stroke: #ff3333; }
+            .dark.green { stroke: #67ff67; }
+            .dark.gray  { stroke: #676767; }
 
-            .dot.thin {
-                stroke-width: ${thin_dot_stroke_width}pt;
-            }
-            .dot.thick {
-                stroke-width: ${thick_dot_stroke_width}pt;
-            }
-
-            .margin-line.thin {
-                stroke-width: ${thin_line_stroke_width}pt;
-            }
-            .margin-line.thick {
-                stroke-width: ${thick_line_stroke_width}pt;
-            }
+            .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
+            .alternate-red   { stroke: #ff3333; opacity: 0.5; }
+            .alternate-green { stroke: #67ff67; opacity: 0.5; }
+            .alternate-gray  { stroke: #676767; opacity: 0.5; }
 EOF
         my $doc = $self->doc;
         my $style = $doc->createElement("style");
