@@ -232,6 +232,49 @@ package My::Printable {
                         },
                     },
                 },
+                additional_horizontal_lines => [
+                    {
+                        position => "top",
+                        y => {
+                            DEFAULT => "0.5in",
+                            metric => "13mm",
+                        },
+                        nearest_grid => "horizontal_lines",
+                        class => {
+                            DEFAULT => {
+                                DEFAULT => "thin blue line",
+                                grayscale => "thin gray line",
+                            },
+                            "thinner-grid-lines" => {
+                                DEFAULT => "super-thin blue line",
+                                grayscale => "super-thin gray line",
+                            },
+                        },
+                    },
+                    {
+                        position => "bottom",
+                        y => {
+                            DEFAULT => "0.25in",
+                            metric => "12mm",
+                        },
+                        right => {
+                            x => "1unit",
+                            nearest_grid => "vertical_lines",
+                        },
+                        width => "3unit",
+                        nearest_grid => "horizontal_lines",
+                        class => {
+                            DEFAULT => {
+                                DEFAULT => "thin blue line",
+                                grayscale => "thin gray line",
+                            },
+                            "thinner-grid-lines" => {
+                                DEFAULT => "super-thin blue line",
+                                grayscale => "super-thin gray line",
+                            },
+                        },
+                    },
+                ],
                 vertical_lines => {
                     x_spacing => "1unit",
                     nearest_margins => 1,
@@ -346,16 +389,18 @@ package My::Printable {
         $self->ruling($ruling);
 
         my $canvas = $self->canvas({});
-        $canvas->{dot_grid}         = {};
-        $canvas->{horizontal_lines} = {};
-        $canvas->{vertical_lines}   = {};
-        $canvas->{margin_lines}     = {};
+        $canvas->{dot_grid}                    = {};
+        $canvas->{horizontal_lines}            = {};
+        $canvas->{additional_horizontal_lines} = [];
+        $canvas->{vertical_lines}              = {};
+        $canvas->{margin_lines}                = {};
 
         # Compute points
         $self->compute_dot_grid;
         $self->compute_horizontal_lines;
         $self->compute_vertical_lines;
         $self->compute_margin_lines;
+        $self->compute_additional_horizontal_lines;
         $self->chop_horizontal_lines;
         $self->compute_minor_horizontal_lines;
         $self->chop_vertical_lines;
@@ -367,6 +412,7 @@ package My::Printable {
         $self->draw_minor_horizontal_lines;
         $self->draw_vertical_lines;
         $self->draw_horizontal_lines;
+        $self->draw_additional_horizontal_lines;
         $self->draw_margin_lines;
 
         print $doc->toString(1);
@@ -416,6 +462,71 @@ package My::Printable {
                 origin => $our_y_origin,
                 nearest_margins => $ruling->{horizontal_lines}->{nearest_margins},
             );
+            $canvas_horizontal_lines->{unchopped_y} = $self->get_points(
+                spacing => $y_spacing,
+                min => $self->bottom_margin,
+                max => $self->top_margin,
+                origin => $our_y_origin,
+                nearest_margins => $ruling->{horizontal_lines}->{nearest_margins},
+            );
+        }
+    }
+
+    sub compute_additional_horizontal_lines {
+        my ($self) = @_;
+        my $ruling = $self->ruling;
+        my $canvas_additional_horizontal_lines = $self->canvas->{additional_horizontal_lines} //= [];
+        return if !$ruling->{additional_horizontal_lines};
+        foreach my $ahl (@{$ruling->{additional_horizontal_lines}}) {
+            my $position = $ahl->{position};
+            my $y;
+            if ($position eq "bottom") {
+                $y = $self->unit_y->pt($self->value($ahl->{y}));
+            } elsif ($position eq "top") {
+                $y = $self->height - $self->unit_y->pt($self->value($ahl->{y}));
+            }
+            my $nearest_grid = $ahl->{nearest_grid};
+            if ($nearest_grid eq "horizontal_lines") {
+                $y = $self->point_nearest($y, @{$self->canvas->{horizontal_lines}->{unchopped_y}});
+            }
+
+            my $left = $ahl->{left};
+            my $right = $ahl->{right};
+
+            my $x1;
+            my $x2;
+            if (defined $left) {
+                $x1 = $self->unit_x->pt($self->value($left->{x}));
+                if ($left->{nearest_grid} eq "vertical_lines") {
+                    $x1 = $self->point_nearest($x1, @{$self->canvas->{vertical_lines}->{unchopped_x}});
+                }
+            }
+            if (defined $right) {
+                $x2 = $self->width - $self->unit_x->pt($self->value($right->{x}));
+                if ($right->{nearest_grid} eq "vertical_lines") {
+                    $x2 = $self->point_nearest($x2, @{$self->canvas->{vertical_lines}->{unchopped_x}});
+                }
+            }
+
+            my $width = $self->value($ahl->{width});
+            if (defined $left && !defined $right && defined $width) {
+                $x2 = $x1 + $self->unit_x->pt($width);
+            }
+            if (defined $right && !defined $left && defined $width) {
+                $x1 = $x2 - $self->unit_x->pt($width);
+            }
+
+            my $class = $self->value($ahl->{class});
+            if (!defined($class)) {
+                $class = $self->value($ruling->{horizontal_lines}->{class});
+            }
+
+            push(@{$canvas_additional_horizontal_lines}, {
+                x1 => $x1,
+                x2 => $x2,
+                y => $y,
+                class => $class,
+            });
         }
     }
 
@@ -431,6 +542,13 @@ package My::Printable {
                 $our_x_origin = $canvas_dot_grid->{x}->[0];
             }
             $canvas_vertical_lines->{x} = $self->get_points(
+                spacing => $x_spacing,
+                min => $self->left_margin,
+                max => $self->right_margin,
+                origin => $our_x_origin,
+                nearest_margins => $ruling->{vertical_lines}->{nearest_margins},
+            );
+            $canvas_vertical_lines->{unchopped_x} = $self->get_points(
                 spacing => $x_spacing,
                 min => $self->left_margin,
                 max => $self->right_margin,
@@ -601,6 +719,27 @@ package My::Printable {
                 my $line = $self->create_line(
                     x1 => $x1, x2 => $x2, y => $y,
                     class => $self->value($ruling->{horizontal_lines}->{class}) // "thin blue line"
+                );
+                $layer->appendChild($line);
+            }
+        }
+    }
+
+    sub draw_additional_horizontal_lines {
+        my ($self) = @_;
+        my $ruling = $self->ruling;
+        my $canvas_additional_horizontal_lines = $self->canvas->{additional_horizontal_lines};
+        my $layer = $self->layer("additional-horizontal-lines");
+        if ($ruling->{horizontal_lines}) {
+            foreach my $line (@{$canvas_additional_horizontal_lines}) {
+                my $y  = $line->{y};
+                my $x1 = $line->{x1} // $self->left_margin;
+                my $x2 = $line->{x2} // $self->right_margin;
+                my $line = $self->create_line(
+                    x1 => $x1,
+                    x2 => $x2,
+                    y => $y,
+                    class => $line->{class} // "thin blue line"
                 );
                 $layer->appendChild($line);
             }
@@ -842,6 +981,7 @@ EOF
 
     sub value {
         my ($self, $value) = @_;
+        return undef if !defined $value;
         return $value if ref $value ne "HASH";
         return $value if !exists $value->{DEFAULT};
         my $valuehash = $value;
@@ -939,6 +1079,8 @@ package My::Printable::Unit {
     sub pt {
         my ($self, $value, $unit) = @_;
         $self = object($self);
+
+        return undef if !defined $value;
 
         my ($numerator, $denominator);
 
