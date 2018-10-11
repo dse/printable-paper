@@ -18,6 +18,7 @@ our $opt_width;
 our $opt_height;
 our $opt_unit_modifier;
 our $opt_color_modifier;
+our @opt_modifiers;
 
 use Getopt::Long;
 use Data::Dumper;
@@ -32,6 +33,7 @@ Getopt::Long::GetOptions(
     "c|color|colour"                  => sub { $opt_color_modifier = "color";     },
     "m|metric"                        => sub { $opt_unit_modifier = "metric";     },
     "i|imperial"                      => sub { $opt_unit_modifier = "imperial";   },
+    "modifier=s"                      => sub { push(@opt_modifiers, $_[1]); },
     "help|?" => sub {
         usage();
         exit(0);
@@ -63,7 +65,7 @@ my $p = My::Printable->new();
 $p->set_papersize($opt_papersize) if defined $opt_papersize;
 $p->set_width($opt_width)         if defined $opt_width;
 $p->set_height($opt_height)       if defined $opt_height;
-$p->set_modifiers($opt_unit_modifier, $opt_color_modifier);
+$p->set_modifiers($opt_unit_modifier, $opt_color_modifier, @opt_modifiers);
 
 if (!scalar @ARGV) {
     die("No paper ruling argument specified.\n");
@@ -219,8 +221,14 @@ package My::Printable {
                             top => 3,
                         },
                         class => {
-                            DEFAULT => "thin blue line",
-                            grayscale => "thin gray line",
+                            DEFAULT => {
+                                DEFAULT => "thin blue line",
+                                grayscale => "thin gray line",
+                            },
+                            "thinner-grid-lines" => {
+                                DEFAULT => "super-thin blue line",
+                                grayscale => "super-thin gray line",
+                            },
                         },
                     },
                 },
@@ -358,9 +366,9 @@ package My::Printable {
         my ($self) = @_;
         my $ruling = $self->ruling;
         my $canvas_dot_grid = $self->canvas->{dot_grid};
-        my $x_coordinates_nearest_margins = $ruling->{dot_grid}->{x_coordinates_nearest_margins};
-        my $y_coordinates_nearest_margins = $ruling->{dot_grid}->{y_coordinates_nearest_margins};
         if ($ruling->{dot_grid}) {
+            my $x_coordinates_nearest_margins = $ruling->{dot_grid}->{x_coordinates_nearest_margins};
+            my $y_coordinates_nearest_margins = $ruling->{dot_grid}->{y_coordinates_nearest_margins};
             my $x_spacing = $canvas_dot_grid->{x_spacing} = $self->unit_x->pt($self->value($ruling->{dot_grid}->{x_spacing}));
             my $y_spacing = $canvas_dot_grid->{y_spacing} = $self->unit_y->pt($self->value($ruling->{dot_grid}->{y_spacing}));
             $canvas_dot_grid->{x} = $self->get_points(
@@ -833,7 +841,7 @@ EOF
                 $value = $valuehash->{$modifier};
             }
         }
-        return $value;
+        return $self->value($value);
     }
 };
 
