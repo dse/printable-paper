@@ -128,7 +128,7 @@ package My::Printable {
                     "1/5in" => "1/5in",
                     "5mm" => "5mm",
                     "6mm" => "6mm",
-                }
+                },
                 dot_grid => {
                     x_spacing => "1unit",
                     y_spacing => "1unit",
