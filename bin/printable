@@ -123,22 +123,38 @@ package My::Printable {
     BEGIN {
         $RULINGS = {
             dot_grid => {
-                unit => "1/4in",
+                unit => {
+                    DEFAULT => "1/4in",
+                    "1/5in" => "1/5in",
+                    "5mm" => "5mm",
+                    "6mm" => "6mm",
+                }
                 dot_grid => {
                     x_spacing => "1unit",
                     y_spacing => "1unit",
-                    class => "blue dot",
+                    class => {
+                        DEFAULT => "blue dot",
+                        grayscale => "gray dot",
+                    },
                 },
                 left_margin_line => {
-                    x => "1.25in",
+                    x => {
+                        DEFAULT => "1.25in",
+                        metric => "41mm",
+                    },
                     nearest => "dot-grid",
-                    class => "red margin-line",
+                    class => {
+                        DEFAULT => "red margin-line",
+                        grayscale => "gray margin-line",
+                    },
                 },
             },
             line_dot_grid => {
                 unit => {
                     DEFAULT => "5/16in",
                     metric => "8mm",
+                    "8mm" => "8mm",
+                    "10mm" => "10mm",
                 },
                 dot_grid => {
                     x_spacing => "1unit",
@@ -147,7 +163,7 @@ package My::Printable {
                 },
                 horizontal_lines => {
                     y_spacing => "1unit",
-                    ends_nearest_margins => 1,
+                    nearest_margins => 1,
                     bottom => {
                         DEFAULT => "1in",
                         metric => "24mm",
@@ -156,21 +172,29 @@ package My::Printable {
                         DEFAULT => "1.5in",
                         metric => "40mm",
                     },
-                    class => "thin blue line",
+                    class => {
+                        DEFAULT => "thin blue line",
+                        grayscale => "thin gray line",
+                    },
                 },
                 left_margin_line => {
                     x => {
                         DEFAULT => "1.25in",
-                        metric => "32mm",
+                        metric => "41mm",
                     },
                     nearest => "dot-grid",
-                    class => "red margin-line",
+                    class => {
+                        DEFAULT => "red margin-line",
+                        grayscale => "gray margin-line",
+                    },
                 },
             },
             seyes => {
                 unit => {
                     DEFAULT => "5/16in",
                     metric => "8mm",
+                    "8mm" => "8mm",
+                    "10mm" => "10mm",
                 },
                 horizontal_lines => {
                     y_spacing => "1unit",
@@ -200,7 +224,7 @@ package My::Printable {
                 },
                 vertical_lines => {
                     x_spacing => "1unit",
-                    ends_nearest_margins => 1,
+                    nearest_margins => 1,
                     class => {
                         DEFAULT => "thin blue line",
                         grayscale => "thin gray line",
@@ -209,12 +233,12 @@ package My::Printable {
                 left_margin_line => {
                     x => {
                         DEFAULT => "1.25in",
-                        metric => "32mm",
+                        metric => "41mm",
                     },
                     nearest => "vertical-lines",
                     class => {
-                        DEFAULT => "thick red margin-line",
-                        grayscale => "thick gray margin-line",
+                        DEFAULT => "red margin-line",
+                        grayscale => "gray margin-line",
                     },
                 },
             },
@@ -337,6 +361,8 @@ package My::Printable {
         my ($self) = @_;
         my $ruling = $self->ruling;
         my $dot_grid = $self->canvas->{dot_grid};
+        my $x_coordinates_nearest_margins => $ruling->{dot_grid}->{x_coordinates_nearest_margins};
+        my $y_coordinates_nearest_margins => $ruling->{dot_grid}->{y_coordinates_nearest_margins};
         if ($ruling->{dot_grid}) {
             my $x_spacing = $dot_grid->{x_spacing} = $self->unit_x->pt($self->value($ruling->{dot_grid}->{x_spacing}));
             my $y_spacing = $dot_grid->{y_spacing} = $self->unit_y->pt($self->value($ruling->{dot_grid}->{y_spacing}));
@@ -345,14 +371,14 @@ package My::Printable {
                 min => $self->left_margin,
                 max => $self->right_margin,
                 origin => $self->x_origin,
-                ends_nearest_margins => 1
+                nearest_margins => $x_coordinates_nearest_margins,
             );
             $dot_grid->{y} = $self->get_points(
                 spacing => $y_spacing,
                 min => $self->bottom_margin,
                 max => $self->top_margin,
                 origin => $self->y_origin,
-                ends_nearest_margins => 1
+                nearest_margins => $y_coordinates_nearest_margins,
             );
         }
     }
@@ -373,7 +399,7 @@ package My::Printable {
                 min => $self->bottom_margin,
                 max => $self->top_margin,
                 origin => $our_y_origin,
-                ends_nearest_margins => 1
+                nearest_margins => $ruling->{horizontal_lines}->{nearest_margins},
             );
         }
     }
@@ -394,7 +420,7 @@ package My::Printable {
                 min => $self->left_margin,
                 max => $self->right_margin,
                 origin => $our_x_origin,
-                ends_nearest_margins => 1
+                nearest_margins => $ruling->{vertical_lines}->{nearest_margins},
             );
         }
     }
@@ -630,10 +656,10 @@ package My::Printable {
         my $origin  = $args{origin};
         my $min     = $args{min};
         my $max     = $args{max};
-        my $ends_nearest_margins = delete $args{ends_nearest_margins};
+        my $nearest_margins = delete $args{nearest_margins};
         my $nearest_margin_line = delete $args{nearest_margin_line};
 
-        if ($ends_nearest_margins) {
+        if ($nearest_margins) {
             my @points1 = $self->get_points(%args);
             my %args2 = %args;
             $args2{origin} += $spacing / 2;
