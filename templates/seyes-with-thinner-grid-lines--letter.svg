@@ -120,30 +120,30 @@
     <line x1="0" x2="612" y1="86.625" y2="86.625" class="super-thin blue line"/>
   </g>
   <g id="vertical-lines">
-    <line x1="92.25" x2="92.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="114.75" x2="114.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="137.25" x2="137.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="159.75" x2="159.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="182.25" x2="182.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="204.75" x2="204.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="227.25" x2="227.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="249.75" x2="249.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="272.25" x2="272.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="294.75" x2="294.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="317.25" x2="317.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="339.75" x2="339.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="362.25" x2="362.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="384.75" x2="384.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="407.25" x2="407.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="429.75" x2="429.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="452.25" x2="452.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="474.75" x2="474.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="497.25" x2="497.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="519.75" x2="519.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="542.25" x2="542.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="564.75" x2="564.75" y1="792" y2="0" class="thin blue line"/>
-    <line x1="587.25" x2="587.25" y1="792" y2="0" class="thin blue line"/>
-    <line x1="609.75" x2="609.75" y1="792" y2="0" class="thin blue line"/>
+    <line x1="92.25" x2="92.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="114.75" x2="114.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="137.25" x2="137.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="159.75" x2="159.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="182.25" x2="182.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="204.75" x2="204.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="227.25" x2="227.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="249.75" x2="249.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="272.25" x2="272.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="294.75" x2="294.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="317.25" x2="317.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="339.75" x2="339.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="362.25" x2="362.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="384.75" x2="384.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="407.25" x2="407.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="429.75" x2="429.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="452.25" x2="452.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="474.75" x2="474.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="497.25" x2="497.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="519.75" x2="519.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="542.25" x2="542.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="564.75" x2="564.75" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="587.25" x2="587.25" y1="792" y2="0" class="super-thin blue line"/>
+    <line x1="609.75" x2="609.75" y1="792" y2="0" class="super-thin blue line"/>
   </g>
   <g id="horizontal-lines">
     <line x1="0" x2="612" y1="711" y2="711" class="blue line"/>

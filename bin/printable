@@ -236,8 +236,14 @@ package My::Printable {
                     x_spacing => "1unit",
                     nearest_margins => 1,
                     class => {
-                        DEFAULT => "thin blue line",
-                        grayscale => "thin gray line",
+                        DEFAULT => {
+                            DEFAULT => "thin blue line",
+                            grayscale => "thin gray line",
+                        },
+                        "thinner-grid-lines" => {
+                            DEFAULT => "super-thin blue line",
+                            grayscale => "super-thin gray line",
+                        },
                     },
                     left => {
                         DEFAULT => "1.25in",
