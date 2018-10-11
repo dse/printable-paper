@@ -1,97 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="612pt" height="792pt" viewBox="0.000000 0.000000 612.000000 792.000000">
-  <style>            .line {
-                stroke-linecap: round;
-                stroke-width: 0.48pt;
-            }
-            .dot {
-                stroke-linecap: round;
-                stroke-width: 1.44pt;
-            }
-            .margin-line {
-                stroke-linecap: round;
-                stroke-width: 0.48pt;
-            }
+  <style>            .line, .dot { stroke-linecap: round; }
 
-            .blue {
-                stroke: #b3b3ff;
-            }
-            .red {
-                stroke: #b30000;
-            }
-            .green {
-                stroke: #b3ffb3;
-            }
-            .gray {
-                stroke: #b3b3b3;
-            }
+            .line            { stroke-width: 0.72pt; }
+            .line.super-thin { stroke-width: 0.36pt; }
+            .line.thin       { stroke-width: 0.48pt; }
+            .line.thick      { stroke-width: 1.08pt; }
 
-            .light.blue {
-                stroke: #d9d9ff;
-            }
-            .light.red {
-                stroke: #d98080;
-            }
-            .light.green {
-                stroke: #d9ffd9;
-            }
-            .light.gray {
-                stroke: #d9d9d9;
-            }
+            .dot       { stroke-width: 1.44pt; }
+            .dot.thin  { stroke-width: 0.96pt; }
+            .dot.thick { stroke-width: 2.16pt; }
 
-            .dark.blue {
-                stroke: #6767ff;
-            }
-            .dark.red {
-                stroke: #670000;
-            }
-            .dark.green {
-                stroke: #67ff67;
-            }
-            .dark.gray {
-                stroke: #676767;
-            }
+            .blue  { stroke: #b3b3ff; }
+            .red   { stroke: #ff9999; }
+            .green { stroke: #b3ffb3; }
+            .gray  { stroke: #b3b3b3; }
 
-            .alternate-blue {
-                stroke: #6767ff;
-                opacity: 0.5;
-            }
-            .alternate-red {
-                stroke: #670000;
-                opacity: 0.5;
-            }
-            .alternate-green {
-                stroke: #67ff67;
-                opacity: 0.5;
-            }
-            .alternate-gray {
-                stroke: #676767;
-                opacity: 0.5;
-            }
+            .light.blue  { stroke: #d9d9ff; }
+            .light.red   { stroke: #ffcccc; }
+            .light.green { stroke: #d9ffd9; }
+            .light.gray  { stroke: #d9d9d9; }
 
-            .line.super-thin {
-                stroke-width: 0.12pt;
-            }
-            .line.thin {
-                stroke-width: 0.24pt;
-            }
-            .line.thick {
-                stroke-width: 0.72pt;
-            }
+            .dark.blue  { stroke: #6767ff; }
+            .dark.red   { stroke: #ff3333; }
+            .dark.green { stroke: #67ff67; }
+            .dark.gray  { stroke: #676767; }
 
-            .dot.thin {
-                stroke-width: 0.96pt;
-            }
-            .dot.thick {
-                stroke-width: 2.16pt;
-            }
-
-            .margin-line.thin {
-                stroke-width: 0.24pt;
-            }
-            .margin-line.thick {
-                stroke-width: 0.72pt;
-            }
+            .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
+            .alternate-red   { stroke: #ff3333; opacity: 0.5; }
+            .alternate-green { stroke: #67ff67; opacity: 0.5; }
+            .alternate-gray  { stroke: #676767; opacity: 0.5; }
 </style>
   <g id="dot-grid">
     <line x1="0" x2="0" y1="792" y2="792" class="blue dot"/>
