@@ -254,7 +254,7 @@ package My::Printable {
                     {
                         position => "bottom",
                         y => {
-                            DEFAULT => "0.25in",
+                            DEFAULT => "0.375in",
                             metric => "12mm",
                         },
                         right => {
