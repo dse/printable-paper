@@ -1585,6 +1585,7 @@
     <line x1="594.638" x2="594.638" y1="6.94499999999994" y2="6.94499999999994" class="blue dot"/>
   </g>
   <g id="horizontal-lines"/>
+  <g id="additional-horizontal-lines"/>
   <g id="margin-lines">
     <line x1="108.638" x2="108.638" y1="841.89" y2="0" class="red margin-line"/>
   </g>

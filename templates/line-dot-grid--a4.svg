@@ -3419,6 +3419,7 @@
     <line x1="0" x2="595.276" y1="137.480433070867" y2="137.480433070867" class="thin blue line"/>
     <line x1="0" x2="595.276" y1="114.803267716536" y2="114.803267716536" class="thin blue line"/>
   </g>
+  <g id="additional-horizontal-lines"/>
   <g id="margin-lines">
     <line x1="116.220677165354" x2="116.220677165354" y1="841.89" y2="0" class="red margin-line"/>
   </g>
