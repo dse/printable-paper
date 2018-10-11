@@ -170,11 +170,11 @@ package My::Printable {
                     nearest_margins => 1,
                     bottom => {
                         DEFAULT => "1in",
-                        metric => "24mm",
+                        metric => "28mm",
                     },
                     top => {
                         DEFAULT => "1.5in",
-                        metric => "40mm",
+                        metric => "37mm",
                     },
                     class => {
                         DEFAULT => "thin blue line",
@@ -204,11 +204,11 @@ package My::Printable {
                     y_spacing => "1unit",
                     bottom => {
                         DEFAULT => "1in",
-                        metric => "24mm",
+                        metric => "28mm",
                     },
                     top => {
                         DEFAULT => "1.5in",
-                        metric => "40mm",
+                        metric => "37mm",
                     },
                     class => {
                         DEFAULT => "blue line",
