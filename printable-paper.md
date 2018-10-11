@@ -2,15 +2,17 @@
 
 <https://www.printablepaper.net/>
 
-## French-Ruled Letter
+1/4" dot grid
 
-<https://www.printablepaper.net/preview/French_Ruled-Letter>
+    dots: 4px or 3pt or 1/24in or 12.5/300in diameter
+    #000000
 
-is crap
+narrow ruled; college ruled; wide ruled
 
-<https://www.printablepaper.net/preview/French_Ruled-A4>
+    lines: 0.96px or 4/300in wide
+    #000000
 
-is also crap
+french-ruled is crap
 
 # Incompetech
 
@@ -32,6 +34,21 @@ Multi-Width
     medium lines: 0.3pt  or 0.4px     or 1.25/300in     wide
     thick lines:  0.7pt  or 0.93333px or 2.916666/300in wide
     #b3b3b3
+
+Colors
+
+    #cccccc gray
+    #ccccff blue
+
+    # ff = 255
+    # d9 = 217
+    # b3 = 179
+    # 67 = 103
+
+    # ff = 255
+    # cc = 204
+    # 99 = 153
+    # e6 = 230
 
 # InksAndPens.com
 
