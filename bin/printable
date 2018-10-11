@@ -239,6 +239,10 @@ package My::Printable {
                         DEFAULT => "thin blue line",
                         grayscale => "thin gray line",
                     },
+                    left => {
+                        DEFAULT => "1.25in",
+                        metric => "41mm",
+                    },
                 },
                 left_margin_line => {
                     x => {
