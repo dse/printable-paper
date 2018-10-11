@@ -136,6 +136,8 @@ package My::Printable {
                         DEFAULT => "blue dot",
                         grayscale => "gray dot",
                     },
+                    x_coordinates_nearest_margins => 1,
+                    y_coordinates_nearest_margins => 1,
                 },
                 left_margin_line => {
                     x => {
@@ -361,8 +363,8 @@ package My::Printable {
         my ($self) = @_;
         my $ruling = $self->ruling;
         my $dot_grid = $self->canvas->{dot_grid};
-        my $x_coordinates_nearest_margins => $ruling->{dot_grid}->{x_coordinates_nearest_margins};
-        my $y_coordinates_nearest_margins => $ruling->{dot_grid}->{y_coordinates_nearest_margins};
+        my $x_coordinates_nearest_margins = $ruling->{dot_grid}->{x_coordinates_nearest_margins};
+        my $y_coordinates_nearest_margins = $ruling->{dot_grid}->{y_coordinates_nearest_margins};
         if ($ruling->{dot_grid}) {
             my $x_spacing = $dot_grid->{x_spacing} = $self->unit_x->pt($self->value($ruling->{dot_grid}->{x_spacing}));
             my $y_spacing = $dot_grid->{y_spacing} = $self->unit_y->pt($self->value($ruling->{dot_grid}->{y_spacing}));
