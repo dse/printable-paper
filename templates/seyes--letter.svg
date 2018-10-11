@@ -177,7 +177,7 @@
   </g>
   <g id="additional-horizontal-lines">
     <line x1="0" x2="612" y1="36" y2="36" class="thin blue line"/>
-    <line x1="519.75" x2="587.25" y1="778.5" y2="778.5" class="thin blue line"/>
+    <line x1="519.75" x2="587.25" y1="778.5" y2="778.5" class="blue line"/>
   </g>
   <g id="margin-lines">
     <line x1="92.25" x2="92.25" y1="792" y2="0" class="red margin-line"/>

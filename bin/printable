@@ -265,12 +265,8 @@ package My::Printable {
                         nearest_grid => "horizontal_lines",
                         class => {
                             DEFAULT => {
-                                DEFAULT => "thin blue line",
-                                grayscale => "thin gray line",
-                            },
-                            "thinner-grid-lines" => {
-                                DEFAULT => "super-thin blue line",
-                                grayscale => "super-thin gray line",
+                                DEFAULT => "blue line",
+                                grayscale => "gray line",
                             },
                         },
                     },
