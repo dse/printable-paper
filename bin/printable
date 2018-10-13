@@ -164,6 +164,9 @@ package My::Printable {
                     x_spacing => "1unit",
                     y_spacing => "1/4unit",
                     class => "thin blue dot",
+                    exclude => {
+                        horizontal_lines => 1,
+                    },
                 },
                 horizontal_lines => {
                     y_spacing => "1unit",
@@ -670,17 +673,20 @@ package My::Printable {
         if ($ruling->{dot_grid}) {
             my $x = $canvas_dot_grid->{x};
             my $y = $canvas_dot_grid->{y};
-            if ($ruling->{horizontal_lines}) {
-                @$y = exclude(@$y, @{$canvas_horizontal_lines->{y}});
-            }
-            if ($ruling->{horizontal_lines}->{minor}) {
-                @$y = exclude(@$y, @{$canvas_horizontal_lines->{minor}->{y}});
-            }
-            if ($ruling->{vertical_lines}) {
-                @$x = exclude(@$x, @{$canvas_vertical_lines->{x}});
-            }
-            if ($ruling->{left_margin_line}) {
-                @$x = exclude(@$x, ($canvas_margin_lines->{left}->{x}));
+            my $exclude = $ruling->{dot_grid}->{exclude};
+            if ($exclude) {
+                if ($ruling->{horizontal_lines} && $exclude->{horizontal_lines}) {
+                    @$y = exclude(@$y, @{$canvas_horizontal_lines->{y}});
+                }
+                if ($ruling->{horizontal_lines}->{minor} && $exclude->{minor_horizontal_lines}) {
+                    @$y = exclude(@$y, @{$canvas_horizontal_lines->{minor}->{y}});
+                }
+                if ($ruling->{vertical_lines} && $exclude->{vertical_lines}) {
+                    @$x = exclude(@$x, @{$canvas_vertical_lines->{x}});
+                }
+                if ($ruling->{left_margin_line} && $exclude->{left_margin_line}) {
+                    @$x = exclude(@$x, ($canvas_margin_lines->{left}->{x}));
+                }
             }
         }
     }
