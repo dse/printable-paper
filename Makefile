@@ -40,21 +40,21 @@ clean:
 # thinner, lighter, fainter
 templates/%-with-thinner-grid-lines--letter.svg: bin/printable Makefile
 	mkdir -p templates
-	bin/printable -M letter --imperial --modifier=thinner-grid-lines $* >"$@.tmp.svg"
+	bin/printable -M letter --modifier=thinner-grid-lines $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 templates/%-with-thinner-grid-lines--a4.svg: bin/printable Makefile
 	mkdir -p templates
-	bin/printable -M letter --imperial --modifier=thinner-grid-lines $* >"$@.tmp.svg"
+	bin/printable -M a4 --modifier=thinner-grid-lines $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
 # generic rules later, for non-gnu make
 templates/%--letter.svg: bin/printable Makefile
 	mkdir -p templates
-	bin/printable -M letter --imperial $* >"$@.tmp.svg"
+	bin/printable -M letter $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 templates/%--a4.svg: bin/printable Makefile
 	mkdir -p templates
-	bin/printable -M a4 --metric $* >"$@.tmp.svg"
+	bin/printable -M a4 $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
 %.2page.pdf: %.pdf
