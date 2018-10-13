@@ -11,7 +11,7 @@ PATHNAME = $(shell \
 	fi \
 )
 
-default: svg pdf
+default: svg pdf ps
 
 RULINGS = \
 	seyes--letter \
@@ -77,5 +77,7 @@ templates/pdf/%.pdf: templates/svg/%.svg Makefile
 
 templates/ps/%.ps: templates/svg/%.svg Makefile
 	mkdir -p "$$(dirname "$@")"
-	$(INKSCAPE) --without-gui --export-dpi=300 --export-ps "$@.tmp.ps" "$<"
+	$(INKSCAPE) --without-gui --export-dpi=300 --export-ps \
+		"$$($(PATHNAME) "$@.tmp.ps")" \
+		"$$($(PATHNAME) "$<")"
 	mv "$@.tmp.ps" "$@"
