@@ -196,8 +196,8 @@ package My::Printable {
                             grayscale => "thin gray line",
                         },
                         "thinner-lines" => {
-                            DEFAULT => "super-thin blue line",
-                            grayscale => "super-thin gray line",
+                            DEFAULT => "x-thin blue line",
+                            grayscale => "x-thin gray line",
                         },
                     },
                 },
@@ -292,8 +292,8 @@ package My::Printable {
                                 grayscale => "thin gray line",
                             },
                             "thinner-grid" => {
-                                DEFAULT => "super-thin blue line",
-                                grayscale => "super-thin gray line",
+                                DEFAULT => "x-thin blue line",
+                                grayscale => "x-thin gray line",
                             },
                         },
                     },
@@ -312,8 +312,8 @@ package My::Printable {
                                 grayscale => "thin gray line",
                             },
                             "thinner-grid" => {
-                                DEFAULT => "super-thin blue line",
-                                grayscale => "super-thin gray line",
+                                DEFAULT => "x-thin blue line",
+                                grayscale => "x-thin gray line",
                             },
                         },
                     },
@@ -346,8 +346,8 @@ package My::Printable {
                             grayscale => "thin gray line",
                         },
                         "thinner-grid" => {
-                            DEFAULT => "super-thin blue line",
-                            grayscale => "super-thin gray line",
+                            DEFAULT => "x-thin blue line",
+                            grayscale => "x-thin gray line",
                         },
                     },
                     left => {
@@ -866,7 +866,7 @@ package My::Printable {
                     my $x2 = $self->right_margin;
                     my $line = $self->create_line(
                         x1 => $x1, x2 => $x2, y => $y,
-                        class => $self->value($ruling->{horizontal_lines}->{minor}->{class}) // "super-thin blue line"
+                        class => $self->value($ruling->{horizontal_lines}->{minor}->{class}) // "x-thin blue line"
                     );
                     $layer->appendChild($line);
                 }
@@ -1018,7 +1018,8 @@ package My::Printable {
     sub create_style_element {
         my ($self, $css) = @_;
 
-        my $super_thin_line_stroke_width = $self->unit->pt("3/600in");
+        my $xx_thin_line_stroke_width    = $self->unit->pt("2/600in");
+        my $x_thin_line_stroke_width     = $self->unit->pt("3/600in");
         my $thin_line_stroke_width       = $self->unit->pt("4/600in");
         my $semi_thin_line_stroke_width  = $self->unit->pt("4.9/600in");
         my $line_stroke_width            = $self->unit->pt("6/600in");
@@ -1035,7 +1036,8 @@ package My::Printable {
             .line, .dot { stroke-linecap: round; }
 
             .line            { stroke-width: ${line_stroke_width}pt; }
-            .line.super-thin { stroke-width: ${super_thin_line_stroke_width}pt; }
+            .line.xx-thin    { stroke-width: ${xx_thin_line_stroke_width}pt; }
+            .line.x-thin     { stroke-width: ${x_thin_line_stroke_width}pt; }
             .line.thin       { stroke-width: ${thin_line_stroke_width}pt; }
             .line.thick      { stroke-width: ${thick_line_stroke_width}pt; }
             .line.semi-thin  { stroke-width: ${semi_thin_line_stroke_width}pt; }
