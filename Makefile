@@ -17,10 +17,12 @@ RULINGS = \
 	seyes--letter \
 	seyes-with-thinner-grid-lines--letter \
 	line-dot-graph--letter \
+	line-dot-grid--letter \
 	dot-grid--letter \
 	seyes--a4 \
 	seyes-with-thinner-grid-lines--a4 \
 	line-dot-graph--a4 \
+	line-dot-grid--a4 \
 	dot-grid--a4 \
 
 PS_FILES	= $(patsubst %,templates/%.ps,$(RULINGS))
