@@ -291,7 +291,7 @@ package My::Printable {
                                 DEFAULT => "thin blue line",
                                 grayscale => "thin gray line",
                             },
-                            "thinner-grid-lines" => {
+                            "thinner-grid" => {
                                 DEFAULT => "super-thin blue line",
                                 grayscale => "super-thin gray line",
                             },
@@ -311,7 +311,7 @@ package My::Printable {
                                 DEFAULT => "thin blue line",
                                 grayscale => "thin gray line",
                             },
-                            "thinner-grid-lines" => {
+                            "thinner-grid" => {
                                 DEFAULT => "super-thin blue line",
                                 grayscale => "super-thin gray line",
                             },
@@ -345,7 +345,7 @@ package My::Printable {
                             DEFAULT => "thin blue line",
                             grayscale => "thin gray line",
                         },
-                        "thinner-grid-lines" => {
+                        "thinner-grid" => {
                             DEFAULT => "super-thin blue line",
                             grayscale => "super-thin gray line",
                         },

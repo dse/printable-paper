@@ -15,13 +15,13 @@ default: svg pdf ps
 
 RULINGS = \
 	seyes--letter \
-	seyes-with-thinner-grid-lines--letter \
+	seyes--thinner-grid--letter \
 	line-dot-graph--letter \
 	line-dot-grid--letter \
 	line-dot-grid--thinner--letter \
 	dot-grid--letter \
 	seyes--a4 \
-	seyes-with-thinner-grid-lines--a4 \
+	seyes--thinner-grid--a4 \
 	line-dot-graph--a4 \
 	line-dot-grid--a4 \
 	line-dot-grid--thinner--a4 \
@@ -42,13 +42,13 @@ clean:
 
 # more specific rules first, for non-gnu make
 # thinner, lighter, fainter
-templates/svg/%-with-thinner-grid-lines--letter.svg: bin/printable Makefile
+templates/svg/%--thinner-grid--letter.svg: bin/printable Makefile
 	mkdir -p "$$(dirname "$@")"
-	bin/printable -M letter --modifier=thinner-grid-lines $* >"$@.tmp.svg"
+	bin/printable -M letter --modifier=thinner-grid $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
-templates/svg/%-with-thinner-grid-lines--a4.svg: bin/printable Makefile
+templates/svg/%--thinner-grid--a4.svg: bin/printable Makefile
 	mkdir -p "$$(dirname "$@")"
-	bin/printable -M a4 --modifier=thinner-grid-lines $* >"$@.tmp.svg"
+	bin/printable -M a4 --modifier=thinner-grid $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
 templates/svg/%--thinner--letter.svg: bin/printable Makefile
