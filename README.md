@@ -8,9 +8,7 @@ rulings are provided, for double-sided printing.
 
 ## Rulings Included
 
--   Dot grid.
-
-    Dots 1/4″ apart on letter size, 6mm apart on A4.
+-   A 1/4" or 6mm dot grid.
 
 -   French ruling, or Seyès ruling.
 
@@ -18,7 +16,9 @@ rulings are provided, for double-sided printing.
 
 -   French ruling, with thinner grid lines.
 
--   A hybrid line-dot grid based on French ruling.
+-   A 5/16" or 8mm hybrid line-dot graph based on French ruling.
+
+-   A 1/4" or 6mm line dot grid.
 
 ## Other Sources for Printable Paper
 
