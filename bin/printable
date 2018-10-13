@@ -170,8 +170,14 @@ package My::Printable {
                     x_spacing => "1unit",
                     y_spacing => "1unit",
                     class => {
-                        DEFAULT => "semi-thick blue dot",
-                        grayscale => "semi-thick gray dot",
+                        DEFAULT => {
+                            DEFAULT => "semi-thick blue dot",
+                            grayscale => "semi-thick gray dot",
+                        },
+                        "thinner-dots" => {
+                            DEFAULT => "blue dot",
+                            grayscale => "gray dot",
+                        },
                     },
                     top => {
                         DEFAULT => "1.5in",
@@ -185,8 +191,14 @@ package My::Printable {
                         metric  => "37mm",
                     },
                     class => {
-                        DEFAULT => "thin blue line",
-                        grayscale => "thin gray line",
+                        DEFAULT => {
+                            DEFAULT => "thin blue line",
+                            grayscale => "thin gray line",
+                        },
+                        "thinner-lines" => {
+                            DEFAULT => "super-thin blue line",
+                            grayscale => "super-thin gray line",
+                        },
                     },
                 },
                 left_margin_line => {

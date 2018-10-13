@@ -18,11 +18,13 @@ RULINGS = \
 	seyes-with-thinner-grid-lines--letter \
 	line-dot-graph--letter \
 	line-dot-grid--letter \
+	line-dot-grid--thinner--letter \
 	dot-grid--letter \
 	seyes--a4 \
 	seyes-with-thinner-grid-lines--a4 \
 	line-dot-graph--a4 \
 	line-dot-grid--a4 \
+	line-dot-grid--thinner--a4 \
 	dot-grid--a4 \
 
 PS_FILES	= $(patsubst %,templates/ps/%.ps,$(RULINGS))
@@ -47,6 +49,15 @@ templates/svg/%-with-thinner-grid-lines--letter.svg: bin/printable Makefile
 templates/svg/%-with-thinner-grid-lines--a4.svg: bin/printable Makefile
 	mkdir -p "$$(dirname "$@")"
 	bin/printable -M a4 --modifier=thinner-grid-lines $* >"$@.tmp.svg"
+	mv "$@.tmp.svg" "$@"
+
+templates/svg/%--thinner--letter.svg: bin/printable Makefile
+	mkdir -p "$$(dirname "$@")"
+	bin/printable -M letter --modifier=thinner-dots --modifier=thinner-lines $* >"$@.tmp.svg"
+	mv "$@.tmp.svg" "$@"
+templates/svg/%--thinner--a4.svg: bin/printable Makefile
+	mkdir -p "$$(dirname "$@")"
+	bin/printable -M a4 --modifier=thinner-dots --modifier=thinner-lines $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
 # generic rules later, for non-gnu make
