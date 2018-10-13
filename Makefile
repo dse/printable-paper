@@ -25,10 +25,10 @@ RULINGS = \
 	line-dot-grid--a4 \
 	dot-grid--a4 \
 
-PS_FILES	= $(patsubst %,templates/%.ps,$(RULINGS))
-PDF_FILES	= $(patsubst %,templates/%.pdf,$(RULINGS))
-PDF_2PAGE_FILES = $(patsubst %,templates/%.2page.pdf,$(RULINGS))
-SVG_FILES	= $(patsubst %,templates/%.svg,$(RULINGS))
+PS_FILES	= $(patsubst %,templates/ps/%.ps,$(RULINGS))
+PDF_FILES	= $(patsubst %,templates/pdf/%.pdf,$(RULINGS))
+PDF_2PAGE_FILES = $(patsubst %,templates/2-page-pdf/%.2page.pdf,$(RULINGS))
+SVG_FILES	= $(patsubst %,templates/svg/%.svg,$(RULINGS))
 
 ps:  $(PS_FILES)
 pdf: $(PDF_FILES) $(PDF_2PAGE_FILES)
@@ -40,26 +40,27 @@ clean:
 
 # more specific rules first, for non-gnu make
 # thinner, lighter, fainter
-templates/%-with-thinner-grid-lines--letter.svg: bin/printable Makefile
-	mkdir -p templates
+templates/svg/%-with-thinner-grid-lines--letter.svg: bin/printable Makefile
+	mkdir -p "$$(dirname "$@")"
 	bin/printable -M letter --modifier=thinner-grid-lines $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
-templates/%-with-thinner-grid-lines--a4.svg: bin/printable Makefile
-	mkdir -p templates
+templates/svg/%-with-thinner-grid-lines--a4.svg: bin/printable Makefile
+	mkdir -p "$$(dirname "$@")"
 	bin/printable -M a4 --modifier=thinner-grid-lines $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
 # generic rules later, for non-gnu make
-templates/%--letter.svg: bin/printable Makefile
-	mkdir -p templates
+templates/svg/%--letter.svg: bin/printable Makefile
+	mkdir -p "$$(dirname "$@")"
 	bin/printable -M letter $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
-templates/%--a4.svg: bin/printable Makefile
-	mkdir -p templates
+templates/svg/%--a4.svg: bin/printable Makefile
+	mkdir -p "$$(dirname "$@")"
 	bin/printable -M a4 $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
-%.2page.pdf: %.pdf
+templates/2-page-pdf/%.2page.pdf: templates/pdf/%.pdf
+	mkdir -p "$$(dirname "$@")"
 	if which pdfunite >/dev/null 2>/dev/null ; then \
 		pdfunite "$<" "$<" "$@.tmp.pdf" ; \
 	else \
@@ -67,12 +68,14 @@ templates/%--a4.svg: bin/printable Makefile
 	fi
 	mv "$@.tmp.pdf" "$@"
 
-%.pdf: %.svg Makefile
+templates/pdf/%.pdf: templates/svg/%.svg Makefile
+	mkdir -p "$$(dirname "$@")"
 	$(INKSCAPE) --without-gui --export-dpi=300 --export-pdf \
 		"$$($(PATHNAME) "$@.tmp.pdf")" \
 		"$$($(PATHNAME) "$<")"
 	mv "$@.tmp.pdf" "$@"
 
-%.ps: %.svg Makefile
+templates/ps/%.ps: templates/svg/%.svg Makefile
+	mkdir -p "$$(dirname "$@")"
 	$(INKSCAPE) --without-gui --export-dpi=300 --export-ps "$@.tmp.ps" "$<"
 	mv "$@.tmp.ps" "$@"
