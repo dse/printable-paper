@@ -6,10 +6,14 @@
             .line.super-thin { stroke-width: 0.36pt; }
             .line.thin       { stroke-width: 0.48pt; }
             .line.thick      { stroke-width: 1.08pt; }
+            .line.semi-thin  { stroke-width: 0.588pt; }
+            .line.semi-thick { stroke-width: 0.882pt; }
 
-            .dot       { stroke-width: 1.44pt; }
-            .dot.thin  { stroke-width: 0.96pt; }
-            .dot.thick { stroke-width: 2.16pt; }
+            .dot             { stroke-width: 1.44pt; }
+            .dot.thin        { stroke-width: 0.96pt; }
+            .dot.thick       { stroke-width: 2.16pt; }
+            .dot.semi-thin   { stroke-width: 1.176pt; }
+            .dot.semi-thick  { stroke-width: 1.764pt; }
 
             .blue  { stroke: #b3b3ff; }
             .red   { stroke: #ff9999; }
