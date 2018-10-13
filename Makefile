@@ -35,7 +35,7 @@ PDF_FILES	= $(patsubst %,templates/pdf/%.pdf,$(RULINGS))
 PDF_2PAGE_FILES = $(patsubst %,templates/2-page-pdf/%.2page.pdf,$(RULINGS))
 SVG_FILES	= $(patsubst %,templates/svg/%.svg,$(RULINGS))
 
-ps:  $(PS_FILES)
+ps:  $(PS_FILES)  ${PS_2PAGE_FILES}
 pdf: $(PDF_FILES) $(PDF_2PAGE_FILES)
 svg: $(SVG_FILES)
 
