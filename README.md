@@ -3,8 +3,10 @@
 Some different types of printable paper, and a Perl program that
 generates them.
 
-SVG and PDF formats are included.  Two-page versions of all paper
-rulings are provided, for double-sided printing.
+SVG, PDF, and PostScript formats are included.
+
+Two-page PDFs of all paper rulings are provided, for convenient
+double-sided printing.
 
 ## Rulings Included
 
