@@ -153,8 +153,8 @@ package My::Printable {
                     },
                     nearest => "dot-grid",
                     class => {
-                        DEFAULT => "red margin-line",
-                        grayscale => "gray margin-line",
+                        DEFAULT => "red margin line",
+                        grayscale => "gray margin line",
                     },
                 },
             },
@@ -178,6 +178,10 @@ package My::Printable {
                             DEFAULT => "blue dot",
                             grayscale => "gray dot",
                         },
+                        "x-thinner-dots" => {
+                            DEFAULT => "semi-thin blue dot",
+                            grayscale => "semi-thin gray dot",
+                        },
                     },
                     top => {
                         DEFAULT => "1.5in",
@@ -199,6 +203,10 @@ package My::Printable {
                             DEFAULT => "x-thin blue line",
                             grayscale => "x-thin gray line",
                         },
+                        "x-thinner-lines" => {
+                            DEFAULT => "xx-thin blue line",
+                            grayscale => "xx-thin gray line",
+                        },
                     },
                 },
                 left_margin_line => {
@@ -208,8 +216,8 @@ package My::Printable {
                     },
                     nearest => "dot-grid",
                     class => {
-                        DEFAULT => "red margin-line",
-                        grayscale => "gray margin-line",
+                        DEFAULT => "red margin line",
+                        grayscale => "gray margin line",
                     },
                 },
             },
@@ -254,8 +262,8 @@ package My::Printable {
                     },
                     nearest => "dot-grid",
                     class => {
-                        DEFAULT => "red margin-line",
-                        grayscale => "gray margin-line",
+                        DEFAULT => "red margin line",
+                        grayscale => "gray margin line",
                     },
                 },
             },
@@ -362,8 +370,8 @@ package My::Printable {
                     },
                     nearest => "vertical-lines",
                     class => {
-                        DEFAULT => "red margin-line",
-                        grayscale => "gray margin-line",
+                        DEFAULT => "red margin line",
+                        grayscale => "gray margin line",
                     },
                 },
             },
@@ -902,7 +910,7 @@ package My::Printable {
                 x => $canvas_margin_lines->{left}->{x},
                 y1 => $self->bottom_margin,
                 y2 => $self->top_margin,
-                class => $self->value($ruling->{left_margin_line}->{class}) // "red margin-line"
+                class => $self->value($ruling->{left_margin_line}->{class}) // "red margin line"
             );
             $layer->appendChild($margin_line);
         }
