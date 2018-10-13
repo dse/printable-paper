@@ -16,8 +16,8 @@ use v5.10.0;
 our $opt_papersize;
 our $opt_width;
 our $opt_height;
-our $opt_unit_modifier;
-our $opt_color_modifier;
+our $opt_unit_type;
+our $opt_color_type;
 our @opt_modifiers;
 
 use Getopt::Long;
@@ -29,10 +29,10 @@ Getopt::Long::GetOptions(
     "M|p|media|paper|paper-size=s"    => \$opt_papersize,
     "w|width=s"                       => \$opt_width,
     "h|height=s"                      => \$opt_height,
-    "g|gray|grey|grayscale|greyscale" => sub { $opt_color_modifier = "grayscale"; },
-    "c|color|colour"                  => sub { $opt_color_modifier = "color";     },
-    "m|metric"                        => sub { $opt_unit_modifier = "metric";     },
-    "i|imperial"                      => sub { $opt_unit_modifier = "imperial";   },
+    "g|gray|grey|grayscale|greyscale" => sub { $opt_color_type = "grayscale"; },
+    "c|color|colour"                  => sub { $opt_color_type = "color";     },
+    "m|metric"                        => sub { $opt_unit_type = "metric";     },
+    "i|imperial"                      => sub { $opt_unit_type = "imperial";   },
     "modifier=s"                      => sub { push(@opt_modifiers, $_[1]); },
     "help|?" => sub {
         usage();
@@ -65,7 +65,9 @@ my $p = My::Printable->new();
 $p->set_papersize($opt_papersize) if defined $opt_papersize;
 $p->set_width($opt_width)         if defined $opt_width;
 $p->set_height($opt_height)       if defined $opt_height;
-$p->set_modifiers($opt_unit_modifier, $opt_color_modifier, @opt_modifiers);
+$p->unit_type($opt_unit_type)     if defined $opt_unit_type;
+$p->color_type($opt_color_type)   if defined $opt_color_type;
+$p->set_modifiers(@opt_modifiers);
 
 if (!scalar @ARGV) {
     die("No paper ruling argument specified.\n");
@@ -81,9 +83,11 @@ package My::Printable {
     use Class::Thingy;
 
     INIT {
-        public papersize, default => "letter";
-        public width,     default => 612;
-        public height,    default => 792;
+        public papersize,  default => "letter";
+        public width,      default => 612;
+        public height,     default => 792;
+        public unit_type,  default => "imperial";
+        public color_type, default => "color";
 
         public doc;
         public root;
@@ -127,9 +131,10 @@ package My::Printable {
             dot_grid => {
                 unit => {
                     DEFAULT => "1/4in",
+                    "metric" => "6mm",
+                    "6mm" => "6mm",
                     "1/5in" => "1/5in",
                     "5mm" => "5mm",
-                    "6mm" => "6mm",
                 },
                 dot_grid => {
                     x_spacing => "1unit",
@@ -153,17 +158,63 @@ package My::Printable {
                     },
                 },
             },
+            line_dot_grid => {
+                unit => {
+                    DEFAULT => "1/4in",
+                    "metric" => "6mm",
+                    "6mm" => "6mm",
+                    "1/5in" => "1/5in",
+                    "5mm" => "5mm",
+                },
+                dot_grid => {
+                    x_spacing => "1unit",
+                    y_spacing => "1unit",
+                    class => {
+                        DEFAULT => "semi-thick blue dot",
+                        grayscale => "semi-thick gray dot",
+                    },
+                    top => {
+                        DEFAULT => "1.5in",
+                        metric => "37mm",
+                    },
+                },
+                horizontal_lines => {
+                    y_spacing => "1unit",
+                    top => {
+                        DEFAULT => "1.5in",
+                        metric  => "37mm",
+                    },
+                    class => {
+                        DEFAULT => "thin blue line",
+                        grayscale => "thin gray line",
+                    },
+                },
+                left_margin_line => {
+                    x => {
+                        DEFAULT => "1.25in",
+                        metric => "41mm",
+                    },
+                    nearest => "dot-grid",
+                    class => {
+                        DEFAULT => "red margin-line",
+                        grayscale => "gray margin-line",
+                    },
+                },
+            },
             line_dot_graph => {
                 unit => {
                     DEFAULT => "5/16in",
-                    metric => "8mm",
+                    "metric" => "8mm",
                     "8mm" => "8mm",
                     "10mm" => "10mm",
                 },
                 dot_grid => {
                     x_spacing => "1unit",
                     y_spacing => "1/4unit",
-                    class => "thin blue dot",
+                    class => {
+                        DEFAULT => "thin blue dot",
+                        grayscale => "thin gray dot",
+                    },
                     exclude => {
                         horizontal_lines => 1,
                     },
@@ -310,6 +361,7 @@ package My::Printable {
     sub set_papersize {
         my ($self, $spec) = @_;
         my ($name, $width, $height, $type) = My::Printable::PaperSizes->parse($spec);
+        $self->unit_type($type);
         $self->papersize($name);
         $self->width($width);
         $self->height($height);
@@ -320,6 +372,7 @@ package My::Printable {
     sub set_width {
         my ($self, $value, $unit) = @_;
         my ($pt, $type) = $self->unit->pt($value, $unit);
+        $self->unit_type($type);
         $self->width($pt);
         $self->papersize(undef);
         $self->unit_x->set_percentage_basis($pt);
@@ -328,6 +381,7 @@ package My::Printable {
     sub set_height {
         my ($self, $value, $unit) = @_;
         my ($pt, $type) = $self->unit->pt($value, $unit);
+        $self->unit_type($type);
         $self->height($pt);
         $self->papersize(undef);
         $self->unit_y->set_percentage_basis($pt);
@@ -400,6 +454,7 @@ package My::Printable {
         $self->compute_vertical_lines;
         $self->compute_margin_lines;
         $self->compute_additional_horizontal_lines;
+        $self->chop_dot_grid;
         $self->chop_horizontal_lines;
         $self->compute_minor_horizontal_lines;
         $self->chop_vertical_lines;
@@ -563,6 +618,44 @@ package My::Printable {
         my $canvas_margin_lines = $self->canvas->{margin_lines};
         if ($ruling->{left_margin_line}) {
             $canvas_margin_lines->{left}->{x} = $self->unit_x->pt($self->value($ruling->{left_margin_line}->{x}));
+        }
+    }
+
+    sub chop_dot_grid {
+        my ($self) = @_;
+        my $ruling = $self->ruling;
+        my $canvas_dot_grid = $self->canvas->{dot_grid};
+        my $height = $self->height;
+        my $width = $self->width;
+        if ($ruling->{dot_grid}) {
+            my $x = $canvas_dot_grid->{x};
+            my $y = $canvas_dot_grid->{y};
+
+            my $bottom = $self->value($ruling->{dot_grid}->{bottom});
+            my $top    = $self->value($ruling->{dot_grid}->{top});
+            my $left   = $self->value($ruling->{dot_grid}->{left});
+            my $right  = $self->value($ruling->{dot_grid}->{right});
+
+            if (defined $bottom) {
+                my $bottom_y = $self->unit_y->pt($bottom);
+                $bottom_y = $self->point_nearest($bottom_y, @$y);
+                @$y = grep { $_ >= $bottom_y } @$y;
+            }
+            if (defined $top) {
+                my $top_y = $height - $self->unit_y->pt($top);
+                $top_y = $self->point_nearest($top_y, @$y);
+                @$y = grep { $_ <= $top_y } @$y;
+            }
+            if (defined $left) {
+                my $left_x = $self->unit_x->pt($left);
+                $left_x = $self->point_nearest($left_x, @$x);
+                @$x = grep { $_ >= $left_x } @$x;
+            }
+            if (defined $right) {
+                my $right_x = $width - $self->unit_x->pt($right);
+                $right_x = $self->point_nearest($right_x, @$x);
+                @$x = grep { $_ <= $right_x } @$x;
+            }
         }
     }
 
@@ -915,11 +1008,15 @@ package My::Printable {
 
         my $super_thin_line_stroke_width = $self->unit->pt("3/600in");
         my $thin_line_stroke_width       = $self->unit->pt("4/600in");
+        my $semi_thin_line_stroke_width  = $self->unit->pt("4.9/600in");
         my $line_stroke_width            = $self->unit->pt("6/600in");
+        my $semi_thick_line_stroke_width = $self->unit->pt("7.35/600in");
         my $thick_line_stroke_width      = $self->unit->pt("9/600in");
 
         my $thin_dot_stroke_width        = $self->unit->pt("4/300in");
+        my $semi_thin_dot_stroke_width   = $self->unit->pt("4.9/300in");
         my $dot_stroke_width             = $self->unit->pt("6/300in");
+        my $semi_thick_dot_stroke_width  = $self->unit->pt("7.35/300in");
         my $thick_dot_stroke_width       = $self->unit->pt("9/300in");
 
         $css //= <<"EOF";
@@ -929,10 +1026,14 @@ package My::Printable {
             .line.super-thin { stroke-width: ${super_thin_line_stroke_width}pt; }
             .line.thin       { stroke-width: ${thin_line_stroke_width}pt; }
             .line.thick      { stroke-width: ${thick_line_stroke_width}pt; }
+            .line.semi-thin  { stroke-width: ${semi_thin_line_stroke_width}pt; }
+            .line.semi-thick { stroke-width: ${semi_thick_line_stroke_width}pt; }
 
-            .dot       { stroke-width: ${dot_stroke_width}pt; }
-            .dot.thin  { stroke-width: ${thin_dot_stroke_width}pt; }
-            .dot.thick { stroke-width: ${thick_dot_stroke_width}pt; }
+            .dot             { stroke-width: ${dot_stroke_width}pt; }
+            .dot.thin        { stroke-width: ${thin_dot_stroke_width}pt; }
+            .dot.thick       { stroke-width: ${thick_dot_stroke_width}pt; }
+            .dot.semi-thin   { stroke-width: ${semi_thin_dot_stroke_width}pt; }
+            .dot.semi-thick  { stroke-width: ${semi_thick_dot_stroke_width}pt; }
 
             .blue  { stroke: #b3b3ff; }
             .red   { stroke: #ff9999; }
@@ -988,7 +1089,7 @@ EOF
         return $value if !exists $value->{DEFAULT};
         my $valuehash = $value;
         $value = $valuehash->{DEFAULT};
-        foreach my $modifier (@{$self->modifiers}) {
+        foreach my $modifier (@{$self->modifiers}, $self->unit_type, $self->color_type) {
             if (exists $valuehash->{$modifier}) {
                 $value = $valuehash->{$modifier};
             }
