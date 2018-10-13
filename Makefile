@@ -36,24 +36,25 @@ clean:
 	rm $(PS_FILES) $(PDF_FILES) $(PDF_2PAGE_FILES) $(SVG_FILES) || true
 	find . -type f \( -name '*.tmp' -o -name '*.tmp.*' \) -exec rm {} + || true
 
-templates/%--letter.svg: bin/printable Makefile
-	mkdir -p templates
-	bin/printable -M letter --imperial $* >"$@.tmp.svg"
-	mv "$@.tmp.svg" "$@"
-
-templates/%--a4.svg: bin/printable Makefile
-	mkdir -p templates
-	bin/printable -M a4 --metric $* >"$@.tmp.svg"
-	mv "$@.tmp.svg" "$@"
-
+# more specific rules first, for non-gnu make
+# thinner, lighter, fainter
 templates/%-with-thinner-grid-lines--letter.svg: bin/printable Makefile
 	mkdir -p templates
 	bin/printable -M letter --imperial --modifier=thinner-grid-lines $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
-
 templates/%-with-thinner-grid-lines--a4.svg: bin/printable Makefile
 	mkdir -p templates
 	bin/printable -M letter --imperial --modifier=thinner-grid-lines $* >"$@.tmp.svg"
+	mv "$@.tmp.svg" "$@"
+
+# generic rules later, for non-gnu make
+templates/%--letter.svg: bin/printable Makefile
+	mkdir -p templates
+	bin/printable -M letter --imperial $* >"$@.tmp.svg"
+	mv "$@.tmp.svg" "$@"
+templates/%--a4.svg: bin/printable Makefile
+	mkdir -p templates
+	bin/printable -M a4 --metric $* >"$@.tmp.svg"
 	mv "$@.tmp.svg" "$@"
 
 %.2page.pdf: %.pdf
