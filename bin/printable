@@ -19,6 +19,9 @@ our $opt_height;
 our $opt_unit_type;
 our $opt_color_type;
 our @opt_modifiers;
+our $opt_output_yaml;
+our $opt_output_json;
+our $opt_output_perl;
 
 use Getopt::Long;
 use Data::Dumper;
@@ -34,6 +37,9 @@ Getopt::Long::GetOptions(
     "m|metric"                        => sub { $opt_unit_type = "metric";     },
     "i|imperial"                      => sub { $opt_unit_type = "imperial";   },
     "modifier=s"                      => sub { push(@opt_modifiers, $_[1]); },
+    "output-yaml"                     => \$opt_output_yaml,
+    "output-json"                     => \$opt_output_json,
+    "output-perl"                     => \$opt_output_perl,
     "help|?" => sub {
         usage();
         exit(0);
@@ -62,19 +68,31 @@ examples:
 EOF
 
 my $p = My::Printable->new();
-$p->set_papersize($opt_papersize) if defined $opt_papersize;
-$p->set_width($opt_width)         if defined $opt_width;
-$p->set_height($opt_height)       if defined $opt_height;
-$p->unit_type($opt_unit_type)     if defined $opt_unit_type;
-$p->color_type($opt_color_type)   if defined $opt_color_type;
-$p->set_modifiers(@opt_modifiers);
+if ($opt_output_yaml || $opt_output_json || $opt_output_perl) {
+    if ($opt_output_yaml) {
+        $p->output_yaml;
+    }
+    if ($opt_output_json) {
+        $p->output_json;
+    }
+    if ($opt_output_perl) {
+        $p->output_perl;
+    }
+} else {
+    $p->set_papersize($opt_papersize) if defined $opt_papersize;
+    $p->set_width($opt_width)         if defined $opt_width;
+    $p->set_height($opt_height)       if defined $opt_height;
+    $p->unit_type($opt_unit_type)     if defined $opt_unit_type;
+    $p->color_type($opt_color_type)   if defined $opt_color_type;
+    $p->set_modifiers(@opt_modifiers);
 
-if (!scalar @ARGV) {
-    die("No paper ruling argument specified.\n");
-}
+    if (!scalar @ARGV) {
+        die("No paper ruling argument specified.\n");
+    }
 
-foreach my $arg (@ARGV) {
-    $p->generate_paper($arg);
+    foreach my $arg (@ARGV) {
+        $p->generate_paper($arg);
+    }
 }
 
 package My::Printable {
@@ -117,7 +135,9 @@ package My::Printable {
 
     use XML::LibXML;
     use List::Util qw(min max);
-    use Data::Dumper;
+    use Data::Dumper qw(Dumper);
+    use YAML qw(Dump);
+    use JSON::PP;
 
     # use My::Printable::Util qw(exclude);
     sub exclude(\@@);      # for embedded package subs with prototypes
@@ -376,6 +396,27 @@ package My::Printable {
                 },
             },
         };
+    }
+
+    sub output_yaml {
+        my ($self) = @_;
+        my $string = Dump($RULINGS);
+        print $string;
+    }
+
+    sub output_json {
+        my ($self) = @_;
+        my $json = JSON::PP->new->ascii(1)->pretty(1)->allow_nonref(1)->space_before(0)->indent_length(2);
+        my $string = $json->encode($RULINGS);
+        print $string;
+    }
+
+    sub output_perl {
+        my ($self) = @_;
+        local $Data::Dumper::Indent = 1; # standard indentation
+        local $Data::Dumper::Trailingcomma = 1;
+        local $Data::Dumper::Terse = 1; # output just the structure
+        print Dumper($RULINGS);
     }
 
     sub set_papersize {
