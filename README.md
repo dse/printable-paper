@@ -32,6 +32,15 @@ double-sided printing, flip on long edge:
 -   A 1/4" or 6mm line dot grid.  In regular, thinner, and
     extra-thinner variants.
 
+## Utilities Required
+
+-   `inkscape`
+-   `pdfunite`
+-   `psselect`
+-   `psjoin`
+-   `pdfnup`
+-   `pdftops`
+
 ## Other Sources for Printable Paper
 
 -   [PrintablePaper.net](https://www.printablepaper.net/)
