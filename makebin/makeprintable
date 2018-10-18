@@ -4,6 +4,9 @@ use strict;
 use v5.10.0;
 
 use String::ShellQuote;
+use Cwd qw(realpath);
+use File::Path qw(mkpath);
+use File::Basename qw(dirname);
 
 my @templates = (
     { base => "dot-grid--a4",                     ruling => "dot-grid",       size => "a4"                                                            },
@@ -23,8 +26,6 @@ my @templates = (
     { base => "seyes--thinner-grid--halfletter",  ruling => "seyes",          size => "halfletter", modifiers => [qw(thinner-grid smaller)]           },
 );
 
-use Cwd qw(realpath);
-
 sub path {
     my ($filename) = @_;
     if ($^O =~ m{^darwin}) {
@@ -40,6 +41,12 @@ sub cmd {
     if ($filename =~ m{\.([^\.\\\/]+)$}) {
         my $ext = $1;
         $temp = "$filename.tmp.$ext";
+    }
+
+    my $dirname = dirname($filename);
+    if (!-e $dirname) {
+        warn(sprintf("+ mkdir -p %s\n", shell_quote($dirname)));
+        mkpath($dirname);
     }
 
     $filename = path($filename);
@@ -88,6 +95,7 @@ my %build = (
 
             my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-pdf {FILENAME} %s",
                               shell_quote($dependencies->[0]));
+
             cmd($target, $cmd);
         },
     },
@@ -101,6 +109,7 @@ my %build = (
 
             my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-ps {FILENAME} %s",
                               shell_quote($dependencies->[0]));
+
             cmd($target, $cmd);
         },
     },
