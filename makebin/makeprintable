@@ -9,21 +9,32 @@ use File::Path qw(mkpath);
 use File::Basename qw(dirname);
 
 my @templates = (
-    { base => "dot-grid--a4",                     ruling => "dot-grid",       size => "a4"                                                            },
-    { base => "dot-grid--letter",                 ruling => "dot-grid",       size => "letter"                                                        },
-    { base => "line-dot-graph--a4",               ruling => "line-dot-graph", size => "a4"                                                            },
-    { base => "line-dot-graph--letter",           ruling => "line-dot-graph", size => "letter"                                                        },
-    { base => "line-dot-grid--a4",                ruling => "line-dot-grid",  size => "a4"                                                            },
-    { base => "line-dot-grid--letter",            ruling => "line-dot-grid",  size => "letter"                                                        },
-    { base => "line-dot-grid--thinner--a4",       ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(thinner-dots thinner-lines)]     },
-    { base => "line-dot-grid--thinner--letter",   ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(thinner-dots thinner-lines)]     },
-    { base => "line-dot-grid--x-thinner--a4",     ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(x-thinner-dots x-thinner-lines)] },
-    { base => "line-dot-grid--x-thinner--letter", ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(x-thinner-dots x-thinner-lines)] },
-    { base => "seyes--a4",                        ruling => "seyes",          size => "a4"                                                            },
-    { base => "seyes--letter",                    ruling => "seyes",          size => "letter"                                                        },
-    { base => "seyes--thinner-grid--a4",          ruling => "seyes",          size => "a4",         modifiers => [qw(thinner-grid)]                   },
-    { base => "seyes--thinner-grid--letter",      ruling => "seyes",          size => "letter",     modifiers => [qw(thinner-grid)]                   },
-    { base => "seyes--thinner-grid--halfletter",  ruling => "seyes",          size => "halfletter", modifiers => [qw(thinner-grid smaller)]           },
+    {   base => "dot-grid--a4",                     ruling => "dot-grid",       size => "a4"                                                            },
+    {   base => "dot-grid--letter",                 ruling => "dot-grid",       size => "letter"                                                        },
+    {   base => "line-dot-graph--a4",               ruling => "line-dot-graph", size => "a4"                                                            },
+    {   base => "line-dot-graph--letter",           ruling => "line-dot-graph", size => "letter"                                                        },
+    {   base => "line-dot-grid--a4",                ruling => "line-dot-grid",  size => "a4"                                                            },
+    {   base => "line-dot-grid--letter",            ruling => "line-dot-grid",  size => "letter"                                                        },
+    {   base => "line-dot-grid--thinner--a4",       ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(thinner-dots thinner-lines)]     },
+    {   base => "line-dot-grid--thinner--letter",   ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(thinner-dots thinner-lines)]     },
+    {   base => "line-dot-grid--x-thinner--a4",     ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(x-thinner-dots x-thinner-lines)] },
+    {   base => "line-dot-grid--x-thinner--letter", ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(x-thinner-dots x-thinner-lines)] },
+    {   base => "seyes--a4",                        ruling => "seyes",          size => "a4"                                                            },
+    {   base => "seyes--letter",                    ruling => "seyes",          size => "letter"                                                        },
+    {   base => "seyes--thinner-grid--a4",          ruling => "seyes",          size => "a4",         modifiers => [qw(thinner-grid)]                   },
+    {   base => "seyes--thinner-grid--letter",      ruling => "seyes",          size => "letter",     modifiers => [qw(thinner-grid)]                   },
+    {   base => "seyes--thinner-grid--a5",          ruling => "seyes",          size => "a5",         modifiers => [qw(thinner-grid smaller)],
+        "2up" => {
+            size => "a4",
+            base => "seyes--thinner-grid--a5-a4"
+        }
+    },
+    {   base => "seyes--thinner-grid--halfletter",  ruling => "seyes",          size => "halfletter", modifiers => [qw(thinner-grid smaller)],
+        "2up" => {
+            size => "letter",
+            base => "seyes--thinner-grid--halfletter-letter"
+        }
+    },
 );
 
 sub path {
@@ -91,8 +102,6 @@ my %build = (
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
-            @$dependencies = map { path($_) } @$dependencies if $dependencies;
-
             my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-pdf {FILENAME} %s",
                               shell_quote($dependencies->[0]));
 
@@ -105,8 +114,6 @@ my %build = (
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
-            @$dependencies = map { path($_) } @$dependencies if $dependencies;
-
             my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-ps {FILENAME} %s",
                               shell_quote($dependencies->[0]));
 
@@ -118,8 +125,6 @@ my %build = (
         code => sub {
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
-
-            @$dependencies = map { path($_) } @$dependencies if $dependencies;
 
             my $cmd;
             if (scalar @$dependencies == 1) {
@@ -141,14 +146,25 @@ my %build = (
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
-            @$dependencies = map { path($_) } @$dependencies if $dependencies;
-
             my $cmd;
             if (scalar @$dependencies == 1) {
                 $cmd = sprintf("psselect 1,1 %s >{FILENAME}", shell_quote($dependencies->[0]));
             } else {
                 $cmd = sprintf("psjoin %s %s >{FILENAME}", shell_quote($dependencies->[0]), shell_quote($dependencies->[1]));
             }
+
+            cmd($target, $cmd);
+        },
+    },
+    two_up_pdf => {
+        dependencies => [qw(makebin/makeprintable)],
+        code => sub {
+            my %args = @_;
+            my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
+
+            my $cmd;
+
+            # ...
 
             cmd($target, $cmd);
         },
@@ -209,10 +225,12 @@ sub build_file {
         }
     }
 
+    my @path_dependencies = map { path($_) } @dependencies;
+
     if ($make) {
         my $code = $build->{code};
         $code->(target => $target,
-                dependencies => $file->{dependencies},
+                dependencies => \@path_dependencies,
                 template => $template,
                 file => $file,
                 build => $build);
@@ -258,6 +276,17 @@ foreach my $template (@templates) {
 
     push(@{$template->{files}}, { type => "pdf", subtype => "2-page", filename => $pdf_2_page, dependencies => $pdf_2_page_dependencies, build => $build{two_page_pdf} });
     push(@{$template->{files}}, { type => "ps",  subtype => "2-page", filename => $ps_2_page,  dependencies => $ps_2_page_dependencies,  build => $build{two_page_ps}  });
+
+    if (0) {
+        my $two_up_size = eval { $template->{"2up"}->{size} };
+        my $two_up_base = eval { $template->{"2up"}->{base} } // $base . "-" . $two_up_size;
+        if ($two_up_size) {
+            my $pdf_2_up = "templates/2-up-pdf/${two_up_base}.2up.pdf";
+            my $ps_2_up  = "templates/2-up-ps/${two_up_base}.2up.pdf";
+            push(@{$template->{files}}, { type => "pdf", subtype => "2-up", filename => $pdf_2_up, dependencies => [$pdf_2_page], build => $build{"two_up_pdf"} });
+            push(@{$template->{files}}, { type => "ps",  subtype => "2-up", filename => $ps_2_up,  dependencies => [$ps_2_page],  build => $build{"two_up_pdf"} });
+        }
+    }
 }
 
 my @build;
