@@ -20,8 +20,18 @@ my @templates = (
     { base => "seyes--letter",                    ruling => "seyes",          size => "letter"                                                        },
     { base => "seyes--thinner-grid--a4",          ruling => "seyes",          size => "a4",         modifiers => [qw(thinner-grid)]                   },
     { base => "seyes--thinner-grid--letter",      ruling => "seyes",          size => "letter",     modifiers => [qw(thinner-grid)]                   },
-    { base => "seyes--thinner-grid--halfletter",  ruling => "seyes",          size => "halfletter", modifiers => [qw(thinner-grid)]                   },
+    { base => "seyes--thinner-grid--halfletter",  ruling => "seyes",          size => "halfletter", modifiers => [qw(thinner-grid smaller)]           },
 );
+
+use Cwd qw(realpath);
+
+sub path {
+    my ($filename) = @_;
+    if ($^O =~ m{^darwin}) {
+        return realpath($filename);
+    }
+    return $filename;
+}
 
 sub cmd {
     my ($filename, $cmd) = @_;
@@ -31,6 +41,9 @@ sub cmd {
         my $ext = $1;
         $temp = "$filename.tmp.$ext";
     }
+
+    $filename = path($filename);
+    $temp     = path($temp);
 
     $cmd =~ s{\{FILENAME\}}{shell_quote($temp)}ge;
 
@@ -52,13 +65,13 @@ my %build = (
         dependencies => [qw(bin/printable makebin/makeprintable)],
         code => sub {
             my %args = @_;
-            my ($target, $dependencies, $template, $build) = @args{qw(target dependencies template build)};
+            my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
             my $cmd = sprintf("bin/printable -M %s", shell_quote($template->{size}));
-            if (exists $template->{modifiers}) {
-                foreach my $modifier (@{$template->{modifiers}}) {
-                    $cmd .= sprintf(" --modifier=%s", shell_quote($modifier));
-                }
+            my @modifiers = (eval { @{$template->{modifiers}} },
+                             eval { @{$file->{modifiers}} });
+            foreach my $modifier (@modifiers) {
+                $cmd .= sprintf(" --modifier=%s", shell_quote($modifier));
             }
             $cmd .= sprintf(" %s >{FILENAME}", shell_quote($template->{ruling}));
 
@@ -69,7 +82,9 @@ my %build = (
         dependencies => [qw(makebin/makeprintable)],
         code => sub {
             my %args = @_;
-            my ($target, $dependencies, $template, $build) = @args{qw(target dependencies template build)};
+            my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
+
+            @$dependencies = map { path($_) } @$dependencies if $dependencies;
 
             my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-pdf {FILENAME} %s",
                               shell_quote($dependencies->[0]));
@@ -80,7 +95,9 @@ my %build = (
         dependencies => [qw(makebin/makeprintable)],
         code => sub {
             my %args = @_;
-            my ($target, $dependencies, $template, $build) = @args{qw(target dependencies template build)};
+            my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
+
+            @$dependencies = map { path($_) } @$dependencies if $dependencies;
 
             my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-ps {FILENAME} %s",
                               shell_quote($dependencies->[0]));
@@ -91,11 +108,21 @@ my %build = (
         dependencies => [qw(makebin/makeprintable)],
         code => sub {
             my %args = @_;
-            my ($target, $dependencies, $template, $build) = @args{qw(target dependencies template build)};
+            my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
-            my $cmd = sprintf("pdfunite %s %s {FILENAME}",
-                              shell_quote($dependencies->[0]),
-                              shell_quote($dependencies->[0]));
+            @$dependencies = map { path($_) } @$dependencies if $dependencies;
+
+            my $cmd;
+            if (scalar @$dependencies == 1) {
+                $cmd = sprintf("pdfunite %s %s {FILENAME}",
+                               shell_quote($dependencies->[0]),
+                               shell_quote($dependencies->[0]));
+            } else {
+                $cmd = sprintf("pdfunite %s %s {FILENAME}",
+                               shell_quote($dependencies->[0]),
+                               shell_quote($dependencies->[1]));
+            }
+
             cmd($target, $cmd);
         },
     },
@@ -103,10 +130,17 @@ my %build = (
         dependencies => [qw(makebin/makeprintable)],
         code => sub {
             my %args = @_;
-            my ($target, $dependencies, $template, $build) = @args{qw(target dependencies template build)};
+            my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
-            my $cmd = sprintf("psselect 1,1 %s >{FILENAME}",
-                              shell_quote($dependencies->[0]));
+            @$dependencies = map { path($_) } @$dependencies if $dependencies;
+
+            my $cmd;
+            if (scalar @$dependencies == 1) {
+                $cmd = sprintf("psselect 1,1 %s >{FILENAME}", shell_quote($dependencies->[0]));
+            } else {
+                $cmd = sprintf("psjoin %s %s >{FILENAME}", shell_quote($dependencies->[0]), shell_quote($dependencies->[1]));
+            }
+
             cmd($target, $cmd);
         },
     },
@@ -133,32 +167,45 @@ sub build_file {
     my $template     = $args{template};
     my $file         = $args{file};
     my $target       = $file->{filename};
-    my @dependencies = exists $file->{dependencies} ? @{$file->{dependencies}} : ();
+    my @dependencies = eval { @{$file->{dependencies}} };
     my $build        = $file->{build};
 
-    if (exists $build->{dependencies}) {
-        push(@dependencies, @{$build->{dependencies}});
-    }
+    my @build_dependencies = eval { @{$build->{dependencies}} };
+
+    warn("$target requires:\n");
+    warn("    dependencies       @dependencies\n") if scalar @dependencies;
+    warn("    build dependencies @build_dependencies\n") if scalar @build_dependencies;
+
+    my $target_exists = -e $target;
+    my $target_age    = -M _;
 
     my $make = 0;
-    if (!-e $target) {
+    if (!$target_exists) {
         $make = 1;
-    } else {
-        foreach my $dependency (@dependencies) {
-            if (!-e $dependency) {
-                build($dependency);
-                $make = 1;
-            } elsif (-M $dependency < -M $target) {
+    }
+    foreach my $dependency (@dependencies) {
+        if (!-e $dependency) {
+            build($dependency);
+            $make = 1;
+        } else {
+            build($dependency);
+            if ($target_exists && -M $dependency < $target_age) {
                 $make = 1;
             }
+        }
+    }
+    foreach my $dependency (@build_dependencies) {
+        if ($target_exists && -M $dependency < $target_age) {
+            $make = 1;
         }
     }
 
     if ($make) {
         my $code = $build->{code};
         $code->(target => $target,
-                dependencies => \@dependencies,
+                dependencies => $file->{dependencies},
                 template => $template,
+                file => $file,
                 build => $build);
     }
 }
@@ -192,7 +239,7 @@ foreach my $template (@templates) {
     push(@{$template->{files}}, { type => "ps",  filename => $ps,  dependencies => [$svg], build => $build{svg_ps}  });
 
     if ($template->{has_even_pages}) {
-        push(@{$template->{files}}, { type => "svg", subtype => "even-page", filename => $svg_even_page,                                   build => $build{svg}     });
+        push(@{$template->{files}}, { type => "svg", subtype => "even-page", filename => $svg_even_page,                                   build => $build{svg},    modifiers => [qw(even-page)] });
         push(@{$template->{files}}, { type => "pdf", subtype => "even-page", filename => $pdf_even_page, dependencies => [$svg_even_page], build => $build{svg_pdf} });
         push(@{$template->{files}}, { type => "ps",  subtype => "even-page", filename => $ps_even_page,  dependencies => [$svg_even_page], build => $build{svg_ps}  });
 
@@ -203,8 +250,6 @@ foreach my $template (@templates) {
     push(@{$template->{files}}, { type => "pdf", subtype => "2-page", filename => $pdf_2_page, dependencies => $pdf_2_page_dependencies, build => $build{two_page_pdf} });
     push(@{$template->{files}}, { type => "ps",  subtype => "2-page", filename => $ps_2_page,  dependencies => $ps_2_page_dependencies,  build => $build{two_page_ps}  });
 }
-
-my @templates_to_build = @templates;
 
 my @build;
 foreach my $template (@templates) {
@@ -229,25 +274,35 @@ foreach my $arg (@ARGV) {
     }
 }
 
-warn $operation;
-
-if (!scalar @build) {
-    warn("Nothing to build.\n");
-    exit(1);
-}
-
-warn("Will build:\n");
-foreach my $build (@build) {
-    my $filename = $build->{file}->{filename};
-    warn("- $filename\n");
-}
-
 if ($operation eq "LIST") {
+    foreach my $build (@build) {
+        my $filename = $build->{file}->{filename};
+        say $filename;
+    }
     exit 0;
-}
-
-foreach my $build (@build) {
-    my $filename = $build->{file}->{filename};
-    warn("Building $filename...\n");
-    build($filename);
+} elsif ($operation eq "MAKE") {
+    if (!scalar @build) {
+        warn("Nothing to build.\n");
+        exit(1);
+    }
+    warn("Will build:\n");
+    foreach my $build (@build) {
+        my $filename = $build->{file}->{filename};
+        warn("- $filename\n");
+    }
+    foreach my $build (@build) {
+        my $filename = $build->{file}->{filename};
+        warn("Building $filename...\n");
+        build($filename);
+    }
+} elsif ($operation eq "CLEAN") {
+    foreach my $build (@build) {
+        my $filename = $build->{file}->{filename};
+        if (-e $filename) {
+            warn(sprintf("+ rm %s\n", shell_quote($filename)));
+            if (!unlink($filename)) {
+                warn("Cannot unlink $filename: $!\n");
+            }
+        }
+    }
 }
