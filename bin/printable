@@ -373,9 +373,22 @@ package My::Printable {
                                     metric => "9mm",
                                 }
                             },
+                            left => {
+                                DEFAULT => undef,
+                                "even-page" => {
+                                    x => {
+                                        DEFAULT => "1unit",
+                                        smaller => "2unit",
+                                    },
+                                    nearest_grid => "vertical_lines",
+                                },
+                            },
                             right => {
-                                x => "1unit",
-                                nearest_grid => "vertical_lines",
+                                DEFAULT => {
+                                    x => "1unit",
+                                    nearest_grid => "vertical_lines",
+                                },
+                                "even-page" => undef,
                             },
                             width => "3unit",
                             nearest_grid => {
