@@ -14,21 +14,21 @@ PATHNAME = $(shell \
 default: svg pdf ps
 
 RULINGS = \
-	seyes--letter \
-	seyes--thinner-grid--letter \
-	seyes--thinner-grid--halfletter \
-	line-dot-graph--letter \
-	line-dot-grid--letter \
-	line-dot-grid--thinner--letter \
-	line-dot-grid--x-thinner--letter \
-	dot-grid--letter \
-	seyes--a4 \
-	seyes--thinner-grid--a4 \
-	line-dot-graph--a4 \
-	line-dot-grid--a4 \
-	line-dot-grid--thinner--a4 \
-	line-dot-grid--x-thinner--a4 \
 	dot-grid--a4 \
+	dot-grid--letter \
+	line-dot-graph--a4 \
+	line-dot-graph--letter \
+	line-dot-grid--a4 \
+	line-dot-grid--letter \
+	line-dot-grid--thinner--a4 \
+	line-dot-grid--thinner--letter \
+	line-dot-grid--x-thinner--a4 \
+	line-dot-grid--x-thinner--letter \
+	seyes--a4 \
+	seyes--letter \
+	seyes--thinner-grid--a4 \
+	seyes--thinner-grid--letter \
+	seyes--thinner-grid--halfletter
 
 PS_FILES	= $(patsubst %,templates/ps/%.ps,$(RULINGS))
 PS_2PAGE_FILES	= $(patsubst %,templates/2-page-ps/%.2page.ps,$(RULINGS))
