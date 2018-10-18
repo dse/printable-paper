@@ -5,8 +5,8 @@ generates them.
 
 SVG, PDF, and PostScript formats are included.
 
-Two-page PDFs of all paper rulings are provided, for convenient
-double-sided printing.
+Two-page PDF and PostScript files of all paper rulings are provided,
+for convenient double-sided printing.
 
 ## Rulings Included
 
@@ -20,7 +20,8 @@ double-sided printing.
 
 -   A 5/16" or 8mm hybrid line-dot graph based on French ruling.
 
--   A 1/4" or 6mm line dot grid.
+-   A 1/4" or 6mm line dot grid.  In regular, thinner, and
+    extra-thinner variants.
 
 ## Other Sources for Printable Paper
 
