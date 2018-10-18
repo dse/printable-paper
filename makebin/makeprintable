@@ -222,9 +222,9 @@ foreach my $template (@templates) {
     my $pdf = "templates/pdf/${base}.pdf";
     my $ps  = "templates/ps/${base}.ps";
 
-    my $svg_even_page = "templates/svg/${base}.evenpage.svg";
-    my $pdf_even_page = "templates/pdf/${base}.evenpage.pdf";
-    my $ps_even_page  = "templates/ps/${base}.evenpage.ps";
+    my $svg_even_page = "templates/even-page-svg/${base}.evenpage.svg";
+    my $pdf_even_page = "templates/even-page-pdf/${base}.evenpage.pdf";
+    my $ps_even_page  = "templates/even-page-ps/${base}.evenpage.ps";
 
     my $pdf_2_page = "templates/2-page-pdf/${base}.2page.pdf";
     my $ps_2_page  = "templates/2-page-ps/${base}.2page.ps";
