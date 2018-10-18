@@ -6,7 +6,16 @@ generates them.
 SVG, PDF, and PostScript formats are included.
 
 Two-page PDF and PostScript files of all paper rulings are provided,
-for convenient double-sided printing.
+for convenient double-sided printing, flip on long edge.
+
+Two-page, two-up PDF and PostScript files, printed as what are called
+"signatures", apparently, are also provided, for convenient
+double-sided printing, flip on long edge:
+
+    Output paper size        Cut in half cross-wise for:
+    ---------------------    ---------------------------
+    Letter (8.5in × 11in)    Half-Letter (5.5in × 8.5in)
+    A4 (210mm × 297mm)       A5 (149mm × 210mm)
 
 ## Rulings Included
 
