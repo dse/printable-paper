@@ -1,0 +1,253 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use v5.10.0;
+
+use String::ShellQuote;
+
+my @templates = (
+    { base => "dot-grid--a4",                     ruling => "dot-grid",       size => "a4"                                                            },
+    { base => "dot-grid--letter",                 ruling => "dot-grid",       size => "letter"                                                        },
+    { base => "line-dot-graph--a4",               ruling => "line-dot-graph", size => "a4"                                                            },
+    { base => "line-dot-graph--letter",           ruling => "line-dot-graph", size => "letter"                                                        },
+    { base => "line-dot-grid--a4",                ruling => "line-dot-grid",  size => "a4"                                                            },
+    { base => "line-dot-grid--letter",            ruling => "line-dot-grid",  size => "letter"                                                        },
+    { base => "line-dot-grid--thinner--a4",       ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(thinner-dots thinner-lines)]     },
+    { base => "line-dot-grid--thinner--letter",   ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(thinner-dots thinner-lines)]     },
+    { base => "line-dot-grid--x-thinner--a4",     ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(x-thinner-dots x-thinner-lines)] },
+    { base => "line-dot-grid--x-thinner--letter", ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(x-thinner-dots x-thinner-lines)] },
+    { base => "seyes--a4",                        ruling => "seyes",          size => "a4"                                                            },
+    { base => "seyes--letter",                    ruling => "seyes",          size => "letter"                                                        },
+    { base => "seyes--thinner-grid--a4",          ruling => "seyes",          size => "a4",         modifiers => [qw(thinner-grid)]                   },
+    { base => "seyes--thinner-grid--letter",      ruling => "seyes",          size => "letter",     modifiers => [qw(thinner-grid)]                   },
+    { base => "seyes--thinner-grid--halfletter",  ruling => "seyes",          size => "halfletter", modifiers => [qw(thinner-grid)]                   },
+);
+
+sub cmd {
+    my ($filename, $cmd) = @_;
+
+    my $temp = "$filename.tmp";
+    if ($filename =~ m{\.([^\.\\\/]+)$}) {
+        my $ext = $1;
+        $temp = "$filename.tmp.$ext";
+    }
+
+    $cmd =~ s{\{FILENAME\}}{shell_quote($temp)}ge;
+
+    warn("+ $cmd\n");
+    if (system($cmd)) {
+        die("Command failed -- Exiting.");
+    }
+    if (!-e $temp) {
+        die("$temp does not exist -- Exiting.\n");
+    }
+    warn(sprintf("+ mv %s %s\n", shell_quote($temp), shell_quote($filename)));
+    if (!rename($temp, $filename)) {
+        die("Could not rename $temp to $filename: $! -- Exiting.\n");
+    }
+}
+
+my %build = (
+    svg => {
+        dependencies => [qw(bin/printable makebin/makeprintable)],
+        code => sub {
+            my %args = @_;
+            my ($target, $dependencies, $template, $build) = @args{qw(target dependencies template build)};
+
+            my $cmd = sprintf("bin/printable -M %s", shell_quote($template->{size}));
+            if (exists $template->{modifiers}) {
+                foreach my $modifier (@{$template->{modifiers}}) {
+                    $cmd .= sprintf(" --modifier=%s", shell_quote($modifier));
+                }
+            }
+            $cmd .= sprintf(" %s >{FILENAME}", shell_quote($template->{ruling}));
+
+            cmd($target, $cmd);
+        },
+    },
+    svg_pdf => {
+        dependencies => [qw(makebin/makeprintable)],
+        code => sub {
+            my %args = @_;
+            my ($target, $dependencies, $template, $build) = @args{qw(target dependencies template build)};
+
+            my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-pdf {FILENAME} %s",
+                              shell_quote($dependencies->[0]));
+            cmd($target, $cmd);
+        },
+    },
+    svg_ps => {
+        dependencies => [qw(makebin/makeprintable)],
+        code => sub {
+            my %args = @_;
+            my ($target, $dependencies, $template, $build) = @args{qw(target dependencies template build)};
+
+            my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-ps {FILENAME} %s",
+                              shell_quote($dependencies->[0]));
+            cmd($target, $cmd);
+        },
+    },
+    two_page_pdf => {
+        dependencies => [qw(makebin/makeprintable)],
+        code => sub {
+            my %args = @_;
+            my ($target, $dependencies, $template, $build) = @args{qw(target dependencies template build)};
+
+            my $cmd = sprintf("pdfunite %s %s {FILENAME}",
+                              shell_quote($dependencies->[0]),
+                              shell_quote($dependencies->[0]));
+            cmd($target, $cmd);
+        },
+    },
+    two_page_ps => {
+        dependencies => [qw(makebin/makeprintable)],
+        code => sub {
+            my %args = @_;
+            my ($target, $dependencies, $template, $build) = @args{qw(target dependencies template build)};
+
+            my $cmd = sprintf("psselect 1,1 %s >{FILENAME}",
+                              shell_quote($dependencies->[0]));
+            cmd($target, $cmd);
+        },
+    },
+);
+
+sub build {
+    my ($filename) = @_;
+    foreach my $template (@templates) {
+        foreach my $file (@{$template->{files}}) {
+            if ($file->{filename} eq $filename) {
+                build_file(
+                    template => $template,
+                    file     => $file
+                );
+                return;
+            }
+        }
+    }
+    die("Don't know how to build $filename.\n");
+}
+
+sub build_file {
+    my %args = @_;
+    my $template     = $args{template};
+    my $file         = $args{file};
+    my $target       = $file->{filename};
+    my @dependencies = exists $file->{dependencies} ? @{$file->{dependencies}} : ();
+    my $build        = $file->{build};
+
+    if (exists $build->{dependencies}) {
+        push(@dependencies, @{$build->{dependencies}});
+    }
+
+    my $make = 0;
+    if (!-e $target) {
+        $make = 1;
+    } else {
+        foreach my $dependency (@dependencies) {
+            if (!-e $dependency) {
+                build($dependency);
+                $make = 1;
+            } elsif (-M $dependency < -M $target) {
+                $make = 1;
+            }
+        }
+    }
+
+    if ($make) {
+        my $code = $build->{code};
+        $code->(target => $target,
+                dependencies => \@dependencies,
+                template => $template,
+                build => $build);
+    }
+}
+
+foreach my $template (@templates) {
+    my $ruling = $template->{ruling};
+    my $base = $template->{base};
+
+    if ($ruling eq "seyes") {
+        $template->{has_even_pages} = 1;
+    }
+
+    my $svg = "templates/svg/${base}.svg";
+    my $pdf = "templates/pdf/${base}.pdf";
+    my $ps  = "templates/ps/${base}.ps";
+
+    my $svg_even_page = "templates/svg/${base}.evenpage.svg";
+    my $pdf_even_page = "templates/pdf/${base}.evenpage.pdf";
+    my $ps_even_page  = "templates/ps/${base}.evenpage.ps";
+
+    my $pdf_2_page = "templates/2-page-pdf/${base}.2page.pdf";
+    my $ps_2_page  = "templates/2-page-ps/${base}.2page.ps";
+
+    my $pdf_2_page_dependencies = [$pdf];
+    my $ps_2_page_dependencies  = [$ps];
+
+    $template->{files} = [];
+
+    push(@{$template->{files}}, { type => "svg", filename => $svg,                         build => $build{svg}     });
+    push(@{$template->{files}}, { type => "pdf", filename => $pdf, dependencies => [$svg], build => $build{svg_pdf} });
+    push(@{$template->{files}}, { type => "ps",  filename => $ps,  dependencies => [$svg], build => $build{svg_ps}  });
+
+    if ($template->{has_even_pages}) {
+        push(@{$template->{files}}, { type => "svg", subtype => "even-page", filename => $svg_even_page,                                   build => $build{svg}     });
+        push(@{$template->{files}}, { type => "pdf", subtype => "even-page", filename => $pdf_even_page, dependencies => [$svg_even_page], build => $build{svg_pdf} });
+        push(@{$template->{files}}, { type => "ps",  subtype => "even-page", filename => $ps_even_page,  dependencies => [$svg_even_page], build => $build{svg_ps}  });
+
+        push(@$pdf_2_page_dependencies, $pdf_even_page);
+        push(@$ps_2_page_dependencies,  $ps_even_page);
+    }
+
+    push(@{$template->{files}}, { type => "pdf", subtype => "2-page", filename => $pdf_2_page, dependencies => $pdf_2_page_dependencies, build => $build{two_page_pdf} });
+    push(@{$template->{files}}, { type => "ps",  subtype => "2-page", filename => $ps_2_page,  dependencies => $ps_2_page_dependencies,  build => $build{two_page_ps}  });
+}
+
+my @templates_to_build = @templates;
+
+my @build;
+foreach my $template (@templates) {
+    foreach my $file (@{$template->{files}}) {
+        push(@build, { template => $template, file => $file });
+    }
+}
+
+my $operation = "MAKE";
+
+foreach my $arg (@ARGV) {
+    if ($arg eq "LIST" || $arg eq "CLEAN" || $arg eq "MAKE") {
+        $operation = $arg;
+    } else {
+        @build = grep {
+            (($_->{template}->{ruling} eq $arg) ||
+                 ($_->{template}->{size} eq $arg) ||
+                 ($_->{file}->{type} eq $arg) ||
+                 ($_->{file}->{filename} eq $arg) ||
+                 (($_->{file}->{subtype} // "") eq $arg))
+        } @build;
+    }
+}
+
+warn $operation;
+
+if (!scalar @build) {
+    warn("Nothing to build.\n");
+    exit(1);
+}
+
+warn("Will build:\n");
+foreach my $build (@build) {
+    my $filename = $build->{file}->{filename};
+    warn("- $filename\n");
+}
+
+if ($operation eq "LIST") {
+    exit 0;
+}
+
+foreach my $build (@build) {
+    my $filename = $build->{file}->{filename};
+    warn("Building $filename...\n");
+    build($filename);
+}
