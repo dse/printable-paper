@@ -164,8 +164,27 @@ my %build = (
 
             my $cmd;
 
-            # ...
+            my $papersizename = $template->{size};
+            my ($width_pt, $height_pt) = split(/\s+/, `paperconf -s $papersizename`);
+            my $papersize = sprintf('{%.3fbp,%.3fbp}', $width_pt, $height_pt);
 
+            my $p = $dependencies->[0];
+
+            $cmd = sprintf("pdfnup --vanilla --no-landscape --outfile {FILENAME} --papersize %s --nup 2x1 --twoside %s 1,1,2,2",
+                           shell_quote($papersize),
+                           shell_quote($p),
+                           shell_quote($p));
+
+            cmd($target, $cmd);
+        },
+    },
+    two_up_ps => {
+        dependencies => [qw(makebin/makeprintable)],
+        code => sub {
+            my %args = @_;
+            my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
+            my $p = $dependencies->[0];
+            my $cmd = sprintf("pdftops %s {FILENAME}", shell_quote($p));
             cmd($target, $cmd);
         },
     },
@@ -277,15 +296,13 @@ foreach my $template (@templates) {
     push(@{$template->{files}}, { type => "pdf", subtype => "2-page", filename => $pdf_2_page, dependencies => $pdf_2_page_dependencies, build => $build{two_page_pdf} });
     push(@{$template->{files}}, { type => "ps",  subtype => "2-page", filename => $ps_2_page,  dependencies => $ps_2_page_dependencies,  build => $build{two_page_ps}  });
 
-    if (0) {
-        my $two_up_size = eval { $template->{"2up"}->{size} };
+    my $two_up_size = eval { $template->{"2up"}->{size} };
+    if ($two_up_size) {
         my $two_up_base = eval { $template->{"2up"}->{base} } // $base . "-" . $two_up_size;
-        if ($two_up_size) {
-            my $pdf_2_up = "templates/2-up-pdf/${two_up_base}.2up.pdf";
-            my $ps_2_up  = "templates/2-up-ps/${two_up_base}.2up.pdf";
-            push(@{$template->{files}}, { type => "pdf", subtype => "2-up", filename => $pdf_2_up, dependencies => [$pdf_2_page], build => $build{"two_up_pdf"} });
-            push(@{$template->{files}}, { type => "ps",  subtype => "2-up", filename => $ps_2_up,  dependencies => [$ps_2_page],  build => $build{"two_up_pdf"} });
-        }
+        my $pdf_2_up = "templates/2-up-pdf/${two_up_base}.2up.pdf";
+        my $ps_2_up  = "templates/2-up-ps/${two_up_base}.2up.ps";
+        push(@{$template->{files}}, { type => "pdf", subtype => "2-up", filename => $pdf_2_up, dependencies => [$pdf_2_page], build => $build{"two_up_pdf"} });
+        push(@{$template->{files}}, { type => "ps",  subtype => "2-up", filename => $ps_2_up,  dependencies => [$pdf_2_up],   build => $build{"two_up_ps"} });
     }
 }
 
