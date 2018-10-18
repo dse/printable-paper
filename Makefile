@@ -16,6 +16,7 @@ default: svg pdf ps
 RULINGS = \
 	seyes--letter \
 	seyes--thinner-grid--letter \
+	seyes--thinner-grid--halfletter \
 	line-dot-graph--letter \
 	line-dot-grid--letter \
 	line-dot-grid--thinner--letter \
@@ -35,16 +36,22 @@ PDF_FILES	= $(patsubst %,templates/pdf/%.pdf,$(RULINGS))
 PDF_2PAGE_FILES = $(patsubst %,templates/2-page-pdf/%.2page.pdf,$(RULINGS))
 SVG_FILES	= $(patsubst %,templates/svg/%.svg,$(RULINGS))
 
+TARGETS = $(PS_FILES) $(PS_2PAGE_FILES) $(PDF_FILES) $(PDF_2PAGE_FILES) $(SVG_FILES)
+
 ps:  $(PS_FILES)  ${PS_2PAGE_FILES}
 pdf: $(PDF_FILES) $(PDF_2PAGE_FILES)
 svg: $(SVG_FILES)
 
 clean:
-	rm $(PS_FILES) $(PDF_FILES) $(PDF_2PAGE_FILES) $(SVG_FILES) || true
+	rm $(TARGETS) || true
 	find . -type f \( -name '*.tmp' -o -name '*.tmp.*' \) -exec rm {} + || true
 
 # more specific rules first, for non-gnu make
 # thinner, lighter, fainter
+templates/svg/%--thinner-grid--halfletter.svg: bin/printable Makefile
+	mkdir -p "$$(dirname "$@")"
+	bin/printable -M halfletter --modifier=thinner-grid --modifier=smaller $* >"$@.tmp.svg"
+	mv "$@.tmp.svg" "$@"
 templates/svg/%--thinner-grid--letter.svg: bin/printable Makefile
 	mkdir -p "$$(dirname "$@")"
 	bin/printable -M letter --modifier=thinner-grid $* >"$@.tmp.svg"
