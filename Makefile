@@ -13,20 +13,48 @@ PATHNAME = $(shell \
 
 default:
 	makebin/makeprintable
+
+# file formats
 ps:
 	makebin/makeprintable ps
 pdf:
 	makebin/makeprintable pdf
 svg:
 	makebin/makeprintable svg
+
+# specialties
+2-up:
+	makebin/makeprintable 2-up
+
+# paper sizes
+a4:
+	makebin/makeprintable a4
+a5:
+	makebin/makeprintable a5
+letter:
+	makebin/makeprintable letter
+halfletter:
+	makebin/makeprintable half-letter
+
+# rulings
+dot-grid:
+	makebin/makeprintable dot-grid
+line-dot-grid:
+	makebin/makeprintable line-dot-grid
+line-dot-graph:
+	makebin/makeprintable line-dot-graph
+seyes:
+	makebin/makeprintable seyes
+
+# actions
 clean:
 	makebin/makeprintable CLEAN
 list:
 	makebin/makeprintable LIST
-%.pdf:
+
+%.pdf: makebin/makeprintable bin/printable Makefile
 	makebin/makeprintable "$@"
-%.svg:
+%.svg: makebin/makeprintable bin/printable Makefile
 	makebin/makeprintable "$@"
-%.ps:
+%.ps: makebin/makeprintable bin/printable Makefile
 	makebin/makeprintable "$@"
-.PHONY: %.pdf %.svg %.ps
