@@ -48,10 +48,15 @@ sub path {
 sub cmd {
     my ($filename, $cmd) = @_;
 
-    my $temp = "$filename.tmp";
-    if ($filename =~ m{\.([^\.\\\/]+)$}) {
-        my $ext = $1;
-        $temp = "$filename.tmp.$ext";
+    my $use_temp_file = 0;
+
+    my $temp;
+    if ($use_temp_file) {
+        $temp = "$filename.tmp";
+        if ($filename =~ m{\.([^\.\\\/]+)$}) {
+            my $ext = $1;
+            $temp = "$filename.tmp.$ext";
+        }
     }
 
     my $dirname = dirname($filename);
@@ -61,20 +66,31 @@ sub cmd {
     }
 
     $filename = path($filename);
-    $temp     = path($temp);
+    if ($use_temp_file) {
+        $temp = path($temp);
+    }
 
-    $cmd =~ s{\{FILENAME\}}{shell_quote($temp)}ge;
+    if ($use_temp_file) {
+        $cmd =~ s{\{FILENAME\}}{shell_quote($temp)}ge;
+    } else {
+        $cmd =~ s{\{FILENAME\}}{shell_quote($filename)}ge;
+    }
 
     warn("+ $cmd\n");
     if (system($cmd)) {
+        if (!$use_temp_file) {
+            unlink($filename);
+        }
         die("Command failed -- Exiting.");
     }
-    if (!-e $temp) {
-        die("$temp does not exist -- Exiting.\n");
-    }
-    warn(sprintf("+ mv %s %s\n", shell_quote($temp), shell_quote($filename)));
-    if (!rename($temp, $filename)) {
-        die("Could not rename $temp to $filename: $! -- Exiting.\n");
+    if ($use_temp_file) {
+        if (!-e $temp) {
+            die("$temp does not exist -- Exiting.\n");
+        }
+        warn(sprintf("+ mv %s %s\n", shell_quote($temp), shell_quote($filename)));
+        if (!rename($temp, $filename)) {
+            die("Could not rename $temp to $filename: $! -- Exiting.\n");
+        }
     }
 }
 
@@ -164,16 +180,26 @@ my %build = (
 
             my $cmd;
 
-            my $papersizename = $template->{size};
-            my ($width_pt, $height_pt) = split(/\s+/, `paperconf -s $papersizename`);
-            my $papersize = sprintf('{%.3fbp,%.3fbp}', $width_pt, $height_pt);
+            my $input_papersizename = $template->{size};
+            my ($input_width_pt, $input_height_pt) = split(/\s+/, `paperconf -s $input_papersizename`);
+
+            my $output_papersizename = $template->{"2up"}->{size};
+            my ($output_width_pt, $output_height_pt) = split(/\s+/, `paperconf -s $output_papersizename`);
+
+            my $output_papersize = sprintf('{%.3fbp,%.3fbp}', $output_width_pt, $output_height_pt);
 
             my $p = $dependencies->[0];
 
-            $cmd = sprintf("pdfnup --vanilla --no-landscape --outfile {FILENAME} --papersize %s --nup 2x1 --twoside %s 1,1,2,2",
-                           shell_quote($papersize),
-                           shell_quote($p),
+            # Ick.  There's a Python script called pdfnup, and
+            # something that comes with TeXlive called pdfnup.
+
+            $cmd = sprintf("pdfbook --no-tidy --outfile {FILENAME} --papersize %s --nup 2x1 --twoside %s 1,2,1,2",
+                           shell_quote($output_papersize),
                            shell_quote($p));
+
+            # ick.
+            # $cmd = sprintf("pdfxup -b le -im 0 -m 0 -is 0 -fw 0 -o {FILENAME} -d %s",
+            #                shell_quote($p));
 
             cmd($target, $cmd);
         },
