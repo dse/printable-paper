@@ -464,7 +464,10 @@ package My::Printable {
                     },
                 ],
                 vertical_lines => {
-                    x_spacing => "1unit",
+                    x_spacing => {
+                        DEFAULT => "1unit",
+                        "wider-grid" => "1.5units",
+                    },
                     nearest_margins => 1,
                     class => {
                         DEFAULT => {
@@ -520,8 +523,8 @@ package My::Printable {
     }
 
     sub set_width {
-        my ($self, $value, $unit) = @_;
-        my ($pt, $type) = $self->unit->pt($value, $unit);
+        my ($self, $value) = @_;
+        my ($pt, $type) = $self->unit->pt($value);
         $self->unit_type($type);
         $self->width($pt);
         $self->papersize(undef);
@@ -529,8 +532,8 @@ package My::Printable {
     }
 
     sub set_height {
-        my ($self, $value, $unit) = @_;
-        my ($pt, $type) = $self->unit->pt($value, $unit);
+        my ($self, $value) = @_;
+        my ($pt, $type) = $self->unit->pt($value);
         $self->unit_type($type);
         $self->height($pt);
         $self->papersize(undef);
@@ -560,9 +563,12 @@ package My::Printable {
         my $ruling_unit = $self->ruling_get("unit");
         if (defined $ruling_unit) {
             my $unit_pt = $self->unit->pt($ruling_unit);
-            $self->unit->add_unit("unit", $unit_pt);
-            $self->unit_x->add_unit("unit", $unit_pt);
-            $self->unit_y->add_unit("unit", $unit_pt);
+            my %options = (
+                aka => "units",
+            );
+            $self->unit->add_unit("unit", $unit_pt, %options);
+            $self->unit_x->add_unit("unit", $unit_pt, %options);
+            $self->unit_y->add_unit("unit", $unit_pt, %options);
         }
 
         my $width  = $self->width;
@@ -1494,19 +1500,38 @@ package My::Printable::Unit {
     }
 
     sub set_percentage_basis {
-        my ($self, $value, $unit) = @_;
+        my ($self, $value) = @_;
         delete $self->{units}->{'%'};
-        $self->add_unit('%', $value / 100, $unit);
+        my $hash = $self->add_unit('%', $value);
+        $hash->{to_pt} /= 100;
     }
 
     sub add_unit {
-        my ($self, $unit, $value, $value_unit) = @_;
+        my ($self, $unit, $value, %options) = @_;
         die("Unit already defined: $unit\n") if exists $self->{units}->{$unit};
-        my ($pt, $type) = $self->pt($value, $value_unit);
-        $self->{units}->{$unit} = {
+        my ($pt, $type) = $self->pt($value);
+
+        my $aka = delete $options{aka};
+        my @aka;
+        if (defined $aka) {
+            if (ref $aka eq "ARRAY") {
+                @aka = @$aka;
+            } elsif (ref $aka) {
+                # do nothing
+            } else {
+                @aka = ($aka);
+            }
+        }
+        foreach my $aka (@aka) {
+            $self->{units}->{$aka} = $unit;
+        }
+
+        my $hash = {
             to_pt => $pt,
-            type => $type
+            type => $type,
+            %options
         };
+        return $self->{units}->{$unit} = $hash;
     }
 
     sub delete_unit {
@@ -1519,6 +1544,20 @@ package My::Printable::Unit {
         $self = object($self);
 
         my @units = sort keys %{$self->{units}};
+        @units = map {
+            my $unit = $self->{units}->{$_};
+            if (ref $unit eq "HASH" && $unit->{aka}) {
+                if (ref $unit->{aka} eq "ARRAY") {
+                    ($_, @{$unit->{aka}});
+                } elsif (ref $unit->{aka}) {
+                    ($_);
+                } else {
+                    ($_, $unit->{aka});
+                }
+            } else {
+                ($_);
+            }
+        } @units;
         my $units = join('|', map { quotemeta($_) } @units);
         return qr{$units}xi;
     }
@@ -1530,7 +1569,7 @@ package My::Printable::Unit {
     }
 
     sub pt {
-        my ($self, $value, $unit) = @_;
+        my ($self, $value) = @_;
         $self = object($self);
 
         return undef if !defined $value;
@@ -1541,7 +1580,12 @@ package My::Printable::Unit {
         my $rx_number = $self->rx_number;
         my $spec;
 
-        if (defined $unit) {
+        my $unit;
+        if (ref $value eq "ARRAY") {
+            ($value, $unit) = @$value;
+        }
+
+        if (defined $unit && $unit ne "") {
             $spec = "$value $unit";
             if ($value =~ m{\A
                             \s*
@@ -1592,6 +1636,9 @@ package My::Printable::Unit {
         }
 
         my $unit_info = $self->{units}->{$unit};
+        while (defined $unit_info && !ref $unit_info) {
+            $unit_info = $self->{units}->{$unit_info};
+        }
         if (!defined $unit_info) {
             die("Invalid size specification: $spec\n");
         }
@@ -1625,19 +1672,24 @@ package My::Printable::PaperSizes {
     INIT {
         $SIZES = {
             letter => {
-                width  => scalar(My::Printable::Unit->pt(8.5, "in")),
-                height => scalar(My::Printable::Unit->pt(11, "in")),
+                width  => scalar(My::Printable::Unit->pt([8.5, "in"])),
+                height => scalar(My::Printable::Unit->pt([11, "in"])),
                 type   => "imperial",
             },
             a4 => {
-                width  => scalar(My::Printable::Unit->pt(250 / sqrt(sqrt(2)), "mm")),
-                height => scalar(My::Printable::Unit->pt(250 * sqrt(sqrt(2)), "mm")),
+                width  => scalar(My::Printable::Unit->pt([250 / sqrt(sqrt(2)), "mm"])),
+                height => scalar(My::Printable::Unit->pt([250 * sqrt(sqrt(2)), "mm"])),
                 type   => "metric",
             },
             halfletter => {
-                width  => scalar(My::Printable::Unit->pt(5.5, "in")),
-                height => scalar(My::Printable::Unit->pt(8.5, "in")),
+                width  => scalar(My::Printable::Unit->pt([5.5, "in"])),
+                height => scalar(My::Printable::Unit->pt([8.5, "in"])),
                 type   => "imperial",
+            },
+            a5 => {
+                width  => scalar(My::Printable::Unit->pt([125 * sqrt(sqrt(2)), "mm"])),
+                height => scalar(My::Printable::Unit->pt([250 / sqrt(sqrt(2)), "mm"])),
+                type   => "metric",
             },
         };
     }
@@ -1758,8 +1810,8 @@ package My::Printable::PaperSizes {
 
             my $x_type;
             my $y_type;
-            ($width,  $x_type) = My::Printable::Unit->pt($width,  $x_unit);
-            ($height, $y_type) = My::Printable::Unit->pt($height, $y_unit);
+            ($width,  $x_type) = My::Printable::Unit->pt([$width,  $x_unit]);
+            ($height, $y_type) = My::Printable::Unit->pt([$height, $y_unit]);
 
             my $type = $x_type // $y_type;
             if (wantarray) {
