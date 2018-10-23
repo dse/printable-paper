@@ -350,14 +350,19 @@ foreach my $arg (@ARGV) {
     if ($arg eq "LIST" || $arg eq "CLEAN" || $arg eq "MAKE") {
         $operation = $arg;
     } else {
-        @build = grep {
-            (($_->{template}->{ruling} eq $arg) ||
-                 ($_->{template}->{size} eq $arg) ||
-                 ($_->{file}->{type} eq $arg) ||
-                 ($_->{file}->{filename} eq $arg) ||
-                 (($_->{file}->{subtype} // "") eq $arg) ||
-                 grep { $_ eq $arg } @{$_->{template}->{modifiers}});
-        } @build;
+        my $sub = sub {
+            return (($_->{template}->{ruling} eq $arg) ||
+                        ($_->{template}->{size} eq $arg) ||
+                        ($_->{file}->{type} eq $arg) ||
+                        ($_->{file}->{filename} eq $arg) ||
+                        (($_->{file}->{subtype} // "") eq $arg) ||
+                        grep { $_ eq $arg } @{$_->{template}->{modifiers}});
+        };
+        if ($arg =~ s{^[\!\-\^]}{}) {
+            @build = grep { !$sub->() } @build;
+        } else {
+            @build = grep { $sub->() } @build;
+        }
     }
 }
 
