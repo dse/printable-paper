@@ -183,9 +183,12 @@ package My::Printable {
                     y_spacing => "1unit",
                     class => {
                         DEFAULT => {
-                            DEFAULT => "x-thin blue line",
-                            grayscale => "x-thin gray line",
+                            DEFAULT => "xx-thin blue line",
+                            grayscale => "xx-thin gray line",
                         },
+                    },
+                    exclude => {
+                        horizontal_lines => 1,
                     },
                     x_coordinates_nearest_margins => 1,
                     y_coordinates_nearest_margins => 1,
@@ -625,21 +628,27 @@ package My::Printable {
         $canvas->{vertical_lines}              = {};
         $canvas->{margin_lines}                = {};
 
-        # Compute points
+        # Compute points.
         $self->compute_grid;
         $self->compute_horizontal_lines;
         $self->compute_vertical_lines;
         $self->compute_margin_lines;
         $self->compute_additional_horizontal_lines;
+        $self->compute_minor_horizontal_lines;
+        $self->compute_minor_vertical_lines;
+
+        # Secondary processing.
         $self->chop_grid;
         $self->chop_horizontal_lines;
-        $self->compute_minor_horizontal_lines;
+        $self->post_process_minor_horizontal_lines;
+        $self->post_process_minor_vertical_lines;
         $self->chop_vertical_lines;
         $self->relocate_margin_lines;
         $self->filter_grid_points;
 
         # Draw everything.
         $self->draw_grid;
+        $self->draw_minor_vertical_lines;
         $self->draw_minor_horizontal_lines;
         $self->draw_vertical_lines;
         $self->draw_horizontal_lines;
@@ -926,7 +935,46 @@ package My::Printable {
                 max => $new_y_top,
                 origin => $y_bottom
             );
+        }
+    }
+
+    sub compute_minor_vertical_lines {
+        my ($self) = @_;
+        my $canvas_vertical_lines = $self->canvas->{vertical_lines};
+        if ($self->ruling_get("vertical_lines", "minor")) {
+            my $x = $canvas_vertical_lines->{x};
+            my $every        = $self->ruling_get("vertical_lines", "minor", "every");
+            my $extra_left   = $self->ruling_get("vertical_lines", "minor", "extra", "left")  // 0;
+            my $extra_right  = $self->ruling_get("vertical_lines", "minor", "extra", "right") // 0;
+            my $x_left  = min @$x;
+            my $x_right = max @$x;
+            my $x_spacing = $canvas_vertical_lines->{x_spacing} / $every;
+            my $new_x_left  = $x_left  - ($extra_left  + 0.5) * $x_spacing;
+            my $new_x_right = $x_right + ($extra_right + 0.5) * $x_spacing;
+            my $minor_x = $canvas_vertical_lines->{minor}->{x} = $self->get_points(
+                spacing => $x_spacing,
+                min => $new_x_left,
+                max => $new_x_right,
+                origin => $x_left
+            );
+        }
+    }
+
+    sub post_process_minor_horizontal_lines {
+        my ($self) = @_;
+        my $canvas_horizontal_lines = $self->canvas->{horizontal_lines};
+        if ($self->ruling_get("horizontal_lines", "minor")) {
+            my $minor_y = $canvas_horizontal_lines->{minor}->{y};
             @$minor_y = exclude(@$minor_y, @{$canvas_horizontal_lines->{y}});
+        }
+    }
+
+    sub post_process_minor_vertical_lines {
+        my ($self) = @_;
+        my $canvas_vertical_lines = $self->canvas->{vertical_lines};
+        if ($self->ruling_get("vertical_lines", "minor")) {
+            my $minor_x = $canvas_vertical_lines->{minor}->{x};
+            @$minor_x = exclude(@$minor_x, @{$canvas_vertical_lines->{x}});
         }
     }
 
@@ -959,15 +1007,25 @@ package My::Printable {
         if ($self->ruling_get("grid")) {
             my $x = $canvas_grid->{x};
             my $y = $canvas_grid->{y};
-            my $exclude     = $self->ruling_get("grid", "exclude");
+
             my $exclude_hl  = $self->ruling_get("grid", "exclude", "horizontal_lines");
-            my $exclude_mhl = $self->ruling_get("grid", "exclude", "minor_horizontal_lines");
             my $exclude_vl  = $self->ruling_get("grid", "exclude", "vertical_lines");
+            my $exclude_mhl = $self->ruling_get("grid", "exclude", "minor_horizontal_lines");
+            my $exclude_mvl = $self->ruling_get("grid", "exclude", "minor_vertical_lines");
             my $exclude_lml = $self->ruling_get("grid", "exclude", "left_margin_line");
+
             my $has_hl      = $self->ruling_get("horizontal_lines");
-            my $has_mhl     = $self->ruling_get("horizontal_lines", "minor");
             my $has_vl      = $self->ruling_get("vertical_lines");
+            my $has_mhl     = $self->ruling_get("horizontal_lines", "minor");
+            my $has_mvl     = $self->ruling_get("vertical_lines", "minor");
             my $has_lml     = $self->ruling_get("left_margin_line");
+
+            # keep original boundaries in case grid is enclosed.
+            $canvas_grid->{min_x} = min(@{$x});
+            $canvas_grid->{max_x} = max(@{$x});
+            $canvas_grid->{min_y} = min(@{$y});
+            $canvas_grid->{max_y} = max(@{$y});
+
             if ($has_hl && $exclude_hl) {
                 @$y = exclude(@$y, @{$canvas_horizontal_lines->{y}});
             }
@@ -976,6 +1034,9 @@ package My::Printable {
             }
             if ($has_vl && $exclude_vl) {
                 @$x = exclude(@$x, @{$canvas_vertical_lines->{x}});
+            }
+            if ($has_mvl && $exclude_mvl) {
+                @$x = exclude(@$x, @{$canvas_vertical_lines->{minor}->{x}});
             }
             if ($has_lml && $exclude_lml) {
                 @$x = exclude(@$x, ($canvas_margin_lines->{left}->{x}));
@@ -1001,13 +1062,15 @@ package My::Printable {
                 }
             } else {
                 my $enclosed = $self->ruling_get("grid", "enclosed");
+                my $x_class = $self->ruling_get("grid", "x_class") // $self->ruling_get("grid", "class") // "thin blue line";
+                my $y_class = $self->ruling_get("grid", "y_class") // $self->ruling_get("grid", "class") // "thin blue line";
                 my ($x1, $x2);
                 my ($y1, $y2);
                 if ($enclosed) {
-                    $x1 = min(@{$canvas_grid->{x}});
-                    $x2 = max(@{$canvas_grid->{x}});
-                    $y1 = min(@{$canvas_grid->{y}});
-                    $y2 = max(@{$canvas_grid->{y}});
+                    $x1 = $canvas_grid->{min_x};
+                    $x2 = $canvas_grid->{max_x};
+                    $y1 = $canvas_grid->{min_y};
+                    $y2 = $canvas_grid->{max_y};
                 } else {
                     $x1 = $self->left_margin;
                     $x2 = $self->right_margin;
@@ -1017,14 +1080,14 @@ package My::Printable {
                 foreach my $x (@{$canvas_grid->{x}}) {
                     my $line = $self->create_line(
                         y1 => $y1, y2 => $y2, x => $x,
-                        class => $self->ruling_get("grid", "class") // "thin blue line",
+                        class => $x_class,
                     );
                     $layer->appendChild($line);
                 }
                 foreach my $y (@{$canvas_grid->{y}}) {
                     my $line = $self->create_line(
                         x1 => $x1, x2 => $x2, y => $y,
-                        class => $self->ruling_get("grid", "class") // "thin blue line",
+                        class => $y_class,
                     );
                     $layer->appendChild($line);
                 }
@@ -1076,9 +1139,9 @@ package My::Printable {
             my $layer = $self->layer("minor-horizontal-lines");
             my $minor = $canvas_horizontal_lines->{minor};
             if (defined $minor) {
+                my $x1 = $self->left_margin;
+                my $x2 = $self->right_margin;
                 foreach my $y (@{$minor->{y}}) {
-                    my $x1 = $self->left_margin;
-                    my $x2 = $self->right_margin;
                     my $line = $self->create_line(
                         x1 => $x1, x2 => $x2, y => $y,
                         class => $self->ruling_get("horizontal_lines", "minor", "class") // "x-thin blue line",
@@ -1094,14 +1157,34 @@ package My::Printable {
         my $canvas_vertical_lines = $self->canvas->{vertical_lines};
         if ($self->ruling_get("vertical_lines")) {
             my $layer = $self->layer("vertical-lines");
+            my $y1 = $self->bottom_margin;
+            my $y2 = $self->top_margin;
             foreach my $x (@{$canvas_vertical_lines->{x}}) {
-                my $y1 = $self->bottom_margin;
-                my $y2 = $self->top_margin;
                 my $line = $self->create_line(
                     y1 => $y1, y2 => $y2, x => $x,
                     class => $self->ruling_get("vertical_lines", "class") // "thin blue line",
                 );
                 $layer->appendChild($line);
+            }
+        }
+    }
+
+    sub draw_minor_vertical_lines {
+        my ($self) = @_;
+        my $canvas_vertical_lines = $self->canvas->{vertical_lines};
+        if ($self->ruling_get("vertical_lines", "minor")) {
+            my $layer = $self->layer("minor-vertical-lines");
+            my $minor = $canvas_vertical_lines->{minor};
+            if (defined $minor) {
+                my $y1 = $self->bottom_margin;
+                my $y2 = $self->top_margin;
+                foreach my $x (@{$minor->{x}}) {
+                    my $line = $self->create_line(
+                        y1 => $y1, y2 => $y2, x => $x,
+                        class => $self->ruling_get("vertical_lines", "minor", "class") // "x-thin blue line",
+                    );
+                    $layer->appendChild($line);
+                }
             }
         }
     }
