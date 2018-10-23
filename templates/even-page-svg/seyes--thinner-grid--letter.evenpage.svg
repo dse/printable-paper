@@ -180,11 +180,11 @@
     <line x1="0" x2="612" y1="126" y2="126" class="blue line"/>
     <line x1="0" x2="612" y1="103.5" y2="103.5" class="blue line"/>
   </g>
+  <g id="margin-lines">
+    <line x1="92.25" x2="92.25" y1="792" y2="0" class="red margin line"/>
+  </g>
   <g id="additional-horizontal-lines">
     <line x1="0" x2="612" y1="36" y2="36" class="x-thin blue line"/>
     <line x1="24.75" x2="92.25" y1="756" y2="756" class="blue line"/>
-  </g>
-  <g id="margin-lines">
-    <line x1="92.25" x2="92.25" y1="792" y2="0" class="red margin line"/>
   </g>
 </svg>

@@ -193,11 +193,11 @@
     <line x1="0" x2="595.276" y1="126.141850393701" y2="126.141850393701" class="blue line"/>
     <line x1="0" x2="595.276" y1="103.46468503937" y2="103.46468503937" class="blue line"/>
   </g>
+  <g id="margin-lines">
+    <line x1="116.220677165354" x2="116.220677165354" y1="841.89" y2="0" class="red margin line"/>
+  </g>
   <g id="additional-horizontal-lines">
     <line x1="0" x2="595.276" y1="35.4331889763783" y2="35.4331889763783" class="x-thin blue line"/>
     <line x1="501.732488188976" x2="569.763984251969" y1="806.456811023622" y2="806.456811023622" class="blue line"/>
-  </g>
-  <g id="margin-lines">
-    <line x1="116.220677165354" x2="116.220677165354" y1="841.89" y2="0" class="red margin line"/>
   </g>
 </svg>

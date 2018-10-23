@@ -148,11 +148,11 @@
     <line x1="0" x2="396" y1="103.5" y2="103.5" class="blue line"/>
     <line x1="0" x2="396" y1="81" y2="81" class="blue line"/>
   </g>
+  <g id="margin-lines">
+    <line x1="51.75" x2="51.75" y1="612" y2="0" class="red margin line"/>
+  </g>
   <g id="additional-horizontal-lines">
     <line x1="0" x2="396" y1="36" y2="36" class="x-thin blue line"/>
     <line x1="299.25" x2="366.75" y1="589.5" y2="589.5" class="blue line"/>
-  </g>
-  <g id="margin-lines">
-    <line x1="51.75" x2="51.75" y1="612" y2="0" class="red margin line"/>
   </g>
 </svg>

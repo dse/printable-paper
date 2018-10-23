@@ -1,8 +1,8 @@
 %!PS-Adobe-3.0
-%%Title: /Users/dse/git/dse.d/printable-paper/templates/ps/seyes--thinner-grid--halfletter.ps /Users/dse/git/dse.d/printable-paper/templates/even-page-ps/seyes--thinner-grid--halfletter.evenpage.ps
+%%Title: templates/ps/seyes--thinner-grid--halfletter.ps templates/even-page-ps/seyes--thinner-grid--halfletter.evenpage.ps
 %%Creator: psjoin 0.31
 %%Pages: (atend)
-%%CreationDate: Thu Oct 18 04:21:31 2018
+%%CreationDate: Tue Oct 23 19:05:55 2018
 %%DocumentData: Clean7Bit
 %%LanguageLevel: 2
 %%DocumentMedia: Statement 396 612 0 () ()
@@ -64,6 +64,9 @@
 /g { setgray } bind def
 /rg { setrgbcolor } bind def
 /d1 { setcachedevice } bind def
+/cairo_flush_ascii85_file { cairo_ascii85_file status { cairo_ascii85_file flushfile } if } def
+/cairo_image { image cairo_flush_ascii85_file } def
+/cairo_imagemask { imagemask cairo_flush_ascii85_file } def
 /cairo_set_page_size {
   % Change paper size, but only if different from previous paper size otherwise
   % duplex fails. PLRM specifies a tolerance of 5 pts when matching paper size
@@ -99,11 +102,11 @@
 %%BeginSetup
 %%EndSetup
 
-% [ psjoin: file = /Users/dse/git/dse.d/printable-paper/templates/ps/seyes--thinner-grid--halfletter.ps ]
+% [ psjoin: file = templates/ps/seyes--thinner-grid--halfletter.ps ]
 % [ psjoin: common Prolog/Trailer will be used ]
 % %!PS-Adobe-3.0
-% %%Creator: cairo 1.14.8 (http://cairographics.org)
-% %%CreationDate: Thu Oct 18 04:21:31 2018
+% %%Creator: cairo 1.14.12 (http://cairographics.org)
+% %%CreationDate: Tue Oct 23 19:05:55 2018
 % %%Pages: 1
 % %%DocumentData: Clean7Bit
 % %%LanguageLevel: 2
@@ -336,23 +339,24 @@ q 1 0 0 -1 0 612 cm
 0 103.5 m 396 103.5 l S Q
 q 1 0 0 -1 0 612 cm
 0 81 m 396 81 l S Q
+1 0.6 0.6 rg
+q 1 0 0 -1 0 612 cm
+51.75 612 m 51.75 0 l S Q
+0.701961 0.701961 1 rg
 0.48 w
 q 1 0 0 -1 0 612 cm
 0 36 m 396 36 l S Q
 0.96 w
 q 1 0 0 -1 0 612 cm
 299.25 589.5 m 366.75 589.5 l S Q
-1 0.6 0.6 rg
-q 1 0 0 -1 0 612 cm
-51.75 612 m 51.75 0 l S Q
 Q Q
 showpage
 
-% [ psjoin: file = /Users/dse/git/dse.d/printable-paper/templates/even-page-ps/seyes--thinner-grid--halfletter.evenpage.ps ]
+% [ psjoin: file = templates/even-page-ps/seyes--thinner-grid--halfletter.evenpage.ps ]
 % [ psjoin: common Prolog/Trailer will be used ]
 % %!PS-Adobe-3.0
-% %%Creator: cairo 1.14.8 (http://cairographics.org)
-% %%CreationDate: Thu Oct 18 04:21:33 2018
+% %%Creator: cairo 1.14.12 (http://cairographics.org)
+% %%CreationDate: Tue Oct 23 19:05:57 2018
 % %%Pages: 1
 % %%DocumentData: Clean7Bit
 % %%LanguageLevel: 2
@@ -585,15 +589,16 @@ q 1 0 0 -1 0 612 cm
 0 103.5 m 396 103.5 l S Q
 q 1 0 0 -1 0 612 cm
 0 81 m 396 81 l S Q
+1 0.6 0.6 rg
+q 1 0 0 -1 0 612 cm
+51.75 612 m 51.75 0 l S Q
+0.701961 0.701961 1 rg
 0.48 w
 q 1 0 0 -1 0 612 cm
 0 36 m 396 36 l S Q
 0.96 w
 q 1 0 0 -1 0 612 cm
 51.75 589.5 m 119.25 589.5 l S Q
-1 0.6 0.6 rg
-q 1 0 0 -1 0 612 cm
-51.75 612 m 51.75 0 l S Q
 Q Q
 showpage
 

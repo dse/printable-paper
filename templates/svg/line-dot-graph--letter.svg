@@ -36,7 +36,7 @@
             .alternate-green { stroke: #67ff67; opacity: 0.5; }
             .alternate-gray  { stroke: #676767; opacity: 0.5; }
 </style>
-  <g id="dot-grid">
+  <g id="grid">
     <line x1="13.5" x2="13.5" y1="789.75" y2="789.75" class="thin blue dot"/>
     <line x1="13.5" x2="13.5" y1="784.125" y2="784.125" class="thin blue dot"/>
     <line x1="13.5" x2="13.5" y1="778.5" y2="778.5" class="thin blue dot"/>
@@ -3119,8 +3119,8 @@
     <line x1="0" x2="612" y1="137.25" y2="137.25" class="thin blue line"/>
     <line x1="0" x2="612" y1="114.75" y2="114.75" class="thin blue line"/>
   </g>
-  <g id="additional-horizontal-lines"/>
   <g id="margin-lines">
     <line x1="81" x2="81" y1="792" y2="0" class="red margin line"/>
   </g>
+  <g id="additional-horizontal-lines"/>
 </svg>
