@@ -9,21 +9,22 @@ use File::Path qw(mkpath);
 use File::Basename qw(dirname);
 
 my @templates = (
-    {   base => "dot-grid--a4",                     ruling => "dot-grid",       size => "a4"                                                            },
-    {   base => "dot-grid--letter",                 ruling => "dot-grid",       size => "letter"                                                        },
-    {   base => "line-dot-graph--a4",               ruling => "line-dot-graph", size => "a4"                                                            },
-    {   base => "line-dot-graph--letter",           ruling => "line-dot-graph", size => "letter"                                                        },
-    {   base => "line-dot-grid--a4",                ruling => "line-dot-grid",  size => "a4"                                                            },
-    {   base => "line-dot-grid--letter",            ruling => "line-dot-grid",  size => "letter"                                                        },
-    {   base => "line-dot-grid--thinner--a4",       ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(thinner-dots thinner-lines)]     },
-    {   base => "line-dot-grid--thinner--letter",   ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(thinner-dots thinner-lines)]     },
-    {   base => "line-dot-grid--x-thinner--a4",     ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(x-thinner-dots x-thinner-lines)] },
-    {   base => "line-dot-grid--x-thinner--letter", ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(x-thinner-dots x-thinner-lines)] },
-    {   base => "seyes--a4",                        ruling => "seyes",          size => "a4"                                                            },
-    {   base => "seyes--letter",                    ruling => "seyes",          size => "letter"                                                        },
-    {   base => "seyes--thinner-grid--a4",          ruling => "seyes",          size => "a4",         modifiers => [qw(thinner-grid)]                   },
-    {   base => "seyes--thinner-grid--letter",      ruling => "seyes",          size => "letter",     modifiers => [qw(thinner-grid)]                   },
-    {   base => "seyes--thinner-grid--a5",          ruling => "seyes",          size => "a5",         modifiers => [qw(thinner-grid smaller)],
+    {   base => "dot-grid--a4",                            ruling => "dot-grid",       size => "a4"                                                            },
+    {   base => "dot-grid--letter",                        ruling => "dot-grid",       size => "letter"                                                        },
+    {   base => "line-dot-graph--a4",                      ruling => "line-dot-graph", size => "a4"                                                            },
+    {   base => "line-dot-graph--letter",                  ruling => "line-dot-graph", size => "letter"                                                        },
+    {   base => "line-dot-grid--a4",                       ruling => "line-dot-grid",  size => "a4"                                                            },
+    {   base => "line-dot-grid--letter",                   ruling => "line-dot-grid",  size => "letter"                                                        },
+    {   base => "line-dot-grid--thinner--a4",              ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(thinner-dots thinner-lines)]     },
+    {   base => "line-dot-grid--thinner--letter",          ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(thinner-dots thinner-lines)]     },
+    {   base => "line-dot-grid--x-thinner--a4",            ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(x-thinner-dots x-thinner-lines)] },
+    {   base => "line-dot-grid--x-thinner--letter",        ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(x-thinner-dots x-thinner-lines)] },
+    {   base => "seyes--a4",                               ruling => "seyes",          size => "a4"                                                            },
+    {   base => "seyes--letter",                           ruling => "seyes",          size => "letter"                                                        },
+    {   base => "seyes--thinner-grid--a4",                 ruling => "seyes",          size => "a4",         modifiers => [qw(thinner-grid)]                   },
+    {   base => "seyes--thinner-grid--letter",             ruling => "seyes",          size => "letter",     modifiers => [qw(thinner-grid)]                   },
+    {   base => "seyes--three-line--thinner-grid--letter", ruling => "seyes",          size => "letter",     modifiers => [qw(thinner-grid three-line)]        },
+    {   base => "seyes--thinner-grid--a5",                 ruling => "seyes",          size => "a5",         modifiers => [qw(thinner-grid smaller)],
         "2up" => {
             size => "a4",
             base => "seyes--thinner-grid--a5-a4"
@@ -35,6 +36,10 @@ my @templates = (
             base => "seyes--thinner-grid--halfletter-letter"
         }
     },
+    {   base => "doane",                 ruling => "doane",     size => "letter"                                 },
+    {   base => "doane--smaller",        ruling => "doane",     size => "letter", modifiers => [qw(smaller)]     },
+    {   base => "quadrille",             ruling => "quadrille", size => "letter"                                 },
+    {   base => "quadrille--5-per-inch", ruling => "quadrille", size => "letter", modifiers => [qw(5-per-inch)], },
 );
 
 sub path {
@@ -350,7 +355,8 @@ foreach my $arg (@ARGV) {
                  ($_->{template}->{size} eq $arg) ||
                  ($_->{file}->{type} eq $arg) ||
                  ($_->{file}->{filename} eq $arg) ||
-                 (($_->{file}->{subtype} // "") eq $arg))
+                 (($_->{file}->{subtype} // "") eq $arg) ||
+                 grep { $_ eq $arg } @{$_->{template}->{modifiers}});
         } @build;
     }
 }
