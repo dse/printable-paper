@@ -351,10 +351,14 @@ package My::Printable {
             },
             seyes => {
                 unit => {
-                    DEFAULT => "5/16in",
-                    metric => "8mm",
-                    "8mm" => "8mm",
-                    "10mm" => "10mm",
+                    DEFAULT => {
+                        DEFAULT => "5/16in",
+                        metric => "8mm",
+                    },
+                    "three-line" => {
+                        DEFAULT => "1/4in",
+                        metric => "6mm",
+                    },
                 },
                 horizontal_lines => {
                     y_spacing => "1unit",
@@ -379,10 +383,19 @@ package My::Printable {
                         grayscale => "gray line",
                     },
                     minor => {
-                        every => 4,
+                        every => {
+                            DEFAULT => 4,
+                            "three-line" => 3,
+                        },
                         extra => {
-                            bottom => 2,
-                            top => 3,
+                            DEFAULT => {
+                                bottom => 2,
+                                top => 3,
+                            },
+                            "three-line" => {
+                                bottom => 1,
+                                top => 2,
+                            },
                         },
                         class => {
                             DEFAULT => {
@@ -630,19 +643,23 @@ package My::Printable {
 
         # Compute points.
         $self->compute_grid;
-        $self->compute_horizontal_lines;
+
         $self->compute_vertical_lines;
+        $self->compute_horizontal_lines;
+        $self->chop_vertical_lines;
+        $self->chop_horizontal_lines;
+        $self->compute_minor_vertical_lines;
+        $self->compute_minor_horizontal_lines;
+
         $self->compute_margin_lines;
         $self->compute_additional_horizontal_lines;
-        $self->compute_minor_horizontal_lines;
-        $self->compute_minor_vertical_lines;
 
         # Secondary processing.
         $self->chop_grid;
-        $self->chop_horizontal_lines;
-        $self->post_process_minor_horizontal_lines;
+
         $self->post_process_minor_vertical_lines;
-        $self->chop_vertical_lines;
+        $self->post_process_minor_horizontal_lines;
+
         $self->relocate_margin_lines;
         $self->filter_grid_points;
 
@@ -652,8 +669,9 @@ package My::Printable {
         $self->draw_minor_horizontal_lines;
         $self->draw_vertical_lines;
         $self->draw_horizontal_lines;
-        $self->draw_additional_horizontal_lines;
+
         $self->draw_margin_lines;
+        $self->draw_additional_horizontal_lines;
 
         print $doc->toString(1);
     }
