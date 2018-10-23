@@ -192,7 +192,7 @@ package My::Printable {
                 },
                 horizontal_lines => {
                     y_spacing => "3unit",
-                    bottom => "3/2unit",
+                    bottom => "2unit",
                     class => {
                         DEFAULT => "blue line",
                         grayscale => "gray line",
