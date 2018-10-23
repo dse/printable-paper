@@ -1,15 +1,19 @@
 # printable-paper
 
-Some different types of printable paper, and a Perl program that
-generates them.
+Some different types of printable lined, dot grid, and grid paper, and
+a Perl program that generates them.
+
+For now this utility specializes primarily in simple series of
+horizontal and vertical lines and grids for now.  No logarithmic,
+isometric, polar, or other fancy stuff yet.
 
 SVG, PDF, and PostScript formats are included.
 
 Two-page PDF and PostScript files of all paper rulings are provided,
 for convenient double-sided printing, flip on long edge.
 
-Two-page, two-up PDF and PostScript files, printed as what are called
-"signatures", apparently, are also provided, for convenient
+Two-page, two-up PDF and PostScript files, printed as what are
+apparently called "signatures", are also provided, for convenient
 double-sided printing, flip on long edge:
 
     Output paper size        Cut in half cross-wise for:
@@ -27,10 +31,16 @@ double-sided printing, flip on long edge:
 
 -   French ruling, with thinner grid lines.
 
--   A 5/16" or 8mm hybrid line-dot graph based on French ruling.
+-   A 5/16" or 8mm hybrid line dot graph, based on French ruling.
 
 -   A 1/4" or 6mm line dot grid.  In regular, thinner, and
     extra-thinner variants.
+
+-   A version of French ruling with major lines every three lines
+    instead of four.  (Do not use for Lego bricks, as the proportions
+    are not correct.)
+
+-   Doane Paper style ruling.
 
 ## Utilities Required
 
