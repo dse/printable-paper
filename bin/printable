@@ -148,6 +148,62 @@ package My::Printable {
     our $RULINGS;
     BEGIN {
         $RULINGS = {
+            quadrille => {
+                unit => {
+                    DEFAULT => "1/4in",
+                    "5-per-inch" => "1/5in",
+                    metric => "5mm",
+                },
+                grid => {
+                    x_spacing => "1unit",
+                    y_spacing => "1unit",
+                    class => {
+                        DEFAULT => {
+                            DEFAULT => "x-thin blue line",
+                            grayscale => "x-thin gray line",
+                        },
+                    },
+                    x_coordinates_nearest_margins => 1,
+                    y_coordinates_nearest_margins => 1,
+                },
+            },
+            doane => {
+                unit => {
+                    DEFAULT => {
+                        DEFAULT => "1/8in",
+                        smaller => "1/12in",
+                    },
+                    metric => {
+                        DEFAULT => "3mm",
+                        smaller => "2mm",
+                    },
+                },
+                grid => {
+                    x_spacing => "1unit",
+                    y_spacing => "1unit",
+                    class => {
+                        DEFAULT => {
+                            DEFAULT => "x-thin blue line",
+                            grayscale => "x-thin gray line",
+                        },
+                    },
+                    x_coordinates_nearest_margins => 1,
+                    y_coordinates_nearest_margins => 1,
+                },
+                horizontal_lines => {
+                    y_spacing => "3unit",
+                    bottom => "3/2unit",
+                    class => {
+                        DEFAULT => "blue line",
+                        grayscale => "gray line",
+                    },
+                    nearest => "grid",
+                },
+                left_margin_line => {
+                    x => "7/8in",
+                    nearest => "grid",
+                },
+            },
             dot_grid => {
                 unit => {
                     DEFAULT => "1/4in",
@@ -156,7 +212,8 @@ package My::Printable {
                     "1/5in" => "1/5in",
                     "5mm" => "5mm",
                 },
-                dot_grid => {
+                grid => {
+                    dots => 1,
                     x_spacing => "1unit",
                     y_spacing => "1unit",
                     class => {
@@ -171,7 +228,7 @@ package My::Printable {
                         DEFAULT => "1.25in",
                         metric => "41mm",
                     },
-                    nearest => "dot-grid",
+                    nearest => "grid",
                     class => {
                         DEFAULT => "red margin line",
                         grayscale => "gray margin line",
@@ -186,7 +243,8 @@ package My::Printable {
                     "1/5in" => "1/5in",
                     "5mm" => "5mm",
                 },
-                dot_grid => {
+                grid => {
+                    dots => 1,
                     x_spacing => "1unit",
                     y_spacing => "1unit",
                     class => {
@@ -234,7 +292,7 @@ package My::Printable {
                         DEFAULT => "1.25in",
                         metric => "41mm",
                     },
-                    nearest => "dot-grid",
+                    nearest => "grid",
                     class => {
                         DEFAULT => "red margin line",
                         grayscale => "gray margin line",
@@ -248,7 +306,8 @@ package My::Printable {
                     "8mm" => "8mm",
                     "10mm" => "10mm",
                 },
-                dot_grid => {
+                grid => {
+                    dots => 1,
                     x_spacing => "1unit",
                     y_spacing => "1/4unit",
                     class => {
@@ -280,7 +339,7 @@ package My::Printable {
                         DEFAULT => "1.25in",
                         metric => "41mm",
                     },
-                    nearest => "dot-grid",
+                    nearest => "grid",
                     class => {
                         DEFAULT => "red margin line",
                         grayscale => "gray margin line",
@@ -560,19 +619,19 @@ package My::Printable {
         $root->appendChild($style);
 
         my $canvas = $self->canvas({});
-        $canvas->{dot_grid}                    = {};
+        $canvas->{grid}                        = {};
         $canvas->{horizontal_lines}            = {};
         $canvas->{additional_horizontal_lines} = [];
         $canvas->{vertical_lines}              = {};
         $canvas->{margin_lines}                = {};
 
         # Compute points
-        $self->compute_dot_grid;
+        $self->compute_grid;
         $self->compute_horizontal_lines;
         $self->compute_vertical_lines;
         $self->compute_margin_lines;
         $self->compute_additional_horizontal_lines;
-        $self->chop_dot_grid;
+        $self->chop_grid;
         $self->chop_horizontal_lines;
         $self->compute_minor_horizontal_lines;
         $self->chop_vertical_lines;
@@ -580,7 +639,7 @@ package My::Printable {
         $self->filter_grid_points;
 
         # Draw everything.
-        $self->draw_dot_grid;
+        $self->draw_grid;
         $self->draw_minor_horizontal_lines;
         $self->draw_vertical_lines;
         $self->draw_horizontal_lines;
@@ -590,24 +649,26 @@ package My::Printable {
         print $doc->toString(1);
     }
 
-    sub compute_dot_grid {
+    sub compute_grid {
         my ($self) = @_;
-        my $canvas_dot_grid = $self->canvas->{dot_grid};
-        if ($self->ruling_get("dot_grid")) {
-            my $dg_x_spacing = $self->ruling_get("dot_grid", "x_spacing") // "1unit";
-            my $dg_y_spacing = $self->ruling_get("dot_grid", "y_spacing") // "1unit";
-            my $dg_x_coordinates_nearest_margins = $self->ruling_get("dot_grid", "x_coordinates_nearest_margins");
-            my $dg_y_coordinates_nearest_margins = $self->ruling_get("dot_grid", "y_coordinates_nearest_margins");
-            my $x_spacing = $canvas_dot_grid->{x_spacing} = $self->unit_x->pt($dg_x_spacing);
-            my $y_spacing = $canvas_dot_grid->{y_spacing} = $self->unit_y->pt($dg_y_spacing);
-            $canvas_dot_grid->{x} = $self->get_points(
+        my $canvas_grid = $self->canvas->{grid};
+        if ($self->ruling_get("grid")) {
+            my $dg_x_spacing = $self->ruling_get("grid", "x_spacing") // "1unit";
+            my $dg_y_spacing = $self->ruling_get("grid", "y_spacing") // "1unit";
+            my $dg_x_coordinates_nearest_margins = $self->ruling_get("grid", "x_coordinates_nearest_margins");
+            my $dg_y_coordinates_nearest_margins = $self->ruling_get("grid", "y_coordinates_nearest_margins");
+            my $x_spacing = $canvas_grid->{x_spacing} = $self->unit_x->pt($dg_x_spacing);
+            my $y_spacing = $canvas_grid->{y_spacing} = $self->unit_y->pt($dg_y_spacing);
+            $canvas_grid->{x} = $self->get_points(
+                axis => "x",
                 spacing => $x_spacing,
                 min => $self->left_margin,
                 max => $self->right_margin,
                 origin => $self->x_origin,
                 nearest_margins => $dg_x_coordinates_nearest_margins,
             );
-            $canvas_dot_grid->{y} = $self->get_points(
+            $canvas_grid->{y} = $self->get_points(
+                axis => "y",
                 spacing => $y_spacing,
                 min => $self->bottom_margin,
                 max => $self->top_margin,
@@ -620,27 +681,46 @@ package My::Printable {
     sub compute_horizontal_lines {
         my ($self) = @_;
         my $canvas_horizontal_lines = $self->canvas->{horizontal_lines};
-        my $canvas_dot_grid = $self->canvas->{dot_grid};
+        my $canvas_grid = $self->canvas->{grid};
         if ($self->ruling_get("horizontal_lines")) {
             my $hl_y_spacing = $self->ruling_get("horizontal_lines", "y_spacing") // "1unit";
             my $y_spacing = $canvas_horizontal_lines->{y_spacing} = $self->unit_y->pt($hl_y_spacing);
             my $our_y_origin = $self->y_origin;
-            if ($self->ruling_get("dot_grid")) {
-                $our_y_origin = $canvas_dot_grid->{y}->[0];
+            my $nearest_margins = $self->ruling_get("horizontal_lines", "nearest_margins");
+            my $nearest = undef;
+
+            if ($self->ruling_get("grid")) {
+                $our_y_origin = $canvas_grid->{y}->[0];
+                my $bottom = $self->ruling_get('horizontal_lines', 'bottom');
+                my $top    = $self->ruling_get('horizontal_lines', 'top');
+                if (defined $bottom && !defined $top) {
+                    $our_y_origin = $self->unit_y->pt($bottom);
+                    $nearest_margins = 0;
+                    $nearest = "grid";
+                }
+                if (defined $top && !defined $bottom) {
+                    $our_y_origin = $self->unit_y->pt($top);
+                    $nearest_margins = 0;
+                    $nearest = "grid";
+                }
             }
             $canvas_horizontal_lines->{y} = $self->get_points(
+                axis => "y",
                 spacing => $y_spacing,
                 min => $self->bottom_margin,
                 max => $self->top_margin,
                 origin => $our_y_origin,
-                nearest_margins => $self->ruling_get("horizontal_lines", "nearest_margins"),
+                nearest_margins => $nearest_margins,
+                nearest => $nearest,
             );
             $canvas_horizontal_lines->{unchopped_y} = $self->get_points(
+                axis => "y",
                 spacing => $y_spacing,
                 min => $self->bottom_margin,
                 max => $self->top_margin,
                 origin => $our_y_origin,
-                nearest_margins => $self->ruling_get("horizontal_lines", "nearest_margins"),
+                nearest_margins => $nearest_margins,
+                nearest => $nearest,
             );
         }
     }
@@ -711,13 +791,13 @@ package My::Printable {
     sub compute_vertical_lines {
         my ($self) = @_;
         my $canvas_vertical_lines = $self->canvas->{vertical_lines};
-        my $canvas_dot_grid = $self->canvas->{dot_grid};
+        my $canvas_grid = $self->canvas->{grid};
         if ($self->ruling_get("vertical_lines")) {
             my $vl_x_spacing = $self->ruling_get("vertical_lines", "x_spacing") // "1unit";
             my $x_spacing = $canvas_vertical_lines->{x_spacing} = $self->unit_x->pt($vl_x_spacing);
             my $our_x_origin = $self->x_origin;
-            if ($self->ruling_get("dot_grid")) {
-                $our_x_origin = $canvas_dot_grid->{x}->[0];
+            if ($self->ruling_get("grid")) {
+                $our_x_origin = $canvas_grid->{x}->[0];
             }
             $canvas_vertical_lines->{x} = $self->get_points(
                 spacing => $x_spacing,
@@ -744,19 +824,19 @@ package My::Printable {
         }
     }
 
-    sub chop_dot_grid {
+    sub chop_grid {
         my ($self) = @_;
-        my $canvas_dot_grid = $self->canvas->{dot_grid};
+        my $canvas_grid = $self->canvas->{grid};
         my $height = $self->height;
         my $width = $self->width;
-        if ($self->ruling_get("dot_grid")) {
-            my $x = $canvas_dot_grid->{x};
-            my $y = $canvas_dot_grid->{y};
+        if ($self->ruling_get("grid")) {
+            my $x = $canvas_grid->{x};
+            my $y = $canvas_grid->{y};
 
-            my $bottom = $self->ruling_get("dot_grid", "bottom");
-            my $top    = $self->ruling_get("dot_grid", "top");
-            my $left   = $self->ruling_get("dot_grid", "left");
-            my $right  = $self->ruling_get("dot_grid", "right");
+            my $bottom = $self->ruling_get("grid", "bottom");
+            my $top    = $self->ruling_get("grid", "top");
+            my $left   = $self->ruling_get("grid", "left");
+            my $right  = $self->ruling_get("grid", "right");
 
             if (defined $bottom) {
                 my $bottom_y = $self->unit_y->pt($bottom);
@@ -853,14 +933,14 @@ package My::Printable {
     sub relocate_margin_lines {
         my ($self) = @_;
         my $canvas_margin_lines = $self->canvas->{margin_lines};
-        my $canvas_dot_grid = $self->canvas->{dot_grid};
+        my $canvas_grid = $self->canvas->{grid};
         my $canvas_vertical_lines = $self->canvas->{vertical_lines};
         if ($self->ruling_get("left_margin_line")) {
             my $nearest = $self->ruling_get("left_margin_line", "nearest");
             if (defined $nearest) {
-                if ($nearest eq "dot-grid" && $self->ruling_get("dot_grid")) {
+                if ($nearest eq "grid" && $self->ruling_get("grid")) {
                     $canvas_margin_lines->{left}->{x} = $self->point_nearest($canvas_margin_lines->{left}->{x},
-                                                                             @{$canvas_dot_grid->{x}});
+                                                                             @{$canvas_grid->{x}});
                 }
                 if ($nearest eq "vertical-lines" && $self->ruling_get("vertical_lines")) {
                     $canvas_margin_lines->{left}->{x} = $self->point_nearest($canvas_margin_lines->{left}->{x},
@@ -873,17 +953,17 @@ package My::Printable {
     sub filter_grid_points {
         my ($self) = @_;
         my $canvas_margin_lines = $self->canvas->{margin_lines};
-        my $canvas_dot_grid = $self->canvas->{dot_grid};
+        my $canvas_grid = $self->canvas->{grid};
         my $canvas_horizontal_lines = $self->canvas->{horizontal_lines};
         my $canvas_vertical_lines = $self->canvas->{vertical_lines};
-        if ($self->ruling_get("dot_grid")) {
-            my $x = $canvas_dot_grid->{x};
-            my $y = $canvas_dot_grid->{y};
-            my $exclude     = $self->ruling_get("dot_grid", "exclude");
-            my $exclude_hl  = $self->ruling_get("dot_grid", "exclude", "horizontal_lines");
-            my $exclude_mhl = $self->ruling_get("dot_grid", "exclude", "minor_horizontal_lines");
-            my $exclude_vl  = $self->ruling_get("dot_grid", "exclude", "vertical_lines");
-            my $exclude_lml = $self->ruling_get("dot_grid", "exclude", "left_margin_line");
+        if ($self->ruling_get("grid")) {
+            my $x = $canvas_grid->{x};
+            my $y = $canvas_grid->{y};
+            my $exclude     = $self->ruling_get("grid", "exclude");
+            my $exclude_hl  = $self->ruling_get("grid", "exclude", "horizontal_lines");
+            my $exclude_mhl = $self->ruling_get("grid", "exclude", "minor_horizontal_lines");
+            my $exclude_vl  = $self->ruling_get("grid", "exclude", "vertical_lines");
+            my $exclude_lml = $self->ruling_get("grid", "exclude", "left_margin_line");
             my $has_hl      = $self->ruling_get("horizontal_lines");
             my $has_mhl     = $self->ruling_get("horizontal_lines", "minor");
             my $has_vl      = $self->ruling_get("vertical_lines");
@@ -903,16 +983,48 @@ package My::Printable {
         }
     }
 
-    sub draw_dot_grid {
+    sub draw_grid {
         my ($self) = @_;
-        my $canvas_dot_grid = $self->canvas->{dot_grid};
-        if ($self->ruling_get("dot_grid")) {
-            my $layer = $self->layer("dot-grid");
-            foreach my $x (@{$canvas_dot_grid->{x}}) {
-                foreach my $y (@{$canvas_dot_grid->{y}}) {
+        my $canvas_grid = $self->canvas->{grid};
+        my $dots = $self->ruling_get("grid", "dots");
+        if ($self->ruling_get("grid")) {
+            my $layer = $self->layer("grid");
+            if ($dots) {
+                foreach my $x (@{$canvas_grid->{x}}) {
+                    foreach my $y (@{$canvas_grid->{y}}) {
+                        my $line = $self->create_line(
+                            x => $x, y => $y,
+                            class => $self->ruling_get("grid", "class") // "thin blue dot",
+                        );
+                        $layer->appendChild($line);
+                    }
+                }
+            } else {
+                my $enclosed = $self->ruling_get("grid", "enclosed");
+                my ($x1, $x2);
+                my ($y1, $y2);
+                if ($enclosed) {
+                    $x1 = min(@{$canvas_grid->{x}});
+                    $x2 = max(@{$canvas_grid->{x}});
+                    $y1 = min(@{$canvas_grid->{y}});
+                    $y2 = max(@{$canvas_grid->{y}});
+                } else {
+                    $x1 = $self->left_margin;
+                    $x2 = $self->right_margin;
+                    $y1 = $self->bottom_margin;
+                    $y2 = $self->top_margin;
+                }
+                foreach my $x (@{$canvas_grid->{x}}) {
                     my $line = $self->create_line(
-                        x => $x, y => $y,
-                        class => $self->ruling_get("dot_grid", "class") // "thin blue dot",
+                        y1 => $y1, y2 => $y2, x => $x,
+                        class => $self->ruling_get("grid", "class") // "thin blue line",
+                    );
+                    $layer->appendChild($line);
+                }
+                foreach my $y (@{$canvas_grid->{y}}) {
+                    my $line = $self->create_line(
+                        x1 => $x1, x2 => $x2, y => $y,
+                        class => $self->ruling_get("grid", "class") // "thin blue line",
                     );
                     $layer->appendChild($line);
                 }
@@ -997,7 +1109,7 @@ package My::Printable {
     sub draw_margin_lines {
         my ($self) = @_;
         my $canvas_margin_lines = $self->canvas->{margin_lines};
-        if ($self->get("left_margin_line")) {
+        if ($self->ruling_get("left_margin_line")) {
             my $layer = $self->layer("margin-lines");
             my $margin_line = $self->create_line(
                 x => $canvas_margin_lines->{left}->{x},
@@ -1015,8 +1127,11 @@ package My::Printable {
         my $origin  = $args{origin};
         my $min     = $args{min};
         my $max     = $args{max};
-        my $nearest_margins = delete $args{nearest_margins};
+        my $axis    = $args{axis};
+
+        my $nearest_margins     = delete $args{nearest_margins};
         my $nearest_margin_line = delete $args{nearest_margin_line};
+        my $nearest             = delete $args{nearest};
 
         if ($nearest_margins) {
             my @points1 = $self->get_points(%args);
@@ -1057,6 +1172,22 @@ package My::Printable {
             return \@points2;
         }
 
+        if ($nearest) {
+            if ($nearest eq "grid" && $self->ruling_get("grid")) {
+                my $canvas_grid = $self->canvas->{grid};
+
+                my %args2 = %args;
+                if ($axis eq "x") {
+                    $args2{origin} = $self->point_nearest($args2{origin}, @{$canvas_grid->{x}});
+                } elsif ($axis eq "y") {
+                    $args2{origin} = $self->point_nearest($args2{origin}, @{$canvas_grid->{y}});
+                }
+                my @points2 = $self->get_points(%args2);
+                return @points2 if wantarray;
+                return \@points2;
+            }
+        }
+
         my @points = ($origin);
         $spacing = $self->unit->pt($spacing);
         my $x;
@@ -1070,7 +1201,7 @@ package My::Printable {
         return \@points;
     }
 
-
+    # point_nearest($x, @x) returns the element of @x that is nearest $x.
     sub point_nearest {
         my ($self, $x, @points) = @_;
         my @dist = map { abs($x - $_) } @points;
@@ -1091,8 +1222,12 @@ package My::Printable {
         my $x2 = $args{x2} // $args{x};
         my $y1 = $args{y1} // $args{y};
         my $y2 = $args{y2} // $args{y};
+
+        # Our internal coordinate system is bottom = 0.
+        # But SVG's is top = 0.
         $y1 = $self->height - $y1;
         $y2 = $self->height - $y2;
+
         $line->setAttribute("x1", $x1);
         $line->setAttribute("x2", $x2);
         $line->setAttribute("y1", $y1);
