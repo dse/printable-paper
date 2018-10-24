@@ -31,6 +31,7 @@ my @templates = (
     {   base => "doane--smaller",                              ruling => "doane",          size => "letter",     modifiers => [qw(smaller)]                                                        },
     {   base => "quadrille",                                   ruling => "quadrille",      size => "letter"                                                                                        },
     {   base => "quadrille--5-per-inch",                       ruling => "quadrille",      size => "letter",     modifiers => [qw(5-per-inch)],                                                    },
+    {   base => "seyes--thinner-wider-grid--halfletter",       ruling => "seyes",          size => "halfletter", modifiers => [qw(smaller thinner-grid wider-grid)], "2up" => { size => "letter" } },
 );
 
 sub path {
