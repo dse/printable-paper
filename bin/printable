@@ -124,6 +124,7 @@ package My::Printable {
         public unit_y;
 
         public modifiers;
+        public modifiers_hash;
     }
 
     sub init {
@@ -138,6 +139,7 @@ package My::Printable {
     use Data::Dumper qw(Dumper);
     use YAML qw(Dump);
     use JSON::PP;
+    use Clone qw(clone);
 
     # use My::Printable::Util qw(exclude);
     sub exclude(\@@);      # for embedded package subs with prototypes
@@ -150,12 +152,12 @@ package My::Printable {
         my $unit_one_quarter = {
             DEFAULT      => { DEFAULT => "1/4in", metric => "6mm" },
             smaller      => { DEFAULT => "1/5in", metric => "5mm" },
-            "4-per-inch" => { DEFAULT => "1/4in", metric => "6mm" },
-            "5-per-inch" => { DEFAULT => "1/5in", metric => "5mm" },
-            "1/4in"      => { DEFAULT => "1/4in", metric => "6mm" },
-            "1/5in"      => { DEFAULT => "1/5in", metric => "5mm" },
-            "6mm"        => { DEFAULT => "1/4in", metric => "6mm" },
-            "5mm"        => { DEFAULT => "1/5in", metric => "5mm" },
+            "4-per-inch" => { DEFAULT => "1/4in" },
+            "5-per-inch" => { DEFAULT => "1/5in" },
+            "1/4in"      => { DEFAULT => "1/4in" },
+            "1/5in"      => { DEFAULT => "1/5in" },
+            "6mm"        => { DEFAULT => "6mm" },
+            "5mm"        => { DEFAULT => "5mm" },
         };
         my $unit_seyes = {
             DEFAULT      => { DEFAULT => "5/16in", metric => "8mm"  },
@@ -422,30 +424,6 @@ package My::Printable {
                                     metric => "9mm",
                                 }
                             },
-                            left => {
-                                DEFAULT => undef,
-                                "even-page" => {
-                                    x => $left_margin,
-                                    nearest_grid => "vertical_lines",
-                                },
-                            },
-                            right => {
-                                DEFAULT => {
-                                    x => "1unit",
-                                    nearest_grid => "vertical_lines",
-                                },
-                                "even-page" => undef,
-                            },
-                            width => {
-                                DEFAULT => {
-                                    DEFAULT => "3unit",
-                                    "even-page" => "-3unit",
-                                },
-                                "smaller" => {
-                                    DEFAULT => "3unit",
-                                    "even-page" => "3unit",
-                                }
-                            },
                             nearest_grid => {
                                 DEFAULT => "horizontal_lines",
                                 smaller => "minor_horizontal_lines",
@@ -457,8 +435,21 @@ package My::Printable {
                                 },
                             },
                             '!even-page' => {
+                                right => {
+                                    x => "1unit",
+                                    nearest_grid => "vertical_lines",
+                                },
+                                width => "3unit",
                             },
                             '=even-page' => {
+                                left => {
+                                    x => $left_margin,
+                                    nearest_grid => "vertical_lines",
+                                },
+                                width => "-3unit",
+                                '=smaller' => {
+                                    width => "3unit",
+                                },
                             },
                         },
                     },
@@ -543,7 +534,9 @@ package My::Printable {
     sub set_modifiers {
         my ($self, @modifiers) = @_;
         @modifiers = grep { defined $_ } @modifiers;
+        my %modifiers = map { ($_, 1) } @modifiers;
         $self->modifiers(\@modifiers);
+        $self->modifiers_hash(\%modifiers);
     }
 
     sub generate_paper {
@@ -1434,6 +1427,8 @@ EOF
             }
             return $o;
         }
+        $o = clone($o);
+
         if (exists $o->{DEFAULT}) {
             my $next = $o->{DEFAULT};
             foreach my $modifier (@{$self->modifiers},
@@ -1445,10 +1440,33 @@ EOF
             }
             return $self->get($next, $prop, @other_props);
         }
+
+        my @negative_modifiers = sort map { substr($_, 1) } grep { m{^\!} } keys %$o;
+        my @positive_modifiers = sort map { substr($_, 1) } grep { m{^\=} } keys %$o;
+        @negative_modifiers = grep { !exists($self->modifiers_hash->{$_}) } @negative_modifiers;
+        @positive_modifiers = grep {  exists($self->modifiers_hash->{$_}) } @positive_modifiers;
+        my @modifiers = (@negative_modifiers, @positive_modifiers);
+        @modifiers = sort @modifiers;
+        foreach my $modifier (@modifiers) {
+            my $apply;
+            if ($self->modifiers_hash->{$modifier}) {
+                $apply = delete $o->{"=" . $modifier};
+                delete $o->{"!" . $modifier};
+            } else {
+                $apply = delete $o->{"!" . $modifier};
+                delete $o->{"=" . $modifier};
+            }
+            if (defined $apply) {
+                if (ref $apply eq "HASH") {
+                    %$o = (%$o, %$apply);
+                }
+            }
+        }
+
         if (!defined $prop) {
             return $o;
         }
-        if (!exists $o->{$prop}) {
+        if (!defined $o->{$prop}) {
             return undef;
         }
         return $self->get($o->{$prop}, @other_props);
