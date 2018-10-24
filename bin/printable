@@ -426,7 +426,7 @@ package My::Printable {
                                 DEFAULT => undef,
                                 "even-page" => {
                                     x => {
-                                        DEFAULT => "1unit",
+                                        DEFAULT => $left_margin,
                                         smaller => "2unit",
                                     },
                                     nearest_grid => "vertical_lines",
@@ -439,7 +439,10 @@ package My::Printable {
                                 },
                                 "even-page" => undef,
                             },
-                            width => "3unit",
+                            width => {
+                                DEFAULT => "3unit",
+                                "even-page" => "-3unit",
+                            },
                             nearest_grid => {
                                 DEFAULT => "horizontal_lines",
                                 smaller => "minor_horizontal_lines",
@@ -1515,8 +1518,7 @@ package My::Printable::Unit {
     sub rx_number {
         my ($self) = @_;
         $self = object($self);
-
-        return qr{\d+(?:\.\d*)?|\.\d+}ix;
+        return qr{[\-\+]?\d+(?:\.\d*)?|\.\d+}ix;
     }
 
     sub pt {
