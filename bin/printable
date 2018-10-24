@@ -425,10 +425,7 @@ package My::Printable {
                             left => {
                                 DEFAULT => undef,
                                 "even-page" => {
-                                    x => {
-                                        DEFAULT => $left_margin,
-                                        smaller => "2unit",
-                                    },
+                                    x => $left_margin,
                                     nearest_grid => "vertical_lines",
                                 },
                             },
@@ -440,8 +437,14 @@ package My::Printable {
                                 "even-page" => undef,
                             },
                             width => {
-                                DEFAULT => "3unit",
-                                "even-page" => "-3unit",
+                                DEFAULT => {
+                                    DEFAULT => "3unit",
+                                    "even-page" => "-3unit",
+                                },
+                                "smaller" => {
+                                    DEFAULT => "3unit",
+                                    "even-page" => "3unit",
+                                }
                             },
                             nearest_grid => {
                                 DEFAULT => "horizontal_lines",
@@ -449,9 +452,13 @@ package My::Printable {
                             },
                             class => {
                                 DEFAULT => {
-                                    DEFAULT => "blue line",
-                                    grayscale => "gray line",
+                                    DEFAULT => "blue line stroke-linecap-butt",
+                                    grayscale => "gray line stroke-linecap-butt",
                                 },
+                            },
+                            '!even-page' => {
+                            },
+                            '=even-page' => {
                             },
                         },
                     },
@@ -626,8 +633,8 @@ package My::Printable {
         $self->draw_vertical_lines;
         $self->draw_horizontal_lines;
 
-        $self->draw_margin_lines;
         $self->draw_additional_horizontal_lines;
+        $self->draw_margin_lines;
 
         print $doc->toString(1);
     }
@@ -1327,6 +1334,7 @@ package My::Printable {
 
         $css //= <<"EOF";
             .line, .dot { stroke-linecap: round; }
+            .stroke-linecap-butt { stroke-linecap: butt; }
 
             .line            { stroke-width: ${line_stroke_width}pt; }
             .line.xx-thin    { stroke-width: ${xx_thin_line_stroke_width}pt; }
