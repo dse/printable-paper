@@ -147,13 +147,66 @@ package My::Printable {
 
     our $RULINGS;
     BEGIN {
+        my $unit_one_quarter = {
+            DEFAULT      => { DEFAULT => "1/4in", metric => "6mm" },
+            smaller      => { DEFAULT => "1/5in", metric => "5mm" },
+            "4-per-inch" => { DEFAULT => "1/4in", metric => "6mm" },
+            "5-per-inch" => { DEFAULT => "1/5in", metric => "5mm" },
+            "1/4in"      => { DEFAULT => "1/4in", metric => "6mm" },
+            "1/5in"      => { DEFAULT => "1/5in", metric => "5mm" },
+            "6mm"        => { DEFAULT => "1/4in", metric => "6mm" },
+            "5mm"        => { DEFAULT => "1/5in", metric => "5mm" },
+        };
+        my $unit_seyes = {
+            DEFAULT      => { DEFAULT => "5/16in", metric => "8mm"  },
+            "8mm"        => { DEFAULT => "5/16in", metric => "8mm"  },
+            "10mm"       => { DEFAULT => "3/8in",  metric => "10mm" },
+            "three-line" => { DEFAULT => "1/4in",  metric => "6mm"  },
+        };
+        my $unit_doane = {
+            DEFAULT => {
+                DEFAULT => "1/8in",
+                smaller => "1/12in",
+            },
+            metric => {
+                DEFAULT => "3mm",
+                smaller => "2mm",
+            },
+        };
+        my $left_margin = {
+            DEFAULT => {
+                DEFAULT => "1.25in",
+                metric => "41mm",
+            },
+            smaller => {
+                DEFAULT => "0.75in",
+                metric => "16mm",
+            }
+        };
+        my $margin_line_class = {
+            DEFAULT => "red margin line",
+            grayscale => "gray margin line",
+        };
+        my $seyes_bottom = {
+            DEFAULT => "1in",
+            metric => "28mm",
+            smaller => {
+                DEFAULT => "0.75in",
+                metric => "19mm",
+            },
+        };
+        my $seyes_top = {
+            DEFAULT => "1.5in",
+            metric => "37mm",
+            smaller => {
+                DEFAULT => "1in",
+                metric => "24mm",
+            },
+        };
+
         $RULINGS = {
             quadrille => {
-                unit => {
-                    DEFAULT => "1/4in",
-                    "5-per-inch" => "1/5in",
-                    metric => "5mm",
-                },
+                unit => $unit_one_quarter,
                 grid => {
                     x_spacing => "1unit",
                     y_spacing => "1unit",
@@ -168,16 +221,7 @@ package My::Printable {
                 },
             },
             doane => {
-                unit => {
-                    DEFAULT => {
-                        DEFAULT => "1/8in",
-                        smaller => "1/12in",
-                    },
-                    metric => {
-                        DEFAULT => "3mm",
-                        smaller => "2mm",
-                    },
-                },
+                unit => $unit_doane,
                 grid => {
                     x_spacing => "1unit",
                     y_spacing => "1unit",
@@ -208,13 +252,7 @@ package My::Printable {
                 },
             },
             dot_grid => {
-                unit => {
-                    DEFAULT => "1/4in",
-                    "metric" => "6mm",
-                    "6mm" => "6mm",
-                    "1/5in" => "1/5in",
-                    "5mm" => "5mm",
-                },
+                unit => $unit_one_quarter,
                 grid => {
                     dots => 1,
                     x_spacing => "1unit",
@@ -227,25 +265,13 @@ package My::Printable {
                     y_coordinates_nearest_margins => 1,
                 },
                 left_margin_line => {
-                    x => {
-                        DEFAULT => "1.25in",
-                        metric => "41mm",
-                    },
+                    x => $left_margin,
                     nearest => "grid",
-                    class => {
-                        DEFAULT => "red margin line",
-                        grayscale => "gray margin line",
-                    },
+                    class => $margin_line_class,
                 },
             },
             line_dot_grid => {
-                unit => {
-                    DEFAULT => "1/4in",
-                    "metric" => "6mm",
-                    "6mm" => "6mm",
-                    "1/5in" => "1/5in",
-                    "5mm" => "5mm",
-                },
+                unit => $unit_one_quarter,
                 grid => {
                     dots => 1,
                     x_spacing => "1unit",
@@ -264,17 +290,11 @@ package My::Printable {
                             grayscale => "semi-thin gray dot",
                         },
                     },
-                    top => {
-                        DEFAULT => "1.5in",
-                        metric => "37mm",
-                    },
+                    top => $seyes_top,
                 },
                 horizontal_lines => {
                     y_spacing => "1unit",
-                    top => {
-                        DEFAULT => "1.5in",
-                        metric  => "37mm",
-                    },
+                    top => $seyes_top,
                     class => {
                         DEFAULT => {
                             DEFAULT => "thin blue line",
@@ -291,24 +311,13 @@ package My::Printable {
                     },
                 },
                 left_margin_line => {
-                    x => {
-                        DEFAULT => "1.25in",
-                        metric => "41mm",
-                    },
+                    x => $left_margin,
                     nearest => "grid",
-                    class => {
-                        DEFAULT => "red margin line",
-                        grayscale => "gray margin line",
-                    },
+                    class => $margin_line_class,
                 },
             },
             line_dot_graph => {
-                unit => {
-                    DEFAULT => "5/16in",
-                    "metric" => "8mm",
-                    "8mm" => "8mm",
-                    "10mm" => "10mm",
-                },
+                unit => $unit_seyes,
                 grid => {
                     dots => 1,
                     x_spacing => "1unit",
@@ -324,60 +333,25 @@ package My::Printable {
                 horizontal_lines => {
                     y_spacing => "1unit",
                     nearest_margins => 1,
-                    bottom => {
-                        DEFAULT => "1in",
-                        metric => "28mm",
-                    },
-                    top => {
-                        DEFAULT => "1.5in",
-                        metric => "37mm",
-                    },
+                    bottom => $seyes_bottom,
+                    top => $seyes_top,
                     class => {
                         DEFAULT => "thin blue line",
                         grayscale => "thin gray line",
                     },
                 },
                 left_margin_line => {
-                    x => {
-                        DEFAULT => "1.25in",
-                        metric => "41mm",
-                    },
+                    x => $left_margin,
                     nearest => "grid",
-                    class => {
-                        DEFAULT => "red margin line",
-                        grayscale => "gray margin line",
-                    },
+                    class => $margin_line_class,
                 },
             },
             seyes => {
-                unit => {
-                    DEFAULT => {
-                        DEFAULT => "5/16in",
-                        metric => "8mm",
-                    },
-                    "three-line" => {
-                        DEFAULT => "1/4in",
-                        metric => "6mm",
-                    },
-                },
+                unit => $unit_seyes,
                 horizontal_lines => {
                     y_spacing => "1unit",
-                    bottom => {
-                        DEFAULT => "1in",
-                        metric => "28mm",
-                        smaller => {
-                            DEFAULT => "0.75in",
-                            metric => "19mm",
-                        }
-                    },
-                    top => {
-                        DEFAULT => "1.5in",
-                        metric => "37mm",
-                        smaller => {
-                            DEFAULT => "1in",
-                            metric => "24mm",
-                        }
-                    },
+                    bottom => $seyes_bottom,
+                    top => $seyes_top,
                     class => {
                         DEFAULT => "blue line",
                         grayscale => "gray line",
@@ -492,33 +466,12 @@ package My::Printable {
                             grayscale => "x-thin gray line",
                         },
                     },
-                    left => {
-                        DEFAULT => {
-                            DEFAULT => "1.25in",
-                            metric => "41mm",
-                        },
-                        smaller => {
-                            DEFAULT => "0.75in",
-                            metric => "16mm",
-                        }
-                    },
+                    left => $left_margin,
                 },
                 left_margin_line => {
-                    x => {
-                        DEFAULT => {
-                            DEFAULT => "1.25in",
-                            metric => "41mm",
-                        },
-                        smaller => {
-                            DEFAULT => "0.75in",
-                            metric => "16mm",
-                        }
-                    },
+                    x => $left_margin,
                     nearest => "vertical-lines",
-                    class => {
-                        DEFAULT => "red margin line",
-                        grayscale => "gray margin line",
-                    },
+                    class => $margin_line_class,
                 },
             },
         };
