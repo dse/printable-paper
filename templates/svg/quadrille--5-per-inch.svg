@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="612pt" height="792pt" viewBox="0.000000 0.000000 612.000000 792.000000">
   <style>            .line, .dot { stroke-linecap: round; }
+            .stroke-linecap-butt { stroke-linecap: butt; }
 
             .line            { stroke-width: 0.72pt; }
             .line.xx-thin    { stroke-width: 0.24pt; }
