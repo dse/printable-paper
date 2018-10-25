@@ -218,8 +218,8 @@ package My::Printable {
                             grayscale => "x-thin gray line",
                         },
                     },
-                    x_coordinates_nearest_margins => 1,
-                    y_coordinates_nearest_margins => 1,
+                    x_snap_to => "margins",
+                    y_snap_to => "margins",
                 },
             },
             doane => {
@@ -236,8 +236,8 @@ package My::Printable {
                     exclude => {
                         horizontal_lines => 1,
                     },
-                    x_coordinates_nearest_margins => 1,
-                    y_coordinates_nearest_margins => 1,
+                    x_snap_to => "margins",
+                    y_snap_to => "margins",
                 },
                 horizontal_lines => {
                     y_spacing => "3unit",
@@ -246,11 +246,11 @@ package My::Printable {
                         DEFAULT => "blue line",
                         grayscale => "gray line",
                     },
-                    nearest => "grid",
+                    snap_to => "grid",
                 },
                 left_margin_line => {
                     x => "7/8in",
-                    nearest => "grid",
+                    snap_to => "grid",
                 },
             },
             dot_grid => {
@@ -263,12 +263,12 @@ package My::Printable {
                         DEFAULT => "blue dot",
                         grayscale => "gray dot",
                     },
-                    x_coordinates_nearest_margins => 1,
-                    y_coordinates_nearest_margins => 1,
+                    x_snap_to => "margins",
+                    y_snap_to => "margins",
                 },
                 left_margin_line => {
                     x => $left_margin,
-                    nearest => "grid",
+                    snap_to => "grid",
                     class => $margin_line_class,
                 },
             },
@@ -314,7 +314,7 @@ package My::Printable {
                 },
                 left_margin_line => {
                     x => $left_margin,
-                    nearest => "grid",
+                    snap_to => "grid",
                     class => $margin_line_class,
                 },
             },
@@ -334,7 +334,7 @@ package My::Printable {
                 },
                 horizontal_lines => {
                     y_spacing => "1unit",
-                    nearest_margins => 1,
+                    snap_to => "margins",
                     bottom => $seyes_bottom,
                     top => $seyes_top,
                     class => {
@@ -344,7 +344,7 @@ package My::Printable {
                 },
                 left_margin_line => {
                     x => $left_margin,
-                    nearest => "grid",
+                    snap_to => "grid",
                     class => $margin_line_class,
                 },
             },
@@ -397,7 +397,7 @@ package My::Printable {
                                     metric => "13mm",
                                 },
                             },
-                            nearest_grid => {
+                            snap_to => {
                                 DEFAULT => "horizontal_lines",
                                 smaller => "minor_horizontal_lines",
                             },
@@ -424,7 +424,7 @@ package My::Printable {
                                     metric => "9mm",
                                 }
                             },
-                            nearest_grid => {
+                            snap_to => {
                                 DEFAULT => "horizontal_lines",
                                 smaller => "minor_horizontal_lines",
                             },
@@ -437,14 +437,14 @@ package My::Printable {
                             '!even-page' => {
                                 right => {
                                     x => "1unit",
-                                    nearest_grid => "vertical_lines",
+                                    snap_to => "vertical_lines",
                                 },
                                 width => "3unit",
                             },
                             '=even-page' => {
                                 left => {
                                     x => $left_margin,
-                                    nearest_grid => "vertical_lines",
+                                    snap_to => "vertical_lines",
                                 },
                                 width => "-3unit",
                                 '=smaller' => {
@@ -459,7 +459,7 @@ package My::Printable {
                         DEFAULT => "1unit",
                         "wider-grid" => "1.5units",
                     },
-                    nearest_margins => 1,
+                    snap_to => "margins",
                     class => {
                         DEFAULT => {
                             DEFAULT => "thin blue line",
@@ -474,7 +474,7 @@ package My::Printable {
                 },
                 left_margin_line => {
                     x => $left_margin,
-                    nearest => "vertical-lines",
+                    snap_to => "vertical_lines",
                     class => $margin_line_class,
                 },
             },
@@ -644,8 +644,8 @@ package My::Printable {
         if ($self->ruling_get("grid")) {
             my $dg_x_spacing = $self->ruling_get("grid", "x_spacing") // "1unit";
             my $dg_y_spacing = $self->ruling_get("grid", "y_spacing") // "1unit";
-            my $dg_x_coordinates_nearest_margins = $self->ruling_get("grid", "x_coordinates_nearest_margins");
-            my $dg_y_coordinates_nearest_margins = $self->ruling_get("grid", "y_coordinates_nearest_margins");
+            my $dg_x_snap_to = $self->ruling_get("grid", "x_snap_to");
+            my $dg_y_snap_to = $self->ruling_get("grid", "y_snap_to");
             my $x_spacing = $canvas_grid->{x_spacing} = $self->unit_x->pt($dg_x_spacing);
             my $y_spacing = $canvas_grid->{y_spacing} = $self->unit_y->pt($dg_y_spacing);
             $canvas_grid->{x} = $self->get_points(
@@ -654,7 +654,7 @@ package My::Printable {
                 min => $self->left_margin,
                 max => $self->right_margin,
                 origin => $self->x_origin,
-                nearest_margins => $dg_x_coordinates_nearest_margins,
+                snap_to => $dg_x_snap_to,
             );
             $canvas_grid->{y} = $self->get_points(
                 axis => "y",
@@ -662,7 +662,7 @@ package My::Printable {
                 min => $self->bottom_margin,
                 max => $self->top_margin,
                 origin => $self->y_origin,
-                nearest_margins => $dg_y_coordinates_nearest_margins,
+                snap_to => $dg_y_snap_to,
             );
         }
     }
@@ -675,22 +675,18 @@ package My::Printable {
             my $hl_y_spacing = $self->ruling_get("horizontal_lines", "y_spacing") // "1unit";
             my $y_spacing = $canvas_horizontal_lines->{y_spacing} = $self->unit_y->pt($hl_y_spacing);
             my $our_y_origin = $self->y_origin;
-            my $nearest_margins = $self->ruling_get("horizontal_lines", "nearest_margins");
-            my $nearest = undef;
-
+            my $snap_to = $self->ruling_get("horizontal_lines", "snap_to");
             if ($self->ruling_get("grid")) {
                 $our_y_origin = $canvas_grid->{y}->[0];
                 my $bottom = $self->ruling_get('horizontal_lines', 'bottom');
                 my $top    = $self->ruling_get('horizontal_lines', 'top');
                 if (defined $bottom && !defined $top) {
                     $our_y_origin = $self->unit_y->pt($bottom);
-                    $nearest_margins = 0;
-                    $nearest = "grid";
+                    $snap_to = "grid";
                 }
                 if (defined $top && !defined $bottom) {
                     $our_y_origin = $self->unit_y->pt($top);
-                    $nearest_margins = 0;
-                    $nearest = "grid";
+                    $snap_to = "grid";
                 }
             }
             $canvas_horizontal_lines->{y} = $self->get_points(
@@ -699,8 +695,7 @@ package My::Printable {
                 min => $self->bottom_margin,
                 max => $self->top_margin,
                 origin => $our_y_origin,
-                nearest_margins => $nearest_margins,
-                nearest => $nearest,
+                snap_to => $snap_to,
             );
             $canvas_horizontal_lines->{unchopped_y} = $self->get_points(
                 axis => "y",
@@ -708,8 +703,7 @@ package My::Printable {
                 min => $self->bottom_margin,
                 max => $self->top_margin,
                 origin => $our_y_origin,
-                nearest_margins => $nearest_margins,
-                nearest => $nearest,
+                snap_to => $snap_to,
             );
         }
     }
@@ -726,13 +720,13 @@ package My::Printable {
             my $ahl_position     = $self->get($ahl, "position");
             my $ahl_x            = $self->get($ahl, "x");
             my $ahl_y            = $self->get($ahl, "y");
-            my $ahl_nearest_grid = $self->get($ahl, "nearest_grid");
+            my $ahl_snap_to      = $self->get($ahl, "snap_to");
             my $ahl_left         = $self->get($ahl, "left");
             my $ahl_right        = $self->get($ahl, "right");
             my $ahl_left_x       = $self->get($ahl, "left", "x");
             my $ahl_right_x      = $self->get($ahl, "right", "x");
-            my $ahl_left_ng      = $self->get($ahl, "left", "nearest_grid");
-            my $ahl_right_ng     = $self->get($ahl, "right", "nearest_grid");
+            my $ahl_left_snap_to  = $self->get($ahl, "left", "snap_to");
+            my $ahl_right_snap_to = $self->get($ahl, "right", "snap_to");
             my $ahl_width        = $self->get($ahl, "width");
             my $ahl_class        = $self->get($ahl, "class") // $self->ruling_get("horizontal_lines", "class");
 
@@ -742,7 +736,7 @@ package My::Printable {
             } elsif ($ahl_position eq "top") {
                 $y = $self->height - $self->unit_y->pt($ahl_y);
             }
-            if ($ahl_nearest_grid eq "horizontal_lines") {
+            if ($ahl_snap_to eq "horizontal_lines") {
                 $y = $self->point_nearest($y, @{$self->canvas->{horizontal_lines}->{unchopped_y}});
             }
 
@@ -750,13 +744,13 @@ package My::Printable {
             my $x2;
             if (defined $ahl_left) {
                 $x1 = $self->unit_x->pt($ahl_left_x);
-                if ($ahl_left_ng eq "vertical_lines") {
+                if ($ahl_left_snap_to eq "vertical_lines") {
                     $x1 = $self->point_nearest($x1, @{$self->canvas->{vertical_lines}->{unchopped_x}});
                 }
             }
             if (defined $ahl_right) {
                 $x2 = $self->width - $self->unit_x->pt($ahl_right_x);
-                if ($ahl_right_ng eq "vertical_lines") {
+                if ($ahl_right_snap_to eq "vertical_lines") {
                     $x2 = $self->point_nearest($x2, @{$self->canvas->{vertical_lines}->{unchopped_x}});
                 }
             }
@@ -793,14 +787,14 @@ package My::Printable {
                 min => $self->left_margin,
                 max => $self->right_margin,
                 origin => $our_x_origin,
-                nearest_margins => $self->ruling_get("vertical_lines", "nearest_margins"),
+                snap_to => $self->ruling_get("vertical_lines", "snap_to"),
             );
             $canvas_vertical_lines->{unchopped_x} = $self->get_points(
                 spacing => $x_spacing,
                 min => $self->left_margin,
                 max => $self->right_margin,
                 origin => $our_x_origin,
-                nearest_margins => $self->ruling_get("vertical_lines", "nearest_margins"),
+                snap_to => $self->ruling_get("vertical_lines", "snap_to"),
             );
         }
     }
@@ -964,13 +958,13 @@ package My::Printable {
         my $canvas_grid = $self->canvas->{grid};
         my $canvas_vertical_lines = $self->canvas->{vertical_lines};
         if ($self->ruling_get("left_margin_line")) {
-            my $nearest = $self->ruling_get("left_margin_line", "nearest");
-            if (defined $nearest) {
-                if ($nearest eq "grid" && $self->ruling_get("grid")) {
+            my $snap_to = $self->ruling_get("left_margin_line", "snap_to");
+            if (defined $snap_to) {
+                if ($snap_to eq "grid" && $self->ruling_get("grid")) {
                     $canvas_margin_lines->{left}->{x} = $self->point_nearest($canvas_margin_lines->{left}->{x},
                                                                              @{$canvas_grid->{x}});
                 }
-                if ($nearest eq "vertical-lines" && $self->ruling_get("vertical_lines")) {
+                if ($snap_to eq "vertical_lines" && $self->ruling_get("vertical_lines")) {
                     $canvas_margin_lines->{left}->{x} = $self->point_nearest($canvas_margin_lines->{left}->{x},
                                                                              @{$canvas_vertical_lines->{x}});
                 }
@@ -1191,54 +1185,28 @@ package My::Printable {
         my $min     = $args{min};
         my $max     = $args{max};
         my $axis    = $args{axis};
+        my $snap_to = delete $args{snap_to};
 
-        my $nearest_margins     = delete $args{nearest_margins};
-        my $nearest_margin_line = delete $args{nearest_margin_line};
-        my $nearest             = delete $args{nearest};
-
-        if ($nearest_margins) {
-            my @points1 = $self->get_points(%args);
-            my %args2 = %args;
-            $args2{origin} += $spacing / 2;
-            if ($args2{origin} > $max) {
-                $args2{origin} -= $spacing;
+        if (defined $snap_to) {
+            if ($snap_to eq "margins") {
+                my @points1 = $self->get_points(%args);
+                my %args2 = %args;
+                $args2{origin} += $spacing / 2;
+                if ($args2{origin} > $max) {
+                    $args2{origin} -= $spacing;
+                }
+                my @points2 = $self->get_points(%args2);
+                my $min1 = $points1[0];
+                my $min2 = $points2[0];
+                if ($min1 < $min2) {
+                    return @points1 if wantarray;
+                    return \@points1;
+                }
+                return @points2 if wantarray;
+                return \@points2;
             }
-            my @points2 = $self->get_points(%args2);
-            my $min1 = $points1[0];
-
-            my $min2 = $points2[0];
-            if ($min1 < $min2) {
-                return @points1 if wantarray;
-                return \@points1;
-            }
-            return @points2 if wantarray;
-            return \@points2;
-        }
-
-        if ($nearest_margin_line) {
-            my @points1 = $self->get_points(%args);
-            my %args2 = %args;
-            $args2{origin} += $spacing / 2;
-            if ($args2{origin} > $max) {
-                $args2{origin} -= $spacing;
-            }
-            my @points2 = $self->get_points(%args2);
-            my $point1 = $self->point_nearest($nearest_margin_line, @points1);
-            my $point2 = $self->point_nearest($nearest_margin_line, @points2);
-            my $dist1 = abs($point1 - $nearest_margin_line);
-            my $dist2 = abs($point2 - $nearest_margin_line);
-            if ($dist1 < $dist2) {
-                return @points1 if wantarray;
-                return \@points1;
-            }
-            return @points2 if wantarray;
-            return \@points2;
-        }
-
-        if ($nearest) {
-            if ($nearest eq "grid" && $self->ruling_get("grid")) {
+            if ($snap_to eq "grid" && $self->ruling_get("grid")) {
                 my $canvas_grid = $self->canvas->{grid};
-
                 my %args2 = %args;
                 if ($axis eq "x") {
                     $args2{origin} = $self->point_nearest($args2{origin}, @{$canvas_grid->{x}});
