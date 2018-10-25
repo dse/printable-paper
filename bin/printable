@@ -619,11 +619,11 @@ package My::Printable {
         # Secondary processing.
         $self->chop_grid;
 
-        $self->post_process_minor_vertical_lines;
-        $self->post_process_minor_horizontal_lines;
+        $self->exclude_from_minor_vertical_lines;
+        $self->exclude_from_minor_horizontal_lines;
 
-        $self->relocate_margin_lines;
-        $self->filter_grid_points;
+        $self->snap_margin_lines;
+        $self->exclude_grid_points;
 
         # Draw everything.
         $self->draw_grid;
@@ -940,7 +940,7 @@ package My::Printable {
         }
     }
 
-    sub post_process_minor_horizontal_lines {
+    sub exclude_from_minor_horizontal_lines {
         my ($self) = @_;
         my $canvas_horizontal_lines = $self->canvas->{horizontal_lines};
         if ($self->ruling_get("horizontal_lines", "minor")) {
@@ -949,7 +949,7 @@ package My::Printable {
         }
     }
 
-    sub post_process_minor_vertical_lines {
+    sub exclude_from_minor_vertical_lines {
         my ($self) = @_;
         my $canvas_vertical_lines = $self->canvas->{vertical_lines};
         if ($self->ruling_get("vertical_lines", "minor")) {
@@ -958,7 +958,7 @@ package My::Printable {
         }
     }
 
-    sub relocate_margin_lines {
+    sub snap_margin_lines {
         my ($self) = @_;
         my $canvas_margin_lines = $self->canvas->{margin_lines};
         my $canvas_grid = $self->canvas->{grid};
@@ -978,7 +978,7 @@ package My::Printable {
         }
     }
 
-    sub filter_grid_points {
+    sub exclude_grid_points {
         my ($self) = @_;
         my $canvas_margin_lines = $self->canvas->{margin_lines};
         my $canvas_grid = $self->canvas->{grid};
