@@ -185,7 +185,7 @@ package My::Printable {
                 metric => "16mm",
             }
         };
-        my $margin_line_class = {
+        my $margin_line_css_class = {
             DEFAULT => "red margin line",
             grayscale => "gray margin line",
         };
@@ -212,7 +212,7 @@ package My::Printable {
                 grid => {
                     x_spacing => "1unit",
                     y_spacing => "1unit",
-                    class => {
+                    css_class => {
                         DEFAULT => {
                             DEFAULT => "x-thin blue line",
                             grayscale => "x-thin gray line",
@@ -227,7 +227,7 @@ package My::Printable {
                 grid => {
                     x_spacing => "1unit",
                     y_spacing => "1unit",
-                    class => {
+                    css_class => {
                         DEFAULT => {
                             DEFAULT => "xx-thin blue line",
                             grayscale => "xx-thin gray line",
@@ -242,7 +242,7 @@ package My::Printable {
                 horizontal_lines => {
                     y_spacing => "3unit",
                     bottom => "2unit",
-                    class => {
+                    css_class => {
                         DEFAULT => "blue line",
                         grayscale => "gray line",
                     },
@@ -259,7 +259,7 @@ package My::Printable {
                     dots => 1,
                     x_spacing => "1unit",
                     y_spacing => "1unit",
-                    class => {
+                    css_class => {
                         DEFAULT => "blue dot",
                         grayscale => "gray dot",
                     },
@@ -269,7 +269,7 @@ package My::Printable {
                 left_margin_line => {
                     x => $left_margin,
                     snap_to => "grid",
-                    class => $margin_line_class,
+                    css_class => $margin_line_css_class,
                 },
             },
             line_dot_grid => {
@@ -278,7 +278,7 @@ package My::Printable {
                     dots => 1,
                     x_spacing => "1unit",
                     y_spacing => "1unit",
-                    class => {
+                    css_class => {
                         DEFAULT => {
                             DEFAULT => "semi-thick blue dot",
                             grayscale => "semi-thick gray dot",
@@ -297,7 +297,7 @@ package My::Printable {
                 horizontal_lines => {
                     y_spacing => "1unit",
                     top => $seyes_top,
-                    class => {
+                    css_class => {
                         DEFAULT => {
                             DEFAULT => "thin blue line",
                             grayscale => "thin gray line",
@@ -315,7 +315,7 @@ package My::Printable {
                 left_margin_line => {
                     x => $left_margin,
                     snap_to => "grid",
-                    class => $margin_line_class,
+                    css_class => $margin_line_css_class,
                 },
             },
             line_dot_graph => {
@@ -324,7 +324,7 @@ package My::Printable {
                     dots => 1,
                     x_spacing => "1unit",
                     y_spacing => "1/4unit",
-                    class => {
+                    css_class => {
                         DEFAULT => "thin blue dot",
                         grayscale => "thin gray dot",
                     },
@@ -337,7 +337,7 @@ package My::Printable {
                     snap_to => "margins",
                     bottom => $seyes_bottom,
                     top => $seyes_top,
-                    class => {
+                    css_class => {
                         DEFAULT => "thin blue line",
                         grayscale => "thin gray line",
                     },
@@ -345,7 +345,7 @@ package My::Printable {
                 left_margin_line => {
                     x => $left_margin,
                     snap_to => "grid",
-                    class => $margin_line_class,
+                    css_class => $margin_line_css_class,
                 },
             },
             seyes => {
@@ -354,7 +354,7 @@ package My::Printable {
                     y_spacing => "1unit",
                     bottom => $seyes_bottom,
                     top => $seyes_top,
-                    class => {
+                    css_class => {
                         DEFAULT => "blue line",
                         grayscale => "gray line",
                     },
@@ -373,7 +373,7 @@ package My::Printable {
                                 top => 2,
                             },
                         },
-                        class => {
+                        css_class => {
                             DEFAULT => {
                                 DEFAULT => "thin blue line",
                                 grayscale => "thin gray line",
@@ -401,7 +401,7 @@ package My::Printable {
                                 DEFAULT => "horizontal_lines",
                                 smaller => "minor_horizontal_lines",
                             },
-                            class => {
+                            css_class => {
                                 DEFAULT => {
                                     DEFAULT => "thin blue line",
                                     grayscale => "thin gray line",
@@ -428,7 +428,7 @@ package My::Printable {
                                 DEFAULT => "horizontal_lines",
                                 smaller => "minor_horizontal_lines",
                             },
-                            class => {
+                            css_class => {
                                 DEFAULT => {
                                     DEFAULT => "blue line stroke-linecap-butt",
                                     grayscale => "gray line stroke-linecap-butt",
@@ -460,7 +460,7 @@ package My::Printable {
                         "wider-grid" => "1.5units",
                     },
                     snap_to => "margins",
-                    class => {
+                    css_class => {
                         DEFAULT => {
                             DEFAULT => "thin blue line",
                             grayscale => "thin gray line",
@@ -475,7 +475,7 @@ package My::Printable {
                 left_margin_line => {
                     x => $left_margin,
                     snap_to => "vertical_lines",
-                    class => $margin_line_class,
+                    css_class => $margin_line_css_class,
                 },
             },
         };
@@ -728,7 +728,7 @@ package My::Printable {
             my $ahl_left_snap_to  = $self->get($ahl, "left", "snap_to");
             my $ahl_right_snap_to = $self->get($ahl, "right", "snap_to");
             my $ahl_width        = $self->get($ahl, "width");
-            my $ahl_class        = $self->get($ahl, "class") // $self->ruling_get("horizontal_lines", "class");
+            my $ahl_css_class        = $self->get($ahl, "css_class") // $self->ruling_get("horizontal_lines", "css_class");
 
             my $y;
             if ($ahl_position eq "bottom") {
@@ -766,7 +766,7 @@ package My::Printable {
                 x1 => $x1,
                 x2 => $x2,
                 y => $y,
-                class => $ahl_class,
+                css_class => $ahl_css_class,
             });
         }
     }
@@ -1029,15 +1029,15 @@ package My::Printable {
                     foreach my $y (@{$canvas_grid->{y}}) {
                         my $line = $self->create_line(
                             x => $x, y => $y,
-                            class => $self->ruling_get("grid", "class") // "thin blue dot",
+                            css_class => $self->ruling_get("grid", "css_class") // "thin blue dot",
                         );
                         $layer->appendChild($line);
                     }
                 }
             } else {
                 my $enclosed = $self->ruling_get("grid", "enclosed");
-                my $x_class = $self->ruling_get("grid", "x_class") // $self->ruling_get("grid", "class") // "thin blue line";
-                my $y_class = $self->ruling_get("grid", "y_class") // $self->ruling_get("grid", "class") // "thin blue line";
+                my $x_css_class = $self->ruling_get("grid", "x_css_class") // $self->ruling_get("grid", "css_class") // "thin blue line";
+                my $y_css_class = $self->ruling_get("grid", "y_css_class") // $self->ruling_get("grid", "css_class") // "thin blue line";
                 my ($x1, $x2);
                 my ($y1, $y2);
                 if ($enclosed) {
@@ -1054,14 +1054,14 @@ package My::Printable {
                 foreach my $x (@{$canvas_grid->{x}}) {
                     my $line = $self->create_line(
                         y1 => $y1, y2 => $y2, x => $x,
-                        class => $x_class,
+                        css_class => $x_css_class,
                     );
                     $layer->appendChild($line);
                 }
                 foreach my $y (@{$canvas_grid->{y}}) {
                     my $line = $self->create_line(
                         x1 => $x1, x2 => $x2, y => $y,
-                        class => $y_class,
+                        css_class => $y_css_class,
                     );
                     $layer->appendChild($line);
                 }
@@ -1079,7 +1079,7 @@ package My::Printable {
                 my $x2 = $self->right_margin;
                 my $line = $self->create_line(
                     x1 => $x1, x2 => $x2, y => $y,
-                    class => $self->ruling_get("horizontal_lines", "class") // "thin blue line",
+                    css_class => $self->ruling_get("horizontal_lines", "css_class") // "thin blue line",
                 );
                 $layer->appendChild($line);
             }
@@ -1099,7 +1099,7 @@ package My::Printable {
                     x1 => $x1,
                     x2 => $x2,
                     y => $y,
-                    class => $line->{class} // "thin blue line"
+                    css_class => $line->{css_class} // "thin blue line"
                 );
                 $layer->appendChild($line);
             }
@@ -1118,7 +1118,7 @@ package My::Printable {
                 foreach my $y (@{$minor->{y}}) {
                     my $line = $self->create_line(
                         x1 => $x1, x2 => $x2, y => $y,
-                        class => $self->ruling_get("horizontal_lines", "minor", "class") // "x-thin blue line",
+                        css_class => $self->ruling_get("horizontal_lines", "minor", "css_class") // "x-thin blue line",
                     );
                     $layer->appendChild($line);
                 }
@@ -1136,7 +1136,7 @@ package My::Printable {
             foreach my $x (@{$canvas_vertical_lines->{x}}) {
                 my $line = $self->create_line(
                     y1 => $y1, y2 => $y2, x => $x,
-                    class => $self->ruling_get("vertical_lines", "class") // "thin blue line",
+                    css_class => $self->ruling_get("vertical_lines", "css_class") // "thin blue line",
                 );
                 $layer->appendChild($line);
             }
@@ -1155,7 +1155,7 @@ package My::Printable {
                 foreach my $x (@{$minor->{x}}) {
                     my $line = $self->create_line(
                         y1 => $y1, y2 => $y2, x => $x,
-                        class => $self->ruling_get("vertical_lines", "minor", "class") // "x-thin blue line",
+                        css_class => $self->ruling_get("vertical_lines", "minor", "css_class") // "x-thin blue line",
                     );
                     $layer->appendChild($line);
                 }
@@ -1172,7 +1172,7 @@ package My::Printable {
                 x => $canvas_margin_lines->{left}->{x},
                 y1 => $self->bottom_margin,
                 y2 => $self->top_margin,
-                class => $self->ruling_get("left_margin_line", "class") // "red margin line",
+                css_class => $self->ruling_get("left_margin_line", "css_class") // "red margin line",
             );
             $layer->appendChild($margin_line);
         }
@@ -1263,7 +1263,7 @@ package My::Printable {
         $line->setAttribute("x2", $x2);
         $line->setAttribute("y1", $y1);
         $line->setAttribute("y2", $y2);
-        $line->setAttribute("class", $args{class}) if defined $args{class};
+        $line->setAttribute("class", $args{css_class}) if defined $args{css_class};
         return $line;
     }
 
