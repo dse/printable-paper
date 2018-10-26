@@ -144,7 +144,7 @@ package My::Printable {
     # use My::Printable::Util qw(exclude);
     sub exclude(\@@);      # for embedded package subs with prototypes
     INIT {
-        import My::Printable::Util qw(exclude);
+        import My::Printable::Util qw(exclude round3);
     }
 
     our $RULINGS;
@@ -1259,10 +1259,10 @@ package My::Printable {
         $y1 = $self->height - $y1;
         $y2 = $self->height - $y2;
 
-        $line->setAttribute("x1", $x1);
-        $line->setAttribute("x2", $x2);
-        $line->setAttribute("y1", $y1);
-        $line->setAttribute("y2", $y2);
+        $line->setAttribute("x1", round3($x1));
+        $line->setAttribute("x2", round3($x2));
+        $line->setAttribute("y1", round3($y1));
+        $line->setAttribute("y2", round3($y2));
         $line->setAttribute("class", $args{css_class}) if defined $args{css_class};
         return $line;
     }
@@ -1271,11 +1271,12 @@ package My::Printable {
         my ($self) = @_;
         my $width = $self->width;
         my $height = $self->height;
-        my $viewBox = sprintf("%f %f %f %f", 0, 0, $width, $height);
+        my $viewBox = sprintf("%s %s %s %s",
+                              map { round3($_) } (0, 0, $width, $height));
         my $doc = $self->doc(XML::LibXML::Document->new("1.0", "UTF-8"));
         my $root = $self->root($doc->createElement("svg"));
-        $root->setAttribute("width", $width . "pt");
-        $root->setAttribute("height", $height . "pt");
+        $root->setAttribute("width", round3($width) . "pt");
+        $root->setAttribute("height", round3($height) . "pt");
         $root->setAttribute("viewBox", $viewBox);
         $root->setAttribute("xmlns", "http://www.w3.org/2000/svg");
         $doc->setDocumentElement($root);
@@ -1828,7 +1829,7 @@ package My::Printable::Util {
 
     our @EXPORT_OK;
     BEGIN {
-        push(@EXPORT_OK, 'exclude');
+        push(@EXPORT_OK, 'exclude', 'round3');
     }
 
     use Data::Dumper;
@@ -1838,5 +1839,13 @@ package My::Printable::Util {
         my ($a, @b) = @_;
         my %b = map { ($_, 1) } @b;
         return grep { !$b{$_} } @$a;
+    }
+
+    sub round3 {
+        my ($value) = @_;
+        $value = sprintf('%.3f', $value);
+        $value =~ s{(\.\d*?)0+$}{$1};
+        $value =~ s{\.$}{};
+        return $value;
     }
 };
