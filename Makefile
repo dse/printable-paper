@@ -58,3 +58,5 @@ list:
 	makebin/makeprintable "$@"
 %.ps: makebin/makeprintable bin/printable Makefile
 	makebin/makeprintable "$@"
+
+.PHONY: ps pdf svg 2-up a4 a5 letter halfletter dot-grid line-dot-grid line-dot-graph seyes clean list
