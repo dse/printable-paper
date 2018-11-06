@@ -5,6 +5,9 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
+use Class::Thingy::RequireObject;
+
+require_object;
 
 our $UNITS;
 BEGIN {
@@ -87,7 +90,7 @@ sub delete_unit {
 
 sub rx_units {
     my ($self) = @_;
-    $self = object($self);
+    $self = REQUIRE_OBJECT($self);
 
     my @units = sort keys %{$self->{units}};
     @units = map {
@@ -110,13 +113,13 @@ sub rx_units {
 
 sub rx_number {
     my ($self) = @_;
-    $self = object($self);
+    $self = REQUIRE_OBJECT($self);
     return qr{[\-\+]?\d+(?:\.\d*)?|\.\d+}ix;
 }
 
 sub pt {
     my ($self, $value) = @_;
-    $self = object($self);
+    $self = REQUIRE_OBJECT($self);
 
     return undef if !defined $value;
 
@@ -194,16 +197,6 @@ sub pt {
 
     return ($result_pt, $result_type) if wantarray;
     return $result_pt;
-}
-
-our $SINGLETON;
-
-sub object {
-    my ($self) = @_;
-    if (!ref $self) {
-        $self = ($SINGLETON //= __PACKAGE__->new);
-    }
-    return $self;
 }
 
 1;
