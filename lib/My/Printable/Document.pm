@@ -6,7 +6,6 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
-public "layers";                # arrayref
 public "paperSizeName";         # letter, A4, etc.
 public "width";                 # in pt
 public "height";                # in pt
@@ -23,7 +22,7 @@ public "unitY";                 # My::Printable::Unit
 public "modifiers";             # arrayref
 public "modifiersHash";         # hashref
 
-public "layers";
+public "layers";                # arrayref
 
 public "svgDocument", lazy_default => sub {
     my ($self) = @_;
@@ -73,6 +72,13 @@ sub init {
     $self->unit(My::Printable::Unit->new());
     $self->unitX(My::Printable::Unit->new());
     $self->unitY(My::Printable::Unit->new());
+}
+
+sub start {
+    my ($self) = @_;
+    $self->svgDocument(undef);
+    $self->svgRoot(undef);
+    $self->layers(undef);
 }
 
 sub setPaperSize {
@@ -156,12 +162,12 @@ sub setYOrigin {
 
 sub generate {
     my ($self) = @_;
-    $self->createNewSVGDocument;
-    $self->compute;
-    $self->chop;
-    $self->snap;
-    $self->exclude;
-    $self->draw;
+    $self->start();
+    $self->compute();
+    $self->chop();
+    $self->snap();
+    $self->exclude();
+    $self->draw();
 }
 
 sub layer {
@@ -175,6 +181,17 @@ sub layer {
     );
     $layers->{$id} = $layer;
     return $layer;
+}
+
+sub createLine {
+    my ($self, %args) = @_;
+    my $line = $self->svgDocument->createElement('line');
+    $line->setAttribute('x1', round3($args{x1} // $args{x}));
+    $line->setAttribute('x2', round3($args{x2} // $args{x}));
+    $line->setAttribute('y1', round3($args{y1} // $args{y}));
+    $line->setAttribute('y2', round3($args{y2} // $args{y}));
+    $line->setAttribute('class', $args{cssClass}) if defined $args{cssClass};
+    return $line;
 }
 
 1;

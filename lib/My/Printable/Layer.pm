@@ -10,7 +10,8 @@ use Class::Thingy::Delegate;
 public "elements";
 public "document";
 public "id";
-public "node", lazy_default => sub {
+
+public "svgLayer", lazy_default => sub {
     my ($self) = @_;
     my $id = $self->id;
     die("id not defined before node called\n") if !defined $id;

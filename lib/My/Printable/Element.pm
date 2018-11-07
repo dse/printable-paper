@@ -25,8 +25,10 @@ public "bottomY";
 public "topY";
 public "leftX";
 public "rightX";
+public "cssClass";
 
 public "document";
+public "layer";
 
 delegate "unitX",            via => "document";
 delegate "unitY",            via => "document";
@@ -39,6 +41,11 @@ delegate "leftMarginX",      via => "document";
 delegate "rightMarginX",     via => "document";
 delegate "bottomMarginY",    via => "document";
 delegate "topMarginY",       via => "document";
+
+delegate "svgDocument", via => "document";
+delegate "svgRoot",     via => "document";
+delegate "svgLayer",    via => "layer";
+delegate "createLine",  via => "document";
 
 sub ptX {
     my ($self, $value) = @_;
