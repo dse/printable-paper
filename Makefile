@@ -49,8 +49,12 @@ seyes:
 # actions
 clean:
 	makebin/makeprintable CLEAN
+clean-svg:
+	makebin/makeprintable CLEAN svg
 list:
 	makebin/makeprintable LIST
+list-svg:
+	makebin/makeprintable LIST svg
 
 %.pdf: makebin/makeprintable bin/printable Makefile
 	makebin/makeprintable "$@"
@@ -59,4 +63,4 @@ list:
 %.ps: makebin/makeprintable bin/printable Makefile
 	makebin/makeprintable "$@"
 
-.PHONY: ps pdf svg 2-up a4 a5 letter halfletter dot-grid line-dot-grid line-dot-graph seyes clean list
+.PHONY: ps pdf svg 2-up a4 a5 letter halfletter dot-grid line-dot-grid line-dot-graph seyes clean list clean-svg list-svg
