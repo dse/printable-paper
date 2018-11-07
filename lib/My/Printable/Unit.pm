@@ -8,56 +8,57 @@ use Class::Thingy;
 use Class::Thingy::RequireObject;
 
 require_object;
+public "units";
+public "axis";
 
-our $UNITS;
-BEGIN {
-    $UNITS = {
-        "pt" => {
-            to_pt => 1,
-            type => "imperial",
-        },
-        "pc" => {
-            to_pt => 12,    # 1 pc = 12 pt
-            type => "imperial",
-        },
-        "in" => {
-            to_pt => 72,    # 1 in = 72 pt
-            type => "imperial",
-        },
-        "cm" => {
-            to_pt => (72 / 2.54), # 1 cm ~= 28.3465 pt
-            type => "metric",
-        },
-        "mm" => {
-            to_pt => (72 / 25.4), # 1 cm ~= 2.83465 pt
-            type => "metric",
-        },
-        "px" => {
-            to_pt => (72 / 96), # 1 px = 0.75 pt
-            type => "imperial"
-        },
-        "pd" => {           # pixel dots
-            to_pt => (72 / 300), # 1 pd = 1 dot on a 300dpi laser printer = 1/300 in = 72/300 pt
-            type => "imperial"
-        }
-    };
-}
+use Storable qw(dclone);
+
+our $UNITS = {
+    "pt" => {
+        to_pt => 1,
+        type => "imperial",
+    },
+    "pc" => {
+        to_pt => 12,            # 1 pc = 12 pt
+        type => "imperial",
+    },
+    "in" => {
+        to_pt => 72,            # 1 in = 72 pt
+        type => "imperial",
+    },
+    "cm" => {
+        to_pt => (72 / 2.54),   # 1 cm ~= 28.3465 pt
+        type => "metric",
+    },
+    "mm" => {
+        to_pt => (72 / 25.4),   # 1 cm ~= 2.83465 pt
+        type => "metric",
+    },
+    "px" => {
+        to_pt => (72 / 96),     # 1 px = 0.75 pt
+        type => "imperial"
+    },
+    "pd" => {                   # pixel dots
+        to_pt => (72 / 300), # 1 pd = 1 dot on a 300dpi laser printer = 1/300 in = 72/300 pt
+        type => "imperial"
+    }
+};
 
 sub init {
     my ($self) = @_;
-    $self->{units} = { %$UNITS }; # shallow copy
+    $self->units(dclone($UNITS));
 }
 
 sub set_percentage_basis {
     my ($self, $value) = @_;
-    delete $self->{units}->{'%'};
+    delete $self->units->{'%'};
     my $hash = $self->add_unit('%', $value);
     $hash->{to_pt} /= 100;
 }
 
 sub add_unit {
     my ($self, $unit, $value, %options) = @_;
-    die("Unit already defined: $unit\n") if exists $self->{units}->{$unit};
+    die("Unit already defined: $unit\n") if exists $self->units->{$unit};
     my ($pt, $type) = $self->pt($value);
 
     my $aka = delete $options{aka};
@@ -72,7 +73,7 @@ sub add_unit {
         }
     }
     foreach my $aka (@aka) {
-        $self->{units}->{$aka} = $unit;
+        $self->units->{$aka} = $unit;
     }
 
     my $hash = {
@@ -80,21 +81,21 @@ sub add_unit {
         type => $type,
         %options
     };
-    return $self->{units}->{$unit} = $hash;
+    return $self->units->{$unit} = $hash;
 }
 
 sub delete_unit {
     my ($self, $unit) = @_;
-    delete $self->{units}->{$unit};
+    delete $self->units->{$unit};
 }
 
 sub rx_units {
     my ($self) = @_;
     $self = REQUIRE_OBJECT($self);
 
-    my @units = sort keys %{$self->{units}};
+    my @units = sort keys %{$self->units};
     @units = map {
-        my $unit = $self->{units}->{$_};
+        my $unit = $self->units->{$_};
         if (ref $unit eq "HASH" && $unit->{aka}) {
             if (ref $unit->{aka} eq "ARRAY") {
                 ($_, @{$unit->{aka}});
@@ -184,9 +185,9 @@ sub pt {
         return $number;
     }
 
-    my $unit_info = $self->{units}->{$unit};
+    my $unit_info = $self->units->{$unit};
     while (defined $unit_info && !ref $unit_info) {
-        $unit_info = $self->{units}->{$unit_info};
+        $unit_info = $self->units->{$unit_info};
     }
     if (!defined $unit_info) {
         die("Invalid size specification: $spec\n");
