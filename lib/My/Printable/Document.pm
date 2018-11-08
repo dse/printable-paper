@@ -6,23 +6,23 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
-public "paperSizeName";         # letter, A4, etc.
-public "width";                 # in pt
-public "height";                # in pt
-public "unitType";              # imperial, metric
-public "colorType";             # color, grayscale
-public "rulingName";            # seyes, etc.
-public "leftMargin";            # in pt, from 0
-public "rightMargin";           # in pt, from 0
-public "bottomMargin";          # in pt, from 0
-public "topMargin";             # in pt, from 0
-public "unit";                  # My::Printable::Unit
-public "unitX";                 # My::Printable::Unit
-public "unitY";                 # My::Printable::Unit
-public "modifiers";             # arrayref
-public "modifiersHash";         # hashref
-
-public "layers";                # arrayref
+public "paperSizeName", default => "letter";   # letter, A4, etc.
+public "width",         default => 612;        # in pt
+public "height",        default => 792;        # in pt
+public "unitType",      default => "imperial"; # imperial, metric
+public "colorType",     default => "color";    # color, grayscale
+public "rulingName";                           # seyes, etc.
+public "leftMargin";                           # in pt, from 0
+public "rightMargin";                          # in pt, from 0
+public "bottomMargin";                         # in pt, from 0
+public "topMargin";                            # in pt, from 0
+public "unit";                                 # My::Printable::Unit
+public "unitX";                                # My::Printable::Unit
+public "unitY";                                # My::Printable::Unit
+public "modifiers",     default => [];         # arrayref
+public "modifiersHash", default => {};         # hashref
+public "elements",      default => [];
+public "elementsById",  default => {};
 
 public "svgDocument", lazy_default => sub {
     my ($self) = @_;
@@ -34,12 +34,8 @@ public "svgRoot", lazy_default => sub {
     my ($self) = @_;
     my $width = $self->width;
     my $height = $self->height;
-    die("width not defined before svgRoot called\n") if !defined $width;
-    die("height not defined before svgRoot called\n") if !defined $height;
-
     my $doc = $self->svgDocument;
-    my $viewBox = sprintf("%s %s %s %s",
-                          map { round3($_) } (0, 0, $width, $height));
+    my $viewBox = sprintf("%s %s %s %s", map { round3($_) } (0, 0, $width, $height));
     my $root = $doc->createElement("svg");
     $root->setAttribute("width", round3($width) . "pt");
     $root->setAttribute("height", round3($height) . "pt");
@@ -170,28 +166,61 @@ sub generate {
     $self->draw();
 }
 
-sub layer {
-    my ($self, $id) = @_;
-    my $layers = $self->layers;
-    my $layer = $layers->{$id};
-    return $layer if defined $layer;
-    $layer = My::Printable::Layer->new(
-        id => $id,
-        document => $self,
-    );
-    $layers->{$id} = $layer;
-    return $layer;
+sub compute {
+    my ($self) = @_;
+    foreach my $element (@{$self->elements}) {
+        $element->compute();
+    }
 }
 
-sub createLine {
-    my ($self, %args) = @_;
-    my $line = $self->svgDocument->createElement('line');
-    $line->setAttribute('x1', round3($args{x1} // $args{x}));
-    $line->setAttribute('x2', round3($args{x2} // $args{x}));
-    $line->setAttribute('y1', round3($args{y1} // $args{y}));
-    $line->setAttribute('y2', round3($args{y2} // $args{y}));
-    $line->setAttribute('class', $args{cssClass}) if defined $args{cssClass};
-    return $line;
+sub chop {
+    my ($self) = @_;
+    foreach my $element (@{$self->elements}) {
+        $element->chop();
+    }
+}
+
+sub snap {
+    my ($self) = @_;
+    foreach my $element (@{$self->elements}) {
+        $element->snap();
+    }
+}
+
+sub exclude {
+    my ($self) = @_;
+    foreach my $element (@{$self->elements}) {
+        $element->exclude();
+    }
+}
+
+sub draw {
+    my ($self) = @_;
+    foreach my $element (@{$self->elements}) {
+        $element->draw();
+    }
+}
+
+sub print {
+    my ($self) = @_;
+    $self->generate();
+    print $self->svgDocument->asString();
+}
+
+sub appendElement {
+    my ($self, $element) = @_;
+
+    if (grep { $_ eq $element } @{$self->elements}) {
+        return;
+    }
+
+    my $id = $element->id;
+    if (defined $id) {
+        $self->elementsById->{$id} = $element;
+    }
+    push(@{$self->elements}, $element);
+
+    $self->svgRoot->appendChild($element->svgLayer);
 }
 
 1;

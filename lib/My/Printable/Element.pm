@@ -28,14 +28,12 @@ public "rightX";
 public "cssClass";
 
 public "document";
-public "layer";
 
 delegate "unitX",            via => "document";
 delegate "unitY",            via => "document";
 delegate "unit",             via => "document";
 delegate "documentWidth",    via => "document", method => "width";
 delegate "documentHeight",   via => "document", method => "height";
-delegate "layers",           via => "document";
 delegate "documentElements", via => "document", method => "elements";
 delegate "leftMarginX",      via => "document";
 delegate "rightMarginX",     via => "document";
@@ -44,8 +42,40 @@ delegate "topMarginY",       via => "document";
 
 delegate "svgDocument", via => "document";
 delegate "svgRoot",     via => "document";
-delegate "svgLayer",    via => "layer";
-delegate "createLine",  via => "document";
+
+public "svgLayer", lazy_default => sub {
+    my ($self) = @_;
+    my $id = $self->id;
+    die("id not defined before node called\n") if !defined $id;
+    my $doc = $self->svgDocument;
+    my $g = $doc->createElement("g");
+    $g->setAttribute("id", $id);
+    return $g;
+};
+
+sub createLine {
+    my ($self, %args) = @_;
+    my $line = $self->svgDocument->createElement('line');
+    $line->setAttribute('x1', round3($args{x1} // $args{x}));
+    $line->setAttribute('x2', round3($args{x2} // $args{x}));
+    $line->setAttribute('y1', round3($args{y1} // $args{y}));
+    $line->setAttribute('y2', round3($args{y2} // $args{y}));
+    $line->setAttribute('class', $args{cssClass}) if defined $args{cssClass};
+    return $line;
+}
+
+sub appendLine {
+    my $self = shift;
+    my $line;
+    if (scalar @_ == 1 && ref $line && $line->isa('XML::LibXML::Element')) {
+        $line = shift;
+    } elsif ((scalar @_) % 2 == 0) {
+        $line = $self->createLine(@_);
+    } else {
+        die("Bad call to appendLine");
+    }
+    $self->svgLayer->appendChild($line);
+}
 
 sub ptX {
     my ($self, $value) = @_;
