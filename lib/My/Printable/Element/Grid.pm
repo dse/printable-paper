@@ -17,10 +17,10 @@ use base qw(My::Printable::Element);
 
 sub draw {
     my ($self) = @_;
-    my $x1 = $self->leftMargin;
-    my $x2 = $self->rightMargin;
-    my $y1 = $self->bottomMargin;
-    my $y2 = $self->topMargin;
+    my $x1 = $self->leftMarginX;
+    my $x2 = $self->rightMarginX;
+    my $y1 = $self->bottomMarginY;
+    my $y2 = $self->topMarginY;
     if ($self->isDotGrid) {
         foreach my $x (@{$self->xValues}) {
             foreach my $y (@{$self->yValues}) {

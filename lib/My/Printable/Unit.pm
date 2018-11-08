@@ -50,6 +50,9 @@ sub init {
 }
 
 sub set_percentage_basis {
+    goto &setPercentageBasis;
+}
+sub setPercentageBasis {
     my ($self, $value) = @_;
     delete $self->units->{'%'};
     my $hash = $self->add_unit('%', $value);
@@ -57,6 +60,9 @@ sub set_percentage_basis {
 }
 
 sub add_unit {
+    goto &addUnit;
+}
+sub addUnit {
     my ($self, $unit, $value, %options) = @_;
     die("Unit already defined: $unit\n") if exists $self->units->{$unit};
     my ($pt, $type) = $self->pt($value);
@@ -85,6 +91,9 @@ sub add_unit {
 }
 
 sub delete_unit {
+    goto &deleteUnit;
+}
+sub deleteUnit {
     my ($self, $unit) = @_;
     delete $self->units->{$unit};
 }

@@ -12,10 +12,10 @@ public "height",        default => 792;        # in pt
 public "unitType",      default => "imperial"; # imperial, metric
 public "colorType",     default => "color";    # color, grayscale
 public "rulingName";                           # seyes, etc.
-public "leftMargin";                           # in pt, from 0
-public "rightMargin";                          # in pt, from 0
-public "bottomMargin";                         # in pt, from 0
-public "topMargin";                            # in pt, from 0
+public "leftMarginX";                          # in pt, from 0
+public "rightMarginX";                         # in pt, from 0
+public "bottomMarginY";                        # in pt, from 0
+public "topMarginY";                           # in pt, from 0
 public "unit";                                 # My::Printable::Unit
 public "unitX";                                # My::Printable::Unit
 public "unitY";                                # My::Printable::Unit
@@ -23,6 +23,8 @@ public "modifiers",     default => [];         # arrayref
 public "modifiersHash", default => {};         # hashref
 public "elements",      default => [];
 public "elementsById",  default => {};
+
+use XML::LibXML;
 
 public "svgDocument", lazy_default => sub {
     my ($self) = @_;
@@ -62,19 +64,17 @@ sub pt {
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Util qw(round3);
+use My::Printable::Unit;
 
 sub init {
     my ($self) = @_;
     $self->unit(My::Printable::Unit->new());
     $self->unitX(My::Printable::Unit->new());
     $self->unitY(My::Printable::Unit->new());
-}
-
-sub start {
-    my ($self) = @_;
-    $self->svgDocument(undef);
-    $self->svgRoot(undef);
-    $self->layers(undef);
+    $self->setBottomMargin(0);
+    $self->setTopMargin(0);
+    $self->setLeftMargin(0);
+    $self->setRightMargin(0);
 }
 
 sub setPaperSize {
@@ -128,22 +128,22 @@ sub setModifiers {
 
 sub setLeftMargin {
     my ($self, $value) = @_;
-    $self->leftMargin($self->ptX($value));
+    $self->leftMarginX($self->ptX($value));
 }
 
 sub setRightMargin {
     my ($self, $value) = @_;
-    $self->rightMargin($self->width - $self->ptX($value));
+    $self->rightMarginX($self->width - $self->ptX($value));
 }
 
 sub setBottomMargin {
     my ($self, $value) = @_;
-    $self->bottomMargin($self->ptY($value));
+    $self->bottomMarginY($self->ptY($value));
 }
 
 sub setTopMargin {
     my ($self, $value) = @_;
-    $self->topMargin($self->height - $self->ptY($value));
+    $self->topMarginY($self->height - $self->ptY($value));
 }
 
 sub setXOrigin {
@@ -156,9 +156,15 @@ sub setYOrigin {
     $self->yOrigin($self->ptY($value));
 }
 
+sub setUnit {
+    my ($self, $value) = @_;
+    $self->unit->addUnit("unit", scalar($self->pt($value)));
+    $self->unitX->addUnit("unit", scalar($self->ptX($value)));
+    $self->unitY->addUnit("unit", scalar($self->ptY($value)));
+}
+
 sub generate {
     my ($self) = @_;
-    $self->start();
     $self->compute();
     $self->chop();
     $self->snap();
@@ -204,7 +210,7 @@ sub draw {
 sub print {
     my ($self) = @_;
     $self->generate();
-    print $self->svgDocument->asString();
+    print $self->svgDocument->toString(2);
 }
 
 sub appendElement {
@@ -213,6 +219,8 @@ sub appendElement {
     if (grep { $_ eq $element } @{$self->elements}) {
         return;
     }
+
+    $element->document($self);
 
     my $id = $element->id;
     if (defined $id) {

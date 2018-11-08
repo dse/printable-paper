@@ -8,40 +8,48 @@ use Class::Thingy;
 use Class::Thingy::Delegate;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(get_point_series);
+use My::Printable::Util qw(get_point_series round3);
 
 public "id";
+
 public "x1";
 public "x2";
 public "y1";
 public "y2";
+
 public "xValues";
 public "yValues";
+
 public "origXValues";
 public "origYValues";
+
+public "spacing";
 public "spacingX";
 public "spacingY";
+
 public "bottomY";
 public "topY";
 public "leftX";
 public "rightX";
+
 public "cssClass";
 
-public "document";
+public "originX";
+public "originY";
 
-delegate "unitX",            via => "document";
-delegate "unitY",            via => "document";
-delegate "unit",             via => "document";
-delegate "documentWidth",    via => "document", method => "width";
-delegate "documentHeight",   via => "document", method => "height";
-delegate "documentElements", via => "document", method => "elements";
-delegate "leftMarginX",      via => "document";
-delegate "rightMarginX",     via => "document";
-delegate "bottomMarginY",    via => "document";
-delegate "topMarginY",       via => "document";
+public "document";              # My::Printable::Document
 
-delegate "svgDocument", via => "document";
-delegate "svgRoot",     via => "document";
+delegate "unitX",         via => "document";
+delegate "unitY",         via => "document";
+delegate "unit",          via => "document";
+delegate "leftMarginX",   via => "document";
+delegate "rightMarginX",  via => "document";
+delegate "bottomMarginY", via => "document";
+delegate "topMarginY",    via => "document";
+delegate "width",         via => "document";
+delegate "height",        via => "document";
+delegate "svgDocument",   via => "document";
+delegate "svgRoot",       via => "document";
 
 public "svgLayer", lazy_default => sub {
     my ($self) = @_;
@@ -55,7 +63,8 @@ public "svgLayer", lazy_default => sub {
 
 sub createLine {
     my ($self, %args) = @_;
-    my $line = $self->svgDocument->createElement('line');
+    my $doc = $self->document->svgDocument;
+    my $line = $self->document->svgDocument->createElement('line');
     $line->setAttribute('x1', round3($args{x1} // $args{x}));
     $line->setAttribute('x2', round3($args{x2} // $args{x}));
     $line->setAttribute('y1', round3($args{y1} // $args{y}));
@@ -67,8 +76,13 @@ sub createLine {
 sub appendLine {
     my $self = shift;
     my $line;
-    if (scalar @_ == 1 && ref $line && $line->isa('XML::LibXML::Element')) {
+    if (scalar @_ == 1) {
         $line = shift;
+        if (ref $line && $line->isa('XML::LibXML::Element')) {
+            # do nothing
+        } else {
+            die("Bad call to appendLine");
+        }
     } elsif ((scalar @_) % 2 == 0) {
         $line = $self->createLine(@_);
     } else {
@@ -129,6 +143,12 @@ sub setSpacingY {
     $self->spacingY($self->ptY($value));
 }
 
+sub setSpacing {
+    my ($self, $value) = @_;
+    $self->spacingX($self->ptX($value));
+    $self->spacingY($self->ptY($value));
+}
+
 sub setBottomY {
     my ($self, $value) = @_;
     $self->bottomY($self->ptY($value));
@@ -160,10 +180,10 @@ sub compute {
 sub computeX {
     my ($self) = @_;
     my $xValues = get_point_series(
-        spacing => $self->spacingX,
-        min     => $self->leftX   // $self->leftMarginX,
-        max     => $self->rightX  // $self->rightMarginX,
-        origin  => $self->originX // ($self->width / 2),
+        spacing => scalar($self->spacingX // $self->spacing // $self->ptX("1unit")),
+        min     => scalar($self->leftX // $self->leftMarginX),
+        max     => scalar($self->rightX // $self->rightMarginX),
+        origin  => scalar($self->originX // ($self->width / 2)),
     );
     $self->xValues($xValues);
 }
@@ -171,10 +191,10 @@ sub computeX {
 sub computeY {
     my ($self) = @_;
     my $yValues = get_point_series(
-        spacing => $self->spacingY,
-        min     => $self->bottomY // $self->bottomMarginY,
-        max     => $self->topY    // $self->topMarginY,
-        origin  => $self->originY // ($self->height / 2),
+        spacing => scalar($self->spacingY // $self->spacing // $self->ptY("1unit")),
+        min     => scalar($self->bottomY // $self->bottomMarginY),
+        max     => scalar($self->topY    // $self->topMarginY),
+        origin  => scalar($self->originY // ($self->height / 2)),
     );
     $self->yValues($yValues);
 }
