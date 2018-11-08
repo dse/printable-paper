@@ -44,6 +44,7 @@ public "svgRoot", lazy_default => sub {
     $root->setAttribute("viewBox", $viewBox);
     $root->setAttribute("xmlns", "http://www.w3.org/2000/svg");
     $doc->setDocumentElement($root);
+    $root->appendChild($self->createSVGStyle);
     return $root;
 };
 
@@ -229,6 +230,70 @@ sub appendElement {
     push(@{$self->elements}, $element);
 
     $self->svgRoot->appendChild($element->svgLayer);
+}
+
+sub createSVGStyle {
+    my ($self) = @_;
+    my $style = $self->svgDocument->createElement('style');
+    $style->appendText($self->defaultStyles);
+    return $style;
+}
+
+sub defaultStyles {
+    my ($self) = @_;
+
+    my $xx_thin_line_stroke_width    = $self->unit->pt("2/600in");
+    my $x_thin_line_stroke_width     = $self->unit->pt("3/600in");
+    my $thin_line_stroke_width       = $self->unit->pt("4/600in");
+    my $semi_thin_line_stroke_width  = $self->unit->pt("4.9/600in");
+    my $line_stroke_width            = $self->unit->pt("6/600in");
+    my $semi_thick_line_stroke_width = $self->unit->pt("7.35/600in");
+    my $thick_line_stroke_width      = $self->unit->pt("9/600in");
+
+    my $thin_dot_stroke_width        = $self->unit->pt("4/300in");
+    my $semi_thin_dot_stroke_width   = $self->unit->pt("4.9/300in");
+    my $dot_stroke_width             = $self->unit->pt("6/300in");
+    my $semi_thick_dot_stroke_width  = $self->unit->pt("7.35/300in");
+    my $thick_dot_stroke_width       = $self->unit->pt("9/300in");
+
+    return <<"EOF";
+    .line, .dot { stroke-linecap: round; }
+    .stroke-linecap-butt { stroke-linecap: butt; }
+
+    .line            { stroke-width: ${line_stroke_width}pt; }
+    .line.xx-thin    { stroke-width: ${xx_thin_line_stroke_width}pt; }
+    .line.x-thin     { stroke-width: ${x_thin_line_stroke_width}pt; }
+    .line.thin       { stroke-width: ${thin_line_stroke_width}pt; }
+    .line.thick      { stroke-width: ${thick_line_stroke_width}pt; }
+    .line.semi-thin  { stroke-width: ${semi_thin_line_stroke_width}pt; }
+    .line.semi-thick { stroke-width: ${semi_thick_line_stroke_width}pt; }
+
+    .dot             { stroke-width: ${dot_stroke_width}pt; }
+    .dot.thin        { stroke-width: ${thin_dot_stroke_width}pt; }
+    .dot.thick       { stroke-width: ${thick_dot_stroke_width}pt; }
+    .dot.semi-thin   { stroke-width: ${semi_thin_dot_stroke_width}pt; }
+    .dot.semi-thick  { stroke-width: ${semi_thick_dot_stroke_width}pt; }
+
+    .blue  { stroke: #b3b3ff; }
+    .red   { stroke: #ff9999; }
+    .green { stroke: #b3ffb3; }
+    .gray  { stroke: #b3b3b3; }
+
+    .light.blue  { stroke: #d9d9ff; }
+    .light.red   { stroke: #ffcccc; }
+    .light.green { stroke: #d9ffd9; }
+    .light.gray  { stroke: #d9d9d9; }
+
+    .dark.blue  { stroke: #6767ff; }
+    .dark.red   { stroke: #ff3333; }
+    .dark.green { stroke: #67ff67; }
+    .dark.gray  { stroke: #676767; }
+
+    .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
+    .alternate-red   { stroke: #ff3333; opacity: 0.5; }
+    .alternate-green { stroke: #67ff67; opacity: 0.5; }
+    .alternate-gray  { stroke: #676767; opacity: 0.5; }
+EOF
 }
 
 1;

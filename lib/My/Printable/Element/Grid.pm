@@ -15,6 +15,8 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 
 use base qw(My::Printable::Element);
 
+use List::Util qw(min max);
+
 sub draw {
     my ($self) = @_;
     my $x1 = $self->leftMarginX;

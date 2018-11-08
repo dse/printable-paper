@@ -10,6 +10,8 @@ use Class::Thingy::Delegate;
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Util qw(get_point_series round3);
 
+use List::Util qw(min max);
+
 public "id";
 
 public "x1";
@@ -300,6 +302,9 @@ sub excludeX {
     my $xValues = $self->xValues;
     return unless defined $xValues;
 
+    @$xValues = grep { $_ >= $self->leftMarginX  } @$xValues if defined $self->leftMarginX;
+    @$xValues = grep { $_ <= $self->rightMarginX } @$xValues if defined $self->rightMarginX;
+
     foreach my $id (@id) {
         my $element = $self->elements->{$id};
         next unless $element;
@@ -310,6 +315,9 @@ sub excludeY {
     my ($self, @id) = @_;
     my $yValues = $self->yValues;
     return unless defined $yValues;
+
+    @$yValues = grep { $_ >= $self->bottomMarginY } @$yValues if defined $self->bottomMarginY;
+    @$yValues = grep { $_ <= $self->topMarginY    } @$yValues if defined $self->topMarginY;
 
     foreach my $id (@id) {
         my $element = $self->elements->{$id};

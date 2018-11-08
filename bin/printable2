@@ -12,14 +12,18 @@ use My::Printable::Element::Grid;
 
 my $doc = My::Printable::Document->new();
 $doc->setUnit("1/4in");
+$doc->setLeftMargin(".5unit");
+$doc->setRightMargin("1.5unit");
+$doc->setTopMargin("2.5unit");
+$doc->setBottomMargin("2.5unit");
 
 my $grid = My::Printable::Element::Grid->new(
     document => $doc,
     id => "grid"
 );
 $grid->setSpacing("1unit");
+$grid->isEnclosed(1);
 
 $doc->appendElement($grid);
 
-print("<<<<<<<<\n");
 $doc->print;
