@@ -166,45 +166,18 @@ sub setUnit {
 
 sub generate {
     my ($self) = @_;
-    $self->compute();
-    $self->chop();
-    $self->snap();
-    $self->exclude();
-    $self->draw();
+    $self->each("compute");
+    $self->each("chop");
+    $self->each("snap");
+    $self->each("exclude");
+    $self->each("extend");
+    $self->each("draw");
 }
 
-sub compute {
-    my ($self) = @_;
+sub each {
+    my ($self, $method, @args) = @_;
     foreach my $element (@{$self->elements}) {
-        $element->compute();
-    }
-}
-
-sub chop {
-    my ($self) = @_;
-    foreach my $element (@{$self->elements}) {
-        $element->chop();
-    }
-}
-
-sub snap {
-    my ($self) = @_;
-    foreach my $element (@{$self->elements}) {
-        $element->snap();
-    }
-}
-
-sub exclude {
-    my ($self) = @_;
-    foreach my $element (@{$self->elements}) {
-        $element->exclude();
-    }
-}
-
-sub draw {
-    my ($self) = @_;
-    foreach my $element (@{$self->elements}) {
-        $element->draw();
+        $element->$method(@args);
     }
 }
 

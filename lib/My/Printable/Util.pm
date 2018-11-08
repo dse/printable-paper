@@ -36,12 +36,17 @@ sub get_point_series {
 
     my @points = ($origin);
     my $x;
+
+    # float
     for ($x = $origin + $spacing; $x <= $max; $x += $spacing) {
         push(@points, $x);
     }
+
+    # float
     for ($x = $origin - $spacing; $x >= $min; $x -= $spacing) {
         unshift(@points, $x);
     }
+
     return @points if wantarray;
     return \@points;
 }

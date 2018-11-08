@@ -41,6 +41,11 @@ public "originY";
 
 public "document";              # My::Printable::Document
 
+public "extendLeft";
+public "extendRight";
+public "extendTop";
+public "extendBottom";
+
 delegate "unitX",         via => "document";
 delegate "unitY",         via => "document";
 delegate "unit",          via => "document";
@@ -219,7 +224,19 @@ sub snapY {
     return unless defined $yValues;
 }
 
-sub extendRight {
+sub extend {
+    my ($self) = @_;
+    my $left   = $self->extendLeft;
+    my $right  = $self->extendRight;
+    my $top    = $self->extendTop;
+    my $bottom = $self->extendBottom;
+    $self->extendLeftBy($left)     if defined $left;
+    $self->extendRightBy($right)   if defined $right;
+    $self->extendTopBy($top)       if defined $top;
+    $self->extendBottomBy($bottom) if defined $bottom;
+}
+
+sub extendRightBy {
     my ($self, $number) = @_;
     my $xValues = $self->xValues;
     return unless defined $xValues;
@@ -231,7 +248,7 @@ sub extendRight {
     }
 }
 
-sub extendLeft {
+sub extendLeftBy {
     my ($self, $number) = @_;
     my $xValues = $self->xValues;
     return unless defined $xValues;
@@ -243,7 +260,7 @@ sub extendLeft {
     }
 }
 
-sub extendBottom {
+sub extendBottomBy {
     my ($self, $number) = @_;
     my $yValues = $self->yValues;
     return unless defined $yValues;
@@ -255,7 +272,7 @@ sub extendBottom {
     }
 }
 
-sub extendTop {
+sub extendTopBy {
     my ($self, $number) = @_;
     my $yValues = $self->yValues;
     return unless defined $yValues;
@@ -278,6 +295,7 @@ sub chopX {
     my $xValues = $self->xValues;
     return unless defined $xValues;
 
+    # float
     @$xValues = grep { $_ >= $self->leftX  } @$xValues if defined $self->leftX;
     @$xValues = grep { $_ <= $self->rightX } @$xValues if defined $self->rightX;
 }
@@ -287,6 +305,7 @@ sub chopY {
     my $yValues = $self->yValues;
     return unless defined $yValues;
 
+    # float
     @$yValues = grep { $_ >= $self->bottomY } @$yValues if defined $self->bottomY;
     @$yValues = grep { $_ <= $self->topY    } @$yValues if defined $self->topY;
 }
@@ -302,6 +321,7 @@ sub excludeX {
     my $xValues = $self->xValues;
     return unless defined $xValues;
 
+    # float
     @$xValues = grep { $_ >= $self->leftMarginX  } @$xValues if defined $self->leftMarginX;
     @$xValues = grep { $_ <= $self->rightMarginX } @$xValues if defined $self->rightMarginX;
 
@@ -316,6 +336,7 @@ sub excludeY {
     my $yValues = $self->yValues;
     return unless defined $yValues;
 
+    # float
     @$yValues = grep { $_ >= $self->bottomMarginY } @$yValues if defined $self->bottomMarginY;
     @$yValues = grep { $_ <= $self->topMarginY    } @$yValues if defined $self->topMarginY;
 
