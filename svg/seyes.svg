@@ -26,16 +26,16 @@
 	        <path d="M 0 1 H 210" class="stroke-blue stroke-1" />
 	    </pattern>
 	    <pattern id="thick-h-lines" width="210" height="8" patternUnits="userSpaceOnUse">
-	        <path d="M 0 4 H 210" class="stroke-blue stroke-3" />
+	        <path d="M 0 5 H 210" class="stroke-blue stroke-2" />
 	    </pattern>
 	    <pattern id="v-lines" width="8" height="297" patternUnits="userSpaceOnUse">
-	        <path d="M 4 0 V 297" class="stroke-blue stroke-1" />
+	        <path d="M 1 0 V 297" class="stroke-blue stroke-1" />
 	    </pattern>
     </defs>
     <g>
-	    <rect x="0" y="0" width="210" height="297" fill="url(#feint-h-lines)" />
-	    <rect x="0" y="0" width="210" height="297" fill="url(#thick-h-lines)" />
-	    <rect x="0" y="0" width="210" height="297" fill="url(#v-lines)" />
-	    <path d="M 41 0 V 297" class="stroke-red stroke-3" />
+	    <rect x="0" y="30" width="210" height="244" fill="url(#feint-h-lines)" />
+	    <rect x="0" y="30" width="210" height="244" fill="url(#thick-h-lines)" />
+	    <rect x="40" y="0" width="170" height="297" fill="url(#v-lines)" />
+	    <path d="M 41 0 V 297" class="stroke-red stroke-2" />
     </g>
 </svg>
