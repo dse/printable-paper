@@ -148,7 +148,7 @@ sub draw {
         # vertical dotted lines
         foreach my $x (@{$self->xValues}) {
             foreach my $y (@{$self->dottedLineYValues}) {
-                my $cssClass = $self->cssClass // "blue dot";
+                my $cssClass = $self->cssClassVertical // $self->cssClass // "blue dot";
                 my $line = $self->createLine(x => $x, y => $y, cssClass => $cssClass);
                 $self->appendLine($line);
             }
@@ -157,7 +157,7 @@ sub draw {
         # horizontal dotted lines
         foreach my $y (@{$self->yValues}) {
             foreach my $x (@{$self->dottedLineXValues}) {
-                my $cssClass = $self->cssClass // "blue dot";
+                my $cssClass = $self->cssClassHorizontal // $self->cssClass // "blue dot";
                 my $line = $self->createLine(x => $x, y => $y, cssClass => $cssClass);
                 $self->appendLine($line);
             }
