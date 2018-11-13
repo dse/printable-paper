@@ -9,21 +9,34 @@ use FindBin;
 use lib "${FindBin::Bin}/../lib";
 use My::Printable::Document;
 use My::Printable::Element::Grid;
+use My::Printable::Element::Lines;
 
 my $doc = My::Printable::Document->new();
 $doc->setUnit("1/4in");
-$doc->setLeftMargin(".5unit");
-$doc->setRightMargin("1.5unit");
-$doc->setTopMargin("2.5unit");
-$doc->setBottomMargin("2.5unit");
+# $doc->setLeftMargin("3unit");
+# $doc->setRightMargin("3unit");
+# $doc->setTopMargin("3unit");
+# $doc->setBottomMargin("3unit");
 
 my $grid = My::Printable::Element::Grid->new(
     document => $doc,
-    id => "grid"
+    id => "grid",
+    cssClass => "blue stroke-6"
 );
-$grid->setSpacing("1unit");
-$grid->isEnclosed(1);
+$grid->setSpacingX("1unit");
+$grid->setSpacingY("1/3unit");
+$grid->isDottedLineGrid(1);
+$grid->horizontalDots(6);
+$grid->verticalDots(2);
+
+my $lines = My::Printable::Element::Lines->new(
+    document => $doc,
+    id => "lines",
+    cssClass => "blue stroke-3"
+);
+$lines->setSpacing("1unit");
 
 $doc->appendElement($grid);
+$doc->appendElement($lines);
 
 $doc->print;

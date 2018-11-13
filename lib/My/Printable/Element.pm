@@ -186,24 +186,26 @@ sub compute {
 
 sub computeX {
     my ($self) = @_;
-    my $xValues = get_point_series(
+    my @xValues = get_point_series(
         spacing => scalar($self->spacingX // $self->spacing // $self->ptX("1unit")),
         min     => scalar($self->leftX // $self->leftMarginX),
         max     => scalar($self->rightX // $self->rightMarginX),
         origin  => scalar($self->originX // ($self->width / 2)),
     );
-    $self->xValues($xValues);
+    $self->xValues([@xValues]);
+    $self->origXValues([@xValues]);
 }
 
 sub computeY {
     my ($self) = @_;
-    my $yValues = get_point_series(
+    my @yValues = get_point_series(
         spacing => scalar($self->spacingY // $self->spacing // $self->ptY("1unit")),
         min     => scalar($self->bottomY // $self->bottomMarginY),
         max     => scalar($self->topY    // $self->topMarginY),
         origin  => scalar($self->originY // ($self->height / 2)),
     );
-    $self->yValues($yValues);
+    $self->yValues([@yValues]);
+    $self->origYValues([@yValues]);
 }
 
 sub snap {
@@ -215,13 +217,25 @@ sub snap {
 sub snapX {
     my ($self) = @_;
     my $xValues = $self->xValues;
-    return unless defined $xValues;
+    if (defined $xValues) {
+        # TODO
+    }
+    my $origXValues = $self->origXValues;
+    if (defined $origXValues) {
+        # TODO
+    }
 }
 
 sub snapY {
     my ($self) = @_;
     my $yValues = $self->yValues;
-    return unless defined $yValues;
+    if (defined $yValues) {
+        # TODO
+    }
+    my $origYValues = $self->origYValues;
+    if (defined $origYValues) {
+        # TODO
+    }
 }
 
 sub extend {
@@ -246,6 +260,8 @@ sub extendRightBy {
         $x += $self->spacingX;
         push(@$xValues, $x);
     }
+
+    # TODO: also, origXValues
 }
 
 sub extendLeftBy {
@@ -258,6 +274,8 @@ sub extendLeftBy {
         $x -= $self->spacingX;
         unshift(@$xValues, $x);
     }
+
+    # TODO: also, origXValues
 }
 
 sub extendBottomBy {
@@ -270,6 +288,8 @@ sub extendBottomBy {
         $y -= $self->spacingY;
         unshift(@$yValues, $y);
     }
+
+    # TODO: also, origYValues
 }
 
 sub extendTopBy {
@@ -282,6 +302,8 @@ sub extendTopBy {
         $y += $self->spacingY;
         push(@$yValues, $y);
     }
+
+    # TODO: also, origYValues
 }
 
 sub chop {
@@ -328,6 +350,8 @@ sub excludeX {
     foreach my $id (@id) {
         my $element = $self->elements->{$id};
         next unless $element;
+
+        # TODO
     }
 }
 
@@ -343,6 +367,8 @@ sub excludeY {
     foreach my $id (@id) {
         my $element = $self->elements->{$id};
         next unless $element;
+
+        # TODO
     }
 }
 

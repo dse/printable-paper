@@ -230,42 +230,53 @@ sub defaultStyles {
     my $thick_dot_stroke_width       = $self->unit->pt("9/300in");
 
     return <<"EOF";
-    .line, .dot { stroke-linecap: round; }
-    .stroke-linecap-butt { stroke-linecap: butt; }
+        .line, .dot { stroke-linecap: round; }
+        .stroke-linecap-butt { stroke-linecap: butt; }
 
-    .line            { stroke-width: ${line_stroke_width}pt; }
-    .line.xx-thin    { stroke-width: ${xx_thin_line_stroke_width}pt; }
-    .line.x-thin     { stroke-width: ${x_thin_line_stroke_width}pt; }
-    .line.thin       { stroke-width: ${thin_line_stroke_width}pt; }
-    .line.thick      { stroke-width: ${thick_line_stroke_width}pt; }
-    .line.semi-thin  { stroke-width: ${semi_thin_line_stroke_width}pt; }
-    .line.semi-thick { stroke-width: ${semi_thick_line_stroke_width}pt; }
+        .line            { stroke-width: ${line_stroke_width}pt; }
+        .line.xx-thin    { stroke-width: ${xx_thin_line_stroke_width}pt; }
+        .line.x-thin     { stroke-width: ${x_thin_line_stroke_width}pt; }
+        .line.thin       { stroke-width: ${thin_line_stroke_width}pt; }
+        .line.thick      { stroke-width: ${thick_line_stroke_width}pt; }
+        .line.semi-thin  { stroke-width: ${semi_thin_line_stroke_width}pt; }
+        .line.semi-thick { stroke-width: ${semi_thick_line_stroke_width}pt; }
 
-    .dot             { stroke-width: ${dot_stroke_width}pt; }
-    .dot.thin        { stroke-width: ${thin_dot_stroke_width}pt; }
-    .dot.thick       { stroke-width: ${thick_dot_stroke_width}pt; }
-    .dot.semi-thin   { stroke-width: ${semi_thin_dot_stroke_width}pt; }
-    .dot.semi-thick  { stroke-width: ${semi_thick_dot_stroke_width}pt; }
+        .dot             { stroke-width: ${dot_stroke_width}pt; }
+        .dot.thin        { stroke-width: ${thin_dot_stroke_width}pt; }
+        .dot.thick       { stroke-width: ${thick_dot_stroke_width}pt; }
+        .dot.semi-thin   { stroke-width: ${semi_thin_dot_stroke_width}pt; }
+        .dot.semi-thick  { stroke-width: ${semi_thick_dot_stroke_width}pt; }
 
-    .blue  { stroke: #b3b3ff; }
-    .red   { stroke: #ff9999; }
-    .green { stroke: #b3ffb3; }
-    .gray  { stroke: #b3b3b3; }
+        .stroke-1     { stroke-width: 0.12pt; stroke-linecap: round; } /* 1/600 in */
+        .stroke-2     { stroke-width: 0.24pt; stroke-linecap: round; }
+        .stroke-3     { stroke-width: 0.36pt; stroke-linecap: round; }
+        .stroke-4     { stroke-width: 0.48pt; stroke-linecap: round; }
+        .stroke-5     { stroke-width: 0.60pt; stroke-linecap: round; }
+        .stroke-6     { stroke-width: 0.72pt; stroke-linecap: round; }
+        .stroke-7     { stroke-width: 0.84pt; stroke-linecap: round; }
+        .stroke-8     { stroke-width: 0.96pt; stroke-linecap: round; }
+        .stroke-9     { stroke-width: 1.08pt; stroke-linecap: round; }
+        .stroke-10    { stroke-width: 1.20pt; stroke-linecap: round; }
 
-    .light.blue  { stroke: #d9d9ff; }
-    .light.red   { stroke: #ffcccc; }
-    .light.green { stroke: #d9ffd9; }
-    .light.gray  { stroke: #d9d9d9; }
+        .blue  { stroke: #b3b3ff; }
+        .red   { stroke: #ff9999; }
+        .green { stroke: #b3ffb3; }
+        .gray  { stroke: #b3b3b3; }
 
-    .dark.blue  { stroke: #6767ff; }
-    .dark.red   { stroke: #ff3333; }
-    .dark.green { stroke: #67ff67; }
-    .dark.gray  { stroke: #676767; }
+        .light.blue  { stroke: #d9d9ff; }
+        .light.red   { stroke: #ffcccc; }
+        .light.green { stroke: #d9ffd9; }
+        .light.gray  { stroke: #d9d9d9; }
 
-    .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
-    .alternate-red   { stroke: #ff3333; opacity: 0.5; }
-    .alternate-green { stroke: #67ff67; opacity: 0.5; }
-    .alternate-gray  { stroke: #676767; opacity: 0.5; }
+        .dark.blue  { stroke: #6767ff; }
+        .dark.red   { stroke: #ff3333; }
+        .dark.green { stroke: #67ff67; }
+        .dark.gray  { stroke: #676767; }
+
+        .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
+        .alternate-red   { stroke: #ff3333; opacity: 0.5; }
+        .alternate-green { stroke: #67ff67; opacity: 0.5; }
+        .alternate-gray  { stroke: #676767; opacity: 0.5; }
 EOF
 }
 

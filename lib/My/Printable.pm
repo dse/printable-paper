@@ -1221,6 +1221,17 @@ sub create_style_element {
             .dot.semi-thin   { stroke-width: ${semi_thin_dot_stroke_width}pt; }
             .dot.semi-thick  { stroke-width: ${semi_thick_dot_stroke_width}pt; }
 
+            .stroke-1     { stroke-width: 0.12pt; } /* 1/600 in */
+            .stroke-2     { stroke-width: 0.24pt; }
+            .stroke-3     { stroke-width: 0.36pt; }
+            .stroke-4     { stroke-width: 0.48pt; }
+            .stroke-5     { stroke-width: 0.60pt; }
+            .stroke-6     { stroke-width: 0.72pt; }
+            .stroke-7     { stroke-width: 0.84pt; }
+            .stroke-8     { stroke-width: 0.96pt; }
+            .stroke-9     { stroke-width: 1.08pt; }
+            .stroke-10    { stroke-width: 1.20pt; }
+
             .blue  { stroke: #b3b3ff; }
             .red   { stroke: #ff9999; }
             .green { stroke: #b3ffb3; }
