@@ -29,6 +29,7 @@ public "isGenerated",   default => 0;
 public "verbose",       default => 0;
 
 use XML::LibXML;
+use Scalar::Util qw(refaddr);
 
 public "svgDocument", lazy_default => sub {
     my ($self) = @_;
@@ -48,17 +49,39 @@ public "svgRoot", lazy_default => sub {
     $root->setAttribute("viewBox", $viewBox);
     $root->setAttribute("xmlns", "http://www.w3.org/2000/svg");
     $doc->setDocumentElement($root);
-    $root->appendChild($self->createSVGStyle);
     return $root;
+}, after_builder => sub {
+    my ($self) = @_;
+    $self->svgDefs;
+    $self->svgStyle;
 }, delete => "deleteSVGRoot";
+
+public 'svgDefs', lazy => 1, builder => sub {
+    my ($self) = @_;
+    my $doc = $self->svgDocument;
+    my $root = $self->svgRoot;
+    my $defs = $doc->createElement('defs');
+    $root->appendChild($defs);
+}, delete => 'deleteSVGDefs';
+
+public 'svgStyle', lazy => 1, builder => sub {
+    my ($self) = @_;
+    my $doc = $self->svgDocument;
+    my $root = $self->svgRoot;
+    my $style = $doc->createElement('style');
+    $style->appendText($self->defaultStyles);
+    $root->appendChild($style);
+}, delete => 'deleteSVGStyle';
 
 sub deleteSVG {
     my ($self) = @_;
     foreach my $element (@{$self->elements}) {
         $element->deleteSVGLayer();
     }
-    $self->deleteSVGDocument();
+    $self->deleteSVGStyle();
+    $self->deleteSVGDefs();
     $self->deleteSVGRoot();
+    $self->deleteSVGDocument();
     $self->isGenerated(0);
 }
 
@@ -210,9 +233,13 @@ sub print {
     $self->printToHandle(\*STDOUT);
 };
 
+use File::Basename qw(dirname);
+use File::Path qw(make_path);
+
 sub printToFile {
     my ($self, $filename) = @_;
     my $fh;
+    make_path(dirname($filename));
     open($fh, ">", $filename) or die("Cannot write $filename: $!\n");
     $self->printToHandle($fh);
     close($fh);
@@ -237,27 +264,18 @@ sub appendElement {
         $self->elementsById->{$id} = $element;
     }
     push(@{$self->elements}, $element);
-    $self->svgRoot->appendChild($element->svgLayer);
 }
 
 sub appendSVGLayer {
     my ($self, $svg_layer) = @_;
-    my $id = $svg_layer->getAttribute('id');
-    if (defined $id) {
-        my $xpath = "//*[\@id='" . $id . "']";
-        my ($node) = $self->svgDocument->findnodes($xpath);
-        if ($node) {
-            return;
-        }
-    }
+    return if $svg_layer->ownerDocument == $self->svgDocument;
     $self->svgRoot->appendChild($svg_layer);
 }
 
-sub createSVGStyle {
-    my ($self) = @_;
-    my $style = $self->svgDocument->createElement('style');
-    $style->appendText($self->defaultStyles);
-    return $style;
+sub appendToSVGDefs {
+    my ($self, $svg_object) = @_;
+    return if $svg_object->ownerDocument == $self->svgDocument;
+    $self->svgDefs->appendChild($svg_object);
 }
 
 sub defaultStyles {
