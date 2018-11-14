@@ -10,6 +10,7 @@ use Class::Thingy::RequireObject;
 require_object;
 public "units";
 public "axis";
+public "size";
 
 use Storable qw(dclone);
 
@@ -56,6 +57,7 @@ sub setPercentageBasis {
     my ($self, $value) = @_;
     delete $self->units->{'%'};
     my $hash = $self->add_unit('%', $value);
+    $self->size($hash->{to_pt});
     $hash->{to_pt} /= 100;
 }
 
@@ -100,7 +102,7 @@ sub deleteUnit {
 
 sub rx_units {
     my ($self) = @_;
-    $self = REQUIRE_OBJECT($self);
+    $self = $self->REQUIRE_OBJECT();
 
     my @units = sort keys %{$self->units};
     @units = map {
@@ -123,13 +125,13 @@ sub rx_units {
 
 sub rx_number {
     my ($self) = @_;
-    $self = REQUIRE_OBJECT($self);
+    $self = $self->REQUIRE_OBJECT();
     return qr{[\-\+]?\d+(?:\.\d*)?|\.\d+}ix;
 }
 
 sub pt {
     my ($self, $value) = @_;
-    $self = REQUIRE_OBJECT($self);
+    $self = $self->REQUIRE_OBJECT();
 
     return undef if !defined $value;
 
@@ -142,6 +144,28 @@ sub pt {
     my $unit;
     if (ref $value eq "ARRAY") {
         ($value, $unit) = @$value;
+    }
+
+    my $is_from_end = 0;
+
+    if ($value =~ s{\s+from\s+(left|right|top|bottom)\s*$}{}xi) {
+        my $side = lc($1);
+        if ($side eq "right" || $side eq "top") {
+            $is_from_end = 1;
+        } else {
+            $is_from_end = 0;
+        }
+    }
+    if ($value =~ s{^\s*(left|right|top|bottom)\s+}{}xi) {
+        my $side = lc($1);
+        if ($side eq "right" || $side eq "top") {
+            $is_from_end = 1;
+        } else {
+            $is_from_end = 0;
+        }
+    }
+    if ($is_from_end && !defined $self->size) {
+        die("Invalid use of 'right' or 'top' prefix or 'from right' or 'from top' suffix.\n");
     }
 
     if (defined $unit && $unit ne "") {
@@ -159,7 +183,7 @@ sub pt {
                         \z}xi) {
             ($numerator, $denominator) = ($1, $2);
         } else {
-            die("Invalid size specification: $value $unit\n");
+            die("Invalid size specification: $value $unit (error type 1)\n");
         }
     } else {
         $spec = "$value";
@@ -178,7 +202,7 @@ sub pt {
                         \z}xi) {
             ($numerator, $denominator, $unit) = ($1, $2, $3);
         } else {
-            die("Invalid size specification: $spec\n");
+            die("Invalid size specification: $spec (error type 2)\n");
         }
     }
 
@@ -199,11 +223,15 @@ sub pt {
         $unit_info = $self->units->{$unit_info};
     }
     if (!defined $unit_info) {
-        die("Invalid size specification: $spec\n");
+        die("Invalid size specification: $spec [$unit] (error type 3)\n");
     }
 
     my $result_pt   = $number * $unit_info->{to_pt};
     my $result_type = $unit_info->{type};
+
+    if ($is_from_end) {
+        $result_pt = $self->size - $self->result_pt;
+    }
 
     return ($result_pt, $result_type) if wantarray;
     return $result_pt;

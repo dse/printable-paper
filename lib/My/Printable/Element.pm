@@ -176,6 +176,16 @@ sub setRightX {
     $self->rightX($self->documentWidth - $self->ptX($value));
 }
 
+sub setOriginX {
+    my ($self, $value) = @_;
+    $self->originX($self->ptX($value));
+}
+
+sub setOriginY {
+    my ($self, $value) = @_;
+    $self->originY($self->ptY($value));
+}
+
 ###############################################################################
 
 sub compute {

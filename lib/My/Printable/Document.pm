@@ -19,10 +19,12 @@ public "topMarginY";                           # in pt, from 0
 public "unit";                                 # My::Printable::Unit
 public "unitX";                                # My::Printable::Unit
 public "unitY";                                # My::Printable::Unit
-public "modifiers",     default => [];         # arrayref
-public "modifiersHash", default => {};         # hashref
-public "elements",      default => [];
-public "elementsById",  default => {};
+public "modifiers",     default => [];         # arrayref via setModifiers
+public "hasModifier",   default => {};         # hashref  via setModifiers
+public "elements",      default => [];         # via appendElement
+public "elementsById",  default => {};         # via appendElement
+public "originX";
+public "originY";
 
 use XML::LibXML;
 
@@ -72,6 +74,8 @@ sub init {
     $self->unit(My::Printable::Unit->new());
     $self->unitX(My::Printable::Unit->new());
     $self->unitY(My::Printable::Unit->new());
+    $self->unitX->axis("x");
+    $self->unitY->axis("y");
     $self->setBottomMargin(0);
     $self->setTopMargin(0);
     $self->setLeftMargin(0);
@@ -87,8 +91,8 @@ sub setPaperSize {
     $self->height($height);
     $self->unitX->set_percentage_basis($width);
     $self->unitY->set_percentage_basis($height);
-    $self->setXOrigin($width / 2);
-    $self->setYOrigin($height / 2);
+    $self->setOriginX($width / 2);
+    $self->setOriginY($height / 2);
     $self->setBottomMargin(0);
     $self->setTopMargin(0);
     $self->setLeftMargin(0);
@@ -102,7 +106,7 @@ sub setWidth {
     $self->width($pt);
     $self->paperSizeName(undef);
     $self->unitX->set_percentage_basis($pt);
-    $self->setXOrigin($pt / 2);
+    $self->setOriginX($pt / 2);
     $self->setLeftMargin(0);
     $self->setRightMargin(0);
 }
@@ -114,7 +118,7 @@ sub setHeight {
     $self->height($pt);
     $self->papersize(undef);
     $self->unitY->set_percentage_basis($pt);
-    $self->setYOrigin($pt / 2);
+    $self->setOriginY($pt / 2);
     $self->setBottomMargin(0);
     $self->setTopMargin(0);
 }
@@ -124,7 +128,7 @@ sub setModifiers {
     @modifiers = grep { defined $_ } @modifiers;
     my %modifiers = map { ($_, 1) } @modifiers;
     $self->modifiers(\@modifiers);
-    $self->modifiersHash(\%modifiers);
+    $self->hasModifier(\%modifiers);
 }
 
 sub setLeftMargin {
@@ -147,12 +151,12 @@ sub setTopMargin {
     $self->topMarginY($self->height - $self->ptY($value));
 }
 
-sub setXOrigin {
+sub setOriginX {
     my ($self, $value) = @_;
     $self->xOrigin($self->ptX($value));
 }
 
-sub setYOrigin {
+sub setOriginY {
     my ($self, $value) = @_;
     $self->yOrigin($self->ptY($value));
 }
