@@ -20,7 +20,7 @@ public "origDottedLineXValues", default => [];
 public "origDottedLineYValues", default => [];
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(get_point_series);
+use My::Printable::Util qw(get_series_of_points);
 
 use base qw(My::Printable::Element);
 
@@ -32,7 +32,7 @@ sub computeX {
     if ($self->isDottedLineGrid) {
         my $spacing = scalar($self->spacingX // $self->spacing // $self->ptX("1unit"));
         $spacing /= $self->horizontalDots;
-        my @xValues = get_point_series(
+        my @xValues = get_series_of_points(
             spacing => $spacing,
             min     => scalar($self->leftX // $self->leftMarginX),
             max     => scalar($self->rightX // $self->rightMarginX),
@@ -49,7 +49,7 @@ sub computeY {
     if ($self->isDottedLineGrid) {
         my $spacing = scalar($self->spacingY // $self->spacing // $self->ptY("1unit"));
         $spacing /= $self->verticalDots;
-        my @yValues = get_point_series(
+        my @yValues = get_series_of_points(
             spacing => $spacing,
             min     => scalar($self->bottomY // $self->bottomMarginY),
             max     => scalar($self->topY    // $self->topMarginY),

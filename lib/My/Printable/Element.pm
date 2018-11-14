@@ -8,7 +8,7 @@ use Class::Thingy;
 use Class::Thingy::Delegate;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(get_point_series round3);
+use My::Printable::Util qw(get_series_of_points round3);
 
 use List::Util qw(min max);
 
@@ -21,9 +21,13 @@ public "y2";
 
 public "xValues";
 public "yValues";
+public "xPointSeries";
+public "yPointSeries";
 
 public "origXValues";
 public "origYValues";
+public "origXPointSeries";
+public "origYPointSeries";
 
 public "spacing";
 public "spacingX";
@@ -197,7 +201,7 @@ sub compute {
 
 sub computeX {
     my ($self) = @_;
-    my @xValues = get_point_series(
+    my @xValues = get_series_of_points(
         spacing => scalar($self->spacingX // $self->spacing // $self->ptX("1unit")),
         min     => scalar($self->leftX // $self->leftMarginX),
         max     => scalar($self->rightX // $self->rightMarginX),
@@ -209,7 +213,7 @@ sub computeX {
 
 sub computeY {
     my ($self) = @_;
-    my @yValues = get_point_series(
+    my @yValues = get_series_of_points(
         spacing => scalar($self->spacingY // $self->spacing // $self->ptY("1unit")),
         min     => scalar($self->bottomY // $self->bottomMarginY),
         max     => scalar($self->topY    // $self->topMarginY),

@@ -5,7 +5,7 @@ use v5.10.0;
 
 use base "Exporter";
 
-our @EXPORT_OK = qw(exclude round3 get_point_series nearest_point);
+our @EXPORT_OK = qw(exclude round3 get_series_of_points nearest_point);
 
 use Data::Dumper;
 
@@ -23,7 +23,7 @@ sub round3 {
     return $value;
 }
 
-sub get_point_series {
+sub get_series_of_points {
     my %args = @_;
     my $spacing = delete $args{spacing};
     my $origin  = delete $args{origin};
