@@ -39,4 +39,4 @@ $lines->setSpacing("1unit");
 $doc->appendElement($grid);
 $doc->appendElement($lines);
 
-$doc->print;
+$doc->printToFile('printable2/grid.xml');
