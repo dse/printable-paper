@@ -25,6 +25,8 @@ public "elements",      default => [];         # via appendElement
 public "elementsById",  default => {};         # via appendElement
 public "originX";
 public "originY";
+public "isGenerated",   default => 0;
+public "verbose",       default => 0;
 
 use XML::LibXML;
 
@@ -32,7 +34,7 @@ public "svgDocument", lazy_default => sub {
     my ($self) = @_;
     my $doc = XML::LibXML::Document->new("1.0", "UTF-8");
     return $doc;
-};
+}, delete => "deleteSVGDocument";
 
 public "svgRoot", lazy_default => sub {
     my ($self) = @_;
@@ -48,7 +50,17 @@ public "svgRoot", lazy_default => sub {
     $doc->setDocumentElement($root);
     $root->appendChild($self->createSVGStyle);
     return $root;
-};
+}, delete => "deleteSVGRoot";
+
+sub deleteSVG {
+    my ($self) = @_;
+    foreach my $element (@{$self->elements}) {
+        $element->deleteSVGLayer();
+    }
+    $self->deleteSVGDocument();
+    $self->deleteSVGRoot();
+    $self->isGenerated(0);
+}
 
 sub ptX {
     my ($self, $value) = @_;
@@ -80,6 +92,12 @@ sub init {
     $self->setTopMargin(0);
     $self->setLeftMargin(0);
     $self->setRightMargin(0);
+}
+
+sub reset {
+    my ($self) = @_;
+    $self->elements([]);
+    $self->elementsById({});
 }
 
 sub setPaperSize {
@@ -170,12 +188,14 @@ sub setUnit {
 
 sub generate {
     my ($self) = @_;
+    $self->deleteSVG();
     $self->each("compute");
     $self->each("chop");
     $self->each("snap");
     $self->each("exclude");
     $self->each("extend");
     $self->each("draw");
+    $self->isGenerated(1);
 }
 
 sub each {
@@ -187,26 +207,50 @@ sub each {
 
 sub print {
     my ($self) = @_;
-    $self->generate();
-    print $self->svgDocument->toString(2);
+    $self->printToHandle(\*STDOUT);
+};
+
+sub printToFile {
+    my ($self, $filename) = @_;
+    my $fh;
+    open($fh, ">", $filename) or die("Cannot write $filename: $!\n");
+    $self->printToHandle($fh);
+    close($fh);
+}
+
+sub printToHandle {
+    my ($self, $handle) = @_;
+    if (!$self->isGenerated) {
+        $self->generate();
+    }
+    print $handle $self->svgDocument->toString(2);
 }
 
 sub appendElement {
     my ($self, $element) = @_;
-
     if (grep { $_ eq $element } @{$self->elements}) {
         return;
     }
-
     $element->document($self);
-
     my $id = $element->id;
     if (defined $id) {
         $self->elementsById->{$id} = $element;
     }
     push(@{$self->elements}, $element);
-
     $self->svgRoot->appendChild($element->svgLayer);
+}
+
+sub appendSVGLayer {
+    my ($self, $svg_layer) = @_;
+    my $id = $svg_layer->getAttribute('id');
+    if (defined $id) {
+        my $xpath = "//*[\@id='" . $id . "']";
+        my ($node) = $self->svgDocument->findnodes($xpath);
+        if ($node) {
+            return;
+        }
+    }
+    $self->svgRoot->appendChild($svg_layer);
 }
 
 sub createSVGStyle {

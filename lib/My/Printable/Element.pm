@@ -65,13 +65,14 @@ public "svgLayer", lazy_default => sub {
     my $doc = $self->svgDocument;
     my $g = $doc->createElement("g");
     $g->setAttribute("id", $id);
+    $self->document->appendSVGLayer($g);
     return $g;
-};
+}, delete => "deleteSVGLayer";
 
-sub createLine {
+sub createSVGLine {
     my ($self, %args) = @_;
     my $doc = $self->document->svgDocument;
-    my $line = $self->document->svgDocument->createElement('line');
+    my $line = $doc->createElement('line');
     $line->setAttribute('x1', round3($args{x1} // $args{x}));
     $line->setAttribute('x2', round3($args{x2} // $args{x}));
     $line->setAttribute('y1', round3($args{y1} // $args{y}));
@@ -80,7 +81,7 @@ sub createLine {
     return $line;
 }
 
-sub appendLine {
+sub appendSVGLine {
     my $self = shift;
     my $line;
     if (scalar @_ == 1) {
@@ -88,12 +89,12 @@ sub appendLine {
         if (ref $line && $line->isa('XML::LibXML::Element')) {
             # do nothing
         } else {
-            die("Bad call to appendLine");
+            die("Bad call to appendSVGLine");
         }
     } elsif ((scalar @_) % 2 == 0) {
-        $line = $self->createLine(@_);
+        $line = $self->createSVGLine(@_);
     } else {
-        die("Bad call to appendLine");
+        die("Bad call to appendSVGLine");
     }
     $self->svgLayer->appendChild($line);
 }

@@ -17,8 +17,8 @@ sub draw {
     my $y1 = $self->y1;
     my $y2 = $self->y2;
     my $cssClass = $self->cssClass // "blue line";
-    my $line = $self->createLine(x1 => $x1, y1 => $y1, x2 => $x2, y2 => $y2, cssClass => $cssClass);
-    $self->appendLine($line);
+    my $line = $self->createSVGLine(x1 => $x1, y1 => $y1, x2 => $x2, y2 => $y2, cssClass => $cssClass);
+    $self->appendSVGLine($line);
 }
 
 1;

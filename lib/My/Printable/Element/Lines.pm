@@ -19,15 +19,15 @@ sub draw {
         my $x1 = $self->leftMarginX;
         my $x2 = $self->rightMarginX;
         foreach my $y (@{$self->yValues}) {
-            my $line = $self->createLine(y => $y, x1 => $x1, x2 => $x2, cssClass => $cssClass);
-            $self->appendLine($line);
+            my $line = $self->createSVGLine(y => $y, x1 => $x1, x2 => $x2, cssClass => $cssClass);
+            $self->appendSVGLine($line);
         }
     } elsif ($self->direction eq "vertical") {
         my $y1 = $self->bottomMarginY;
         my $y2 = $self->topMarginY;
         foreach my $x (@{$self->xValues}) {
-            my $line = $self->createLine(x => $x, y1 => $y1, y2 => $y2, cssClass => $cssClass);
-            $self->appendLine($line);
+            my $line = $self->createSVGLine(x => $x, y1 => $y1, y2 => $y2, cssClass => $cssClass);
+            $self->appendSVGLine($line);
         }
     }
 }

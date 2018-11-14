@@ -149,8 +149,8 @@ sub draw {
         foreach my $x (@{$self->xValues}) {
             foreach my $y (@{$self->dottedLineYValues}) {
                 my $cssClass = $self->cssClassVertical // $self->cssClass // "blue dot";
-                my $line = $self->createLine(x => $x, y => $y, cssClass => $cssClass);
-                $self->appendLine($line);
+                my $line = $self->createSVGLine(x => $x, y => $y, cssClass => $cssClass);
+                $self->appendSVGLine($line);
             }
         }
 
@@ -158,8 +158,8 @@ sub draw {
         foreach my $y (@{$self->yValues}) {
             foreach my $x (@{$self->dottedLineXValues}) {
                 my $cssClass = $self->cssClassHorizontal // $self->cssClass // "blue dot";
-                my $line = $self->createLine(x => $x, y => $y, cssClass => $cssClass);
-                $self->appendLine($line);
+                my $line = $self->createSVGLine(x => $x, y => $y, cssClass => $cssClass);
+                $self->appendSVGLine($line);
             }
         }
 
@@ -167,8 +167,8 @@ sub draw {
         foreach my $x (@{$self->xValues}) {
             foreach my $y (@{$self->yValues}) {
                 my $cssClass = $self->cssClass // "blue dot";
-                my $line = $self->createLine(x => $x, y => $y, cssClass => $cssClass);
-                $self->appendLine($line);
+                my $line = $self->createSVGLine(x => $x, y => $y, cssClass => $cssClass);
+                $self->appendSVGLine($line);
             }
         }
     } else {
@@ -182,15 +182,15 @@ sub draw {
         # vertical lines
         foreach my $x (@{$self->xValues}) {
             my $cssClass = $self->cssClassVertical // $self->cssClass // "thin blue line";
-            my $line = $self->createLine(x => $x, y1 => $y1, y2 => $y2, cssClass => $cssClass);
-            $self->appendLine($line);
+            my $line = $self->createSVGLine(x => $x, y1 => $y1, y2 => $y2, cssClass => $cssClass);
+            $self->appendSVGLine($line);
         }
 
         # horizontal lines
         foreach my $y (@{$self->yValues}) {
             my $cssClass = $self->cssClassHorizontal // $self->cssClass // "thin blue line";
-            my $line = $self->createLine(y => $y, x1 => $x1, x2 => $x2, cssClass => $cssClass);
-            $self->appendLine($line);
+            my $line = $self->createSVGLine(y => $y, x1 => $x1, x2 => $x2, cssClass => $cssClass);
+            $self->appendSVGLine($line);
         }
     }
 }
