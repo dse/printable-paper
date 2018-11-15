@@ -159,12 +159,12 @@ sub setSpacing {
     $self->spacingY($self->ptY($value));
 }
 
-sub setBottomY {
+sub setTopY {
     my ($self, $value) = @_;
     $self->bottomY($self->ptY($value));
 }
 
-sub setTopY {
+sub setBottomY {
     my ($self, $value) = @_;
     $self->bottomY($self->documentHeight - $self->ptY($value));
 }
