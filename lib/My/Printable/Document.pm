@@ -181,7 +181,12 @@ sub setLeftMargin {
 
 sub setRightMargin {
     my ($self, $value) = @_;
-    $self->rightMarginX($self->width - $self->ptX($value));
+    my ($pt, $type, $is_from_end) = $self->ptX($value);
+    if ($is_from_end) {
+        $self->rightMarginX($self->ptX($value));
+    } else {
+        $self->rightMarginX($self->width - $self->ptX($value));
+    }
 }
 
 sub setBottomMargin {
@@ -191,7 +196,12 @@ sub setBottomMargin {
 
 sub setTopMargin {
     my ($self, $value) = @_;
-    $self->topMarginY($self->height - $self->ptY($value));
+    my ($pt, $type, $is_from_end) = $self->ptY($value);
+    if ($is_from_end) {
+        $self->topMarginY($self->ptY($value));
+    } else {
+        $self->topMarginY($self->height - $self->ptY($value));
+    }
 }
 
 sub setOriginX {
