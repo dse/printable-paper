@@ -17,15 +17,15 @@ sub draw {
     my ($self) = @_;
     my $cssClass = $self->cssClass // "thin blue line";
     if ($self->direction eq "horizontal") {
-        my $x1 = $self->leftMarginX;
-        my $x2 = $self->rightMarginX;
+        my $x1 = $self->x1 // $self->leftMarginX;
+        my $x2 = $self->x2 // $self->rightMarginX;
         foreach my $y ($self->yPointSeries->getPoints) {
             my $line = $self->createSVGLine(y => $y, x1 => $x1, x2 => $x2, cssClass => $cssClass);
             $self->appendSVGLine($line);
         }
     } elsif ($self->direction eq "vertical") {
-        my $y1 = $self->bottomMarginY;
-        my $y2 = $self->topMarginY;
+        my $y1 = $self->y1 // $self->topMarginY;
+        my $y2 = $self->y2 // $self->bottomMarginY;
         foreach my $x ($self->xPointSeries->getPoints) {
             my $line = $self->createSVGLine(x => $x, y1 => $y1, y2 => $y2, cssClass => $cssClass);
             $self->appendSVGLine($line);
