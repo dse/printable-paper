@@ -8,13 +8,15 @@ use Class::Thingy;
 
 public "cssClassHorizontal";
 public "cssClassVertical";
-public "isDotGrid",        default => 0;
-public "isDottedLineGrid", default => 0;
-public "extendGridLines",  default => 0;
+public "isDotGrid",                 default => 0;
+public "isDottedLineGrid",          default => 0;
+public "extendGridLines",           default => 0;
+public "extendHorizontalGridLines", default => 0;
+public "extendVerticalGridLines",   default => 0;
 
 # for dotted line grids
-public "horizontalDots",   default => 2;
-public "verticalDots",     default => 2;
+public "horizontalDots",            default => 2;
+public "verticalDots",              default => 2;
 
 public "dottedLineXPointSeries";
 public "dottedLineYPointSeries";
@@ -72,8 +74,8 @@ sub draw {
     my $y2 = $self->yPointSeries->max;
 
     if ($self->isDottedLineGrid) {
-        my $xLinePointSeries = $self->extendGridLines ? $self->origDottedLineXPointSeries : $self->dottedLineXPointSeries;
-        my $yLinePointSeries = $self->extendGridLines ? $self->origDottedLineYPointSeries : $self->dottedLineYPointSeries;
+        my $xLinePointSeries = ($self->extendVerticalGridLines   || $self->extendGridLines) ? $self->origDottedLineXPointSeries : $self->dottedLineXPointSeries;
+        my $yLinePointSeries = ($self->extendHorizontalGridLines || $self->extendGridLines) ? $self->origDottedLineYPointSeries : $self->dottedLineYPointSeries;
 
         # vertical dotted lines
         $self->drawDotPattern(
@@ -108,9 +110,11 @@ sub draw {
             y2 => $y2,
         );
     } else {
-        if ($self->extendGridLines) {
+        if ($self->extendHorizontalGridLines || $self->extendGridLines) {
             $x1 = $self->leftMarginX   // $self->document->leftMarginX;
             $x2 = $self->rightMarginX  // $self->document->rightMarginX;
+        }
+        if ($self->extendVerticalGridLines || $self->extendGridLines) {
             $y1 = $self->topMarginY    // $self->document->topMarginY;
             $y2 = $self->bottomMarginY // $self->document->bottomMarginY;
         }
