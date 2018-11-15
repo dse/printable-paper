@@ -12,10 +12,10 @@ public "height",        default => 792;        # in pt
 public "unitType",      default => "imperial"; # imperial, metric
 public "colorType",     default => "color";    # color, grayscale
 public "rulingName";                           # seyes, etc.
-public "leftMarginX";                          # in pt, from 0
-public "rightMarginX";                         # in pt, from 0
-public "bottomMarginY";                        # in pt, from 0
-public "topMarginY";                           # in pt, from 0
+public "leftMarginX";                          # in pt, left = 0
+public "rightMarginX";                         # in pt, left = 0
+public "topMarginY";                           # in pt, top = 0
+public "bottomMarginY";                        # in pt, top = 0
 public "unit";                                 # My::Printable::Unit
 public "unitX";                                # My::Printable::Unit
 public "unitY";                                # My::Printable::Unit
@@ -189,18 +189,18 @@ sub setRightMargin {
     }
 }
 
-sub setBottomMargin {
+sub setTopMargin {
     my ($self, $value) = @_;
-    $self->bottomMarginY($self->ptY($value));
+    $self->topMarginY($self->ptY($value));
 }
 
-sub setTopMargin {
+sub setBottomMargin {
     my ($self, $value) = @_;
     my ($pt, $type, $is_from_end) = $self->ptY($value);
     if ($is_from_end) {
-        $self->topMarginY($self->ptY($value));
+        $self->bottomMarginY($self->ptY($value));
     } else {
-        $self->topMarginY($self->height - $self->ptY($value));
+        $self->bottomMarginY($self->height - $self->ptY($value));
     }
 }
 
