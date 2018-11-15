@@ -29,9 +29,9 @@ $grid->setY1("1in from top");
 $grid->setY2("1in from bottom");
 $grid->setSpacingX("1unit");
 $grid->setSpacingY("1/3unit");
-# $grid->isDottedLineGrid(1);
-# $grid->horizontalDots(6);
-# $grid->verticalDots(2);
+$grid->hasDottedVerticalGridLines(1);
+$grid->horizontalDots(6);
+$grid->verticalDots(2);
 $grid->extendGridLines(1);
 
 my $grid2 = My::Printable::Element::Grid->new(
@@ -58,6 +58,6 @@ $lines->setSpacing("1unit");
 
 $doc->appendElement($grid);
 $doc->appendElement($grid2);
-$doc->appendElement($lines);
+# $doc->appendElement($lines);
 
 $doc->printToFile('printable2/grid.xml');

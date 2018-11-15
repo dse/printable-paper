@@ -10,7 +10,9 @@ public "cssClassHorizontal";
 public "cssClassVertical";
 
 public "isDotGrid",                 default => 0;
-public "isDottedLineGrid",          default => 0;
+public "hasDottedGridLines",           default => 0;
+public "hasDottedHorizontalGridLines", default => 0;
+public "hasDottedVerticalGridLines",   default => 0;
 public "extendGridLines",           default => 0;
 public "extendHorizontalGridLines", default => 0;
 public "extendVerticalGridLines",   default => 0;
@@ -38,7 +40,7 @@ sub computeX {
     my ($self) = @_;
     $self->SUPER::computeX();
 
-    if ($self->isDottedLineGrid) {
+    if ($self->hasDottedGridLines || $self->hasDottedHorizontalGridLines) {
         my $spacingX = $self->spacingX // $self->spacing // $self->ptX("1unit");
         $spacingX /= $self->horizontalDots;
         my $originX = $self->originX // $self->document->originX;
@@ -62,7 +64,7 @@ sub computeY {
     my ($self) = @_;
     $self->SUPER::computeY();
 
-    if ($self->isDottedLineGrid) {
+    if ($self->hasDottedGridLines || $self->hasDottedVerticalGridLines) {
         my $spacingY = scalar($self->spacingY // $self->spacing // $self->ptY("1unit"));
         $spacingY /= $self->verticalDots;
         my $originY = $self->originY // $self->document->originY;
@@ -110,38 +112,7 @@ sub draw {
     my $y1 = $self->y1 // $self->document->topMarginY;
     my $y2 = $self->y2 // $self->document->bottomMarginY;
 
-    if ($self->isDottedLineGrid) {
-        my $xLinePointSeries = ($self->extendVerticalGridLines   || $self->extendGridLines) ? $self->origDottedLineXPointSeries : $self->dottedLineXPointSeries;
-        my $yLinePointSeries = ($self->extendHorizontalGridLines || $self->extendGridLines) ? $self->origDottedLineYPointSeries : $self->dottedLineYPointSeries;
-
-        my @x = $xLinePointSeries->getPoints();
-        my @y = $yLinePointSeries->getPoints();
-
-        print STDERR ("@x\n");
-        print STDERR ("@y\n");
-
-        # vertical dotted lines
-        $self->drawDotPattern(
-            cssClass => ($self->cssClassVertical // $self->cssClass // "blue dot"),
-            xPointSeries => $self->xPointSeries,
-            yPointSeries => $yLinePointSeries,
-            x1 => $x1,
-            x2 => $x2,
-            y1 => $y1,
-            y2 => $y2,
-        );
-
-        # horizontal dotted lines
-        $self->drawDotPattern(
-            cssClass => ($self->cssClassHorizontal // $self->cssClass // "blue dot"),
-            xPointSeries => $xLinePointSeries,
-            yPointSeries => $self->yPointSeries,
-            x1 => $x1,
-            x2 => $x2,
-            y1 => $y1,
-            y2 => $y2,
-        );
-    } elsif ($self->isDotGrid) {
+    if ($self->isDotGrid) {
         my $cssClass = $self->cssClass // "blue dot";
         $self->drawDotPattern(
             cssClass => $cssClass,
@@ -153,26 +124,54 @@ sub draw {
             y2 => $y2,
         );
     } else {
-        if ($self->extendHorizontalGridLines || $self->extendGridLines) {
-            $x1 = $self->document->leftMarginX;
-            $x2 = $self->document->rightMarginX;
+        if ($self->hasDottedGridLines || $self->hasDottedHorizontalGridLines) {
+            my $xLinePointSeries = ($self->extendHorizontalGridLines || $self->extendGridLines) ? $self->origDottedLineXPointSeries : $self->dottedLineXPointSeries;
+            my @x = $xLinePointSeries->getPoints();
+            $self->drawDotPattern(
+                cssClass => ($self->cssClassHorizontal // $self->cssClass // "blue dot"),
+                xPointSeries => $xLinePointSeries,
+                yPointSeries => $self->yPointSeries,
+                x1 => $x1,
+                x2 => $x2,
+                y1 => $y1,
+                y2 => $y2,
+            );
+        } else {
+            if ($self->extendHorizontalGridLines || $self->extendGridLines) {
+                $x1 = $self->document->leftMarginX;
+                $x2 = $self->document->rightMarginX;
+            }
+            $self->drawHorizontalLinePattern(
+                cssClass => ($self->cssClassHorizontal // $self->cssClass // "thin blue line"),
+                yPointSeries => $self->yPointSeries,
+                x1 => $x1,
+                x2 => $x2,
+            );
         }
-        if ($self->extendVerticalGridLines || $self->extendGridLines) {
-            $y1 = $self->document->topMarginY;
-            $y2 = $self->document->bottomMarginY;
+        if ($self->hasDottedGridLines || $self->hasDottedVerticalGridLines) {
+            my $yLinePointSeries = ($self->extendVerticalGridLines || $self->extendGridLines) ? $self->origDottedLineYPointSeries : $self->dottedLineYPointSeries;
+            my @y = $yLinePointSeries->getPoints();
+            $self->drawDotPattern(
+                cssClass => ($self->cssClassVertical // $self->cssClass // "blue dot"),
+                xPointSeries => $self->xPointSeries,
+                yPointSeries => $yLinePointSeries,
+                x1 => $x1,
+                x2 => $x2,
+                y1 => $y1,
+                y2 => $y2,
+            );
+        } else {
+            if ($self->extendVerticalGridLines || $self->extendGridLines) {
+                $y1 = $self->document->topMarginY;
+                $y2 = $self->document->bottomMarginY;
+            }
+            $self->drawVerticalLinePattern(
+                cssClass => ($self->cssClassVertical // $self->cssClass // "thin blue line"),
+                xPointSeries => $self->xPointSeries,
+                y1 => $y1,
+                y2 => $y2,
+            );
         }
-        $self->drawVerticalLinePattern(
-            cssClass => ($self->cssClassVertical // $self->cssClass // "thin blue line"),
-            xPointSeries => $self->xPointSeries,
-            y1 => $y1,
-            y2 => $y2,
-        );
-        $self->drawHorizontalLinePattern(
-            cssClass => ($self->cssClassHorizontal // $self->cssClass // "thin blue line"),
-            yPointSeries => $self->yPointSeries,
-            x1 => $x1,
-            x2 => $x2,
-        );
     }
 }
 
