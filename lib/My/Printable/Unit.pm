@@ -230,7 +230,7 @@ sub pt {
     my $result_type = $unit_info->{type};
 
     if ($is_from_end) {
-        $result_pt = $self->size - $self->result_pt;
+        $result_pt = $self->size - $result_pt;
     }
 
     return ($result_pt, $result_type, $is_from_end) if wantarray;

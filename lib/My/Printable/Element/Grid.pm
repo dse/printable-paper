@@ -8,6 +8,7 @@ use Class::Thingy;
 
 public "cssClassHorizontal";
 public "cssClassVertical";
+
 public "isDotGrid",                 default => 0;
 public "isDottedLineGrid",          default => 0;
 public "extendGridLines",           default => 0;
@@ -36,46 +37,88 @@ use Storable qw(dclone);
 sub computeX {
     my ($self) = @_;
     $self->SUPER::computeX();
+
     if ($self->isDottedLineGrid) {
-        my $spacing = scalar($self->spacingX // $self->spacing // $self->ptX("1unit"));
-        $spacing /= $self->horizontalDots;
+        my $spacingX = $self->spacingX // $self->spacing // $self->ptX("1unit");
+        $spacingX /= $self->horizontalDots;
+        my $originX = $self->originX // $self->document->originX;
+
         $self->dottedLineXPointSeries(My::Printable::PointSeries->new(
-            spacing => $spacing,
-            min     => scalar($self->leftMarginX // $self->document->leftMarginX),
-            max     => scalar($self->rightMarginX // $self->document->rightMarginX),
-            origin  => scalar($self->originX // ($self->width / 2)),
+            spacing => $spacingX,
+            min     => scalar($self->x1 // $self->document->leftMarginX),
+            max     => scalar($self->x2 // $self->document->rightMarginX),
+            origin  => $originX,
         ));
-        $self->origDottedLineXPointSeries(dclone($self->dottedLineXPointSeries));
+        $self->origDottedLineXPointSeries(My::Printable::PointSeries->new(
+            spacing => $spacingX,
+            min     => scalar($self->document->leftMarginX),
+            max     => scalar($self->document->rightMarginX),
+            origin  => $originX,
+        ));
     }
 }
 
 sub computeY {
     my ($self) = @_;
     $self->SUPER::computeY();
+
     if ($self->isDottedLineGrid) {
-        my $spacing = scalar($self->spacingY // $self->spacing // $self->ptY("1unit"));
-        $spacing /= $self->verticalDots;
+        my $spacingY = scalar($self->spacingY // $self->spacing // $self->ptY("1unit"));
+        $spacingY /= $self->verticalDots;
+        my $originY = $self->originY // $self->document->originY;
+
         $self->dottedLineYPointSeries(My::Printable::PointSeries->new(
-            spacing => $spacing,
-            min     => scalar($self->topMarginY    // $self->document->topMarginY),
-            max     => scalar($self->bottomMarginY // $self->document->bottomMarginY),
-            origin  => scalar($self->originY // ($self->height / 2)),
+            spacing => $spacingY,
+            min     => scalar($self->y1 // $self->document->topMarginY),
+            max     => scalar($self->y2 // $self->document->bottomMarginY),
+            origin  => $originY,
         ));
-        $self->origDottedLineYPointSeries(dclone($self->dottedLineYPointSeries));
+        $self->origDottedLineYPointSeries(My::Printable::PointSeries->new(
+            spacing => $spacingY,
+            min     => scalar($self->document->topMarginY),
+            max     => scalar($self->document->bottomMarginY),
+            origin  => $originY,
+        ));
+    }
+}
+
+sub chopX {
+    my ($self) = @_;
+    $self->SUPER::chopX();
+
+    if ($self->dottedLineXPointSeries) {
+        $self->dottedLineXPointSeries->chopBehind($self->document->leftMarginX);
+        $self->dottedLineXPointSeries->chopAhead($self->document->rightMarginX);
+    }
+}
+
+sub chopY {
+    my ($self) = @_;
+    $self->SUPER::chopY();
+
+    if ($self->dottedLineYPointSeries) {
+        $self->dottedLineYPointSeries->chopBehind($self->document->topMarginY);
+        $self->dottedLineYPointSeries->chopAhead($self->document->bottomMarginY);
     }
 }
 
 sub draw {
     my ($self) = @_;
 
-    my $x1 = $self->xPointSeries->min;
-    my $x2 = $self->xPointSeries->max;
-    my $y1 = $self->yPointSeries->min;
-    my $y2 = $self->yPointSeries->max;
+    my $x1 = $self->x1 // $self->document->leftMarginX;
+    my $x2 = $self->x2 // $self->document->rightMarginX;
+    my $y1 = $self->y1 // $self->document->topMarginY;
+    my $y2 = $self->y2 // $self->document->bottomMarginY;
 
     if ($self->isDottedLineGrid) {
         my $xLinePointSeries = ($self->extendVerticalGridLines   || $self->extendGridLines) ? $self->origDottedLineXPointSeries : $self->dottedLineXPointSeries;
         my $yLinePointSeries = ($self->extendHorizontalGridLines || $self->extendGridLines) ? $self->origDottedLineYPointSeries : $self->dottedLineYPointSeries;
+
+        my @x = $xLinePointSeries->getPoints();
+        my @y = $yLinePointSeries->getPoints();
+
+        print STDERR ("@x\n");
+        print STDERR ("@y\n");
 
         # vertical dotted lines
         $self->drawDotPattern(
@@ -111,12 +154,12 @@ sub draw {
         );
     } else {
         if ($self->extendHorizontalGridLines || $self->extendGridLines) {
-            $x1 = $self->leftMarginX   // $self->document->leftMarginX;
-            $x2 = $self->rightMarginX  // $self->document->rightMarginX;
+            $x1 = $self->document->leftMarginX;
+            $x2 = $self->document->rightMarginX;
         }
         if ($self->extendVerticalGridLines || $self->extendGridLines) {
-            $y1 = $self->topMarginY    // $self->document->topMarginY;
-            $y2 = $self->bottomMarginY // $self->document->bottomMarginY;
+            $y1 = $self->document->topMarginY;
+            $y2 = $self->document->bottomMarginY;
         }
         $self->drawVerticalLinePattern(
             cssClass => ($self->cssClassVertical // $self->cssClass // "thin blue line"),

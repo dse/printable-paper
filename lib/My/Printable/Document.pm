@@ -111,6 +111,8 @@ sub init {
     $self->unit(My::Printable::Unit->new());
     $self->unitX(My::Printable::Unit->new());
     $self->unitY(My::Printable::Unit->new());
+    $self->unitX->size($self->width);
+    $self->unitY->size($self->height);
     $self->unitX->axis("x");
     $self->unitY->axis("y");
     $self->setBottomMargin(0);

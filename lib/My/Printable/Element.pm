@@ -30,11 +30,6 @@ public "spacing";
 public "spacingX";
 public "spacingY";
 
-public "bottomMarginY";
-public "topMarginY";
-public "leftMarginX";
-public "rightMarginX";
-
 public "cssClass";
 
 public "originX";
@@ -47,14 +42,13 @@ public "extendRight";
 public "extendTop";
 public "extendBottom";
 
-delegate "unitX",         via => "document";
-delegate "unitY",         via => "document";
-delegate "unit",          via => "document";
-delegate "width",         via => "document";
-delegate "height",        via => "document";
-delegate "svgDocument",   via => "document";
-delegate "svgRoot",       via => "document";
-delegate 'svgDefs',       via => 'document';
+delegate "unit",        via => "document";
+delegate "unitX",       via => "document";
+delegate "unitY",       via => "document";
+
+delegate "svgDocument", via => "document";
+delegate "svgRoot",     via => "document";
+delegate 'svgDefs',     via => 'document';
 
 public "svgLayer", lazy_default => sub {
     my ($self) = @_;
@@ -155,36 +149,6 @@ sub setSpacing {
     $self->spacingY($self->ptY($value));
 }
 
-sub setTopMarginY {
-    my ($self, $value) = @_;
-    $self->topMarginY($self->ptY($value));
-}
-
-sub setBottomMarginY {
-    my ($self, $value) = @_;
-    my ($pt, $type, $is_from_end) = $self->ptY($value);
-    if ($is_from_end) {
-        $self->bottomMarginY($self->ptY($value));
-    } else {
-        $self->bottomMarginY($self->documentHeight - $self->ptY($value));
-    }
-}
-
-sub setLeftMarginX {
-    my ($self, $value) = @_;
-    $self->leftMarginX($self->ptX($value));
-}
-
-sub setRightMarginX {
-    my ($self, $value) = @_;
-    my ($pt, $type, $is_from_end) = $self->ptX($value);
-    if ($is_from_end) {
-        $self->rightMarginX($self->ptX($value));
-    } else {
-        $self->rightMarginX($self->documentWidth - $self->ptX($value));
-    }
-}
-
 sub setOriginX {
     my ($self, $value) = @_;
     $self->originX($self->ptX($value));
@@ -206,25 +170,41 @@ sub compute {
 sub computeX {
     my ($self) = @_;
 
+    my $spacingX = $self->spacingX // $self->spacing // $self->ptX("1unit");
+    my $originX = $self->originX // $self->document->originX;
+
     $self->xPointSeries(My::Printable::PointSeries->new(
-        spacing => scalar($self->spacingX // $self->spacing // $self->ptX("1unit")),
-        min     => scalar($self->leftMarginX // $self->document->leftMarginX),
-        max     => scalar($self->rightMarginX // $self->document->rightMarginX),
-        origin  => scalar($self->originX // $self->document->originX),
+        spacing => $spacingX,
+        min     => scalar($self->x1 // $self->document->leftMarginX),
+        max     => scalar($self->x2 // $self->document->rightMarginX),
+        origin  => $originX,
     ));
-    $self->origXPointSeries(dclone($self->xPointSeries));
+    $self->origXPointSeries(My::Printable::PointSeries->new(
+        spacing => $spacingX,
+        min     => scalar($self->document->leftMarginX),
+        max     => scalar($self->document->rightMarginX),
+        origin  => $originX,
+    ));
 }
 
 sub computeY {
     my ($self) = @_;
 
+    my $spacingY = $self->spacingY // $self->spacing // $self->ptY("1unit");
+    my $originY = $self->originY // $self->document->originY;
+
     $self->yPointSeries(My::Printable::PointSeries->new(
-        spacing => scalar($self->spacingY // $self->spacing // $self->ptY("1unit")),
-        min     => scalar($self->topMarginY    // $self->document->topMarginY),
-        max     => scalar($self->bottomMarginY // $self->document->bottomMarginY),
-        origin  => scalar($self->originY // $self->document->originY),
+        spacing => $spacingY,
+        min     => scalar($self->y1 // $self->document->topMarginY),
+        max     => scalar($self->y2 // $self->document->bottomMarginY),
+        origin  => $originY,
     ));
-    $self->origYPointSeries(dclone($self->yPointSeries));
+    $self->origYPointSeries(My::Printable::PointSeries->new(
+        spacing => $spacingY,
+        min     => scalar($self->document->topMarginY),
+        max     => scalar($self->document->bottomMarginY),
+        origin  => $originY,
+    ));
 }
 
 sub snap {
@@ -288,31 +268,11 @@ sub chop {
 sub chopX {
     my ($self) = @_;
 
-    $self->xPointSeries->chopBehind($self->leftMarginX);
-    $self->xPointSeries->chopAhead($self->rightMarginX);
-}
-
-sub chopY {
-    my ($self) = @_;
-
-    $self->yPointSeries->chopBehind($self->topMarginY);
-    $self->yPointSeries->chopAhead($self->bottomMarginY);
-}
-
-sub chopDocumentMargins {
-    my ($self) = @_;
-    $self->chopDocumentMarginsX();
-    $self->chopDocumentMarginsY();
-}
-
-sub chopDocumentMarginsX {
-    my ($self) = @_;
-
     $self->xPointSeries->chopBehind($self->document->leftMarginX);
     $self->xPointSeries->chopAhead($self->document->rightMarginX);
 }
 
-sub chopDocumentMarginsY {
+sub chopY {
     my ($self) = @_;
 
     $self->yPointSeries->chopBehind($self->document->topMarginY);
@@ -332,10 +292,10 @@ sub drawDotPattern {
     my $xPointSeries = delete $args{xPointSeries};
     my $yPointSeries = delete $args{yPointSeries};
 
-    my $x1 = delete $args{x1};
-    my $x2 = delete $args{x2};
-    my $y1 = delete $args{y1};
-    my $y2 = delete $args{y2};
+    my $x1 = $xPointSeries->min;
+    my $x2 = $xPointSeries->max;
+    my $y1 = $yPointSeries->min;
+    my $y2 = $yPointSeries->max;
 
     my $type = $args{type} // "dots";
 
