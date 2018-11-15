@@ -214,8 +214,8 @@ sub computeY {
 
     $self->yPointSeries(My::Printable::PointSeries->new(
         spacing => scalar($self->spacingY // $self->spacing // $self->ptY("1unit")),
-        min     => scalar($self->bottomY // $self->bottomMarginY),
-        max     => scalar($self->topY    // $self->topMarginY),
+        min     => scalar($self->topY    // $self->topMarginY),
+        max     => scalar($self->bottomY // $self->bottomMarginY),
         origin  => scalar($self->originY // ($self->height / 2)),
     ));
     $self->origYPointSeries(dclone($self->yPointSeries));
@@ -264,13 +264,13 @@ sub extendLeftBy {
 sub extendBottomBy {
     my ($self, $number) = @_;
 
-    $self->yPointSeries->extendBehind($number);
+    $self->yPointSeries->extendAhead($number);
 }
 
 sub extendTopBy {
     my ($self, $number) = @_;
 
-    $self->yPointSeries->extendAhead($number);
+    $self->yPointSeries->extendBehind($number);
 }
 
 sub chop {
