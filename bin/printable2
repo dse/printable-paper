@@ -13,21 +13,40 @@ use My::Printable::Element::Lines;
 
 my $doc = My::Printable::Document->new();
 $doc->setUnit("1/4in");
-# $doc->setLeftMargin("3unit");
-# $doc->setRightMargin("3unit");
-# $doc->setTopMargin("3unit");
-# $doc->setBottomMargin("3unit");
+$doc->setLeftMargin("3.5unit");
+$doc->setRightMargin("3.5unit");
+$doc->setTopMargin("3.5unit");
+$doc->setBottomMargin("3.5unit");
 
 my $grid = My::Printable::Element::Grid->new(
     document => $doc,
     id => "grid",
-    cssClass => "blue stroke-6"
+    cssClass => "blue stroke-6",
+    x1 => "1in from left",
+    x2 => "1in from right",
+    y1 => "1in from bottom",
+    y2 => "1in from top",
 );
 $grid->setSpacingX("1unit");
 $grid->setSpacingY("1/3unit");
 $grid->isDottedLineGrid(1);
 $grid->horizontalDots(6);
 $grid->verticalDots(2);
+
+my $grid2 = My::Printable::Element::Grid->new(
+    document => $doc,
+    id => "grid2",
+    cssClass => "blue stroke-10",
+    x1 => "1in from left",
+    x2 => "1in from right",
+    y1 => "1in from bottom",
+    y2 => "1in from top",
+);
+$grid2->setSpacingX("1unit");
+$grid2->setSpacingY("1/3unit");
+$grid2->horizontalDots(6);
+$grid2->verticalDots(2);
+# $grid2->isDotGrid(1);
 
 my $lines = My::Printable::Element::Lines->new(
     document => $doc,
@@ -37,6 +56,7 @@ my $lines = My::Printable::Element::Lines->new(
 $lines->setSpacing("1unit");
 
 $doc->appendElement($grid);
+# $doc->appendElement($grid2);
 $doc->appendElement($lines);
 
 $doc->printToFile('printable2/grid.xml');

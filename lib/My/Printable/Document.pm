@@ -62,6 +62,7 @@ public 'svgDefs', lazy => 1, builder => sub {
     my $root = $self->svgRoot;
     my $defs = $doc->createElement('defs');
     $root->appendChild($defs);
+    return $defs;
 }, delete => 'deleteSVGDefs';
 
 public 'svgStyle', lazy => 1, builder => sub {
@@ -71,6 +72,7 @@ public 'svgStyle', lazy => 1, builder => sub {
     my $style = $doc->createElement('style');
     $style->appendText($self->defaultStyles);
     $root->appendChild($style);
+    return $style;
 }, delete => 'deleteSVGStyle';
 
 sub deleteSVG {
@@ -212,19 +214,20 @@ sub setUnit {
 sub generate {
     my ($self) = @_;
     $self->deleteSVG();
-    $self->each("compute");
-    $self->each("chop");
-    $self->each("snap");
-    $self->each("exclude");
-    $self->each("extend");
-    $self->each("draw");
+    $self->forEach("compute");
+    $self->forEach("snap");
+    $self->forEach("chop");
+    $self->forEach("chopMargins");
+    $self->forEach("extend");
+    # excluding individual coordinates, if elemented, would go here.
+    $self->forEach("draw");
     $self->isGenerated(1);
 }
 
-sub each {
+sub forEach {
     my ($self, $method, @args) = @_;
     foreach my $element (@{$self->elements}) {
-        $element->$method(@args);
+        $element->$method(@args) if $element->can($method);
     }
 }
 

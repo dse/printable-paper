@@ -9,6 +9,7 @@ use Class::Thingy;
 public "direction", default => "horizontal"; # or 'vertical'
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
+use My::Printable::PointSeries;
 
 use base qw(My::Printable::Element);
 
@@ -18,14 +19,14 @@ sub draw {
     if ($self->direction eq "horizontal") {
         my $x1 = $self->leftMarginX;
         my $x2 = $self->rightMarginX;
-        foreach my $y (@{$self->yValues}) {
+        foreach my $y ($self->yPointSeries->getPoints) {
             my $line = $self->createSVGLine(y => $y, x1 => $x1, x2 => $x2, cssClass => $cssClass);
             $self->appendSVGLine($line);
         }
     } elsif ($self->direction eq "vertical") {
         my $y1 = $self->bottomMarginY;
         my $y2 = $self->topMarginY;
-        foreach my $x (@{$self->xValues}) {
+        foreach my $x ($self->xPointSeries->getPoints) {
             my $line = $self->createSVGLine(x => $x, y1 => $y1, y2 => $y2, cssClass => $cssClass);
             $self->appendSVGLine($line);
         }

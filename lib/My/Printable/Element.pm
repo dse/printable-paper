@@ -8,9 +8,10 @@ use Class::Thingy;
 use Class::Thingy::Delegate;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(get_series_of_points round3);
+use My::Printable::Util qw(get_series_of_points get_point_series round3);
 
 use List::Util qw(min max);
+use Storable qw(dclone);
 
 public "id";
 
@@ -19,13 +20,9 @@ public "x2";
 public "y1";
 public "y2";
 
-public "xValues";
-public "yValues";
 public "xPointSeries";
 public "yPointSeries";
 
-public "origXValues";
-public "origYValues";
 public "origXPointSeries";
 public "origYPointSeries";
 
@@ -61,6 +58,7 @@ delegate "width",         via => "document";
 delegate "height",        via => "document";
 delegate "svgDocument",   via => "document";
 delegate "svgRoot",       via => "document";
+delegate 'svgDefs',       via => 'document';
 
 public "svgLayer", lazy_default => sub {
     my ($self) = @_;
@@ -201,26 +199,26 @@ sub compute {
 
 sub computeX {
     my ($self) = @_;
-    my @xValues = get_series_of_points(
+
+    $self->xPointSeries(My::Printable::PointSeries->new(
         spacing => scalar($self->spacingX // $self->spacing // $self->ptX("1unit")),
         min     => scalar($self->leftX // $self->leftMarginX),
         max     => scalar($self->rightX // $self->rightMarginX),
         origin  => scalar($self->originX // ($self->width / 2)),
-    );
-    $self->xValues([@xValues]);
-    $self->origXValues([@xValues]);
+    ));
+    $self->origXPointSeries(dclone($self->xPointSeries));
 }
 
 sub computeY {
     my ($self) = @_;
-    my @yValues = get_series_of_points(
+
+    $self->yPointSeries(My::Printable::PointSeries->new(
         spacing => scalar($self->spacingY // $self->spacing // $self->ptY("1unit")),
         min     => scalar($self->bottomY // $self->bottomMarginY),
         max     => scalar($self->topY    // $self->topMarginY),
         origin  => scalar($self->originY // ($self->height / 2)),
-    );
-    $self->yValues([@yValues]);
-    $self->origYValues([@yValues]);
+    ));
+    $self->origYPointSeries(dclone($self->yPointSeries));
 }
 
 sub snap {
@@ -231,26 +229,12 @@ sub snap {
 
 sub snapX {
     my ($self) = @_;
-    my $xValues = $self->xValues;
-    if (defined $xValues) {
-        # TODO
-    }
-    my $origXValues = $self->origXValues;
-    if (defined $origXValues) {
-        # TODO
-    }
+    # TODO
 }
 
 sub snapY {
     my ($self) = @_;
-    my $yValues = $self->yValues;
-    if (defined $yValues) {
-        # TODO
-    }
-    my $origYValues = $self->origYValues;
-    if (defined $origYValues) {
-        # TODO
-    }
+    # TODO
 }
 
 sub extend {
@@ -267,58 +251,26 @@ sub extend {
 
 sub extendRightBy {
     my ($self, $number) = @_;
-    my $xValues = $self->xValues;
-    return unless defined $xValues;
 
-    my $x = max(@$xValues);
-    for (my $i = 1; $i <= $number; $i += 1) {
-        $x += $self->spacingX;
-        push(@$xValues, $x);
-    }
-
-    # TODO: also, origXValues
+    $self->xPointSeries->extendAhead($number);
 }
 
 sub extendLeftBy {
     my ($self, $number) = @_;
-    my $xValues = $self->xValues;
-    return unless defined $xValues;
 
-    my $x = min(@$xValues);
-    for (my $i = 1; $i <= $number; $i += 1) {
-        $x -= $self->spacingX;
-        unshift(@$xValues, $x);
-    }
-
-    # TODO: also, origXValues
+    $self->xPointSeries->extendBehind($number);
 }
 
 sub extendBottomBy {
     my ($self, $number) = @_;
-    my $yValues = $self->yValues;
-    return unless defined $yValues;
 
-    my $y = min(@$yValues);
-    for (my $i = 1; $i <= $number; $i += 1) {
-        $y -= $self->spacingY;
-        unshift(@$yValues, $y);
-    }
-
-    # TODO: also, origYValues
+    $self->yPointSeries->extendBehind($number);
 }
 
 sub extendTopBy {
     my ($self, $number) = @_;
-    my $yValues = $self->yValues;
-    return unless defined $yValues;
 
-    my $y = max(@$yValues);
-    for (my $i = 1; $i <= $number; $i += 1) {
-        $y += $self->spacingY;
-        push(@$yValues, $y);
-    }
-
-    # TODO: also, origYValues
+    $self->yPointSeries->extendAhead($number);
 }
 
 sub chop {
@@ -329,62 +281,180 @@ sub chop {
 
 sub chopX {
     my ($self) = @_;
-    my $xValues = $self->xValues;
-    return unless defined $xValues;
 
-    # float
-    @$xValues = grep { $_ >= $self->leftX  } @$xValues if defined $self->leftX;
-    @$xValues = grep { $_ <= $self->rightX } @$xValues if defined $self->rightX;
+    $self->xPointSeries->chopBehind($self->leftX);
+    $self->xPointSeries->chopAhead($self->rightX);
 }
 
 sub chopY {
     my ($self) = @_;
-    my $yValues = $self->yValues;
-    return unless defined $yValues;
 
-    # float
-    @$yValues = grep { $_ >= $self->bottomY } @$yValues if defined $self->bottomY;
-    @$yValues = grep { $_ <= $self->topY    } @$yValues if defined $self->topY;
+    $self->yPointSeries->chopBehind($self->bottomY);
+    $self->yPointSeries->chopAhead($self->topY);
 }
 
-sub exclude {
-    my ($self, @id) = @_;
-    $self->excludeX(@id);
-    $self->excludeY(@id);
+sub chopMargins {
+    my ($self) = @_;
+    $self->chopMarginsX();
+    $self->chopMarginsY();
 }
 
-sub excludeX {
-    my ($self, @id) = @_;
-    my $xValues = $self->xValues;
-    return unless defined $xValues;
+sub chopMarginsX {
+    my ($self) = @_;
 
-    # float
-    @$xValues = grep { $_ >= $self->leftMarginX  } @$xValues if defined $self->leftMarginX;
-    @$xValues = grep { $_ <= $self->rightMarginX } @$xValues if defined $self->rightMarginX;
+    $self->xPointSeries->chopBehind($self->leftMarginX);
+    $self->xPointSeries->chopAhead($self->rightMarginX);
+}
 
-    foreach my $id (@id) {
-        my $element = $self->elements->{$id};
-        next unless $element;
+sub chopMarginsY {
+    my ($self) = @_;
 
-        # TODO
+    $self->yPointSeries->chopBehind($self->bottomMarginY);
+    $self->yPointSeries->chopAhead($self->topMarginY);
+}
+
+public 'patternCounter', default => 0;
+sub getPatternCounter {
+    my ($self) = @_;
+    return $self->patternCounter($self->patternCounter + 1);
+}
+
+sub drawDotPattern {
+    my ($self, %args) = @_;
+    my $pattern = $self->svgDocument->createElement('pattern');
+    my $cssClass = delete $args{cssClass};
+    my $xPointSeries = delete $args{xPointSeries};
+    my $yPointSeries = delete $args{yPointSeries};
+
+    my $x1 = delete $args{x1};
+    my $x2 = delete $args{x2};
+    my $y1 = delete $args{y1};
+    my $y2 = delete $args{y2};
+
+    my $type = $args{type} // "dots";
+
+    my $x = $xPointSeries->min;
+    my $y = $yPointSeries->min;
+
+    if (defined $xPointSeries && defined $yPointSeries) {
+        my $pattern_id = sprintf('%s-pattern-%d-%s',
+                                 $self->id,
+                                 $self->getPatternCounter,
+                                 $type);
+        my $pattern = $self->svgDocument->createElement('pattern');
+        my $viewBox = sprintf('0 0 %.3f %.3f',
+                              $xPointSeries->spacing,
+                              $yPointSeries->spacing);
+        $pattern->setAttribute('id', $pattern_id);
+        $pattern->setAttribute('x', $x - $xPointSeries->spacing / 2);
+        $pattern->setAttribute('y', $y - $yPointSeries->spacing / 2);
+        $pattern->setAttribute('width', $xPointSeries->spacing);
+        $pattern->setAttribute('height', $yPointSeries->spacing);
+        $pattern->setAttribute('patternUnits', 'userSpaceOnUse');
+        $pattern->setAttribute('viewBox', $viewBox);
+
+        my $line = $self->createSVGLine(x => $xPointSeries->spacing / 2,
+                                        y => $yPointSeries->spacing / 2,
+                                        cssClass => $cssClass);
+        $pattern->appendChild($line);
+
+        $self->svgDefs->appendChild($pattern);
+
+        my $rect = $self->svgDocument->createElement('rect');
+        $rect->setAttribute('x', $x1 - $xPointSeries->spacing / 2);
+        $rect->setAttribute('y', $y1 - $yPointSeries->spacing / 2);
+        $rect->setAttribute('width',  ($x2 - $x1) + ($xPointSeries->spacing));
+        $rect->setAttribute('height', ($y2 - $y1) + ($yPointSeries->spacing));
+        $rect->setAttribute('fill', sprintf('url(#%s)', $pattern_id));
+        $self->svgLayer->appendChild($rect);
     }
 }
 
-sub excludeY {
-    my ($self, @id) = @_;
-    my $yValues = $self->yValues;
-    return unless defined $yValues;
+sub drawHorizontalLinePattern {
+    my ($self, %args) = @_;
+    $self->drawLinePattern(direction => "horizontal", %args);
+}
 
-    # float
-    @$yValues = grep { $_ >= $self->bottomMarginY } @$yValues if defined $self->bottomMarginY;
-    @$yValues = grep { $_ <= $self->topMarginY    } @$yValues if defined $self->topMarginY;
+sub drawVerticalLinePattern {
+    my ($self, %args) = @_;
+    $self->drawLinePattern(direction => "vertical", %args);
+}
 
-    foreach my $id (@id) {
-        my $element = $self->elements->{$id};
-        next unless $element;
+sub drawLinePattern {
+    my ($self, %args) = @_;
+    my $direction = $args{direction};
+    my $pattern = $self->svgDocument->createElement('pattern');
+    my $cssClass = $args{cssClass};
+    my $xPointSeries = $args{xPointSeries};
+    my $yPointSeries = $args{yPointSeries};
+    my $x1 = $args{x1} // $xPointSeries->min;
+    my $x2 = $args{x2} // $xPointSeries->max;
+    my $y1 = $args{y1} // $yPointSeries->min;
+    my $y2 = $args{y2} // $yPointSeries->max;
+    my $spacing;
 
-        # TODO
+    my $type = $args{type} // sprintf("%s-lines", $direction);
+
+    my $pattern_id = sprintf('%s-pattern-%d-%s',
+                             $self->id,
+                             $self->getPatternCounter,
+                             $type);
+    my $viewBox;
+    my $fudge = 18;
+    my $line;
+    my $rect;
+
+    if ($direction eq "horizontal") {
+        $spacing = $yPointSeries->spacing;
+        $viewBox = sprintf('0 0 %.3f %.3f',
+                           ($x2 - $x1 + $fudge * 2),
+                           $spacing);
+        $line = $self->createSVGLine(
+            y => $spacing / 2,
+            x1 => $fudge,
+            x2 => $fudge + $x2 - $x1,
+            cssClass => $cssClass,
+        );
+        $pattern->setAttribute('x', $x1 - $fudge);
+        $pattern->setAttribute('y', $yPointSeries->min - $spacing / 2);
+        $pattern->setAttribute('width', $x2 - $x1 + $fudge * 2);
+        $pattern->setAttribute('height', $spacing);
+
+        $rect = $self->svgDocument->createElement('rect');
+        $rect->setAttribute('x', $x1 - $fudge);
+        $rect->setAttribute('y', $y1 - $spacing / 2);
+        $rect->setAttribute('width', $x2 - $x1 + $fudge * 2);
+        $rect->setAttribute('height', $y2 - $y1 + $spacing);
+    } elsif ($direction eq "vertical") {
+        $spacing = $xPointSeries->spacing;
+        $viewBox = sprintf('0 0 %.3f %.3f',
+                           $spacing,
+                           ($y2 - $y1 + $fudge * 2));
+        $line = $self->createSVGLine(
+            x => $spacing / 2,
+            y1 => $fudge,
+            y2 => $fudge + $y2 - $y1,
+            cssClass => $cssClass,
+        );
+        $pattern->setAttribute('x', $xPointSeries->min - $spacing / 2);
+        $pattern->setAttribute('y', $y1 - $fudge);
+        $pattern->setAttribute('width', $spacing);
+        $pattern->setAttribute('height', $y2 - $y1 + $fudge * 2);
+
+        $rect = $self->svgDocument->createElement('rect');
+        $rect->setAttribute('x', $x1 - $spacing / 2);
+        $rect->setAttribute('y', $y1 - $fudge);
+        $rect->setAttribute('width', $x2 - $x1 + $spacing);
+        $rect->setAttribute('height', $y2 - $y1 + $fudge * 2);
     }
+    $pattern->setAttribute('id', $pattern_id);
+    $pattern->setAttribute('patternUnits', 'userSpaceOnUse');
+    $pattern->setAttribute('viewBox', $viewBox);
+    $pattern->appendChild($line);
+    $self->svgDefs->appendChild($pattern);
+
+    $rect->setAttribute('fill', sprintf('url(#%s)', $pattern_id));
+    $self->svgLayer->appendChild($rect);
 }
 
 1;

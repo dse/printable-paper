@@ -14,17 +14,21 @@ public "isDottedLineGrid", default => 0;
 
 public "horizontalDots", default => 2;
 public "verticalDots", default => 2;
-public "dottedLineXValues", default => [];
-public "dottedLineYValues", default => [];
-public "origDottedLineXValues", default => [];
-public "origDottedLineYValues", default => [];
+
+public "dottedLineXPointSeries";
+public "dottedLineYPointSeries";
+public "origDottedLineXPointSeries";
+public "origDottedLineYPointSeries";
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(get_series_of_points);
+use My::Printable::Util qw(get_series_of_points
+                           get_point_series);
+use My::Printable::PointSeries;
 
 use base qw(My::Printable::Element);
 
 use List::Util qw(min max);
+use Storable qw(dclone);
 
 sub computeX {
     my ($self) = @_;
@@ -32,14 +36,13 @@ sub computeX {
     if ($self->isDottedLineGrid) {
         my $spacing = scalar($self->spacingX // $self->spacing // $self->ptX("1unit"));
         $spacing /= $self->horizontalDots;
-        my @xValues = get_series_of_points(
+        $self->dottedLineXPointSeries(My::Printable::PointSeries->new(
             spacing => $spacing,
             min     => scalar($self->leftX // $self->leftMarginX),
             max     => scalar($self->rightX // $self->rightMarginX),
             origin  => scalar($self->originX // ($self->width / 2)),
-        );
-        $self->dottedLineXValues([@xValues]);
-        $self->origDottedLineXValues([@xValues]);
+        ));
+        $self->origDottedLineXPointSeries(dclone($self->dottedLineXPointSeries));
     }
 }
 
@@ -49,14 +52,13 @@ sub computeY {
     if ($self->isDottedLineGrid) {
         my $spacing = scalar($self->spacingY // $self->spacing // $self->ptY("1unit"));
         $spacing /= $self->verticalDots;
-        my @yValues = get_series_of_points(
+        $self->dottedLineYPointSeries(My::Printable::PointSeries->new(
             spacing => $spacing,
             min     => scalar($self->bottomY // $self->bottomMarginY),
             max     => scalar($self->topY    // $self->topMarginY),
             origin  => scalar($self->originY // ($self->height / 2)),
-        );
-        $self->dottedLineYValues([@yValues]);
-        $self->origDottedLineYValues([@yValues]);
+        ));
+        $self->origDottedLineYPointSeries(dclone($self->dottedLineYPointSeries));
     }
 }
 
@@ -65,12 +67,8 @@ sub chopX {
     $self->SUPER::chopX();
 
     if ($self->isEnclosed && $self->isDottedLineGrid) {
-        my $x = $self->dottedLineXValues;
-        if (defined $x) {
-            # float
-            @$x = grep { $_ >= $self->leftX   } @$x if defined $self->leftX;
-            @$x = grep { $_ <= $self->rightX  } @$x if defined $self->rightX;
-        }
+        $self->xPointSeries->chopBehind($self->leftX);
+        $self->xPointSeries->chopAhead($self->rightX);
     }
 }
 
@@ -79,119 +77,87 @@ sub chopY {
     $self->SUPER::chopY();
 
     if ($self->isEnclosed && $self->isDottedLineGrid) {
-        my $y = $self->dottedLineYValues;
-        if (defined $y) {
-            # float
-            @$y = grep { $_ >= $self->bottomY } @$y if defined $self->bottomY;
-            @$y = grep { $_ <= $self->topY    } @$y if defined $self->topY;
-        }
+        $self->yPointSeries->chopBehind($self->bottomY);
+        $self->yPointSeries->chopAhead($self->topY);
     }
 }
 
-sub excludeX {
-    my ($self, @id) = @_;
-    $self->SUPER::excludeX();
+sub chopMarginsX {
+    my ($self) = @_;
+    $self->SUPER::chopMarginsX();
 
     if ($self->isEnclosed && $self->isDottedLineGrid) {
-        my $x = $self->dottedLineXValues;
-        if (defined $x) {
-            # float
-            @$x = grep { $_ >= $self->leftMarginX   } @$x if defined $self->leftMarginX;
-            @$x = grep { $_ <= $self->rightMarginX  } @$x if defined $self->rightMarginX;
-
-            foreach my $id (@id) {
-                my $element = $self->elements->{$id};
-                next unless $element;
-
-                # TODO
-            }
-        }
+        $self->xPointSeries->chopBehind($self->leftMarginX);
+        $self->xPointSeries->chopAhead($self->rightMarginX);
     }
 }
 
-sub excludeY {
-    my ($self, @id) = @_;
-    $self->SUPER::excludeY();
+sub chopMarginsY {
+    my ($self) = @_;
+    $self->SUPER::chopMarginsY();
 
     if ($self->isEnclosed && $self->isDottedLineGrid) {
-        my $y = $self->dottedLineYValues;
-        if (defined $y) {
-            # float
-            @$y = grep { $_ >= $self->bottomMarginY } @$y if defined $self->bottomMarginY;
-            @$y = grep { $_ <= $self->topMarginY    } @$y if defined $self->topMarginY;
-
-            foreach my $id (@id) {
-                my $element = $self->elements->{$id};
-                next unless $element;
-
-                # TODO
-            }
-        }
+        $self->yPointSeries->chopBehind($self->bottomMarginY);
+        $self->yPointSeries->chopAhead($self->topMarginY);
     }
 }
 
 sub draw {
     my ($self) = @_;
-    my $x1 = $self->leftMarginX;
-    my $x2 = $self->rightMarginX;
-    my $y1 = $self->bottomMarginY;
-    my $y2 = $self->topMarginY;
+
+    my $x1 = $self->xPointSeries->min;
+    my $x2 = $self->xPointSeries->max;
+    my $y1 = $self->yPointSeries->min;
+    my $y2 = $self->yPointSeries->max;
+
     if ($self->isDottedLineGrid) {
 
-        if ($self->isEnclosed) {
-            $x1 = min(@{$self->xValues});
-            $x2 = max(@{$self->xValues});
-            $y1 = min(@{$self->yValues});
-            $y2 = max(@{$self->yValues});
-        }
-
         # vertical dotted lines
-        foreach my $x (@{$self->xValues}) {
-            foreach my $y (@{$self->dottedLineYValues}) {
-                my $cssClass = $self->cssClassVertical // $self->cssClass // "blue dot";
-                my $line = $self->createSVGLine(x => $x, y => $y, cssClass => $cssClass);
-                $self->appendSVGLine($line);
-            }
-        }
+        $self->drawDotPattern(
+            cssClass => ($self->cssClassVertical // $self->cssClass // "blue dot"),
+            xPointSeries => $self->xPointSeries,
+            yPointSeries => $self->dottedLineYPointSeries,
+            x1 => $x1,
+            x2 => $x2,
+            y1 => $y1,
+            y2 => $y2,
+        );
 
         # horizontal dotted lines
-        foreach my $y (@{$self->yValues}) {
-            foreach my $x (@{$self->dottedLineXValues}) {
-                my $cssClass = $self->cssClassHorizontal // $self->cssClass // "blue dot";
-                my $line = $self->createSVGLine(x => $x, y => $y, cssClass => $cssClass);
-                $self->appendSVGLine($line);
-            }
-        }
+        $self->drawDotPattern(
+            cssClass => ($self->cssClassHorizontal // $self->cssClass // "blue dot"),
+            xPointSeries => $self->dottedLineXPointSeries,
+            yPointSeries => $self->yPointSeries,
+            x1 => $x1,
+            x2 => $x2,
+            y1 => $y1,
+            y2 => $y2,
+        );
 
     } elsif ($self->isDotGrid) {
-        foreach my $x (@{$self->xValues}) {
-            foreach my $y (@{$self->yValues}) {
-                my $cssClass = $self->cssClass // "blue dot";
-                my $line = $self->createSVGLine(x => $x, y => $y, cssClass => $cssClass);
-                $self->appendSVGLine($line);
-            }
-        }
+        my $cssClass = $self->cssClass // "blue dot";
+        $self->drawDotPattern(
+            cssClass => $cssClass,
+            xPointSeries => $self->xPointSeries,
+            yPointSeries => $self->yPointSeries,
+            x1 => $x1,
+            x2 => $x2,
+            y1 => $y1,
+            y2 => $y2,
+        );
     } else {
-        if ($self->isEnclosed) {
-            $x1 = min(@{$self->xValues});
-            $x2 = max(@{$self->xValues});
-            $y1 = min(@{$self->yValues});
-            $y2 = max(@{$self->yValues});
-        }
-
-        # vertical lines
-        foreach my $x (@{$self->xValues}) {
-            my $cssClass = $self->cssClassVertical // $self->cssClass // "thin blue line";
-            my $line = $self->createSVGLine(x => $x, y1 => $y1, y2 => $y2, cssClass => $cssClass);
-            $self->appendSVGLine($line);
-        }
-
-        # horizontal lines
-        foreach my $y (@{$self->yValues}) {
-            my $cssClass = $self->cssClassHorizontal // $self->cssClass // "thin blue line";
-            my $line = $self->createSVGLine(y => $y, x1 => $x1, x2 => $x2, cssClass => $cssClass);
-            $self->appendSVGLine($line);
-        }
+        $self->drawVerticalLinePattern(
+            cssClass => ($self->cssClassVertical // $self->cssClass // "thin blue line"),
+            xPointSeries => $self->xPointSeries,
+            y1 => $y1,
+            y2 => $y2,
+        );
+        $self->drawHorizontalLinePattern(
+            cssClass => ($self->cssClassHorizontal // $self->cssClass // "thin blue line"),
+            yPointSeries => $self->yPointSeries,
+            x1 => $x1,
+            x2 => $x2,
+        );
     }
 }
 

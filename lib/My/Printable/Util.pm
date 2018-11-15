@@ -5,7 +5,11 @@ use v5.10.0;
 
 use base "Exporter";
 
-our @EXPORT_OK = qw(exclude round3 get_series_of_points nearest_point);
+our @EXPORT_OK = qw(exclude
+                    round3
+                    get_series_of_points
+                    get_point_series
+                    nearest_point);
 
 use Data::Dumper;
 
@@ -49,6 +53,35 @@ sub get_series_of_points {
 
     return @points if wantarray;
     return \@points;
+}
+
+use POSIX qw(ceil);
+
+use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
+use My::Printable::PointSeries;
+
+sub get_point_series {
+    my %args = @_;
+    my $spacing = delete $args{spacing};
+    my $origin  = delete $args{origin};
+    my $min     = delete $args{min};
+    my $max     = delete $args{max};
+
+    # float
+    my $start = $origin;
+    my $end   = $origin;
+    while ((my $new_start = $start - $spacing) >= $min) {
+        $start = $new_start;
+    }
+    while ((my $new_end = $end + $spacing) <= $max) {
+        $end = $new_end;
+    }
+
+    return My::Printable::PointSeries->new(
+        start => $start,
+        end => $end,
+        spacing => $spacing
+    );
 }
 
 sub nearest_point {
