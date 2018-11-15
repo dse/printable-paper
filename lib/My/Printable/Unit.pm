@@ -150,7 +150,7 @@ sub pt {
 
     if ($value =~ s{\s+from\s+(left|right|top|bottom)\s*$}{}xi) {
         my $side = lc($1);
-        if ($side eq "right" || $side eq "top") {
+        if ($side eq "right" || $side eq "bottom") {
             $is_from_end = 1;
         } else {
             $is_from_end = 0;
@@ -158,14 +158,14 @@ sub pt {
     }
     if ($value =~ s{^\s*(left|right|top|bottom)\s+}{}xi) {
         my $side = lc($1);
-        if ($side eq "right" || $side eq "top") {
+        if ($side eq "right" || $side eq "bottom") {
             $is_from_end = 1;
         } else {
             $is_from_end = 0;
         }
     }
     if ($is_from_end && !defined $self->size) {
-        die("Invalid use of 'right' or 'top' prefix or 'from right' or 'from top' suffix.\n");
+        die("Invalid use of 'right' or 'bottom' prefix or 'from right' or 'from bottom' suffix.\n");
     }
 
     if (defined $unit && $unit ne "") {
@@ -233,7 +233,7 @@ sub pt {
         $result_pt = $self->size - $self->result_pt;
     }
 
-    return ($result_pt, $result_type) if wantarray;
+    return ($result_pt, $result_type, $is_from_end) if wantarray;
     return $result_pt;
 }
 
