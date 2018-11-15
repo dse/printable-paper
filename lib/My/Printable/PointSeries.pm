@@ -13,21 +13,21 @@ public 'origin';
 public 'min';
 public 'max';
 
+our $FUDGE = 0.0001;
+
 sub init {
     my ($self) = @_;
     if (defined $self->origin && defined $self->spacing) {
         if (defined $self->min && !defined $self->start) {
-            # float
             my $start = $self->origin;
-            while ((my $new_start = $start - $self->spacing) >= $self->min) {
+            while ((my $new_start = $start - $self->spacing) >= ($self->min - $FUDGE)) {
                 $start = $new_start;
             }
             $self->start($start);
         }
         if (defined $self->max && !defined $self->end) {
-            # float
             my $end = $self->origin;
-            while ((my $new_end = $end + $self->spacing) <= $self->max) {
+            while ((my $new_end = $end + $self->spacing) <= ($self->max + $FUDGE)) {
                 $end = $new_end;
             }
             $self->end($end);
@@ -50,7 +50,7 @@ sub extendBehind {
 sub chopBehind {
     my ($self, $min) = @_;
     return unless defined $min;
-    while ($self->min < $min) {
+    while ($self->min < ($min - $FUDGE)) {
         $self->min($self->min + $self->spacing);
     }
 }
@@ -58,7 +58,7 @@ sub chopBehind {
 sub chopAhead {
     my ($self, $max) = @_;
     return unless defined $max;
-    while ($self->max > $max) {
+    while ($self->max > ($max + $FUDGE)) {
         $self->max($self->max - $self->spacing);
     }
 }
@@ -66,11 +66,7 @@ sub chopAhead {
 sub getPoints {
     my ($self) = @_;
     my @points;
-
-    # float
-    for (my $point = $self->min;
-         $point <= $self->max;
-         $point += $self->spacing) {
+    for (my $point = $self->min; $point <= ($self->max + $FUDGE); $point += $self->spacing) {
         push(@points, $point);
     }
     return @points;
