@@ -54,8 +54,8 @@ sub computeY {
         $spacing /= $self->verticalDots;
         $self->dottedLineYPointSeries(My::Printable::PointSeries->new(
             spacing => $spacing,
-            min     => scalar($self->bottomY // $self->bottomMarginY),
-            max     => scalar($self->topY    // $self->topMarginY),
+            min     => scalar($self->topY    // $self->topMarginY),
+            max     => scalar($self->bottomY // $self->bottomMarginY),
             origin  => scalar($self->originY // ($self->height / 2)),
         ));
         $self->origDottedLineYPointSeries(dclone($self->dottedLineYPointSeries));
@@ -77,8 +77,8 @@ sub chopY {
     $self->SUPER::chopY();
 
     if ($self->isEnclosed && $self->isDottedLineGrid) {
-        $self->yPointSeries->chopBehind($self->bottomY);
-        $self->yPointSeries->chopAhead($self->topY);
+        $self->yPointSeries->chopBehind($self->topY);
+        $self->yPointSeries->chopAhead($self->bottomY);
     }
 }
 
@@ -97,8 +97,8 @@ sub chopMarginsY {
     $self->SUPER::chopMarginsY();
 
     if ($self->isEnclosed && $self->isDottedLineGrid) {
-        $self->yPointSeries->chopBehind($self->bottomMarginY);
-        $self->yPointSeries->chopAhead($self->topMarginY);
+        $self->yPointSeries->chopBehind($self->topMarginY);
+        $self->yPointSeries->chopAhead($self->bottomMarginY);
     }
 }
 
