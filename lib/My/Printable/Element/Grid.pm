@@ -8,12 +8,13 @@ use Class::Thingy;
 
 public "cssClassHorizontal";
 public "cssClassVertical";
-public "isDotGrid", default => 0;
-public "isEnclosed", default => 0;
+public "isDotGrid",        default => 0;
 public "isDottedLineGrid", default => 0;
+public "extendGridLines",  default => 0;
 
-public "horizontalDots", default => 2;
-public "verticalDots", default => 2;
+# for dotted line grids
+public "horizontalDots",   default => 2;
+public "verticalDots",     default => 2;
 
 public "dottedLineXPointSeries";
 public "dottedLineYPointSeries";
@@ -71,12 +72,14 @@ sub draw {
     my $y2 = $self->yPointSeries->max;
 
     if ($self->isDottedLineGrid) {
+        my $xLinePointSeries = $self->extendGridLines ? $self->origDottedLineXPointSeries : $self->dottedLineXPointSeries;
+        my $yLinePointSeries = $self->extendGridLines ? $self->origDottedLineYPointSeries : $self->dottedLineYPointSeries;
 
         # vertical dotted lines
         $self->drawDotPattern(
             cssClass => ($self->cssClassVertical // $self->cssClass // "blue dot"),
             xPointSeries => $self->xPointSeries,
-            yPointSeries => $self->dottedLineYPointSeries,
+            yPointSeries => $yLinePointSeries,
             x1 => $x1,
             x2 => $x2,
             y1 => $y1,
@@ -86,14 +89,13 @@ sub draw {
         # horizontal dotted lines
         $self->drawDotPattern(
             cssClass => ($self->cssClassHorizontal // $self->cssClass // "blue dot"),
-            xPointSeries => $self->dottedLineXPointSeries,
+            xPointSeries => $xLinePointSeries,
             yPointSeries => $self->yPointSeries,
             x1 => $x1,
             x2 => $x2,
             y1 => $y1,
             y2 => $y2,
         );
-
     } elsif ($self->isDotGrid) {
         my $cssClass = $self->cssClass // "blue dot";
         $self->drawDotPattern(
@@ -106,6 +108,12 @@ sub draw {
             y2 => $y2,
         );
     } else {
+        if ($self->extendGridLines) {
+            $x1 = $self->leftMarginX   // $self->document->leftMarginX;
+            $x2 = $self->rightMarginX  // $self->document->rightMarginX;
+            $y1 = $self->topMarginY    // $self->document->topMarginY;
+            $y2 = $self->bottomMarginY // $self->document->bottomMarginY;
+        }
         $self->drawVerticalLinePattern(
             cssClass => ($self->cssClassVertical // $self->cssClass // "thin blue line"),
             xPointSeries => $self->xPointSeries,
