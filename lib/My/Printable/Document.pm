@@ -227,7 +227,7 @@ sub generate {
     $self->forEach("compute");
     $self->forEach("snap");
     $self->forEach("chop");
-    $self->forEach("chopMargins");
+    $self->forEach("chopDocumentMargins");
     $self->forEach("extend");
     # excluding individual coordinates, if elemented, would go here.
     $self->forEach("draw");

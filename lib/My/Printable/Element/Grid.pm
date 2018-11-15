@@ -38,8 +38,8 @@ sub computeX {
         $spacing /= $self->horizontalDots;
         $self->dottedLineXPointSeries(My::Printable::PointSeries->new(
             spacing => $spacing,
-            min     => scalar($self->leftX // $self->leftMarginX),
-            max     => scalar($self->rightX // $self->rightMarginX),
+            min     => scalar($self->leftMarginX // $self->document->leftMarginX),
+            max     => scalar($self->rightMarginX // $self->document->rightMarginX),
             origin  => scalar($self->originX // ($self->width / 2)),
         ));
         $self->origDottedLineXPointSeries(dclone($self->dottedLineXPointSeries));
@@ -54,51 +54,11 @@ sub computeY {
         $spacing /= $self->verticalDots;
         $self->dottedLineYPointSeries(My::Printable::PointSeries->new(
             spacing => $spacing,
-            min     => scalar($self->topY    // $self->topMarginY),
-            max     => scalar($self->bottomY // $self->bottomMarginY),
+            min     => scalar($self->topMarginY    // $self->document->topMarginY),
+            max     => scalar($self->bottomMarginY // $self->document->bottomMarginY),
             origin  => scalar($self->originY // ($self->height / 2)),
         ));
         $self->origDottedLineYPointSeries(dclone($self->dottedLineYPointSeries));
-    }
-}
-
-sub chopX {
-    my ($self) = @_;
-    $self->SUPER::chopX();
-
-    if ($self->isEnclosed && $self->isDottedLineGrid) {
-        $self->xPointSeries->chopBehind($self->leftX);
-        $self->xPointSeries->chopAhead($self->rightX);
-    }
-}
-
-sub chopY {
-    my ($self) = @_;
-    $self->SUPER::chopY();
-
-    if ($self->isEnclosed && $self->isDottedLineGrid) {
-        $self->yPointSeries->chopBehind($self->topY);
-        $self->yPointSeries->chopAhead($self->bottomY);
-    }
-}
-
-sub chopMarginsX {
-    my ($self) = @_;
-    $self->SUPER::chopMarginsX();
-
-    if ($self->isEnclosed && $self->isDottedLineGrid) {
-        $self->xPointSeries->chopBehind($self->leftMarginX);
-        $self->xPointSeries->chopAhead($self->rightMarginX);
-    }
-}
-
-sub chopMarginsY {
-    my ($self) = @_;
-    $self->SUPER::chopMarginsY();
-
-    if ($self->isEnclosed && $self->isDottedLineGrid) {
-        $self->yPointSeries->chopBehind($self->topMarginY);
-        $self->yPointSeries->chopAhead($self->bottomMarginY);
     }
 }
 
