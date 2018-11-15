@@ -204,7 +204,7 @@ sub computeX {
         spacing => scalar($self->spacingX // $self->spacing // $self->ptX("1unit")),
         min     => scalar($self->leftX // $self->leftMarginX),
         max     => scalar($self->rightX // $self->rightMarginX),
-        origin  => scalar($self->originX // ($self->width / 2)),
+        origin  => scalar($self->originX // $self->document->originX),
     ));
     $self->origXPointSeries(dclone($self->xPointSeries));
 }
@@ -216,7 +216,7 @@ sub computeY {
         spacing => scalar($self->spacingY // $self->spacing // $self->ptY("1unit")),
         min     => scalar($self->topY    // $self->topMarginY),
         max     => scalar($self->bottomY // $self->bottomMarginY),
-        origin  => scalar($self->originY // ($self->height / 2)),
+        origin  => scalar($self->originY // $self->document->originY),
     ));
     $self->origYPointSeries(dclone($self->yPointSeries));
 }
