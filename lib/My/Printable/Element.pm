@@ -289,8 +289,8 @@ sub chopX {
 sub chopY {
     my ($self) = @_;
 
-    $self->yPointSeries->chopBehind($self->bottomY);
-    $self->yPointSeries->chopAhead($self->topY);
+    $self->yPointSeries->chopBehind($self->topY);
+    $self->yPointSeries->chopAhead($self->bottomY);
 }
 
 sub chopMargins {
@@ -309,8 +309,8 @@ sub chopMarginsX {
 sub chopMarginsY {
     my ($self) = @_;
 
-    $self->yPointSeries->chopBehind($self->bottomMarginY);
-    $self->yPointSeries->chopAhead($self->topMarginY);
+    $self->yPointSeries->chopBehind($self->topMarginY);
+    $self->yPointSeries->chopAhead($self->bottomMarginY);
 }
 
 public 'patternCounter', default => 0;
