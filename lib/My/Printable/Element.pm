@@ -73,22 +73,37 @@ sub createSVGLine {
     return $line;
 }
 
-sub appendSVGLine {
+sub createSVGRectangle {
+    my ($self, %args) = @_;
+    my $doc = $self->document->svgDocument;
+    my $rectangle = $doc->createElement('rect');
+
+    $rectangle->setAttribute('x',      round3($args{x}));
+    $rectangle->setAttribute('y',      round3($args{y}));
+    $rectangle->setAttribute('width',  round3($args{width}));
+    $rectangle->setAttribute('height', round3($args{height}));
+    $rectangle->setAttribute('rx',     round3($args{rx})) if $args{rx};
+    $rectangle->setAttribute('ry',     round3($args{ry})) if $args{ry};
+    $rectangle->setAttribute('class',  $args{cssClass})   if defined $args{cssClass};
+    return $rectangle;
+}
+
+sub appendSVGElement {
     my $self = shift;
-    my $line;
+    my $svg_element;
     if (scalar @_ == 1) {
-        $line = shift;
-        if (ref $line && $line->isa('XML::LibXML::Element')) {
+        $svg_element = shift;
+        if (ref $svg_element && $svg_element->isa('XML::LibXML::Element')) {
             # do nothing
         } else {
-            die("Bad call to appendSVGLine");
+            die("Bad call to appendSVGElement");
         }
     } elsif ((scalar @_) % 2 == 0) {
-        $line = $self->createSVGLine(@_);
+        $svg_element = $self->createSVGLine(@_);
     } else {
-        die("Bad call to appendSVGLine");
+        die("Bad call to appendSVGElement");
     }
-    $self->svgLayer->appendChild($line);
+    $self->svgLayer->appendChild($svg_element);
 }
 
 sub ptX {

@@ -21,14 +21,14 @@ sub draw {
         my $x2 = $self->x2 // $self->document->rightMarginX;
         foreach my $y ($self->yPointSeries->getPoints) {
             my $line = $self->createSVGLine(y => $y, x1 => $x1, x2 => $x2, cssClass => $cssClass);
-            $self->appendSVGLine($line);
+            $self->appendSVGElement($line);
         }
     } elsif ($self->direction eq "vertical") {
         my $y1 = $self->y1 // $self->document->topMarginY;
         my $y2 = $self->y2 // $self->document->bottomMarginY;
         foreach my $x ($self->xPointSeries->getPoints) {
             my $line = $self->createSVGLine(x => $x, y1 => $y1, y2 => $y2, cssClass => $cssClass);
-            $self->appendSVGLine($line);
+            $self->appendSVGElement($line);
         }
     }
 }
