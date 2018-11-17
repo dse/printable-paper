@@ -93,6 +93,7 @@ sub cmd {
 
 my %build = (
     svg => {
+        force => 1,
         dependencies => [qw(bin/printable makebin/makeprintable)],
         code => sub {
             my %args = @_;
@@ -236,6 +237,7 @@ sub build_file {
     my $target       = $file->{filename};
     my @dependencies = eval { @{$file->{dependencies}} };
     my $build        = $file->{build};
+    my $force        = $build->{force};
 
     my @build_dependencies = eval { @{$build->{dependencies}} };
 
@@ -247,6 +249,9 @@ sub build_file {
     my $target_age    = -M _;
 
     my $make = 0;
+    if ($force) {
+        $make = 1;
+    }
     if (!$target_exists) {
         $make = 1;
     }
