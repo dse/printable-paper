@@ -35,6 +35,21 @@ sub init {
     }
 }
 
+use POSIX qw(trunc);
+
+sub nearest {
+    my ($self, $point) = @_;
+    my $x = $point - $self->startPoint;
+    my $y = $self->spacing;
+    my $t = trunc($x / $y) * $y;
+    my $m = $x - $t;
+    if ($m < $y / 2) {
+        return $self->startPoint + $t;
+    } else {
+        return $self->startPoint + $y + $t;
+    }
+}
+
 sub extendAhead {
     my ($self, $steps) = @_;
     $steps //= 1;
