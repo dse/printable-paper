@@ -9,17 +9,17 @@ use Class::Thingy;
 public "cssClassHorizontal";
 public "cssClassVertical";
 
-public "isDotGrid",                 default => 0;
+public "isDotGrid",                    default => 0;
 public "hasDottedGridLines",           default => 0;
 public "hasDottedHorizontalGridLines", default => 0;
 public "hasDottedVerticalGridLines",   default => 0;
-public "extendGridLines",           default => 0;
-public "extendHorizontalGridLines", default => 0;
-public "extendVerticalGridLines",   default => 0;
+public "extendGridLines",              default => 0;
+public "extendHorizontalGridLines",    default => 0;
+public "extendVerticalGridLines",      default => 0;
 
 # for dotted line grids
-public "horizontalDots",            default => 2;
-public "verticalDots",              default => 2;
+public "horizontalDots",               default => 2;
+public "verticalDots",                 default => 2;
 
 public "dottedLineXPointSeries";
 public "dottedLineYPointSeries";
@@ -27,8 +27,6 @@ public "origDottedLineXPointSeries";
 public "origDottedLineYPointSeries";
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(get_series_of_points
-                           get_point_series);
 use My::Printable::PointSeries;
 
 use base qw(My::Printable::Element);
@@ -124,6 +122,8 @@ sub draw {
             y2 => $y2,
         );
     } else {
+
+        # horizontal grid lines
         if ($self->hasDottedGridLines || $self->hasDottedHorizontalGridLines) {
             my $xLinePointSeries = ($self->extendHorizontalGridLines || $self->extendGridLines) ? $self->origDottedLineXPointSeries : $self->dottedLineXPointSeries;
             my @x = $xLinePointSeries->getPoints();
@@ -148,6 +148,8 @@ sub draw {
                 x2 => $x2,
             );
         }
+
+        # vertical grid lines
         if ($self->hasDottedGridLines || $self->hasDottedVerticalGridLines) {
             my $yLinePointSeries = ($self->extendVerticalGridLines || $self->extendGridLines) ? $self->origDottedLineYPointSeries : $self->dottedLineYPointSeries;
             my @y = $yLinePointSeries->getPoints();
