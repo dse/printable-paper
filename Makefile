@@ -45,6 +45,8 @@ line-dot-graph:
 	makebin/makeprintable line-dot-graph
 seyes:
 	makebin/makeprintable seyes
+quadrille:
+	makebin/makeprintable quadrille
 
 # actions
 clean:
