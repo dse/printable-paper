@@ -12,10 +12,12 @@ public "height",        default => 792;        # in pt
 public "unitType",      default => "imperial"; # imperial, metric
 public "colorType",     default => "color";    # color, grayscale
 public "rulingName";                           # seyes, etc.
+
 public "leftMarginX";                          # in pt, left = 0
 public "rightMarginX";                         # in pt, left = 0
 public "topMarginY";                           # in pt, top = 0
 public "bottomMarginY";                        # in pt, top = 0
+
 public "unit";                                 # My::Printable::Unit
 public "unitX";                                # My::Printable::Unit
 public "unitY";                                # My::Printable::Unit
@@ -75,6 +77,11 @@ public 'svgStyle', lazy => 1, builder => sub {
     return $style;
 }, delete => 'deleteSVGStyle';
 
+use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
+use My::Printable::Util qw(round3);
+use My::Printable::Unit;
+use My::Printable::PaperSizes;
+
 sub deleteSVG {
     my ($self) = @_;
     foreach my $element (@{$self->elements}) {
@@ -101,10 +108,6 @@ sub pt {
     my ($self, $value) = @_;
     return $self->unit->pt($value);
 }
-
-use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(round3);
-use My::Printable::Unit;
 
 sub init {
     my ($self) = @_;
@@ -208,12 +211,12 @@ sub setBottomMargin {
 
 sub setOriginX {
     my ($self, $value) = @_;
-    $self->xOrigin($self->ptX($value));
+    $self->originX($self->ptX($value));
 }
 
 sub setOriginY {
     my ($self, $value) = @_;
-    $self->yOrigin($self->ptY($value));
+    $self->originY($self->ptY($value));
 }
 
 sub setUnit {
