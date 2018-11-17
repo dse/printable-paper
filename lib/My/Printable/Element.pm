@@ -8,7 +8,7 @@ use Class::Thingy;
 use Class::Thingy::Delegate;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(get_series_of_points get_point_series round3);
+use My::Printable::Util qw(round3);
 
 use List::Util qw(min max);
 use Storable qw(dclone);
@@ -292,15 +292,15 @@ sub drawDotPattern {
     my $xPointSeries = delete $args{xPointSeries};
     my $yPointSeries = delete $args{yPointSeries};
 
-    my $x1 = $xPointSeries->min;
-    my $x2 = $xPointSeries->max;
-    my $y1 = $yPointSeries->min;
-    my $y2 = $yPointSeries->max;
+    my $x1 = $xPointSeries->startPoint;
+    my $x2 = $xPointSeries->endPoint;
+    my $y1 = $yPointSeries->startPoint;
+    my $y2 = $yPointSeries->endPoint;
 
     my $type = $args{type} // "dots";
 
-    my $x = $xPointSeries->min;
-    my $y = $yPointSeries->min;
+    my $x = $xPointSeries->startPoint;
+    my $y = $yPointSeries->startPoint;
 
     if (defined $xPointSeries && defined $yPointSeries) {
         my $pattern_id = sprintf('%s-pattern-%d-%s',
@@ -353,10 +353,10 @@ sub drawLinePattern {
     my $cssClass = $args{cssClass};
     my $xPointSeries = $args{xPointSeries};
     my $yPointSeries = $args{yPointSeries};
-    my $x1 = $args{x1} // $xPointSeries->min;
-    my $x2 = $args{x2} // $xPointSeries->max;
-    my $y1 = $args{y1} // $yPointSeries->min;
-    my $y2 = $args{y2} // $yPointSeries->max;
+    my $x1 = $args{x1} // $xPointSeries->startPoint;
+    my $x2 = $args{x2} // $xPointSeries->endPoint;
+    my $y1 = $args{y1} // $yPointSeries->startPoint;
+    my $y2 = $args{y2} // $yPointSeries->endPoint;
     my $spacing;
 
     my $type = $args{type} // sprintf("%s-lines", $direction);
@@ -382,7 +382,7 @@ sub drawLinePattern {
             cssClass => $cssClass,
         );
         $pattern->setAttribute('x', $x1 - $fudge);
-        $pattern->setAttribute('y', $yPointSeries->min - $spacing / 2);
+        $pattern->setAttribute('y', $yPointSeries->startPoint - $spacing / 2);
         $pattern->setAttribute('width', $x2 - $x1 + $fudge * 2);
         $pattern->setAttribute('height', $spacing);
 
@@ -402,7 +402,7 @@ sub drawLinePattern {
             y2 => $fudge + $y2 - $y1,
             cssClass => $cssClass,
         );
-        $pattern->setAttribute('x', $xPointSeries->min - $spacing / 2);
+        $pattern->setAttribute('x', $xPointSeries->startPoint - $spacing / 2);
         $pattern->setAttribute('y', $y1 - $fudge);
         $pattern->setAttribute('width', $spacing);
         $pattern->setAttribute('height', $y2 - $y1 + $fudge * 2);
