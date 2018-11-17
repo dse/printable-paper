@@ -1,0 +1,170 @@
+package My::Printable::Ruling::Seyes;
+use warnings;
+use strict;
+use v5.10.0;
+
+use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
+use base 'My::Printable::Ruling';
+
+use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
+use Class::Thingy;
+
+use constant rulingName => 'seyes';
+
+sub generate {
+    my ($self) = @_;
+
+    $self->document->setUnit($self->getUnit);
+    $self->document->setOriginX($self->getOriginX);
+    $self->document->setOriginY($self->getOriginY);
+
+    my $grid = My::Printable::Element::Grid->new(
+        document => $self->document,
+        id => 'grid',
+        cssClass => $self->getFeintLineCSSClass,
+    );
+    $grid->setX1($self->getOriginX);
+    $grid->setY1($self->getTopLineY);
+    $grid->setY2($self->getBottomLineY);
+    $grid->setSpacingX('1unit');
+    if ($self->hasModifier->{'three-line'}) {
+        $grid->setSpacingY('1/3unit');
+    } else {
+        $grid->setSpacingY('1/4unit');
+    }
+    $grid->extendVerticalGridLines(1);
+    $grid->extendHorizontalGridLines(1);
+    if ($self->hasModifier->{'three-line'}) {
+        $grid->extendTop(2);
+        $grid->extendBottom(1);
+    } else {
+        $grid->extendTop(3);
+        $grid->extendBottom(2);
+    }
+
+    my $lines = My::Printable::Element::Lines->new(
+        document => $self->document,
+        id => 'lines',
+        cssClass => $self->getLineCSSClass,
+    );
+    $lines->setY1($self->getTopLineY);
+    $lines->setY2($self->getBottomLineY);
+    $lines->setSpacing('1unit');
+
+    my $margin_line = My::Printable::Element::Line->new(
+        document => $self->document,
+        id => 'margin-line',
+        cssClass => $self->getMarginLineCSSClass,
+    );
+    $margin_line->setX($self->getOriginX);
+
+    $self->document->appendElement($grid);
+    $self->document->appendElement($lines);
+    $self->document->appendElement($margin_line);
+    $self->document->generate;
+}
+
+sub getLineCSSClass {
+    my ($self) = @_;
+    if ($self->colorType eq 'grayscale') {
+        return 'gray line';
+    } else {
+        return 'blue line';
+    }
+}
+
+sub getFeintLineCSSClass {
+    my ($self) = @_;
+    if ($self->colorType eq 'grayscale') {
+        if ($self->hasModifier->{'thinner-grid'}) {
+            return 'x-thin gray line';
+        } else {
+            return 'thin gray line';
+        }
+    } else {
+        if ($self->hasModifier->{'thinner-grid'}) {
+            return 'x-thin blue line';
+        } else {
+            return 'thin blue line';
+        }
+    }
+}
+
+sub getOriginX {
+    my ($self) = @_;
+    if ($self->unitType eq 'imperial') {
+        if ($self->hasModifier->{smaller}) {
+            return '0.75in from left';
+        } else {
+            return '1.25in from left';
+        }
+    } else {
+        if ($self->hasModifier->{smaller}) {
+            return '16mm from left';
+        } else {
+            return '41mm from left';
+        }
+    }
+}
+
+sub getUnit {
+    my ($self) = @_;
+    if ($self->unitType eq 'imperial') {
+        if ($self->hasModifier->{'10mm'}) {
+            return '3/8in';
+        } elsif ($self->hasModifier->{'three-line'}) {
+            return '1/4in';
+        } else {
+            return '5/16in';
+        }
+    } else {
+        if ($self->hasModifier->{'10mm'}) {
+            return '10mm';
+        } elsif ($self->hasModifier->{'three-line'}) {
+            return '6mm';
+        } else {
+            return '8mm';
+        }
+    }
+}
+
+sub getTopLineY {
+    my ($self) = @_;
+    if ($self->unitType eq 'imperial') {
+        if ($self->hasModifier->{smaller}) {
+            return '1in from top';
+        } else {
+            return '1.5in from top';
+        }
+    } else {
+        if ($self->hasModifier->{smaller}) {
+            return '24mm from top';
+        } else {
+            return '37mm from top';
+        }
+    }
+}
+
+sub getBottomLineY {
+    my ($self) = @_;
+    if ($self->unitType eq 'imperial') {
+        if ($self->hasModifier->{smaller}) {
+            return '0.75in from bottom';
+        } else {
+            return '1in from bottom';
+        }
+    } else {
+        if ($self->hasModifier->{smaller}) {
+            return '19mm from bottom';
+        } else {
+            return '28mm from bottom';
+        }
+    }
+}
+
+sub getOriginY {
+    my ($self) = @_;
+    return $self->getTopLineY;
+}
+
+1;
