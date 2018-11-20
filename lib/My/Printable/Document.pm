@@ -296,6 +296,34 @@ sub appendToSVGDefs {
     $self->svgDefs->appendChild($svg_object);
 }
 
+sub isPaperSizeClass {
+    my ($self, $size) = @_;
+    my $sqpt_size = My::Printable::PaperSizes->get_square_points($size);
+    my $sqpt      = $self->getSquarePoints();
+    return 0 if !$sqpt_size || !$sqpt;
+    my $ratio = $sqpt / $sqpt_size;
+    return $ratio >= 0.8 && $ratio <= 1.25;
+}
+
+sub isA4SizeClass {
+    my ($self) = @_;
+    return $self->isPaperSizeClass('letter') || $self->isPaperSizeClass('a4');
+}
+
+sub isA5SizeClass {
+    my ($self) = @_;
+    return $self->isPaperSizeClass('halfletter') || $self->isPaperSizeClass('a5');
+}
+
+sub getSquarePoints {
+    my ($self) = @_;
+    my $width = $self->width;
+    my $height = $self->height;
+    return 0 if !$width;
+    return 0 if !$height;
+    return $width * $height;
+}
+
 sub defaultStyles {
     my ($self) = @_;
 
