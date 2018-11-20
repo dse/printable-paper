@@ -17,7 +17,7 @@ sub draw {
     my $y2 = $self->y2 // $self->document->bottomMarginY;
     my $cssClass = $self->cssClass // "blue line";
     my $line = $self->createSVGLine(x1 => $x1, y1 => $y1, x2 => $x2, y2 => $y2, cssClass => $cssClass);
-    $self->appendSVGLine($line);
+    $self->svgLayer->appendChild($line);
 }
 
 sub setWidth {

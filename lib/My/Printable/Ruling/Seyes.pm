@@ -58,13 +58,13 @@ sub generate {
     );
     $margin_line->setX($self->getOriginX);
 
-    my $top_line         = $self->generateTopLine();
-    my $page_number_line = $self->generatePageNumberLine();
+    my $head_line        = $self->generateHeadLine();
+    my $page_number_line = $self->generatePageNumberLine(nearest => $grid);
 
     $self->document->appendElement($grid);
     $self->document->appendElement($lines);
     $self->document->appendElement($margin_line);
-    $self->document->appendElement($top_line);
+    $self->document->appendElement($head_line);
     $self->document->appendElement($page_number_line);
     $self->document->generate;
 }
@@ -180,6 +180,7 @@ sub generateHeadLine {
         cssClass => $self->getLineCSSClass,
     );
     $line->setY($self->getHeadLineY);
+    return $line;
 }
 
 sub getHeadLineY {
@@ -189,7 +190,7 @@ sub getHeadLineY {
 }
 
 sub generatePageNumberLine {
-    my ($self) = @_;
+    my ($self, %args) = @_;
     my $line = My::Printable::Element::Line->new(
         document => $self->document,
         id => 'page-number-line',
@@ -200,15 +201,20 @@ sub generatePageNumberLine {
         $line->setX2($self->getOriginX);
         $line->setWidth('3unit');
     } else {
-        $line->setX2($self->nearestX('1unit from right'));
+        $line->setX2('1unit from right');
+        if ($args{nearest}) {
+            $args{nearest}->compute();
+            $line->setX2($args{nearest}->nearestX($line->x2));
+        }
         $line->setWidth('3unit');
     }
+    return $line;
 }
 
 sub getPageNumberLineY {
     my ($self) = @_;
-    return '0.25in' if $self->unitType eq 'imperial';
-    return '6mm';
+    return '0.25in from bottom' if $self->unitType eq 'imperial';
+    return '6mm from bottom';
 }
 
 1;

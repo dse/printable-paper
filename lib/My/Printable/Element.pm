@@ -447,7 +447,7 @@ sub nearestX {
 sub nearestY {
     my ($self, $value) = @_;
     my $pt = $self->ptY($value);
-    return $self->YPointSeries->nearest($pt);
+    return $self->yPointSeries->nearest($pt);
 }
 
 1;
