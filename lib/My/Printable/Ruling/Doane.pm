@@ -23,7 +23,7 @@ sub generate {
     );
     $grid->setSpacing('1/3unit');
 
-    if ($self->hasModifier->{'smaller'}) {
+    if ($self->hasModifier->{'smaller'} || $self->hasModifier->{'denser-grid'}) {
         $grid->setOriginY('50%');
         $grid->setOriginY($grid->originY + $grid->ptY('1/3unit'));
     }
@@ -35,7 +35,7 @@ sub generate {
     );
     $lines->setSpacing('1unit');
 
-    if ($self->hasModifier->{'smaller'}) {
+    if ($self->hasModifier->{'smaller'} || $self->hasModifier->{'denser-grid'}) {
         $lines->setOriginY('50%');
         $lines->setOriginY($lines->originY + $lines->ptY('1/3unit'));
     }
@@ -57,7 +57,7 @@ sub getUnit {
     my ($self) = @_;
     my $is_smaller =
         grep { $self->hasModifier->{$_} }
-        qw(smaller);
+        qw(smaller denser-grid);
     if ($self->unitType eq 'imperial') {
         if ($is_smaller) {
             return '1/4in';
