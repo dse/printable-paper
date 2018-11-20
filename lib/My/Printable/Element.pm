@@ -438,4 +438,16 @@ sub drawLinePattern {
     $self->svgLayer->appendChild($rect);
 }
 
+sub nearestX {
+    my ($self, $value) = @_;
+    my $pt = $self->ptX($value);
+    return $self->xPointSeries->nearest($pt);
+}
+
+sub nearestY {
+    my ($self, $value) = @_;
+    my $pt = $self->ptY($value);
+    return $self->YPointSeries->nearest($pt);
+}
+
 1;

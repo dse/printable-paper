@@ -20,4 +20,24 @@ sub draw {
     $self->appendSVGLine($line);
 }
 
+sub setWidth {
+    my ($self, $value) = @_;
+    my $pt = $self->ptX($value);
+    if (defined $self->x2 && !defined $self->x1) {
+        $self->x1($self->x2 - $pt);
+    } elsif (defined $self->x1 && !defined $self->x2) {
+        $self->x2($self->x1 + $pt);
+    }
+}
+
+sub setHeight {
+    my ($self, $value) = @_;
+    my $pt = $self->ptY($value);
+    if (defined $self->y2 && !defined $self->y1) {
+        $self->y1($self->y2 - $pt);
+    } elsif (defined $self->y1 && !defined $self->y2) {
+        $self->y2($self->y1 + $pt);
+    }
+}
+
 1;

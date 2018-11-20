@@ -58,9 +58,14 @@ sub generate {
     );
     $margin_line->setX($self->getOriginX);
 
+    my $top_line         = $self->generateTopLine();
+    my $page_number_line = $self->generatePageNumberLine();
+
     $self->document->appendElement($grid);
     $self->document->appendElement($lines);
     $self->document->appendElement($margin_line);
+    $self->document->appendElement($top_line);
+    $self->document->appendElement($page_number_line);
     $self->document->generate;
 }
 
@@ -165,6 +170,45 @@ sub getBottomLineY {
 sub getOriginY {
     my ($self) = @_;
     return $self->getTopLineY;
+}
+
+sub generateHeadLine {
+    my ($self) = @_;
+    my $line = My::Printable::Element::Line->new(
+        document => $self->document,
+        id => 'head-line',
+        cssClass => $self->getLineCSSClass,
+    );
+    $line->setY($self->getHeadLineY);
+}
+
+sub getHeadLineY {
+    my ($self) = @_;
+    return '0.5in' if $self->unitType eq 'imperial';
+    return '12mm';
+}
+
+sub generatePageNumberLine {
+    my ($self) = @_;
+    my $line = My::Printable::Element::Line->new(
+        document => $self->document,
+        id => 'page-number-line',
+        cssClass => $self->getLineCSSClass,
+    );
+    $line->setY($self->getPageNumberLineY);
+    if ($self->hasModifier->{'even-page'}) {
+        $line->setX2($self->getOriginX);
+        $line->setWidth('3unit');
+    } else {
+        $line->setX2($self->nearestX('1unit from right'));
+        $line->setWidth('3unit');
+    }
+}
+
+sub getPageNumberLineY {
+    my ($self) = @_;
+    return '0.25in' if $self->unitType eq 'imperial';
+    return '6mm';
 }
 
 1;
