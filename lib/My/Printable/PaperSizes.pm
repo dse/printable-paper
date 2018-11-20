@@ -169,6 +169,25 @@ sub parse_custom_papersize {
     return;
 }
 
+our %SQUARE_POINTS;
+
+sub get_square_points {
+    my ($self, $size) = @_;
+    if (exists $SQUARE_POINTS{$size}) {
+        return $SQUARE_POINTS{$size};
+    }
+    my $hash = My::Printable::PaperSizes->parse($size);
+    if (!$hash) {
+        return $SQUARE_POINTS{$size} = undef;
+    }
+    my $width  = $hash->{width};
+    my $height = $hash->{height};
+    if (!$width || !$height) {
+        return $SQUARE_POINTS{$size} = 0;
+    }
+    return $SQUARE_POINTS{$size} = $width * $height;
+}
+
 our $SINGLETON;
 
 sub object {
