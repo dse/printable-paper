@@ -23,12 +23,22 @@ sub generate {
     );
     $grid->setSpacing('1/3unit');
 
+    if ($self->hasModifier->{'smaller'}) {
+        $grid->setOriginY('50%');
+        $grid->setOriginY($grid->originY + $grid->ptY('1/3unit'));
+    }
+
     my $lines = My::Printable::Element::Lines->new(
         document => $self->document,
         id => 'lines',
         cssClass => $self->getLineCSSClass,
     );
     $lines->setSpacing('1unit');
+
+    if ($self->hasModifier->{'smaller'}) {
+        $lines->setOriginY('50%');
+        $lines->setOriginY($lines->originY + $lines->ptY('1/3unit'));
+    }
 
     my $margin_line = My::Printable::Element::Line->new(
         document => $self->document,
