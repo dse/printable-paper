@@ -7,6 +7,36 @@ use String::ShellQuote;
 use Cwd qw(realpath);
 use File::Path qw(mkpath);
 use File::Basename qw(dirname);
+use File::Find qw(find);
+use Text::Trim;
+use Getopt::Long;
+
+our $opt_verbose = 0;
+our $opt_dry_run = 0;
+
+Getopt::Long::Configure('bundling', 'gnu_compat', 'no_ignore_case');
+Getopt::Long::GetOptions(
+    'v|verbose+' => \$opt_verbose,
+    'n|dry-run'  => \$opt_dry_run,
+    'h|help' => sub { usage(); exit 0; },
+) or die("Type '$0 --help' for help.\n");
+
+sub usage { print <<END; }
+usage: $0 [<option> ...] [<keyword> ...]
+options:
+  -h, --help
+  -v, --verbose
+  -n, --dry-run
+END
+
+my $progname = realpath($0);
+my $progdir = dirname($progname);
+chdir($progdir);
+my $projdir = trim(`git rev-parse --show-toplevel 2>/dev/null`);
+if ($? || !defined $projdir || $projdir !~ m{\S}) {
+    die("not in a git project\n");
+}
+chdir($projdir);
 
 my @templates = (
     {   base => "dot-grid--a4",                                ruling => "dot-grid",       size => "a4"                                                                                            },
@@ -58,7 +88,9 @@ sub cmd {
 
     my $dirname = dirname($filename);
     if (!-e $dirname) {
-        warn(sprintf("+ mkdir -p %s\n", shell_quote($dirname)));
+        if ($opt_verbose) {
+            warn(sprintf("+ mkdir -p %s\n", shell_quote($dirname)));
+        }
         mkpath($dirname);
     }
 
@@ -73,7 +105,9 @@ sub cmd {
         $cmd =~ s{\{FILENAME\}}{shell_quote($filename)}ge;
     }
 
-    warn("+ $cmd\n");
+    if ($opt_verbose) {
+        warn("+ $cmd\n");
+    }
     if (system($cmd)) {
         if (!$use_temp_file) {
             unlink($filename);
@@ -84,17 +118,25 @@ sub cmd {
         if (!-e $temp) {
             die("$temp does not exist -- Exiting.\n");
         }
-        warn(sprintf("+ mv %s %s\n", shell_quote($temp), shell_quote($filename)));
+        if ($opt_verbose) {
+            warn(sprintf("+ mv %s %s\n", shell_quote($temp), shell_quote($filename)));
+        }
         if (!rename($temp, $filename)) {
             die("Could not rename $temp to $filename: $! -- Exiting.\n");
         }
     }
 }
 
+my @modules;
+find(sub {
+         if (lstat($_) && -f _ && m{\.pm\z}) {
+             push(@modules, $File::Find::name);
+         }
+     });
+
 my %build = (
     svg => {
-        force => 1,
-        dependencies => [qw(bin/printable makebin/makeprintable)],
+        dependencies => [qw(bin/printable makebin/makeprintable), @modules],
         code => sub {
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
@@ -241,9 +283,11 @@ sub build_file {
 
     my @build_dependencies = eval { @{$build->{dependencies}} };
 
-    warn("$target requires:\n");
-    warn("    dependencies       @dependencies\n") if scalar @dependencies;
-    warn("    build dependencies @build_dependencies\n") if scalar @build_dependencies;
+    if ($opt_verbose) {
+        warn("$target requires:\n");
+        warn("    dependencies       @dependencies\n") if scalar @dependencies;
+        warn("    build dependencies @build_dependencies\n") if scalar @build_dependencies;
+    }
 
     my $target_exists = -e $target;
     my $target_age    = -M _;
@@ -371,17 +415,23 @@ if ($operation eq "LIST") {
     exit 0;
 } elsif ($operation eq "MAKE") {
     if (!scalar @build) {
-        warn("Nothing to build.\n");
+        if ($opt_verbose) {
+            warn("Nothing to build.\n");
+        }
         exit(1);
     }
-    warn("Will build:\n");
-    foreach my $build (@build) {
-        my $filename = $build->{file}->{filename};
-        warn("- $filename\n");
+    if ($opt_verbose) {
+        warn("Will build:\n");
+        foreach my $build (@build) {
+            my $filename = $build->{file}->{filename};
+            warn("- $filename\n");
+        }
     }
     foreach my $build (@build) {
         my $filename = $build->{file}->{filename};
-        warn("Building $filename...\n");
+        if ($opt_verbose) {
+            warn("Building $filename...\n");
+        }
         build($filename);
     }
 } elsif ($operation eq "CLEAN") {
