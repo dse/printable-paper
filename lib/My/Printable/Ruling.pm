@@ -14,6 +14,8 @@ public 'document', builder => sub {
     return My::Printable::Document->new();
 };
 
+delegate 'id',            via => 'document';
+delegate 'filename',      via => 'document';
 delegate 'setPaperSize',  via => 'document';
 delegate 'setWidth',      via => 'document';
 delegate 'setHeight',     via => 'document';
