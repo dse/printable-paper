@@ -32,7 +32,7 @@ sub getUnit {
     my ($self) = @_;
 
     my $has_denser_grid = grep { $self->hasModifier->{$_} }
-        qw(5-per-inch denser-grid);
+        qw(5-per-inch denser-grid 1/5in 5mm);
 
     if ($self->unitType eq 'imperial') {
         if ($has_denser_grid) {
