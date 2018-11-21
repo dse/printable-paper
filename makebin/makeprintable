@@ -47,10 +47,17 @@ if ($? || !defined $projdir || $projdir !~ m{\S}) {
 }
 chdir($projdir);
 
+my @sizes = (
+    { size => 'letter' },
+    { size => 'a4' },
+    { size => 'halfletter', '2up' => 'letter' },
+    { size => 'a5',         '2up' => 'a4'     },
+);
+
 my @collections = (
     {
         ruling => 'doane',
-        sizes => [qw(letter)],
+        sizes => [@sizes],
         variants => [
             [qw()],
             [qw(denser-grid)],
@@ -58,7 +65,7 @@ my @collections = (
     },
     {
         ruling => 'quadrille',
-        sizes => [qw(letter)],
+        sizes => [@sizes],
         variants => [
             [qw()],
             [qw(5-per-inch)],
@@ -66,7 +73,7 @@ my @collections = (
     },
     {
         ruling => 'line-dot-grid',
-        sizes => [qw(letter a4)],
+        sizes => [@sizes],
         variants => [
             [qw()],
             { name => 'thinner',   modifiers => [qw(thinner-dots thinner-lines)]     },
@@ -75,25 +82,21 @@ my @collections = (
     },
     {
         ruling => 'seyes',
-        sizes => [
-            { size => 'letter' },
-            { size => 'a4' },
-            { size => 'halfletter', '2up' => 'letter' },
-            { size => 'a5',         '2up' => 'a4'     },
-        ],
+        sizes => [@sizes],
         variants => [
-            [qw()],
+            { modifiers => []                            },
             { modifiers => [qw(thinner-grid)]            },
+            { modifiers => [qw(three-line)]              },
             { modifiers => [qw(three-line thinner-grid)] },
         ],
     },
     {
         ruling => 'dot-grid',
-        sizes => [qw(letter a4)],
+        sizes => [@sizes],
     },
     {
         ruling => 'line-dot-graph',
-        sizes => [qw(letter a4)],
+        sizes => [@sizes],
     },
 );
 
