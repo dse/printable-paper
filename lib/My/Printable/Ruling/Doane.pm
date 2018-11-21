@@ -56,13 +56,13 @@ sub generate {
 sub getUnit {
     my ($self) = @_;
     if ($self->unitType eq 'imperial') {
-        if ($self->isA5SizeClass()) {
+        if ($self->hasModifier->{'denser-grid'}) {
             return '1/4in';
         } else {
             return '3/8in';
         }
     } else {
-        if ($self->isA5SizeClass()) {
+        if ($self->hasModifier->{'denser-grid'}) {
             return '6mm';
         } else {
             return '9mm';
