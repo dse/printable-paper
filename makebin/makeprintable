@@ -18,6 +18,13 @@ Getopt::Long::Configure('bundling', 'gnu_compat', 'no_ignore_case');
 Getopt::Long::GetOptions(
     'v|verbose+' => \$opt_verbose,
     'n|dry-run'  => \$opt_dry_run,
+    'quiet'      => sub {
+        if ($opt_verbose < 0) {
+            $opt_verbose -= 1;
+        } else {
+            $opt_verbose = -1;
+        }
+    },
     'h|help' => sub { usage(); exit 0; },
 ) or die("Type '$0 --help' for help.\n");
 
@@ -331,12 +338,19 @@ sub build_file {
     my @path_dependencies = map { path($_) } @dependencies;
 
     if ($make) {
+        if ($opt_verbose >= 0) {
+            warn("makeprintable: Building $target ...\n");
+        }
         my $code = $build->{code};
         $code->(target => $target,
                 dependencies => \@path_dependencies,
                 template => $template,
                 file => $file,
                 build => $build);
+    } else {
+        if ($opt_verbose >= 0) {
+            warn("makeprintable: $target is up to date.\n");
+        }
     }
 }
 
