@@ -6,6 +6,9 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
+public 'id';
+public 'filename';
+
 public "paperSizeName", default => "letter";   # letter, A4, etc.
 public "width",         default => 612;        # in pt
 public "height",        default => 792;        # in pt
