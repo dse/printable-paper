@@ -20,6 +20,9 @@ our $opt_unit_type;
 our $opt_color_type;
 our @opt_modifiers;
 
+our $opt_id;
+our $opt_filename;
+
 use Getopt::Long;
 use Data::Dumper;
 use Carp::Always;
@@ -37,6 +40,8 @@ Getopt::Long::GetOptions(
     "m|metric"                        => sub { $opt_unit_type = "metric";     },
     "i|imperial"                      => sub { $opt_unit_type = "imperial";   },
     "modifier=s"                      => sub { push(@opt_modifiers, $_[1]); },
+    'id=s'                            => \$opt_id,
+    'filename=s'                      => \$opt_filename,
     "help|?" => sub {
         usage();
         exit(0);
@@ -81,7 +86,8 @@ foreach my $ruling (@ARGV) {
         die $@;
     }
     my $ruling = $ruling_class_name->new();
-
+    $ruling->id($opt_id)                  if defined $opt_id;
+    $ruling->filename($opt_filename)      if defined $opt_filename;
     $ruling->setPaperSize($opt_papersize) if defined $opt_papersize;
     $ruling->setWidth($opt_width)         if defined $opt_width;
     $ruling->setHeight($opt_height)       if defined $opt_height;
