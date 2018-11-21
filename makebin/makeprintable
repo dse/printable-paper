@@ -10,6 +10,8 @@ use File::Basename qw(dirname basename);
 use File::Find qw(find);
 use Text::Trim;
 use Getopt::Long;
+use Data::Dumper;
+use Storable qw(dclone);
 
 our $opt_verbose = 0;
 our $opt_dry_run = 0;
@@ -45,37 +47,105 @@ if ($? || !defined $projdir || $projdir !~ m{\S}) {
 }
 chdir($projdir);
 
-my @templates = (
-    { base => "dot-grid--a4",                                ruling => "dot-grid",       size => "a4"                                                                                    },
-    { base => "dot-grid--letter",                            ruling => "dot-grid",       size => "letter"                                                                                },
-
-    { base => "line-dot-graph--a4",                          ruling => "line-dot-graph", size => "a4"                                                                                    },
-    { base => "line-dot-graph--letter",                      ruling => "line-dot-graph", size => "letter"                                                                                },
-
-    { base => "line-dot-grid--a4",                           ruling => "line-dot-grid",  size => "a4"                                                                                    },
-    { base => "line-dot-grid--letter",                       ruling => "line-dot-grid",  size => "letter"                                                                                },
-    { base => "line-dot-grid--thinner--a4",                  ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(thinner-dots thinner-lines)]                             },
-    { base => "line-dot-grid--thinner--letter",              ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(thinner-dots thinner-lines)]                             },
-    { base => "line-dot-grid--x-thinner--a4",                ruling => "line-dot-grid",  size => "a4",         modifiers => [qw(x-thinner-dots x-thinner-lines)]                         },
-    { base => "line-dot-grid--x-thinner--letter",            ruling => "line-dot-grid",  size => "letter",     modifiers => [qw(x-thinner-dots x-thinner-lines)]                         },
-
-    { base => "seyes--a4",                                   ruling => "seyes",          size => "a4"                                                                                    },
-    { base => "seyes--letter",                               ruling => "seyes",          size => "letter"                                                                                },
-    { base => "seyes--thinner-grid--a4",                     ruling => "seyes",          size => "a4",         modifiers => [qw(thinner-grid)]                                           },
-    { base => "seyes--thinner-grid--letter",                 ruling => "seyes",          size => "letter",     modifiers => [qw(thinner-grid)]                                           },
-    { base => "seyes--three-line--thinner-grid--letter",     ruling => "seyes",          size => "letter",     modifiers => [qw(thinner-grid three-line)]                                },
-    { base => "seyes--thinner-grid--a5",                     ruling => "seyes",          size => "a5",         modifiers => [qw(thinner-grid)],            "2up" => { size => "a4" }     },
-    { base => "seyes--thinner-grid--halfletter",             ruling => "seyes",          size => "halfletter", modifiers => [qw(thinner-grid)],            "2up" => { size => "letter" } },
-    { base => "seyes--three-line--thinner-grid--halfletter", ruling => "seyes",          size => "halfletter", modifiers => [qw(thinner-grid three-line)], "2up" => { size => "letter" } },
-
-    { base => "doane--letter",                               ruling => "doane",          size => "letter"                                                                                },
-    { base => "doane--denser-grid--letter",                  ruling => "doane",          size => "letter",     modifiers => [qw(denser-grid)]                                            },
-
-    { base => "quadrille--letter",                           ruling => "quadrille",      size => "letter"                                                                                },
-    { base => "quadrille--5-per-inch--letter",               ruling => "quadrille",      size => "letter",     modifiers => [qw(5-per-inch)],                                            },
-
-    { base => "seyes--thinner-wider-grid--halfletter",       ruling => "seyes",          size => "halfletter", modifiers => [qw(thinner-grid wider-grid)], "2up" => { size => "letter" } },
+my @collections = (
+    {
+        ruling => 'doane',
+        sizes => [qw(letter)],
+        variants => [
+            [qw()],
+            [qw(denser-grid)],
+        ],
+    },
+    {
+        ruling => 'quadrille',
+        sizes => [qw(letter)],
+        variants => [
+            [qw()],
+            [qw(5-per-inch)],
+        ],
+    },
+    {
+        ruling => 'line-dot-grid',
+        sizes => [qw(letter a4)],
+        variants => [
+            [qw()],
+            { name => 'thinner',   modifiers => [qw(thinner-dots thinner-lines)]     },
+            { name => 'x-thinner', modifiers => [qw(x-thinner-dots x-thinner-lines)] },
+        ],
+    },
+    {
+        ruling => 'seyes',
+        sizes => [
+            { size => 'letter' },
+            { size => 'a4' },
+            { size => 'halfletter', '2up' => 'letter' },
+            { size => 'a5',         '2up' => 'a4'     },
+        ],
+        variants => [
+            [qw()],
+            { modifiers => [qw(thinner-grid)]            },
+            { modifiers => [qw(three-line thinner-grid)] },
+        ],
+    },
+    {
+        ruling => 'dot-grid',
+        sizes => [qw(letter a4)],
+    },
+    {
+        ruling => 'line-dot-graph',
+        sizes => [qw(letter a4)],
+    },
 );
+
+my @templates;
+
+foreach my $collection (@collections) {
+    my $ruling   = $collection->{ruling};
+    my $sizes    = $collection->{sizes};
+    my $variants = $collection->{variants};
+    if (!$variants) {
+        $variants = [
+            { modifiers => [] },
+        ];
+    }
+    foreach my $size (@$sizes) {
+        warn "size = $size\n";
+        my $size_name = (ref $size eq 'HASH') ? $size->{size}  : $size;
+        my $size_2up  = (ref $size eq 'HASH') ? $size->{'2up'} : undef;
+        foreach my $variant (@$variants) {
+            my $variant_modifiers =
+                ((ref $variant eq 'ARRAY') ? $variant :
+                 (ref $variant eq 'HASH') ? $variant->{modifiers} :
+                 undef) // [];
+            my $variant_name =
+                ((ref $variant eq 'HASH') ? $variant->{name} :
+                 undef) // join('--', @$variant_modifiers);
+
+            my $base = $ruling;
+            if (defined $variant_name && $variant_name ne '') {
+                $base .= '--' . $variant_name;
+            }
+            $base .= '--' . $size_name;
+
+            my $template = {
+                base => $base,
+                ruling => $ruling,
+                size => $size_name,
+                modifiers => dclone($variant_modifiers),
+            };
+            if ($size_2up) {
+                $template->{'2up'} = {
+                    'size' => $size_2up,
+                };
+            }
+
+            push(@templates, $template);
+        }
+    }
+}
+
+# local $Data::Dumper::Indent = 1;
+# print Dumper(\@templates);
 
 sub path {
     my ($filename) = @_;
