@@ -30,14 +30,18 @@ delegate 'isA5SizeClass', via => 'document';
 
 sub getUnit {
     my ($self) = @_;
+
+    my $has_denser_grid = grep { $self->hasModifier->{$_} }
+        qw(5-per-inch denser-grid);
+
     if ($self->unitType eq 'imperial') {
-        if ($self->isA5SizeClass()) {
+        if ($has_denser_grid) {
             return '1/5in';
         } else {
             return '1/4in';
         }
     } else {
-        if ($self->isA5SizeClass()) {
+        if ($has_denser_grid) {
             return '5mm';
         } else {
             return '6mm';
