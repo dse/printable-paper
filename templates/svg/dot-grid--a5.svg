@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="419.528pt" height="595.276pt" viewBox="0 0 419.528 595.276">
+  <defs/>
+  <style>        .line, .dot { stroke-linecap: round; }
+        .stroke-linecap-butt { stroke-linecap: butt; }
+
+        .line            { stroke-width: 0.72pt; }
+        .line.xx-thin    { stroke-width: 0.24pt; }
+        .line.x-thin     { stroke-width: 0.36pt; }
+        .line.thin       { stroke-width: 0.48pt; }
+        .line.thick      { stroke-width: 1.08pt; }
+        .line.semi-thin  { stroke-width: 0.588pt; }
+        .line.semi-thick { stroke-width: 0.882pt; }
+
+        .dot             { stroke-width: 1.44pt; }
+        .dot.thin        { stroke-width: 0.96pt; }
+        .dot.thick       { stroke-width: 2.16pt; }
+        .dot.semi-thin   { stroke-width: 1.176pt; }
+        .dot.semi-thick  { stroke-width: 1.764pt; }
+
+        .stroke-1     { stroke-width: 0.12pt; stroke-linecap: round; } /* 1/600 in */
+        .stroke-2     { stroke-width: 0.24pt; stroke-linecap: round; }
+        .stroke-3     { stroke-width: 0.36pt; stroke-linecap: round; }
+        .stroke-4     { stroke-width: 0.48pt; stroke-linecap: round; }
+        .stroke-5     { stroke-width: 0.60pt; stroke-linecap: round; }
+        .stroke-6     { stroke-width: 0.72pt; stroke-linecap: round; }
+        .stroke-7     { stroke-width: 0.84pt; stroke-linecap: round; }
+        .stroke-8     { stroke-width: 0.96pt; stroke-linecap: round; }
+        .stroke-9     { stroke-width: 1.08pt; stroke-linecap: round; }
+        .stroke-10    { stroke-width: 1.20pt; stroke-linecap: round; }
+
+        .blue  { stroke: #b3b3ff; }
+        .red   { stroke: #ff9999; }
+        .green { stroke: #b3ffb3; }
+        .gray  { stroke: #b3b3b3; }
+
+        .light.blue  { stroke: #d9d9ff; }
+        .light.red   { stroke: #ffcccc; }
+        .light.green { stroke: #d9ffd9; }
+        .light.gray  { stroke: #d9d9d9; }
+
+        .dark.blue  { stroke: #6767ff; }
+        .dark.red   { stroke: #ff3333; }
+        .dark.green { stroke: #67ff67; }
+        .dark.gray  { stroke: #676767; }
+
+        .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
+        .alternate-red   { stroke: #ff3333; opacity: 0.5; }
+        .alternate-green { stroke: #67ff67; opacity: 0.5; }
+        .alternate-gray  { stroke: #676767; opacity: 0.5; }
+</style>
+  <defs>
+    <pattern id="grid-pattern-1-dots" x="-2.83442519685001" y="0.000204724409954338" width="17.007874015748" height="17.007874015748" patternUnits="userSpaceOnUse" viewBox="0 0 17.008 17.008">
+      <line x1="8.504" x2="8.504" y1="8.504" y2="8.504" class="blue dot"/>
+    </pattern>
+  </defs>
+  <g id="grid">
+    <rect x="-2.83442519685001" y="0.000204724409954338" width="425.1968503937" height="595.27559055118" fill="url(#grid-pattern-1-dots)"/>
+  </g>
+</svg>

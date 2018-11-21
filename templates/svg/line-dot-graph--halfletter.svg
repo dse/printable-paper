@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="396pt" height="612pt" viewBox="0 0 396 612">
+  <defs/>
+  <style>        .line, .dot { stroke-linecap: round; }
+        .stroke-linecap-butt { stroke-linecap: butt; }
+
+        .line            { stroke-width: 0.72pt; }
+        .line.xx-thin    { stroke-width: 0.24pt; }
+        .line.x-thin     { stroke-width: 0.36pt; }
+        .line.thin       { stroke-width: 0.48pt; }
+        .line.thick      { stroke-width: 1.08pt; }
+        .line.semi-thin  { stroke-width: 0.588pt; }
+        .line.semi-thick { stroke-width: 0.882pt; }
+
+        .dot             { stroke-width: 1.44pt; }
+        .dot.thin        { stroke-width: 0.96pt; }
+        .dot.thick       { stroke-width: 2.16pt; }
+        .dot.semi-thin   { stroke-width: 1.176pt; }
+        .dot.semi-thick  { stroke-width: 1.764pt; }
+
+        .stroke-1     { stroke-width: 0.12pt; stroke-linecap: round; } /* 1/600 in */
+        .stroke-2     { stroke-width: 0.24pt; stroke-linecap: round; }
+        .stroke-3     { stroke-width: 0.36pt; stroke-linecap: round; }
+        .stroke-4     { stroke-width: 0.48pt; stroke-linecap: round; }
+        .stroke-5     { stroke-width: 0.60pt; stroke-linecap: round; }
+        .stroke-6     { stroke-width: 0.72pt; stroke-linecap: round; }
+        .stroke-7     { stroke-width: 0.84pt; stroke-linecap: round; }
+        .stroke-8     { stroke-width: 0.96pt; stroke-linecap: round; }
+        .stroke-9     { stroke-width: 1.08pt; stroke-linecap: round; }
+        .stroke-10    { stroke-width: 1.20pt; stroke-linecap: round; }
+
+        .blue  { stroke: #b3b3ff; }
+        .red   { stroke: #ff9999; }
+        .green { stroke: #b3ffb3; }
+        .gray  { stroke: #b3b3b3; }
+
+        .light.blue  { stroke: #d9d9ff; }
+        .light.red   { stroke: #ffcccc; }
+        .light.green { stroke: #d9ffd9; }
+        .light.gray  { stroke: #d9d9d9; }
+
+        .dark.blue  { stroke: #6767ff; }
+        .dark.red   { stroke: #ff3333; }
+        .dark.green { stroke: #67ff67; }
+        .dark.gray  { stroke: #676767; }
+
+        .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
+        .alternate-red   { stroke: #ff3333; opacity: 0.5; }
+        .alternate-green { stroke: #67ff67; opacity: 0.5; }
+        .alternate-gray  { stroke: #676767; opacity: 0.5; }
+</style>
+  <defs>
+    <pattern x="-18" y="60.75" width="432" height="22.5" id="grid-pattern-1-horizontal-lines" patternUnits="userSpaceOnUse" viewBox="0 0 432.000 22.500">
+      <line x1="18" x2="414" y1="11.25" y2="11.25" class="blue line"/>
+    </pattern>
+    <pattern id="grid-pattern-2-dots" x="42.75" y="1.6875" width="22.5" height="5.625" patternUnits="userSpaceOnUse" viewBox="0 0 22.500 5.625">
+      <line x1="11.25" x2="11.25" y1="2.812" y2="2.812" class="thin gray dot"/>
+    </pattern>
+  </defs>
+  <g id="grid">
+    <rect x="-18" y="60.75" width="432" height="495" fill="url(#grid-pattern-1-horizontal-lines)"/>
+    <rect x="42.75" y="1.6875" width="360" height="613.125" fill="url(#grid-pattern-2-dots)"/>
+  </g>
+  <g id="margin-line">
+    <line x1="54" x2="54" y1="0" y2="612" class="red margin line"/>
+  </g>
+</svg>
