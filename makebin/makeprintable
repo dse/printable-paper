@@ -62,6 +62,7 @@ my @collections = (
             [qw()],
             [qw(denser-grid)],
         ],
+        color_types => ['color', 'black'],
     },
     {
         ruling => 'quadrille',
@@ -70,6 +71,7 @@ my @collections = (
             [qw()],
             [qw(5-per-inch)],
         ],
+        color_types => ['color', 'black'],
     },
     {
         ruling => 'line-dot-grid',
@@ -79,6 +81,7 @@ my @collections = (
             { name => 'thinner',   modifiers => [qw(thinner-dots thinner-lines)]     },
             { name => 'x-thinner', modifiers => [qw(x-thinner-dots x-thinner-lines)] },
         ],
+        color_types => ['color', 'black'],
     },
     {
         ruling => 'seyes',
@@ -89,60 +92,95 @@ my @collections = (
             { modifiers => [qw(three-line)]              },
             { modifiers => [qw(three-line thinner-grid)] },
         ],
+        color_types => ['color', 'black'],
     },
     {
         ruling => 'dot-grid',
         sizes => [@sizes],
+        color_types => ['color', 'black'],
     },
     {
         ruling => 'line-dot-graph',
         sizes => [@sizes],
+        color_types => ['color', 'black'],
     },
 );
+
+use constant USE_OLD_FILENAMES => 1;
 
 my @templates;
 
 foreach my $collection (@collections) {
-    my $ruling   = $collection->{ruling};
-    my $sizes    = $collection->{sizes};
-    my $variants = $collection->{variants};
+    my $ruling      = $collection->{ruling};
+    my $sizes       = $collection->{sizes};
+    my $variants    = $collection->{variants};
+    my $color_types = $collection->{color_types} // ['color'];
     if (!$variants) {
         $variants = [
             { modifiers => [] },
         ];
     }
-    foreach my $size (@$sizes) {
-        warn "size = $size\n";
-        my $size_name = (ref $size eq 'HASH') ? $size->{size}  : $size;
-        my $size_2up  = (ref $size eq 'HASH') ? $size->{'2up'} : undef;
-        foreach my $variant (@$variants) {
-            my $variant_modifiers =
-                ((ref $variant eq 'ARRAY') ? $variant :
-                 (ref $variant eq 'HASH') ? $variant->{modifiers} :
-                 undef) // [];
-            my $variant_name =
-                ((ref $variant eq 'HASH') ? $variant->{name} :
-                 undef) // join('--', @$variant_modifiers);
+    foreach my $color_type (@$color_types) {
+        foreach my $size (@$sizes) {
+            my $size_name = (ref $size eq 'HASH') ? $size->{size}  : $size;
+            my $size_2up  = (ref $size eq 'HASH') ? $size->{'2up'} : undef;
+            foreach my $variant (@$variants) {
+                my $variant_modifiers =
+                    ((ref $variant eq 'ARRAY') ? $variant :
+                     (ref $variant eq 'HASH') ? $variant->{modifiers} :
+                     undef) // [];
+                my $variant_name =
+                    ((ref $variant eq 'HASH') ? $variant->{name} :
+                     undef) // join('--', @$variant_modifiers);
 
-            my $base = $ruling;
-            if (defined $variant_name && $variant_name ne '') {
-                $base .= '--' . $variant_name;
-            }
-            $base .= '--' . $size_name;
+                my $base = $ruling;
+                $base .= '/' . $color_type;
+                $base .= '/' . $ruling;
 
-            my $template = {
-                base => $base,
-                ruling => $ruling,
-                size => $size_name,
-                modifiers => dclone($variant_modifiers),
-            };
-            if ($size_2up) {
-                $template->{'2up'} = {
-                    'size' => $size_2up,
+                if (USE_OLD_FILENAMES) {
+                    if ($color_type ne 'color') {
+                        $base .= '--' . $color_type;
+                    }
+                } else {
+                    $base .= '--' . $color_type;
+                }
+
+                if (USE_OLD_FILENAMES) {
+                    if (defined $variant_name && $variant_name ne '') {
+                        $base .= '--' . $variant_name;
+                    }
+                }
+
+                $base .= '--' . $size_name;
+
+                if (!USE_OLD_FILENAMES) {
+                    if (defined $variant_name && $variant_name ne '') {
+                        $base .= '--' . $variant_name;
+                    }
+                }
+
+                my $base_2up;
+                if ($size_2up) {
+                    $base_2up = $base;
+                    $base_2up .= '-2up-' . $size_2up;
+                }
+
+                my $template = {
+                    base       => $base,
+                    ruling     => $ruling,
+                    color_type => $color_type,
+                    size       => $size_name,
+                    modifiers  => dclone($variant_modifiers),
                 };
-            }
+                if ($size_2up) {
+                    $template->{'2up'} = {
+                        'size' => $size_2up,
+                    };
+                    $template->{'base_2up'} = $base_2up;
+                }
 
-            push(@templates, $template);
+                push(@templates, $template);
+            }
         }
     }
 }
@@ -232,6 +270,8 @@ my %build = (
             $id =~ s{[^A-Za-z0-9\_\-\.]+}{}g; # remove anything except A-Z a-z 0-9 _ - .
 
             my $cmd = sprintf("bin/printable -M %s", shell_quote($template->{size}));
+            $cmd .= ' --black'     if $template->{color_type} eq 'black';
+            $cmd .= ' --grayscale' if $template->{color_type} eq 'grayscale';
             $cmd .= sprintf(' --id=%s', shell_quote($id));
             $cmd .= sprintf(' --filename=%s', shell_quote($target));
             my @modifiers = (eval { @{$template->{modifiers}} },
@@ -469,7 +509,7 @@ foreach my $template (@templates) {
 
     my $two_up_size = eval { $template->{"2up"}->{size} };
     if ($two_up_size) {
-        my $two_up_base = eval { $template->{"2up"}->{base} } // $base . "-" . $two_up_size;
+        my $two_up_base = eval { $template->{'base_2up'} };
         my $pdf_2_up = "templates/2-up-pdf/${two_up_base}.2up.pdf";
         my $ps_2_up  = "templates/2-up-ps/${two_up_base}.2up.ps";
         push(@{$template->{files}}, { type => "pdf", subtype => "2-up", filename => $pdf_2_up, dependencies => [$pdf_2_page], build => $build{"two_up_pdf"} });
@@ -486,17 +526,29 @@ foreach my $template (@templates) {
 
 my $operation = "MAKE";
 
+sub EQ {
+    my ($a, $b) = @_;
+    return 1 if defined $a && defined $b && $a eq $b;
+    return 1 if !defined $a && !defined $b;
+    return 0;
+}
+
 foreach my $arg (@ARGV) {
     if ($arg eq "LIST" || $arg eq "CLEAN" || $arg eq "MAKE") {
         $operation = $arg;
     } else {
         my $sub = sub {
-            return (($_->{template}->{ruling} eq $arg) ||
-                        ($_->{template}->{size} eq $arg) ||
-                        ($_->{file}->{type} eq $arg) ||
-                        ($_->{file}->{filename} eq $arg) ||
-                        (($_->{file}->{subtype} // "") eq $arg) ||
-                        grep { $_ eq $arg } @{$_->{template}->{modifiers}});
+            return 1 if EQ($_->{template}->{ruling},     $arg);
+            return 1 if EQ($_->{template}->{size},       $arg);
+            return 1 if EQ($_->{file}->{type},           $arg);
+            return 1 if EQ($_->{file}->{filename},       $arg);
+            return 1 if EQ($_->{template}->{color_type}, $arg);
+            return 1 if EQ($_->{file}->{subtype},        $arg);
+            my $modifiers = $_->{template}->{modifiers};
+            if ($modifiers && ref $modifiers eq 'ARRAY' && scalar @$modifiers) {
+                return 1 if grep { $_ eq $arg } @$modifiers;
+            }
+            return 0;
         };
         if ($arg =~ s{^[\!\-\^]}{}) {
             @build = grep { !$sub->() } @build;
