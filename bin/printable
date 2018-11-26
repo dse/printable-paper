@@ -36,6 +36,7 @@ Getopt::Long::GetOptions(
     "w|width=s"                       => \$opt_width,
     "h|height=s"                      => \$opt_height,
     "g|gray|grey|grayscale|greyscale" => sub { $opt_color_type = "grayscale"; },
+    "b|black"                         => sub { $opt_color_type = "black";     },
     "c|color|colour"                  => sub { $opt_color_type = "color";     },
     "m|metric"                        => sub { $opt_unit_type = "metric";     },
     "i|imperial"                      => sub { $opt_unit_type = "imperial";   },
