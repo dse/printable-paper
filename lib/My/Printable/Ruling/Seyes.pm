@@ -10,6 +10,7 @@ use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
 use constant rulingName => 'seyes';
+use constant hasLineGrid => 1;
 
 sub generate {
     my ($self) = @_;
@@ -67,32 +68,6 @@ sub generate {
     $self->document->appendElement($head_line);
     $self->document->appendElement($page_number_line);
     $self->document->generate;
-}
-
-sub getLineCSSClass {
-    my ($self) = @_;
-    if ($self->colorType eq 'grayscale') {
-        return 'gray line';
-    } else {
-        return 'blue line';
-    }
-}
-
-sub getFeintLineCSSClass {
-    my ($self) = @_;
-    if ($self->colorType eq 'grayscale') {
-        if ($self->hasModifier->{'thinner-grid'}) {
-            return 'x-thin gray line';
-        } else {
-            return 'thin gray line';
-        }
-    } else {
-        if ($self->hasModifier->{'thinner-grid'}) {
-            return 'x-thin blue line';
-        } else {
-            return 'thin blue line';
-        }
-    }
 }
 
 sub getOriginX {

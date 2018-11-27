@@ -10,6 +10,8 @@ use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
 use constant rulingName => 'line-dot-graph';
+use constant hasLineGrid => 0;
+use constant dotThinness => 2;
 
 sub generate {
     my ($self) = @_;
@@ -47,15 +49,6 @@ sub generate {
     $self->document->appendElement($grid);
     $self->document->appendElement($margin_line);
     $self->document->generate;
-}
-
-sub getDotCSSClass {
-    my ($self) = @_;
-    if ($self->colorType eq 'grayscale') {
-        return 'thin blue dot';
-    } else {
-        return 'thin gray dot';
-    }
 }
 
 1;

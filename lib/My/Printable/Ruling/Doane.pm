@@ -10,6 +10,8 @@ use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
 use constant rulingName => 'doane';
+use constant hasLineGrid => 1;
+use constant lineGridThinness => 2;
 
 sub generate {
     my ($self) = @_;
@@ -67,24 +69,6 @@ sub getUnit {
         } else {
             return '9mm';
         }
-    }
-}
-
-sub getLineCSSClass {
-    my ($self) = @_;
-    if ($self->colorType eq 'grayscale') {
-        return 'gray line';
-    } else {
-        return 'blue line';
-    }
-}
-
-sub getFeintLineCSSClass {
-    my ($self) = @_;
-    if ($self->colorType eq 'grayscale') {
-        return 'xx-thin gray line';
-    } else {
-        return 'xx-thin blue line';
     }
 }
 

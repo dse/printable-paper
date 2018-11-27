@@ -10,6 +10,9 @@ use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
 use constant rulingName => 'line-dot-grid';
+use constant hasLineGrid => 0;
+use constant lineThinness => 1;
+use constant dotThinness => -1;
 
 sub generate {
     my ($self) = @_;
@@ -33,28 +36,6 @@ sub generate {
     $self->document->appendElement($grid);
     $self->document->appendElement($lines);
     $self->document->generate;
-}
-
-sub getDotCSSClass {
-    my ($self) = @_;
-    my $thinner =
-        $self->hasModifier->{'x-thinner-dots'} ? 2 :
-        $self->hasModifier->{'thinner-dots'} ? 1 :
-        0;
-    my $thinner_class = ['semi-thick', '', 'semi-thin']->[$thinner];
-    my $color_class   = $self->colorType eq 'grayscale' ? 'gray' : 'blue';
-    return "$thinner_class $color_class dot";
-}
-
-sub getLineCSSClass {
-    my ($self) = @_;
-    my $thinner =
-        $self->hasModifier->{'x-thinner-lines'} ? 2 :
-        $self->hasModifier->{'thinner-lines'} ? 1 :
-        0;
-    my $thinner_class = ['thin', 'x-thin', 'xx-thin']->[$thinner];
-    my $color_class   = $self->colorType eq 'grayscale' ? 'gray' : 'blue';
-    return "$thinner_class $color_class line";
 }
 
 1;

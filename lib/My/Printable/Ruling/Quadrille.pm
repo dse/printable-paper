@@ -10,6 +10,8 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use base 'My::Printable::Ruling';
 
 use constant rulingName => 'quadrille';
+use constant hasLineGrid => 1;
+use constant lineThinness => 2;
 
 sub generate {
     my ($self) = @_;
@@ -24,15 +26,6 @@ sub generate {
 
     $self->document->appendElement($grid);
     $self->document->generate;
-}
-
-sub getLineCSSClass {
-    my ($self) = @_;
-    if ($self->colorType eq 'grayscale') {
-        return 'x-thin gray line';
-    } else {
-        return 'x-thin blue line';
-    }
 }
 
 1;

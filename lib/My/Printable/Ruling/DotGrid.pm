@@ -10,6 +10,7 @@ use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
 use constant rulingName => 'dot-grid';
+use constant hasLineGrid => 0;
 
 sub generate {
     my ($self) = @_;
@@ -25,15 +26,6 @@ sub generate {
 
     $self->document->appendElement($grid);
     $self->document->generate;
-}
-
-sub getDotCSSClass {
-    my ($self) = @_;
-    if ($self->colorType eq 'grayscale') {
-        return 'gray dot';
-    } else {
-        return 'blue dot';
-    }
 }
 
 1;
