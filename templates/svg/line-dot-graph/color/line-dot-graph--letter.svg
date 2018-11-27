@@ -33,7 +33,6 @@
         .red   { stroke: #ff9999; }
         .green { stroke: #b3ffb3; }
         .gray  { stroke: #b3b3b3; }
-
         .light.blue  { stroke: #d9d9ff; }
         .light.red   { stroke: #ffcccc; }
         .light.green { stroke: #d9ffd9; }
@@ -51,10 +50,10 @@
 </style>
   <defs>
     <pattern x="-18" y="96.75" width="648" height="22.5" id="grid-pattern-1-horizontal-lines" patternUnits="userSpaceOnUse" viewBox="0 0 648.000 22.500">
-      <line x1="18" x2="630" y1="11.25" y2="11.25" class="blue line"/>
+      <line x1="18" x2="630" y1="11.25" y2="11.25" class=" blue line"/>
     </pattern>
     <pattern id="grid-pattern-2-dots" x="78.75" y="-1.6875" width="22.5" height="5.625" patternUnits="userSpaceOnUse" viewBox="0 0 22.500 5.625">
-      <line x1="11.25" x2="11.25" y1="2.812" y2="2.812" class="thin gray dot"/>
+      <line x1="11.25" x2="11.25" y1="2.812" y2="2.812" class="thin blue dot"/>
     </pattern>
   </defs>
   <g id="grid">

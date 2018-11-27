@@ -33,7 +33,6 @@
         .red   { stroke: #ff9999; }
         .green { stroke: #b3ffb3; }
         .gray  { stroke: #b3b3b3; }
-
         .light.blue  { stroke: #d9d9ff; }
         .light.red   { stroke: #ffcccc; }
         .light.green { stroke: #d9ffd9; }
@@ -62,41 +61,41 @@
     <rect x="-2.83464566929122" y="-18" width="425.196850393699" height="631.276" fill="url(#grid-pattern-2-vertical-lines)"/>
   </g>
   <g id="lines">
-    <line x1="0" x2="419.528" y1="14.173" y2="14.173" class="blue line"/>
-    <line x1="0" x2="419.528" y1="31.181" y2="31.181" class="blue line"/>
-    <line x1="0" x2="419.528" y1="48.189" y2="48.189" class="blue line"/>
-    <line x1="0" x2="419.528" y1="65.197" y2="65.197" class="blue line"/>
-    <line x1="0" x2="419.528" y1="82.205" y2="82.205" class="blue line"/>
-    <line x1="0" x2="419.528" y1="99.213" y2="99.213" class="blue line"/>
-    <line x1="0" x2="419.528" y1="116.221" y2="116.221" class="blue line"/>
-    <line x1="0" x2="419.528" y1="133.229" y2="133.229" class="blue line"/>
-    <line x1="0" x2="419.528" y1="150.236" y2="150.236" class="blue line"/>
-    <line x1="0" x2="419.528" y1="167.244" y2="167.244" class="blue line"/>
-    <line x1="0" x2="419.528" y1="184.252" y2="184.252" class="blue line"/>
-    <line x1="0" x2="419.528" y1="201.26" y2="201.26" class="blue line"/>
-    <line x1="0" x2="419.528" y1="218.268" y2="218.268" class="blue line"/>
-    <line x1="0" x2="419.528" y1="235.276" y2="235.276" class="blue line"/>
-    <line x1="0" x2="419.528" y1="252.284" y2="252.284" class="blue line"/>
-    <line x1="0" x2="419.528" y1="269.292" y2="269.292" class="blue line"/>
-    <line x1="0" x2="419.528" y1="286.299" y2="286.299" class="blue line"/>
-    <line x1="0" x2="419.528" y1="303.307" y2="303.307" class="blue line"/>
-    <line x1="0" x2="419.528" y1="320.315" y2="320.315" class="blue line"/>
-    <line x1="0" x2="419.528" y1="337.323" y2="337.323" class="blue line"/>
-    <line x1="0" x2="419.528" y1="354.331" y2="354.331" class="blue line"/>
-    <line x1="0" x2="419.528" y1="371.339" y2="371.339" class="blue line"/>
-    <line x1="0" x2="419.528" y1="388.347" y2="388.347" class="blue line"/>
-    <line x1="0" x2="419.528" y1="405.355" y2="405.355" class="blue line"/>
-    <line x1="0" x2="419.528" y1="422.362" y2="422.362" class="blue line"/>
-    <line x1="0" x2="419.528" y1="439.37" y2="439.37" class="blue line"/>
-    <line x1="0" x2="419.528" y1="456.378" y2="456.378" class="blue line"/>
-    <line x1="0" x2="419.528" y1="473.386" y2="473.386" class="blue line"/>
-    <line x1="0" x2="419.528" y1="490.394" y2="490.394" class="blue line"/>
-    <line x1="0" x2="419.528" y1="507.402" y2="507.402" class="blue line"/>
-    <line x1="0" x2="419.528" y1="524.41" y2="524.41" class="blue line"/>
-    <line x1="0" x2="419.528" y1="541.418" y2="541.418" class="blue line"/>
-    <line x1="0" x2="419.528" y1="558.425" y2="558.425" class="blue line"/>
-    <line x1="0" x2="419.528" y1="575.433" y2="575.433" class="blue line"/>
-    <line x1="0" x2="419.528" y1="592.441" y2="592.441" class="blue line"/>
+    <line x1="0" x2="419.528" y1="14.173" y2="14.173" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="31.181" y2="31.181" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="48.189" y2="48.189" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="65.197" y2="65.197" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="82.205" y2="82.205" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="99.213" y2="99.213" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="116.221" y2="116.221" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="133.229" y2="133.229" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="150.236" y2="150.236" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="167.244" y2="167.244" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="184.252" y2="184.252" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="201.26" y2="201.26" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="218.268" y2="218.268" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="235.276" y2="235.276" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="252.284" y2="252.284" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="269.292" y2="269.292" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="286.299" y2="286.299" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="303.307" y2="303.307" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="320.315" y2="320.315" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="337.323" y2="337.323" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="354.331" y2="354.331" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="371.339" y2="371.339" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="388.347" y2="388.347" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="405.355" y2="405.355" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="422.362" y2="422.362" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="439.37" y2="439.37" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="456.378" y2="456.378" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="473.386" y2="473.386" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="490.394" y2="490.394" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="507.402" y2="507.402" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="524.41" y2="524.41" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="541.418" y2="541.418" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="558.425" y2="558.425" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="575.433" y2="575.433" class=" blue line"/>
+    <line x1="0" x2="419.528" y1="592.441" y2="592.441" class=" blue line"/>
   </g>
   <g id="margin-line">
     <line x1="62.362" x2="62.362" y1="0" y2="595.276" class="red margin line"/>

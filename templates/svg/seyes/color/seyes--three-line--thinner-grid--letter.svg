@@ -33,7 +33,6 @@
         .red   { stroke: #ff9999; }
         .green { stroke: #b3ffb3; }
         .gray  { stroke: #b3b3b3; }
-
         .light.blue  { stroke: #d9d9ff; }
         .light.red   { stroke: #ffcccc; }
         .light.green { stroke: #d9ffd9; }
@@ -62,49 +61,49 @@
     <rect x="81" y="-18" width="540" height="828" fill="url(#grid-pattern-2-vertical-lines)"/>
   </g>
   <g id="lines">
-    <line x1="0" x2="612" y1="108" y2="108" class="blue line"/>
-    <line x1="0" x2="612" y1="126" y2="126" class="blue line"/>
-    <line x1="0" x2="612" y1="144" y2="144" class="blue line"/>
-    <line x1="0" x2="612" y1="162" y2="162" class="blue line"/>
-    <line x1="0" x2="612" y1="180" y2="180" class="blue line"/>
-    <line x1="0" x2="612" y1="198" y2="198" class="blue line"/>
-    <line x1="0" x2="612" y1="216" y2="216" class="blue line"/>
-    <line x1="0" x2="612" y1="234" y2="234" class="blue line"/>
-    <line x1="0" x2="612" y1="252" y2="252" class="blue line"/>
-    <line x1="0" x2="612" y1="270" y2="270" class="blue line"/>
-    <line x1="0" x2="612" y1="288" y2="288" class="blue line"/>
-    <line x1="0" x2="612" y1="306" y2="306" class="blue line"/>
-    <line x1="0" x2="612" y1="324" y2="324" class="blue line"/>
-    <line x1="0" x2="612" y1="342" y2="342" class="blue line"/>
-    <line x1="0" x2="612" y1="360" y2="360" class="blue line"/>
-    <line x1="0" x2="612" y1="378" y2="378" class="blue line"/>
-    <line x1="0" x2="612" y1="396" y2="396" class="blue line"/>
-    <line x1="0" x2="612" y1="414" y2="414" class="blue line"/>
-    <line x1="0" x2="612" y1="432" y2="432" class="blue line"/>
-    <line x1="0" x2="612" y1="450" y2="450" class="blue line"/>
-    <line x1="0" x2="612" y1="468" y2="468" class="blue line"/>
-    <line x1="0" x2="612" y1="486" y2="486" class="blue line"/>
-    <line x1="0" x2="612" y1="504" y2="504" class="blue line"/>
-    <line x1="0" x2="612" y1="522" y2="522" class="blue line"/>
-    <line x1="0" x2="612" y1="540" y2="540" class="blue line"/>
-    <line x1="0" x2="612" y1="558" y2="558" class="blue line"/>
-    <line x1="0" x2="612" y1="576" y2="576" class="blue line"/>
-    <line x1="0" x2="612" y1="594" y2="594" class="blue line"/>
-    <line x1="0" x2="612" y1="612" y2="612" class="blue line"/>
-    <line x1="0" x2="612" y1="630" y2="630" class="blue line"/>
-    <line x1="0" x2="612" y1="648" y2="648" class="blue line"/>
-    <line x1="0" x2="612" y1="666" y2="666" class="blue line"/>
-    <line x1="0" x2="612" y1="684" y2="684" class="blue line"/>
-    <line x1="0" x2="612" y1="702" y2="702" class="blue line"/>
-    <line x1="0" x2="612" y1="720" y2="720" class="blue line"/>
+    <line x1="0" x2="612" y1="108" y2="108" class=" blue line"/>
+    <line x1="0" x2="612" y1="126" y2="126" class=" blue line"/>
+    <line x1="0" x2="612" y1="144" y2="144" class=" blue line"/>
+    <line x1="0" x2="612" y1="162" y2="162" class=" blue line"/>
+    <line x1="0" x2="612" y1="180" y2="180" class=" blue line"/>
+    <line x1="0" x2="612" y1="198" y2="198" class=" blue line"/>
+    <line x1="0" x2="612" y1="216" y2="216" class=" blue line"/>
+    <line x1="0" x2="612" y1="234" y2="234" class=" blue line"/>
+    <line x1="0" x2="612" y1="252" y2="252" class=" blue line"/>
+    <line x1="0" x2="612" y1="270" y2="270" class=" blue line"/>
+    <line x1="0" x2="612" y1="288" y2="288" class=" blue line"/>
+    <line x1="0" x2="612" y1="306" y2="306" class=" blue line"/>
+    <line x1="0" x2="612" y1="324" y2="324" class=" blue line"/>
+    <line x1="0" x2="612" y1="342" y2="342" class=" blue line"/>
+    <line x1="0" x2="612" y1="360" y2="360" class=" blue line"/>
+    <line x1="0" x2="612" y1="378" y2="378" class=" blue line"/>
+    <line x1="0" x2="612" y1="396" y2="396" class=" blue line"/>
+    <line x1="0" x2="612" y1="414" y2="414" class=" blue line"/>
+    <line x1="0" x2="612" y1="432" y2="432" class=" blue line"/>
+    <line x1="0" x2="612" y1="450" y2="450" class=" blue line"/>
+    <line x1="0" x2="612" y1="468" y2="468" class=" blue line"/>
+    <line x1="0" x2="612" y1="486" y2="486" class=" blue line"/>
+    <line x1="0" x2="612" y1="504" y2="504" class=" blue line"/>
+    <line x1="0" x2="612" y1="522" y2="522" class=" blue line"/>
+    <line x1="0" x2="612" y1="540" y2="540" class=" blue line"/>
+    <line x1="0" x2="612" y1="558" y2="558" class=" blue line"/>
+    <line x1="0" x2="612" y1="576" y2="576" class=" blue line"/>
+    <line x1="0" x2="612" y1="594" y2="594" class=" blue line"/>
+    <line x1="0" x2="612" y1="612" y2="612" class=" blue line"/>
+    <line x1="0" x2="612" y1="630" y2="630" class=" blue line"/>
+    <line x1="0" x2="612" y1="648" y2="648" class=" blue line"/>
+    <line x1="0" x2="612" y1="666" y2="666" class=" blue line"/>
+    <line x1="0" x2="612" y1="684" y2="684" class=" blue line"/>
+    <line x1="0" x2="612" y1="702" y2="702" class=" blue line"/>
+    <line x1="0" x2="612" y1="720" y2="720" class=" blue line"/>
   </g>
   <g id="margin-line">
     <line x1="90" x2="90" y1="0" y2="792" class="red margin line"/>
   </g>
   <g id="head-line">
-    <line x1="0" x2="612" y1="36" y2="36" class="blue line"/>
+    <line x1="0" x2="612" y1="36" y2="36" class=" blue line"/>
   </g>
   <g id="page-number-line">
-    <line x1="540" x2="594" y1="774" y2="774" class="blue line"/>
+    <line x1="540" x2="594" y1="774" y2="774" class=" blue line"/>
   </g>
 </svg>
