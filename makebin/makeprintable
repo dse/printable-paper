@@ -319,9 +319,10 @@ my %build = (
                 my $temp = "${target}.tmp.pdf";
                 mkpath(dirname($temp));
                 my $temp_realpath = realpath($temp);
+                unlink($temp);
                 $inkscape_shell->cmd(sprintf("%s --export-background=transparent --export-pdf=%s",
                                              shell_quote($dependencies->[0]),
-                                             $temp_realpath));
+                                             shell_quote($temp_realpath)));
                 if (-e $temp) {
                     if (!rename($temp, $target)) {
                         die("Cannot rename $temp to $target: $!\n");
@@ -561,10 +562,17 @@ foreach my $template (@templates) {
     }
 }
 
-my @build;
+my %build_by_filename;
+my @all_builds;
 foreach my $template (@templates) {
     foreach my $file (@{$template->{files}}) {
-        push(@build, { template => $template, file => $file });
+        my $filename = $file->{filename};
+        my $build = {
+            template => $template,
+            file => $file
+        };
+        push(@all_builds, $build);
+        $build_by_filename{$filename} = $build;
     }
 }
 
@@ -577,40 +585,65 @@ sub EQ {
     return 0;
 }
 
+my @builds_to_perform;
+my @filters;
+
 foreach my $arg (@ARGV) {
     if ($arg eq "LIST" || $arg eq "CLEAN" || $arg eq "MAKE") {
         $operation = $arg;
     } else {
-        my $sub = sub {
-            return 1 if EQ($_->{template}->{ruling},     $arg);
-            return 1 if EQ($_->{template}->{size},       $arg);
-            return 1 if EQ($_->{file}->{type},           $arg);
-            return 1 if EQ($_->{file}->{filename},       $arg);
-            return 1 if EQ($_->{template}->{color_type}, $arg);
-            return 1 if EQ($_->{file}->{subtype},        $arg);
-            return 1 if $_->{file}->{filename} =~ m{(^|/)\Q$arg\E($|/)};
-            my $modifiers = $_->{template}->{modifiers};
-            if ($modifiers && ref $modifiers eq 'ARRAY' && scalar @$modifiers) {
-                return 1 if grep { $_ eq $arg } @$modifiers;
+        if ($arg =~ m{[\.\/\\]}) {
+            my $build = $build_by_filename{$arg};
+            if ($build) {
+                push(@builds_to_perform, $build);
+            } else {
+                warn("Don't know how to make $arg.\n");
             }
-            return 0;
-        };
-        if ($arg =~ s{^[\!\-\^]}{}) {
-            @build = grep { !$sub->() } @build;
         } else {
-            @build = grep { $sub->() } @build;
+            my $arg = $arg;
+            my $sub = sub {
+                return 1 if EQ($_->{template}->{ruling},     $arg);
+                return 1 if EQ($_->{template}->{size},       $arg);
+                return 1 if EQ($_->{file}->{type},           $arg);
+                return 1 if EQ($_->{file}->{filename},       $arg);
+                return 1 if EQ($_->{template}->{color_type}, $arg);
+                return 1 if EQ($_->{file}->{subtype},        $arg);
+                return 1 if $_->{file}->{filename} =~ m{ (^|/) \Q$arg\E ($|/) }xi;
+                my $modifiers = $_->{template}->{modifiers};
+                if ($modifiers && ref $modifiers eq 'ARRAY' && scalar @$modifiers) {
+                    return 1 if grep { $_ eq $arg } @$modifiers;
+                }
+                return 0;
+            };
+            if ($arg =~ s{^[\!\-\^]}{}) {
+                push(@filters, sub {
+                         @builds_to_perform = grep { !$sub->() } @builds_to_perform;
+                     });
+            } else {
+                push(@filters, sub {
+                         @builds_to_perform = grep { $sub->() } @builds_to_perform;
+                     });
+            }
         }
     }
 }
 
+if (!scalar @builds_to_perform) {
+    @builds_to_perform = @all_builds;
+}
+
+foreach my $filter (@filters) {
+    $filter->();
+}
+
 if ($operation eq "LIST") {
-    foreach my $build (@build) {
+    foreach my $build (@builds_to_perform) {
         my $filename = $build->{file}->{filename};
         say $filename;
     }
     exit 0;
 } elsif ($operation eq "MAKE") {
-    if (!scalar @build) {
+    if (!scalar @builds_to_perform) {
         if ($opt_verbose) {
             warn("Nothing to build.\n");
         }
@@ -618,12 +651,12 @@ if ($operation eq "LIST") {
     }
     if ($opt_verbose) {
         warn("Will build:\n");
-        foreach my $build (@build) {
+        foreach my $build (@builds_to_perform) {
             my $filename = $build->{file}->{filename};
             warn("- $filename\n");
         }
     }
-    foreach my $build (@build) {
+    foreach my $build (@builds_to_perform) {
         my $filename = $build->{file}->{filename};
         if ($opt_verbose) {
             warn("Building $filename...\n");
@@ -631,7 +664,7 @@ if ($operation eq "LIST") {
         build($filename);
     }
 } elsif ($operation eq "CLEAN") {
-    foreach my $build (@build) {
+    foreach my $build (@builds_to_perform) {
         my $filename = $build->{file}->{filename};
         if (-e $filename) {
             warn(sprintf("+ rm %s\n", shell_quote($filename)));
