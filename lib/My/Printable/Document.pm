@@ -34,7 +34,7 @@ public "isGenerated",   default => 0;
 public "verbose",       default => 0;
 
 use XML::LibXML;
-use Scalar::Util qw(refaddr);
+use Scalar::Util qw(refaddr weaken isweak);
 
 public "svgDocument", lazy_default => sub {
     my ($self) = @_;
@@ -260,10 +260,16 @@ use File::Path qw(make_path);
 sub printToFile {
     my ($self, $filename) = @_;
     my $fh;
+    my $save_filename = $self->filename;
+    $self->filename($filename);
     make_path(dirname($filename));
-    open($fh, ">", $filename) or die("Cannot write $filename: $!\n");
+    my $temp_filename = "${filename}.tmp.svg";
+    open($fh, ">", $temp_filename) or die("Cannot write $temp_filename: $!\n");
     $self->printToHandle($fh);
-    close($fh);
+    close($fh) or die("Cannot close $temp_filename: $!\n");
+    rename($temp_filename, $filename) or die("Cannot rename $temp_filename to $filename: $!\n");
+    $self->filename($save_filename);
+    return;
 }
 
 sub printToHandle {
