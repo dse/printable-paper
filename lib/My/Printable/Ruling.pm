@@ -23,7 +23,6 @@ delegate 'setModifiers',  via => 'document';
 delegate 'hasModifier',   via => 'document';
 delegate 'unitType',      via => 'document';
 delegate 'colorType',     via => 'document';
-delegate 'generate',      via => 'document';
 delegate 'print',         via => 'document';
 delegate 'printToFile',   via => 'document';
 delegate 'isA4SizeClass', via => 'document';
