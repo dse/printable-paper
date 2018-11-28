@@ -16,7 +16,6 @@ use Text::Trim qw(trim);
 use Getopt::Long qw();
 use Data::Dumper qw(Dumper);
 use Storable qw(dclone);
-use Devel::Cycle qw(find_cycle);
 
 our $opt_verbose = 0;
 our $opt_dry_run = 0;
@@ -303,7 +302,6 @@ my %build = (
                 $ruling->setModifiers(@modifiers);
                 $ruling->generate();
                 $ruling->printToFile($target);
-                find_cycle($ruling);
             }
         },
     },
