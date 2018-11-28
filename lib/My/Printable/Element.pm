@@ -42,6 +42,16 @@ public "extendRight";
 public "extendTop";
 public "extendBottom";
 
+# mainly for grids
+public 'dotHeight' => 0, set => sub {
+    my ($self, $value) = @_;
+    return $self->ptX($value);
+};
+public 'dotWidth' => 0, set => sub {
+    my ($self, $value) = @_;
+    return $self->ptY($value);
+};
+
 delegate "unit",        via => "document";
 delegate "unitX",       via => "document";
 delegate "unitY",       via => "document";
@@ -306,6 +316,7 @@ sub drawDotPattern {
     my ($self, %args) = @_;
 
     if (USE_SVG_PATTERNS) {
+        # NOT YET ACCOUNTING FOR DOTHEIGHT OR DOTWIDTH
         my $pattern = $self->svgDocument->createElement('pattern');
         my $cssClass = delete $args{cssClass};
         my $xPointSeries = delete $args{xPointSeries};
@@ -361,12 +372,35 @@ sub drawDotPattern {
         my @y = $yPointSeries->getPoints();
         foreach my $x (@x) {
             foreach my $y (@y) {
-                my $line = $self->createSVGLine(
-                    x => $x,
-                    y => $y,
-                    cssClass => $cssClass,
-                );
-                $self->svgLayer->appendChild($line);
+                my $x1 = $x;
+                my $x2 = $x;
+                my $y1 = $y;
+                my $y2 = $y;
+                if ($self->dotWidth && $self->dotHeight) {
+                    my $ellipse = $self->document->svgDocument->createElement('circle');
+                    $ellipse->setAttribute('cx', $x);
+                    $ellipse->setAttribute('cy', $y);
+                    $ellipse->setAttribute('rx', $self->dotWidth / 2);
+                    $ellipse->setAttribute('ry', $self->dotHeight / 2);
+                    $ellipse->setAttribute('class', $self->cssClass);
+                    $self->svgLayer->appendChild($ellipse);
+                } else {
+                    if ($self->dotWidth) {
+                        $x1 -= $self->dotWidth / 2;
+                        $x2 += $self->dotWidth / 2;
+                    } elsif ($self->dotHeight) {
+                        $y1 -= $self->dotHeight / 2;
+                        $y2 += $self->dotHeight / 2;
+                    }
+                    my $line = $self->createSVGLine(
+                        x1 => $x1,
+                        y1 => $y1,
+                        x2 => $x2,
+                        y2 => $y2,
+                        cssClass => $cssClass,
+                    );
+                    $self->svgLayer->appendChild($line);
+                }
             }
         }
     }
