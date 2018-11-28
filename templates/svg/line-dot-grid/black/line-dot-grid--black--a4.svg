@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="595.276pt" height="841.89pt" viewBox="0 0 595.276 841.89">
+  <defs/>
+  <style>        .line, .dot { stroke-linecap: round; }
+        .stroke-linecap-butt { stroke-linecap: butt; }
+
+        .line            { stroke-width: 0.72pt; }
+        .line.xx-thin    { stroke-width: 0.24pt; }
+        .line.x-thin     { stroke-width: 0.36pt; }
+        .line.thin       { stroke-width: 0.48pt; }
+        .line.thick      { stroke-width: 1.08pt; }
+        .line.semi-thin  { stroke-width: 0.588pt; }
+        .line.semi-thick { stroke-width: 0.882pt; }
+
+        .dot             { stroke-width: 1.44pt; }
+        .dot.thin        { stroke-width: 0.96pt; }
+        .dot.thick       { stroke-width: 2.16pt; }
+        .dot.semi-thin   { stroke-width: 1.176pt; }
+        .dot.semi-thick  { stroke-width: 1.764pt; }
+
+        .stroke-1     { stroke-width: 0.12pt; stroke-linecap: round; } /* 1/600 in */
+        .stroke-2     { stroke-width: 0.24pt; stroke-linecap: round; }
+        .stroke-3     { stroke-width: 0.36pt; stroke-linecap: round; }
+        .stroke-4     { stroke-width: 0.48pt; stroke-linecap: round; }
+        .stroke-5     { stroke-width: 0.60pt; stroke-linecap: round; }
+        .stroke-6     { stroke-width: 0.72pt; stroke-linecap: round; }
+        .stroke-7     { stroke-width: 0.84pt; stroke-linecap: round; }
+        .stroke-8     { stroke-width: 0.96pt; stroke-linecap: round; }
+        .stroke-9     { stroke-width: 1.08pt; stroke-linecap: round; }
+        .stroke-10    { stroke-width: 1.20pt; stroke-linecap: round; }
+
+        .blue  { stroke: #b3b3ff; }
+        .red   { stroke: #ff9999; }
+        .green { stroke: #b3ffb3; }
+        .gray  { stroke: #b3b3b3; }
+        .black         { stroke: #000000; }
+        .half-black    { stroke: #808080; }
+        .quarter-black { stroke: #c0c0c0; }
+        .light.blue  { stroke: #d9d9ff; }
+        .light.red   { stroke: #ffcccc; }
+        .light.green { stroke: #d9ffd9; }
+        .light.gray  { stroke: #d9d9d9; }
+
+        .dark.blue  { stroke: #6767ff; }
+        .dark.red   { stroke: #ff3333; }
+        .dark.green { stroke: #67ff67; }
+        .dark.gray  { stroke: #676767; }
+
+        .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
+        .alternate-red   { stroke: #ff3333; opacity: 0.5; }
+        .alternate-green { stroke: #67ff67; opacity: 0.5; }
+        .alternate-gray  { stroke: #676767; opacity: 0.5; }
+</style>
+  <defs>
+    <pattern id="grid-pattern-1-dots" x="0.000204724409954338" y="4.25208661417376" width="17.007874015748" height="17.007874015748" patternUnits="userSpaceOnUse" viewBox="0 0 17.008 17.008">
+      <line x1="8.504" x2="8.504" y1="8.504" y2="8.504" class="stroke-7 black dot"/>
+    </pattern>
+  </defs>
+  <g id="grid">
+    <rect x="0.000204724409954338" y="4.25208661417376" width="595.27559055118" height="833.385826771653" fill="url(#grid-pattern-1-dots)"/>
+  </g>
+  <g id="lines">
+    <line x1="0" x2="595.276" y1="12.756" y2="12.756" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="29.764" y2="29.764" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="46.772" y2="46.772" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="63.78" y2="63.78" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="80.788" y2="80.788" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="97.795" y2="97.795" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="114.803" y2="114.803" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="131.811" y2="131.811" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="148.819" y2="148.819" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="165.827" y2="165.827" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="182.835" y2="182.835" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="199.843" y2="199.843" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="216.851" y2="216.851" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="233.858" y2="233.858" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="250.866" y2="250.866" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="267.874" y2="267.874" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="284.882" y2="284.882" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="301.89" y2="301.89" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="318.898" y2="318.898" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="335.906" y2="335.906" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="352.914" y2="352.914" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="369.921" y2="369.921" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="386.929" y2="386.929" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="403.937" y2="403.937" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="420.945" y2="420.945" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="437.953" y2="437.953" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="454.961" y2="454.961" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="471.969" y2="471.969" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="488.976" y2="488.976" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="505.984" y2="505.984" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="522.992" y2="522.992" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="540" y2="540" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="557.008" y2="557.008" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="574.016" y2="574.016" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="591.024" y2="591.024" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="608.032" y2="608.032" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="625.039" y2="625.039" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="642.047" y2="642.047" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="659.055" y2="659.055" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="676.063" y2="676.063" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="693.071" y2="693.071" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="710.079" y2="710.079" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="727.087" y2="727.087" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="744.095" y2="744.095" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="761.102" y2="761.102" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="778.11" y2="778.11" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="795.118" y2="795.118" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="812.126" y2="812.126" class="stroke-2 black line"/>
+    <line x1="0" x2="595.276" y1="829.134" y2="829.134" class="stroke-2 black line"/>
+  </g>
+</svg>
