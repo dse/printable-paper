@@ -43,11 +43,11 @@ public "extendTop";
 public "extendBottom";
 
 # mainly for grids
-public 'dotHeight' => 0, set => sub {
+public 'dotHeight', default => 0, set => sub {
     my ($self, $value) = @_;
     return $self->ptX($value);
 };
-public 'dotWidth' => 0, set => sub {
+public 'dotWidth', default => 0, set => sub {
     my ($self, $value) = @_;
     return $self->ptY($value);
 };
