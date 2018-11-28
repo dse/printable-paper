@@ -48,55 +48,150 @@
         .alternate-green { stroke: #67ff67; opacity: 0.5; }
         .alternate-gray  { stroke: #676767; opacity: 0.5; }
 </style>
-  <defs>
-    <pattern x="-18" y="57" width="432" height="6" id="grid-pattern-1-horizontal-lines" patternUnits="userSpaceOnUse" viewBox="0 0 432.000 6.000">
-      <line x1="18" x2="414" y1="3" y2="3" class="thin blue line"/>
-    </pattern>
-    <pattern x="45" y="-18" width="18" height="648" id="grid-pattern-2-vertical-lines" patternUnits="userSpaceOnUse" viewBox="0 0 18.000 648.000">
-      <line x1="9" x2="9" y1="18" y2="630" class="thin blue line"/>
-    </pattern>
-  </defs>
   <g id="grid">
-    <rect x="-18" y="57" width="432" height="510" fill="url(#grid-pattern-1-horizontal-lines)"/>
-    <rect x="45" y="-18" width="360" height="648" fill="url(#grid-pattern-2-vertical-lines)"/>
+    <line x1="0" x2="396" y1="60" y2="60" class="thin blue line"/>
+    <line x1="0" x2="396" y1="66" y2="66" class="thin blue line"/>
+    <line x1="0" x2="396" y1="72" y2="72" class="thin blue line"/>
+    <line x1="0" x2="396" y1="78" y2="78" class="thin blue line"/>
+    <line x1="0" x2="396" y1="84" y2="84" class="thin blue line"/>
+    <line x1="0" x2="396" y1="90" y2="90" class="thin blue line"/>
+    <line x1="0" x2="396" y1="96" y2="96" class="thin blue line"/>
+    <line x1="0" x2="396" y1="102" y2="102" class="thin blue line"/>
+    <line x1="0" x2="396" y1="108" y2="108" class="thin blue line"/>
+    <line x1="0" x2="396" y1="114" y2="114" class="thin blue line"/>
+    <line x1="0" x2="396" y1="120" y2="120" class="thin blue line"/>
+    <line x1="0" x2="396" y1="126" y2="126" class="thin blue line"/>
+    <line x1="0" x2="396" y1="132" y2="132" class="thin blue line"/>
+    <line x1="0" x2="396" y1="138" y2="138" class="thin blue line"/>
+    <line x1="0" x2="396" y1="144" y2="144" class="thin blue line"/>
+    <line x1="0" x2="396" y1="150" y2="150" class="thin blue line"/>
+    <line x1="0" x2="396" y1="156" y2="156" class="thin blue line"/>
+    <line x1="0" x2="396" y1="162" y2="162" class="thin blue line"/>
+    <line x1="0" x2="396" y1="168" y2="168" class="thin blue line"/>
+    <line x1="0" x2="396" y1="174" y2="174" class="thin blue line"/>
+    <line x1="0" x2="396" y1="180" y2="180" class="thin blue line"/>
+    <line x1="0" x2="396" y1="186" y2="186" class="thin blue line"/>
+    <line x1="0" x2="396" y1="192" y2="192" class="thin blue line"/>
+    <line x1="0" x2="396" y1="198" y2="198" class="thin blue line"/>
+    <line x1="0" x2="396" y1="204" y2="204" class="thin blue line"/>
+    <line x1="0" x2="396" y1="210" y2="210" class="thin blue line"/>
+    <line x1="0" x2="396" y1="216" y2="216" class="thin blue line"/>
+    <line x1="0" x2="396" y1="222" y2="222" class="thin blue line"/>
+    <line x1="0" x2="396" y1="228" y2="228" class="thin blue line"/>
+    <line x1="0" x2="396" y1="234" y2="234" class="thin blue line"/>
+    <line x1="0" x2="396" y1="240" y2="240" class="thin blue line"/>
+    <line x1="0" x2="396" y1="246" y2="246" class="thin blue line"/>
+    <line x1="0" x2="396" y1="252" y2="252" class="thin blue line"/>
+    <line x1="0" x2="396" y1="258" y2="258" class="thin blue line"/>
+    <line x1="0" x2="396" y1="264" y2="264" class="thin blue line"/>
+    <line x1="0" x2="396" y1="270" y2="270" class="thin blue line"/>
+    <line x1="0" x2="396" y1="276" y2="276" class="thin blue line"/>
+    <line x1="0" x2="396" y1="282" y2="282" class="thin blue line"/>
+    <line x1="0" x2="396" y1="288" y2="288" class="thin blue line"/>
+    <line x1="0" x2="396" y1="294" y2="294" class="thin blue line"/>
+    <line x1="0" x2="396" y1="300" y2="300" class="thin blue line"/>
+    <line x1="0" x2="396" y1="306" y2="306" class="thin blue line"/>
+    <line x1="0" x2="396" y1="312" y2="312" class="thin blue line"/>
+    <line x1="0" x2="396" y1="318" y2="318" class="thin blue line"/>
+    <line x1="0" x2="396" y1="324" y2="324" class="thin blue line"/>
+    <line x1="0" x2="396" y1="330" y2="330" class="thin blue line"/>
+    <line x1="0" x2="396" y1="336" y2="336" class="thin blue line"/>
+    <line x1="0" x2="396" y1="342" y2="342" class="thin blue line"/>
+    <line x1="0" x2="396" y1="348" y2="348" class="thin blue line"/>
+    <line x1="0" x2="396" y1="354" y2="354" class="thin blue line"/>
+    <line x1="0" x2="396" y1="360" y2="360" class="thin blue line"/>
+    <line x1="0" x2="396" y1="366" y2="366" class="thin blue line"/>
+    <line x1="0" x2="396" y1="372" y2="372" class="thin blue line"/>
+    <line x1="0" x2="396" y1="378" y2="378" class="thin blue line"/>
+    <line x1="0" x2="396" y1="384" y2="384" class="thin blue line"/>
+    <line x1="0" x2="396" y1="390" y2="390" class="thin blue line"/>
+    <line x1="0" x2="396" y1="396" y2="396" class="thin blue line"/>
+    <line x1="0" x2="396" y1="402" y2="402" class="thin blue line"/>
+    <line x1="0" x2="396" y1="408" y2="408" class="thin blue line"/>
+    <line x1="0" x2="396" y1="414" y2="414" class="thin blue line"/>
+    <line x1="0" x2="396" y1="420" y2="420" class="thin blue line"/>
+    <line x1="0" x2="396" y1="426" y2="426" class="thin blue line"/>
+    <line x1="0" x2="396" y1="432" y2="432" class="thin blue line"/>
+    <line x1="0" x2="396" y1="438" y2="438" class="thin blue line"/>
+    <line x1="0" x2="396" y1="444" y2="444" class="thin blue line"/>
+    <line x1="0" x2="396" y1="450" y2="450" class="thin blue line"/>
+    <line x1="0" x2="396" y1="456" y2="456" class="thin blue line"/>
+    <line x1="0" x2="396" y1="462" y2="462" class="thin blue line"/>
+    <line x1="0" x2="396" y1="468" y2="468" class="thin blue line"/>
+    <line x1="0" x2="396" y1="474" y2="474" class="thin blue line"/>
+    <line x1="0" x2="396" y1="480" y2="480" class="thin blue line"/>
+    <line x1="0" x2="396" y1="486" y2="486" class="thin blue line"/>
+    <line x1="0" x2="396" y1="492" y2="492" class="thin blue line"/>
+    <line x1="0" x2="396" y1="498" y2="498" class="thin blue line"/>
+    <line x1="0" x2="396" y1="504" y2="504" class="thin blue line"/>
+    <line x1="0" x2="396" y1="510" y2="510" class="thin blue line"/>
+    <line x1="0" x2="396" y1="516" y2="516" class="thin blue line"/>
+    <line x1="0" x2="396" y1="522" y2="522" class="thin blue line"/>
+    <line x1="0" x2="396" y1="528" y2="528" class="thin blue line"/>
+    <line x1="0" x2="396" y1="534" y2="534" class="thin blue line"/>
+    <line x1="0" x2="396" y1="540" y2="540" class="thin blue line"/>
+    <line x1="0" x2="396" y1="546" y2="546" class="thin blue line"/>
+    <line x1="0" x2="396" y1="552" y2="552" class="thin blue line"/>
+    <line x1="0" x2="396" y1="558" y2="558" class="thin blue line"/>
+    <line x1="0" x2="396" y1="564" y2="564" class="thin blue line"/>
+    <line x1="54" x2="54" y1="0" y2="612" class="thin blue line"/>
+    <line x1="72" x2="72" y1="0" y2="612" class="thin blue line"/>
+    <line x1="90" x2="90" y1="0" y2="612" class="thin blue line"/>
+    <line x1="108" x2="108" y1="0" y2="612" class="thin blue line"/>
+    <line x1="126" x2="126" y1="0" y2="612" class="thin blue line"/>
+    <line x1="144" x2="144" y1="0" y2="612" class="thin blue line"/>
+    <line x1="162" x2="162" y1="0" y2="612" class="thin blue line"/>
+    <line x1="180" x2="180" y1="0" y2="612" class="thin blue line"/>
+    <line x1="198" x2="198" y1="0" y2="612" class="thin blue line"/>
+    <line x1="216" x2="216" y1="0" y2="612" class="thin blue line"/>
+    <line x1="234" x2="234" y1="0" y2="612" class="thin blue line"/>
+    <line x1="252" x2="252" y1="0" y2="612" class="thin blue line"/>
+    <line x1="270" x2="270" y1="0" y2="612" class="thin blue line"/>
+    <line x1="288" x2="288" y1="0" y2="612" class="thin blue line"/>
+    <line x1="306" x2="306" y1="0" y2="612" class="thin blue line"/>
+    <line x1="324" x2="324" y1="0" y2="612" class="thin blue line"/>
+    <line x1="342" x2="342" y1="0" y2="612" class="thin blue line"/>
+    <line x1="360" x2="360" y1="0" y2="612" class="thin blue line"/>
+    <line x1="378" x2="378" y1="0" y2="612" class="thin blue line"/>
+    <line x1="396" x2="396" y1="0" y2="612" class="thin blue line"/>
   </g>
   <g id="lines">
-    <line x1="0" x2="396" y1="72" y2="72" class=" blue line"/>
-    <line x1="0" x2="396" y1="90" y2="90" class=" blue line"/>
-    <line x1="0" x2="396" y1="108" y2="108" class=" blue line"/>
-    <line x1="0" x2="396" y1="126" y2="126" class=" blue line"/>
-    <line x1="0" x2="396" y1="144" y2="144" class=" blue line"/>
-    <line x1="0" x2="396" y1="162" y2="162" class=" blue line"/>
-    <line x1="0" x2="396" y1="180" y2="180" class=" blue line"/>
-    <line x1="0" x2="396" y1="198" y2="198" class=" blue line"/>
-    <line x1="0" x2="396" y1="216" y2="216" class=" blue line"/>
-    <line x1="0" x2="396" y1="234" y2="234" class=" blue line"/>
-    <line x1="0" x2="396" y1="252" y2="252" class=" blue line"/>
-    <line x1="0" x2="396" y1="270" y2="270" class=" blue line"/>
-    <line x1="0" x2="396" y1="288" y2="288" class=" blue line"/>
-    <line x1="0" x2="396" y1="306" y2="306" class=" blue line"/>
-    <line x1="0" x2="396" y1="324" y2="324" class=" blue line"/>
-    <line x1="0" x2="396" y1="342" y2="342" class=" blue line"/>
-    <line x1="0" x2="396" y1="360" y2="360" class=" blue line"/>
-    <line x1="0" x2="396" y1="378" y2="378" class=" blue line"/>
-    <line x1="0" x2="396" y1="396" y2="396" class=" blue line"/>
-    <line x1="0" x2="396" y1="414" y2="414" class=" blue line"/>
-    <line x1="0" x2="396" y1="432" y2="432" class=" blue line"/>
-    <line x1="0" x2="396" y1="450" y2="450" class=" blue line"/>
-    <line x1="0" x2="396" y1="468" y2="468" class=" blue line"/>
-    <line x1="0" x2="396" y1="486" y2="486" class=" blue line"/>
-    <line x1="0" x2="396" y1="504" y2="504" class=" blue line"/>
-    <line x1="0" x2="396" y1="522" y2="522" class=" blue line"/>
-    <line x1="0" x2="396" y1="540" y2="540" class=" blue line"/>
-    <line x1="0" x2="396" y1="558" y2="558" class=" blue line"/>
+    <line x1="0" x2="396" y1="72" y2="72" class="blue line"/>
+    <line x1="0" x2="396" y1="90" y2="90" class="blue line"/>
+    <line x1="0" x2="396" y1="108" y2="108" class="blue line"/>
+    <line x1="0" x2="396" y1="126" y2="126" class="blue line"/>
+    <line x1="0" x2="396" y1="144" y2="144" class="blue line"/>
+    <line x1="0" x2="396" y1="162" y2="162" class="blue line"/>
+    <line x1="0" x2="396" y1="180" y2="180" class="blue line"/>
+    <line x1="0" x2="396" y1="198" y2="198" class="blue line"/>
+    <line x1="0" x2="396" y1="216" y2="216" class="blue line"/>
+    <line x1="0" x2="396" y1="234" y2="234" class="blue line"/>
+    <line x1="0" x2="396" y1="252" y2="252" class="blue line"/>
+    <line x1="0" x2="396" y1="270" y2="270" class="blue line"/>
+    <line x1="0" x2="396" y1="288" y2="288" class="blue line"/>
+    <line x1="0" x2="396" y1="306" y2="306" class="blue line"/>
+    <line x1="0" x2="396" y1="324" y2="324" class="blue line"/>
+    <line x1="0" x2="396" y1="342" y2="342" class="blue line"/>
+    <line x1="0" x2="396" y1="360" y2="360" class="blue line"/>
+    <line x1="0" x2="396" y1="378" y2="378" class="blue line"/>
+    <line x1="0" x2="396" y1="396" y2="396" class="blue line"/>
+    <line x1="0" x2="396" y1="414" y2="414" class="blue line"/>
+    <line x1="0" x2="396" y1="432" y2="432" class="blue line"/>
+    <line x1="0" x2="396" y1="450" y2="450" class="blue line"/>
+    <line x1="0" x2="396" y1="468" y2="468" class="blue line"/>
+    <line x1="0" x2="396" y1="486" y2="486" class="blue line"/>
+    <line x1="0" x2="396" y1="504" y2="504" class="blue line"/>
+    <line x1="0" x2="396" y1="522" y2="522" class="blue line"/>
+    <line x1="0" x2="396" y1="540" y2="540" class="blue line"/>
+    <line x1="0" x2="396" y1="558" y2="558" class="blue line"/>
   </g>
   <g id="margin-line">
     <line x1="54" x2="54" y1="0" y2="612" class="red margin line"/>
   </g>
   <g id="head-line">
-    <line x1="0" x2="396" y1="36" y2="36" class=" blue line"/>
+    <line x1="0" x2="396" y1="36" y2="36" class="blue line"/>
   </g>
   <g id="page-number-line">
-    <line x1="0" x2="54" y1="594" y2="594" class=" blue line"/>
+    <line x1="0" x2="54" y1="594" y2="594" class="blue line"/>
   </g>
 </svg>
