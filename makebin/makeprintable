@@ -3,15 +3,20 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use String::ShellQuote;
+use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
+use My::Printable::Document;
+use My::Printable::Ruling;
+
+use String::ShellQuote qw(shell_quote);
 use Cwd qw(realpath);
 use File::Path qw(mkpath);
 use File::Basename qw(dirname basename);
 use File::Find qw(find);
-use Text::Trim;
-use Getopt::Long;
-use Data::Dumper;
+use Text::Trim qw(trim);
+use Getopt::Long qw();
+use Data::Dumper qw(Dumper);
 use Storable qw(dclone);
+use Devel::Cycle qw(find_cycle);
 
 our $opt_verbose = 0;
 our $opt_dry_run = 0;
@@ -258,6 +263,8 @@ find(sub {
          }
      }, '.');
 
+use constant USE_EXTERNAL_BIN_PRINTABLE => 0;
+
 my %build = (
     svg => {
         dependencies => [qw(bin/printable makebin/makeprintable), @modules],
@@ -269,19 +276,35 @@ my %build = (
             $id =~ s{(?!^)\.[^\.]+$}{}; # remove extension
             $id =~ s{[^A-Za-z0-9\_\-\.]+}{}g; # remove anything except A-Z a-z 0-9 _ - .
 
-            my $cmd = sprintf("bin/printable -M %s", shell_quote($template->{size}));
-            $cmd .= ' --black'     if $template->{color_type} eq 'black';
-            $cmd .= ' --grayscale' if $template->{color_type} eq 'grayscale';
-            $cmd .= sprintf(' --id=%s', shell_quote($id));
-            $cmd .= sprintf(' --filename=%s', shell_quote($target));
             my @modifiers = (eval { @{$template->{modifiers}} },
                              eval { @{$file->{modifiers}} });
-            foreach my $modifier (@modifiers) {
-                $cmd .= sprintf(" --modifier=%s", shell_quote($modifier));
-            }
-            $cmd .= sprintf(" %s >{FILENAME}", shell_quote($template->{ruling}));
 
-            cmd($target, $cmd);
+            if (USE_EXTERNAL_BIN_PRINTABLE) {
+                my $cmd = sprintf("bin/printable -M %s", shell_quote($template->{size}));
+                $cmd .= ' --black'     if $template->{color_type} eq 'black';
+                $cmd .= ' --grayscale' if $template->{color_type} eq 'grayscale';
+                $cmd .= sprintf(' --id=%s', shell_quote($id));
+                $cmd .= sprintf(' --filename=%s', shell_quote($target));
+                foreach my $modifier (@modifiers) {
+                    $cmd .= sprintf(" --modifier=%s", shell_quote($modifier));
+                }
+                $cmd .= sprintf(" %s >{FILENAME}", shell_quote($template->{ruling}));
+                cmd($target, $cmd);
+            } else {
+                my $ruling_class_name = My::Printable::Ruling->getRulingClassName($template->{ruling});
+                eval "use $ruling_class_name";
+                if ($@) {
+                    die $@;
+                }
+                my $ruling = $ruling_class_name->new();
+                $ruling->id($id);
+                $ruling->setPaperSize($template->{size});
+                $ruling->colorType($template->{color_type});
+                $ruling->setModifiers(@modifiers);
+                $ruling->generate();
+                $ruling->printToFile($target);
+                find_cycle($ruling);
+            }
         },
     },
     svg_pdf => {
