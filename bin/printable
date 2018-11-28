@@ -71,17 +71,10 @@ examples:
 EOF
 
 use My::Printable::Document;
-use My::Printable::Element::Grid;
-use My::Printable::Element::Line;
-use My::Printable::Element::Lines;
+use My::Printable::Ruling;
 
 foreach my $ruling (@ARGV) {
-    my $class_suffix = $ruling;
-    $class_suffix =~ s{(^|[-_]+)
-                       ([[:alpha:]])}
-                      {uc $2}gex;
-    my $ruling_class_name = "My::Printable::Ruling::" . $class_suffix;
-
+    my $ruling_class_name = My::Printable::Ruling->getRulingClassName($ruling);
     eval "use $ruling_class_name";
     if ($@) {
         die $@;
