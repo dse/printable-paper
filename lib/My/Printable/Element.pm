@@ -15,10 +15,22 @@ use Storable qw(dclone);
 
 public "id";
 
-public "x1";
-public "x2";
-public "y1";
-public "y2";
+public "x1", set => sub {
+    my ($self, $value) = @_;
+    return $self->ptX($value);
+};
+public "x2", set => sub {
+    my ($self, $value) = @_;
+    return $self->ptX($value);
+};
+public "y1", set => sub {
+    my ($self, $value) = @_;
+    return $self->ptY($value);
+};
+public "y2", set => sub {
+    my ($self, $value) = @_;
+    return $self->ptY($value);
+};
 
 public "xPointSeries";
 public "yPointSeries";
@@ -26,14 +38,29 @@ public "yPointSeries";
 public "origXPointSeries";
 public "origYPointSeries";
 
-public "spacing";
-public "spacingX";
-public "spacingY";
+public "spacing", set => sub {
+    my ($self, $value) = @_;
+    return $self->pt($value);
+};
+public "spacingX", set => sub {
+    my ($self, $value) = @_;
+    return $self->ptX($value);
+};
+public "spacingY", set => sub {
+    my ($self, $value) = @_;
+    return $self->ptY($value);
+};
 
 public "cssClass";
 
-public "originX";
-public "originY";
+public "originX", set => sub {
+    my ($self, $value) = @_;
+    return $self->ptX($value);
+};
+public "originY", set => sub {
+    my ($self, $value) = @_;
+    return $self->ptY($value);
+};
 
 public "document";              # My::Printable::Document
 
