@@ -34,6 +34,8 @@ use constant lineGridThinness => 0;
 use constant lineThinness => 0;
 use constant dotThinness => 0;
 
+use Text::Trim qw(trim);
+
 sub getUnit {
     my ($self) = @_;
 
@@ -92,11 +94,11 @@ sub getLineCSSClass {
     ]->[$thinness];
 
     if ($self->colorType eq 'grayscale') {
-        return "$thinness_class_A gray line";
+        return trim("$thinness_class_A gray line");
     } elsif ($self->colorType eq 'color') {
-        return "$thinness_class_A blue line";
+        return trim("$thinness_class_A blue line");
     } else {
-        return "$thinness_class_B line";
+        return trim("$thinness_class_B line");
     }
 
     # regular for doane
@@ -141,11 +143,11 @@ sub getFeintLineCSSClass {
     ]->[$thinness];
 
     if ($self->colorType eq 'grayscale') {
-        return "$thinness_class_A gray line";
+        return trim("$thinness_class_A gray line");
     } elsif ($self->colorType eq 'color') {
-        return "$thinness_class_A blue line";
+        return trim("$thinness_class_A blue line");
     } else {
-        return "$thinness_class_B line";
+        return trim("$thinness_class_B line");
     }
 }
 
@@ -177,11 +179,11 @@ sub getDotCSSClass {
     ]->[$thinness];
 
     if ($self->colorType eq 'grayscale') {
-        return "$thinness_class_A gray dot";
+        return trim("$thinness_class_A gray dot");
     } elsif ($self->colorType eq 'color') {
-        return "$thinness_class_A blue dot";
+        return trim("$thinness_class_A blue dot");
     } else {
-        return "$thinness_class_B dot";
+        return trim("$thinness_class_B dot");
     }
 
     # regular for dot-grid
