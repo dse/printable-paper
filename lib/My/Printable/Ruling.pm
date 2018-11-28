@@ -12,7 +12,7 @@ use My::Printable::Document;
 
 public 'document', builder => sub {
     return My::Printable::Document->new();
-};
+}, delete => 'deleteDocument';
 
 delegate 'id',            via => 'document';
 delegate 'filename',      via => 'document';
@@ -25,6 +25,7 @@ delegate 'unitType',      via => 'document';
 delegate 'colorType',     via => 'document';
 delegate 'generate',      via => 'document';
 delegate 'print',         via => 'document';
+delegate 'printToFile',   via => 'document';
 delegate 'isA4SizeClass', via => 'document';
 delegate 'isA5SizeClass', via => 'document';
 
@@ -187,6 +188,16 @@ sub getDotCSSClass {
     # regular for dot-grid
     # thin for line-dot-graph
     # semi-thick/regular/semi-thin for line-dot-grid
+}
+
+sub getRulingClassName {
+    my ($self, $name) = @_;
+    my $class_suffix = $name;
+    $class_suffix =~ s{(^|[-_]+)
+                       ([[:alpha:]])}
+                      {uc $2}gex;
+    my $ruling_class_name = "My::Printable::Ruling::" . $class_suffix;
+    return $ruling_class_name;
 }
 
 # margin line  line            feint line        dot
