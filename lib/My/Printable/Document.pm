@@ -24,10 +24,10 @@ public "bottomMarginY";                        # in pt, top = 0
 public "unit";                                 # My::Printable::Unit
 public "unitX";                                # My::Printable::Unit
 public "unitY";                                # My::Printable::Unit
-public "modifiers",     default => [];         # arrayref via setModifiers
-public "hasModifier",   default => {};         # hashref  via setModifiers
-public "elements",      default => [];         # via appendElement
-public "elementsById",  default => {};         # via appendElement
+public "modifiers",     builder => sub { return []; };         # arrayref via setModifiers
+public "hasModifier",   builder => sub { return {}; };         # hashref  via setModifiers
+public "elements",      builder => sub { return []; };         # via appendElement
+public "elementsById",  builder => sub { return {}; };         # via appendElement
 public "originX";
 public "originY";
 public "isGenerated",   default => 0;
