@@ -6,6 +6,7 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Document;
 use My::Printable::Ruling;
+use My::Printable::Util::InkscapeShell;
 
 use String::ShellQuote qw(shell_quote);
 use Cwd qw(realpath);
@@ -263,6 +264,9 @@ find(sub {
      }, '.');
 
 use constant USE_EXTERNAL_BIN_PRINTABLE => 0;
+use constant USE_INKSCAPE_SHELL => 1;
+
+our $inkscape_shell;
 
 my %build = (
     svg => {
@@ -310,11 +314,30 @@ my %build = (
         code => sub {
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
+            if (USE_INKSCAPE_SHELL) {
+                $inkscape_shell //= My::Printable::Util::InkscapeShell->new();
+                my $temp = "${target}.tmp.pdf";
+                mkpath(dirname($temp));
+                my $temp_realpath = realpath($temp);
+                $inkscape_shell->cmd(sprintf("%s --export-background=transparent --export-pdf=%s",
+                                             shell_quote($dependencies->[0]),
+                                             $temp_realpath));
+                if (-e $temp) {
+                    if (!rename($temp, $target)) {
+                        die("Cannot rename $temp to $target: $!\n");
+                    }
+                } else {
+                    die("Inkscape shell apparently failed; $temp doesn't exist.  Exiting.\n");
+                }
+            } else {
+                # svg2pdf will not work
+                # rsvg-convert does not work
+                # imagenagick works but is not fast and rasterizes
 
-            my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-pdf {FILENAME} %s",
-                              shell_quote($dependencies->[0]));
-
-            cmd($target, $cmd);
+                my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-pdf {FILENAME} %s",
+                                  shell_quote($dependencies->[0]));
+                cmd($target, $cmd);
+            }
         },
     },
     svg_ps => {
@@ -565,6 +588,7 @@ foreach my $arg (@ARGV) {
             return 1 if EQ($_->{file}->{filename},       $arg);
             return 1 if EQ($_->{template}->{color_type}, $arg);
             return 1 if EQ($_->{file}->{subtype},        $arg);
+            return 1 if $_->{file}->{filename} =~ m{(^|/)\Q$arg\E($|/)};
             my $modifiers = $_->{template}->{modifiers};
             if ($modifiers && ref $modifiers eq 'ARRAY' && scalar @$modifiers) {
                 return 1 if grep { $_ eq $arg } @$modifiers;
