@@ -6,6 +6,8 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
+use My::Printable::Element::Grid;
+
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use base 'My::Printable::Ruling';
 
