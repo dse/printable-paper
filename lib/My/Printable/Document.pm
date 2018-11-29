@@ -254,21 +254,44 @@ sub generate {
 
 sub leaveAMark {
     my ($self) = @_;
-    my $text = $self->svgDocument->createElement('text');
-    $text->setAttribute('x', $self->ptX('50%'));
-    $text->setAttribute('y', $self->ptY('1/4in from bottom'));
-    $text->setAttribute('text-anchor', 'middle');
-    if ($self->colorType eq 'color') {
-        $text->setAttribute('fill', '#b3b3ff');
-    } elsif ($self->colorType eq 'grayscale') {
-        $text->setAttribute('fill', '#b3b3b3');
-    } else {
-        $text->setAttribute('fill', '#808080');
+
+    my $x = $self->ptX('50%');
+    my $y = $self->ptY('1/4in from bottom');
+    my $text_data = 'https://github.com/dse/printable-paper';
+    my $text_style = 'font-family: "Courier", "Courier New", monospace; font-size: 6pt;';
+    my $text_color =
+        $self->colorType eq 'color' ? '#b3b3ff' :
+        $self->colorType eq 'grayscale' ? '#b3b3b3' :
+        '#808080';
+    {
+        my $rect_width = $self->ptX('2.625in');
+        my $rect_height = $self->ptY('12pt');
+        my $rect_x = $self->ptX('50%') - $rect_width / 2;
+        my $rect_y = $self->ptY('1/4 in from bottom') - $rect_height * 2 / 3;
+        my $rect = $self->svgDocument->createElement('rect');
+        $rect->setAttribute('x', $rect_x);
+        $rect->setAttribute('y', $rect_y);
+        $rect->setAttribute('width', $rect_width);
+        $rect->setAttribute('height', $rect_height);
+        $rect->setAttribute('stroke', $text_color);
+        $rect->setAttribute('stroke-width', $self->pt('2/600in'));
+        $rect->setAttribute('fill', '#ffffff');
+        $rect->setAttribute('rx', '2pt');
+        $rect->setAttribute('ry', '2pt');
+        $self->svgRoot->appendChild($rect);
     }
-    $text->setAttribute('stroke', 'none');
-    $text->setAttribute('style', 'font-family: "Courier", "Courier New", monospace; font-size: 6pt;');
-    $text->appendText('https://github.com/dse/printable-paper');
-    $self->svgRoot->appendChild($text);
+    {
+        my $text = $self->svgDocument->createElement('text');
+        $text->setAttribute('x', $x);
+        $text->setAttribute('y', $y);
+        $text->setAttribute('text-anchor', 'middle');
+        $text->setAttribute('fill', $text_color);
+        $text->setAttribute('stroke', 'none');
+        $text->setAttribute('stroke-width', '0');
+        $text->setAttribute('style', $text_style);
+        $text->appendText($text_data);
+        $self->svgRoot->appendChild($text);
+    }
 }
 
 sub forEach {
