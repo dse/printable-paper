@@ -9,21 +9,31 @@ use Class::Thingy;
 public 'id';
 public 'filename';
 
-public "paperSizeName", default => "letter";   # letter, A4, etc.
-public "width",         default => 612;        # in pt
-public "height",        default => 792;        # in pt
-public "unitType",      default => "imperial"; # imperial, metric
-public "colorType",     default => "color";    # color, grayscale, black
-public "rulingName";                           # seyes, etc.
+# 'letter', 'A4', etc.
+public "paperSizeName", default => "letter";
+
+# in pt
+public "width", default => 612;
+public "height", default => 792;
+
+# 'imperial', 'metric';
+public "unitType", default => "imperial";
+
+# 'color', 'grayscale', 'black'
+public "colorType", default => "color";
+
+# 'seyes', etc.
+public "rulingName";
 
 public "leftMarginX";                          # in pt, left = 0
 public "rightMarginX";                         # in pt, left = 0
 public "topMarginY";                           # in pt, top = 0
 public "bottomMarginY";                        # in pt, top = 0
 
-public "unit";                                 # My::Printable::Unit
-public "unitX";                                # My::Printable::Unit
-public "unitY";                                # My::Printable::Unit
+# My::Printable::Unit
+public "unit";
+public "unitX";
+public "unitY";
 
 public "modifiers",     builder => sub { return []; };         # arrayref via setModifiers
 public "hasModifier",   builder => sub { return {}; };         # hashref  via setModifiers
