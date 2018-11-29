@@ -13,7 +13,7 @@ use base 'My::Printable::Ruling';
 
 use constant rulingName => 'quadrille';
 use constant hasLineGrid => 1;
-use constant lineThinness => 2;
+use constant lineThinness => 1;
 
 sub generate {
     my ($self) = @_;
