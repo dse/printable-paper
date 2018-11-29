@@ -20,8 +20,8 @@ sub generate {
     my ($self) = @_;
 
     $self->document->setUnit($self->getUnit);
-    $self->document->setOriginX($self->getOriginX);
-    $self->document->setOriginY($self->getOriginY);
+    $self->document->originX($self->getOriginX);
+    $self->document->originY($self->getOriginY);
 
     my $grid = My::Printable::Element::Grid->new(
         document => $self->document,

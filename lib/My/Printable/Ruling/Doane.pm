@@ -20,7 +20,7 @@ use constant lineGridThinness => 2;
 sub generate {
     my ($self) = @_;
     $self->document->setUnit($self->getUnit);
-    $self->document->setOriginX($self->getOriginX);
+    $self->document->originX($self->getOriginX);
 
     my $grid = My::Printable::Element::Grid->new(
         document => $self->document,
@@ -30,8 +30,8 @@ sub generate {
     $grid->setSpacing('1/3unit');
 
     if ($self->hasModifier->{'denser-grid'}) {
-        $grid->setOriginY('50%');
-        $grid->setOriginY($grid->originY + $grid->ptY('1/3unit'));
+        $grid->originY('50%');
+        $grid->originY($grid->originY + $grid->ptY('1/3unit'));
     }
 
     my $lines = My::Printable::Element::Lines->new(
@@ -42,8 +42,8 @@ sub generate {
     $lines->setSpacing('1unit');
 
     if ($self->hasModifier->{'denser-grid'}) {
-        $lines->setOriginY('50%');
-        $lines->setOriginY($lines->originY + $lines->ptY('1/3unit'));
+        $lines->originY('50%');
+        $lines->originY($lines->originY + $lines->ptY('1/3unit'));
     }
 
     my $margin_line = My::Printable::Element::Line->new(

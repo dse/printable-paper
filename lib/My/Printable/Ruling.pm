@@ -125,6 +125,7 @@ sub getFeintLineCSSClass {
             $self->hasModifier->{'x-thinner-lines'} ? 2 :
             $self->hasModifier->{'thinner-lines'} ? 1 :
             0;                  # 0 to 2
+        $thinness += $self->lineThinness; # 0 to 5
     }
 
     my $thinness_class_A = [
@@ -133,10 +134,12 @@ sub getFeintLineCSSClass {
         'xx-thin',
         'xx-thin',
         'xx-thin',
+        'xx-thin',
     ]->[$thinness];
     my $thinness_class_B = [
         'stroke-1 black',
         'stroke-1 half-black',
+        'stroke-1 quarter-black',
         'stroke-1 quarter-black',
         'stroke-1 quarter-black',
         'stroke-1 quarter-black',

@@ -161,8 +161,8 @@ sub setPaperSize {
     $self->height($height);
     $self->unitX->setPercentageBasis($width);
     $self->unitY->setPercentageBasis($height);
-    $self->setOriginX($width / 2);
-    $self->setOriginY($height / 2);
+    $self->originX($width / 2);
+    $self->originY($height / 2);
     $self->setBottomMargin(0);
     $self->setTopMargin(0);
     $self->setLeftMargin(0);
@@ -176,7 +176,7 @@ sub setWidth {
     $self->width($pt);
     $self->paperSizeName(undef);
     $self->unitX->setPercentageBasis($pt);
-    $self->setOriginX($pt / 2);
+    $self->originX($pt / 2);
     $self->setLeftMargin(0);
     $self->setRightMargin(0);
 }
@@ -188,7 +188,7 @@ sub setHeight {
     $self->height($pt);
     $self->papersize(undef);
     $self->unitY->setPercentageBasis($pt);
-    $self->setOriginY($pt / 2);
+    $self->originY($pt / 2);
     $self->setBottomMargin(0);
     $self->setTopMargin(0);
 }
@@ -229,16 +229,6 @@ sub setBottomMargin {
     } else {
         $self->bottomMarginY($self->height - $self->ptY($value));
     }
-}
-
-sub setOriginX {
-    my ($self, $value) = @_;
-    $self->originX($self->ptX($value));
-}
-
-sub setOriginY {
-    my ($self, $value) = @_;
-    $self->originY($self->ptY($value));
 }
 
 sub setUnit {
