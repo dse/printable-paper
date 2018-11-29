@@ -159,8 +159,8 @@ sub setPaperSize {
     $self->paperSizeName($name);
     $self->width($width);
     $self->height($height);
-    $self->unitX->set_percentage_basis($width);
-    $self->unitY->set_percentage_basis($height);
+    $self->unitX->setPercentageBasis($width);
+    $self->unitY->setPercentageBasis($height);
     $self->setOriginX($width / 2);
     $self->setOriginY($height / 2);
     $self->setBottomMargin(0);
@@ -175,7 +175,7 @@ sub setWidth {
     $self->unit_type($type);
     $self->width($pt);
     $self->paperSizeName(undef);
-    $self->unitX->set_percentage_basis($pt);
+    $self->unitX->setPercentageBasis($pt);
     $self->setOriginX($pt / 2);
     $self->setLeftMargin(0);
     $self->setRightMargin(0);
@@ -187,7 +187,7 @@ sub setHeight {
     $self->unit_type($type);
     $self->height($pt);
     $self->papersize(undef);
-    $self->unitY->set_percentage_basis($pt);
+    $self->unitY->setPercentageBasis($pt);
     $self->setOriginY($pt / 2);
     $self->setBottomMargin(0);
     $self->setTopMargin(0);
