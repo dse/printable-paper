@@ -6,9 +6,18 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
-public 'rx';
-public 'ry';
-public 'r';
+public 'rx', set => sub {
+    my ($self, $value) = @_;
+    return $self->ptX($value);
+};
+public 'ry', set => sub {
+    my ($self, $value) = @_;
+    return $self->ptY($value);
+};
+public 'r', set => sub {
+    my ($self, $value) = @_;
+    return $self->pt($value);
+};
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use base qw(My::Printable::Element);
