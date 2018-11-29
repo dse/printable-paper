@@ -248,7 +248,27 @@ sub generate {
     $self->forEach("extend");
     # excluding individual coordinates, if elemented, would go here.
     $self->forEach("draw");
+    $self->leaveAMark();
     $self->isGenerated(1);
+}
+
+sub leaveAMark {
+    my ($self) = @_;
+    my $text = $self->svgDocument->createElement('text');
+    $text->setAttribute('x', $self->ptX('50%'));
+    $text->setAttribute('y', $self->ptY('1/4in from bottom'));
+    $text->setAttribute('text-anchor', 'middle');
+    if ($self->colorType eq 'color') {
+        $text->setAttribute('fill', '#b3b3ff');
+    } elsif ($self->colorType eq 'grayscale') {
+        $text->setAttribute('fill', '#b3b3b3');
+    } else {
+        $text->setAttribute('fill', '#808080');
+    }
+    $text->setAttribute('stroke', 'none');
+    $text->setAttribute('style', 'font-family: "Courier", "Courier New", monospace; font-size: 6pt;');
+    $text->appendText('https://github.com/dse/printable-paper');
+    $self->svgRoot->appendChild($text);
 }
 
 sub forEach {
