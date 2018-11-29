@@ -125,4 +125,6 @@
     <line x1="394.016" x2="394.016" y1="0" y2="595.276" class="stroke-1 black line"/>
     <line x1="408.189" x2="408.189" y1="0" y2="595.276" class="stroke-1 black line"/>
   </g>
+  <rect x="115.264" y="569.276" width="189" height="12" stroke="#808080" stroke-width="0.24" fill="#ffffff" rx="2pt" ry="2pt"/>
+  <text x="209.764" y="577.276" text-anchor="middle" fill="#808080" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>
 </svg>

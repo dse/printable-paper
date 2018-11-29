@@ -242,4 +242,6 @@
   <g id="margin-line">
     <line x1="63" x2="63" y1="0" y2="792" class="red margin line"/>
   </g>
+  <rect x="211.5" y="766" width="189" height="12" stroke="#b3b3ff" stroke-width="0.24" fill="#ffffff" rx="2pt" ry="2pt"/>
+  <text x="306" y="774" text-anchor="middle" fill="#b3b3ff" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>
 </svg>

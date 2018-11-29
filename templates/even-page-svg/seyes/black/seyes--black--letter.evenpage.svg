@@ -230,4 +230,6 @@
   <g id="page-number-line">
     <line x1="22.5" x2="90" y1="774" y2="774" class="stroke-3 black line"/>
   </g>
+  <rect x="211.5" y="766" width="189" height="12" stroke="#808080" stroke-width="0.24" fill="#ffffff" rx="2pt" ry="2pt"/>
+  <text x="306" y="774" text-anchor="middle" fill="#808080" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>
 </svg>
