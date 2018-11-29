@@ -13,7 +13,6 @@ use base 'My::Printable::Ruling';
 
 use constant rulingName => 'quadrille';
 use constant hasLineGrid => 1;
-use constant lineThinness => 1;
 
 sub generate {
     my ($self) = @_;
@@ -22,7 +21,7 @@ sub generate {
     my $grid = My::Printable::Element::Grid->new(
         document => $self->document,
         id => 'grid',
-        cssClass => $self->getLineCSSClass,
+        cssClass => $self->getFeintLineCSSClass,
     );
     $grid->setSpacing('1unit');
 
