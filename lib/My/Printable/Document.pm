@@ -43,7 +43,7 @@ public "isGenerated",   default => 0;
 public "verbose",       default => 0;
 
 use XML::LibXML;
-use Scalar::Util qw(refaddr weaken isweak);
+use Scalar::Util qw(refaddr);
 
 public "svgDocument", lazy_default => sub {
     my ($self) = @_;
