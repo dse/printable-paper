@@ -7,7 +7,7 @@ use base "Exporter";
 
 our @EXPORT_OK = qw(exclude
                     round3
-                    nearest_point);
+                    linear_interpolate);
 
 use Data::Dumper;
 
@@ -25,21 +25,9 @@ sub round3 {
     return $value;
 }
 
-use POSIX qw(ceil);
-
-use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::PointSeries;
-
-sub nearest_point {
-    my ($self, $x, @points) = @_;
-    my @dist = map { abs($x - $_) } @points;
-    my $mindist = min(@dist);
-    for (my $i = 0; $i < scalar @points; $i += 1) {
-        if ($mindist == $dist[$i]) {
-            return $points[$i];
-        }
-    }
-    return undef;               # should NEVER happen.
+sub linear_interpolate {
+    my ($v0, $v1, $t) = @_;
+    return $v0 + $t * ($v1 - $v0);
 }
 
 1;
