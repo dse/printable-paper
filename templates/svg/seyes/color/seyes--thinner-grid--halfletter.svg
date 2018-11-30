@@ -4,6 +4,8 @@
   <style>        .line, .dot { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
 
+        .rectangle { fill: #ffffff; }
+
         .line            { stroke-width: 0.72pt; }
         .line.xx-thin    { stroke-width: 0.24pt; }
         .line.x-thin     { stroke-width: 0.36pt; }
@@ -182,14 +184,14 @@
     <line x1="0" x2="396" y1="522" y2="522" class="blue line"/>
     <line x1="0" x2="396" y1="544.5" y2="544.5" class="blue line"/>
   </g>
-  <g id="margin-line">
-    <line x1="54" x2="54" y1="0" y2="612" class="red margin line"/>
-  </g>
   <g id="head-line">
     <line x1="0" x2="396" y1="36" y2="36" class="blue line"/>
   </g>
   <g id="page-number-line">
     <line x1="301.5" x2="369" y1="594" y2="594" class="blue line"/>
+  </g>
+  <g id="margin-line">
+    <line x1="54" x2="54" y1="0" y2="612" class="red margin line"/>
   </g>
   <rect x="103.5" y="586" width="189" height="12" stroke="#b3b3ff" stroke-width="0.24" fill="#ffffff" rx="2pt" ry="2pt"/>
   <text x="198" y="594" text-anchor="middle" fill="#b3b3ff" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>

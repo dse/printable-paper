@@ -4,6 +4,8 @@
   <style>        .line, .dot { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
 
+        .rectangle { fill: #ffffff; }
+
         .line            { stroke-width: 0.72pt; }
         .line.xx-thin    { stroke-width: 0.24pt; }
         .line.x-thin     { stroke-width: 0.36pt; }

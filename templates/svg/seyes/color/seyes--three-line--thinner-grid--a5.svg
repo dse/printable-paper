@@ -4,6 +4,8 @@
   <style>        .line, .dot { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
 
+        .rectangle { fill: #ffffff; }
+
         .line            { stroke-width: 0.72pt; }
         .line.xx-thin    { stroke-width: 0.24pt; }
         .line.x-thin     { stroke-width: 0.36pt; }
@@ -190,14 +192,14 @@
     <line x1="0" x2="419.528" y1="510.236" y2="510.236" class="blue line"/>
     <line x1="0" x2="419.528" y1="527.244" y2="527.244" class="blue line"/>
   </g>
-  <g id="margin-line">
-    <line x1="45.354" x2="45.354" y1="0" y2="595.276" class="red margin line"/>
-  </g>
   <g id="head-line">
     <line x1="0" x2="419.528" y1="34.016" y2="34.016" class="blue line"/>
   </g>
   <g id="page-number-line">
     <line x1="351.496" x2="402.52" y1="578.268" y2="578.268" class="blue line"/>
+  </g>
+  <g id="margin-line">
+    <line x1="45.354" x2="45.354" y1="0" y2="595.276" class="red margin line"/>
   </g>
   <rect x="115.264" y="569.276" width="189" height="12" stroke="#b3b3ff" stroke-width="0.24" fill="#ffffff" rx="2pt" ry="2pt"/>
   <text x="209.764" y="577.276" text-anchor="middle" fill="#b3b3ff" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>
