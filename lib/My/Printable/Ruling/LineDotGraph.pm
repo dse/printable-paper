@@ -15,6 +15,7 @@ use Class::Thingy;
 use constant rulingName => 'line-dot-graph';
 use constant hasLineGrid => 0;
 use constant dotThinness => 2;
+use constant hasMarginLine => 1;
 
 sub generate {
     my ($self) = @_;
@@ -42,16 +43,9 @@ sub generate {
     $grid->extendVerticalGridLines(1);
     $grid->extendHorizontalGridLines(1);
 
-    my $margin_line = My::Printable::Element::Line->new(
-        document => $self->document,
-        id => 'margin-line',
-        cssClass => $self->getMarginLineCSSClass,
-    );
-    $margin_line->setX($self->getOriginX);
-
     $self->document->appendElement($grid);
-    $self->document->appendElement($margin_line);
-    $self->document->generate;
+
+    $self->My::Printable::Ruling::generate();
 }
 
 1;

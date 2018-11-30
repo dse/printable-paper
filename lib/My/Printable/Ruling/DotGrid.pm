@@ -27,7 +27,8 @@ sub generate {
     $grid->setSpacing('1unit');
 
     $self->document->appendElement($grid);
-    $self->document->generate;
+
+    $self->My::Printable::Ruling::generate();
 }
 
 1;

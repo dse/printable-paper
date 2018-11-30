@@ -38,7 +38,8 @@ sub generate {
 
     $self->document->appendElement($grid);
     $self->document->appendElement($lines);
-    $self->document->generate;
+
+    $self->My::Printable::Ruling::generate();
 }
 
 1;

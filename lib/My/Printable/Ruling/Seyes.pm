@@ -15,6 +15,7 @@ use Class::Thingy;
 
 use constant rulingName => 'seyes';
 use constant hasLineGrid => 1;
+use constant hasMarginLine => 1;
 
 sub generate {
     my ($self) = @_;
@@ -56,22 +57,15 @@ sub generate {
     $lines->setY2($self->getBottomLineY);
     $lines->setSpacing('1unit');
 
-    my $margin_line = My::Printable::Element::Line->new(
-        document => $self->document,
-        id => 'margin-line',
-        cssClass => $self->getMarginLineCSSClass,
-    );
-    $margin_line->setX($self->getOriginX);
-
     my $head_line        = $self->generateHeadLine();
     my $page_number_line = $self->generatePageNumberLine(nearest => $grid);
 
     $self->document->appendElement($grid);
     $self->document->appendElement($lines);
-    $self->document->appendElement($margin_line);
     $self->document->appendElement($head_line);
     $self->document->appendElement($page_number_line);
-    $self->document->generate;
+
+    $self->My::Printable::Ruling::generate();
 }
 
 sub getOriginX {
