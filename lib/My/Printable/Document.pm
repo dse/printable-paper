@@ -406,6 +406,8 @@ sub defaultStyles {
         .line, .dot { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
 
+        .rectangle { fill: #ffffff; }
+
         .line            { stroke-width: ${line_stroke_width}pt; }
         .line.xx-thin    { stroke-width: ${xx_thin_line_stroke_width}pt; }
         .line.x-thin     { stroke-width: ${x_thin_line_stroke_width}pt; }
