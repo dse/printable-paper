@@ -9,6 +9,7 @@ use Class::Thingy::Delegate;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Document;
+use My::Printable::Element::Rectangle;
 
 public 'document', builder => sub {
     return My::Printable::Document->new();
@@ -33,8 +34,60 @@ use constant hasLineGrid => 0;
 use constant lineGridThinness => 0;
 use constant lineThinness => 0;
 use constant dotThinness => 0;
+use constant hasMarginLine => 0;
+use constant hasPageNumberRectangle => 0;
 
 use Text::Trim qw(trim);
+
+sub generate {
+    my ($self) = @_;
+    if ($self->hasPageNumberRectangle) {
+        $self->document->appendElement(
+            $self->generatePageNumberRectangle()
+        );
+    }
+    if ($self->hasMarginLine) {
+        $self->document->appendElement(
+            $self->generateMarginLine()
+        );
+    }
+    $self->document->generate();
+}
+
+sub generatePageNumberRectangle {
+    my ($self) = @_;
+    my $cssClass = sprintf('%s rectangle', $self->getLineCSSClass());
+    my $rect = My::Printable::Element::Rectangle->new(
+        document => $self->document,
+        id => 'page-number-rect',
+        cssClass => $cssClass,
+    );
+    my $from_side = $self->hasModifier->{'even-page'} ? 'left' : 'right';
+    my $x_side    = $self->hasModifier->{'even-page'} ? 'x1'   : 'x2';
+    if ($self->unitType eq 'imperial') {
+        $rect->$x_side(sprintf('1/4in from %s', $from_side));
+        $rect->y2('1/4in from bottom');
+        $rect->width('1in');
+        $rect->height('3/8in');
+    } else {
+        $rect->$x_side(sprintf('1/4in from %s', $from_side));
+        $rect->y2('6mm from bottom');
+        $rect->width('30mm');
+        $rect->height('9mm');
+    }
+    return $rect;
+}
+
+sub generateMarginLine {
+    my ($self) = @_;
+    my $margin_line = My::Printable::Element::Line->new(
+        document => $self->document,
+        id => 'margin-line',
+        cssClass => $self->getMarginLineCSSClass,
+    );
+    $margin_line->setX($self->getOriginX);
+    return $margin_line;
+}
 
 sub getUnit {
     my ($self) = @_;
@@ -204,11 +257,21 @@ sub getRulingClassName {
     return $ruling_class_name;
 }
 
-# margin line  line            feint line        dot
-# -----------  --------------  ----------------  --------------
-# stroke-3     stroke-3        stroke-1          stroke-7
-# stroke-3     stroke-2        stroke-1 half     stroke-5
-# stroke-3     stroke-1        stroke-1 quarter  stroke-4
-# stroke-3     stroke-1 half   stroke-1 quarter  stroke-3
+sub getOriginX {
+    my ($self) = @_;
+    if ($self->unitType eq 'imperial') {
+        if ($self->isA5SizeClass()) {
+            return '0.75in from left';
+        } else {
+            return '1.25in from left';
+        }
+    } else {
+        if ($self->isA5SizeClass()) {
+            return '18mm from left';
+        } else {
+            return '32mm from left';
+        }
+    }
+}
 
 1;
