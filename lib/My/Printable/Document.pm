@@ -10,11 +10,11 @@ public 'id';
 public 'filename';
 
 # 'letter', 'A4', etc.
-public "paperSizeName", default => "letter";
+public "paperSizeName", default => "letter", raw_accessor_name => "rawPaperSizeName";
 
 # in pt
-public "width", default => 612;
-public "height", default => 792;
+public "width", default => 612, raw_accessor_name => "rawWidth";
+public "height", default => 792, raw_accessor_name => "rawHeight";
 
 # 'imperial', 'metric';
 public "unitType", default => "imperial";
