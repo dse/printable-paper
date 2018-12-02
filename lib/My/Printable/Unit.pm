@@ -67,7 +67,7 @@ sub add_unit {
 sub addUnit {
     my ($self, $unit, $value, %options) = @_;
     die("Unit already defined: $unit\n") if exists $self->units->{$unit};
-    my ($pt, $type) = $self->pt($value);
+    my ($pt, $unit_type) = $self->pt($value);
 
     my $aka = delete $options{aka};
     my @aka;
@@ -86,7 +86,7 @@ sub addUnit {
 
     my $hash = {
         to_pt => $pt,
-        type => $type,
+        type => $unit_type,
         %options
     };
     return $self->units->{$unit} = $hash;
