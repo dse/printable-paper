@@ -172,7 +172,7 @@ sub setPaperSize {
 sub setWidth {
     my ($self, $value) = @_;
     my ($pt, $type) = $self->pt($value);
-    $self->unit_type($type);
+    $self->unitType($type);
     $self->width($pt);
     $self->paperSizeName(undef);
     $self->unitX->setPercentageBasis($pt);
@@ -184,7 +184,7 @@ sub setWidth {
 sub setHeight {
     my ($self, $value) = @_;
     my ($pt, $type) = $self->pt($value);
-    $self->unit_type($type);
+    $self->unitType($type);
     $self->height($pt);
     $self->papersize(undef);
     $self->unitY->setPercentageBasis($pt);
