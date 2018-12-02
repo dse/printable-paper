@@ -186,7 +186,7 @@ sub setHeight {
     my ($pt, $unit_type) = $self->pt($value);
     $self->unitType($unit_type);
     $self->height($pt);
-    $self->papersize(undef);
+    $self->paperSizeName(undef);
     $self->unitY->setPercentageBasis($pt);
     $self->originY($pt / 2);
     $self->setBottomMargin(0);
