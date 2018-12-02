@@ -91,18 +91,18 @@ sub parse_paperconf_papersize {
     $result =~ s{\s+\z}{};
 
     my ($name, $width, $height) = split(' ', $result);
-    my $type;
+    my $unit_type;
     if ($width == round($width) && $height == round($height)) {
-        $type = "imperial";
+        $unit_type = "imperial";
     } else {
-        $type = "metric";
+        $unit_type = "metric";
     }
 
     return {
         name => $name,
         width => $width,
         height => $height,
-        type   => $type
+        type   => $unit_type
     };
 }
 
@@ -156,14 +156,14 @@ sub parse_custom_papersize {
         ($width,  $x_type) = My::Printable::Unit->pt([$width,  $x_unit]);
         ($height, $y_type) = My::Printable::Unit->pt([$height, $y_unit]);
 
-        my $type = $x_type // $y_type;
+        my $unit_type = $x_type // $y_type;
         if (wantarray) {
-            return (undef, $width, $height, $type);
+            return (undef, $width, $height, $unit_type);
         }
         return {
             width  => $width,
             height => $height,
-            type   => $type
+            type   => $unit_type
         };
     }
     return;
