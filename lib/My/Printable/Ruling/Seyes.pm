@@ -33,14 +33,14 @@ sub generate {
     $grid->setY1($self->getTopLineY);
     $grid->setY2($self->getBottomLineY);
     $grid->setSpacingX('1unit');
-    if ($self->hasModifier->{'three-line'}) {
+    if ($self->modifiers->has('three-line')) {
         $grid->setSpacingY('1/3unit');
     } else {
         $grid->setSpacingY('1/4unit');
     }
     $grid->extendVerticalGridLines(1);
     $grid->extendHorizontalGridLines(1);
-    if ($self->hasModifier->{'three-line'}) {
+    if ($self->modifiers->has('three-line')) {
         $grid->extendTop(2);
         $grid->extendBottom(1);
     } else {
@@ -88,17 +88,17 @@ sub getOriginX {
 sub getUnit {
     my ($self) = @_;
     if ($self->unitType eq 'imperial') {
-        if ($self->hasModifier->{'10mm'}) {
+        if ($self->modifiers->has('10mm')) {
             return '3/8in';
-        } elsif ($self->hasModifier->{'three-line'}) {
+        } elsif ($self->modifiers->has('three-line')) {
             return '1/4in';
         } else {
             return '5/16in';
         }
     } else {
-        if ($self->hasModifier->{'10mm'}) {
+        if ($self->modifiers->has('10mm')) {
             return '10mm';
-        } elsif ($self->hasModifier->{'three-line'}) {
+        } elsif ($self->modifiers->has('three-line')) {
             return '6mm';
         } else {
             return '8mm';
@@ -170,7 +170,7 @@ sub generatePageNumberLine {
         cssClass => $self->getLineCSSClass,
     );
     $line->setY($self->getPageNumberLineY);
-    if ($self->hasModifier->{'even-page'}) {
+    if ($self->modifiers->has('even-page')) {
         $line->setX2($self->getOriginX);
         $line->setWidth('3unit');
     } else {

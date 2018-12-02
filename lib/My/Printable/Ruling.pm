@@ -20,8 +20,7 @@ delegate 'filename',      via => 'document';
 delegate 'paperSizeName', via => 'document';
 delegate 'width',         via => 'document';
 delegate 'height',        via => 'document';
-delegate 'setModifiers',  via => 'document';
-delegate 'hasModifier',   via => 'document';
+delegate 'modifiers',     via => 'document';
 delegate 'unitType',      via => 'document';
 delegate 'colorType',     via => 'document';
 delegate 'print',         via => 'document';
@@ -62,8 +61,8 @@ sub generatePageNumberRectangle {
         id => 'page-number-rect',
         cssClass => $cssClass,
     );
-    my $from_side = $self->hasModifier->{'even-page'} ? 'left' : 'right';
-    my $x_side    = $self->hasModifier->{'even-page'} ? 'x1'   : 'x2';
+    my $from_side = $self->modifiers->has('even-page') ? 'left' : 'right';
+    my $x_side    = $self->modifiers->has('even-page') ? 'x1'   : 'x2';
     if ($self->unitType eq 'imperial') {
         $rect->$x_side(sprintf('1/4in from %s', $from_side));
         $rect->y2('1/4in from bottom');
@@ -92,7 +91,7 @@ sub generateMarginLine {
 sub getUnit {
     my ($self) = @_;
 
-    my $has_denser_grid = grep { $self->hasModifier->{$_} }
+    my $has_denser_grid = grep { $self->modifiers->has($_) }
         qw(5-per-inch denser-grid 1/5in 5mm);
 
     if ($self->unitType eq 'imperial') {
@@ -126,8 +125,8 @@ sub getLineCSSClass {
     my ($self) = @_;
 
     my $thinness =
-        $self->hasModifier->{'x-thinner-lines'} ? 2 :
-        $self->hasModifier->{'thinner-lines'} ? 1 :
+        $self->modifiers->has('x-thinner-lines') ? 2 :
+        $self->modifiers->has('thinner-lines') ? 1 :
         0;                            # 0 to 2
     $thinness += $self->lineThinness; # 0 to 4
 
@@ -166,17 +165,17 @@ sub getFeintLineCSSClass {
     my $thinness;
     if ($self->hasLineGrid) {
         $thinness =
-            $self->hasModifier->{'x-thinner-grid'} ? 2 :
-            $self->hasModifier->{'thinner-grid'} ? 1 :
+            $self->modifiers->has('x-thinner-grid') ? 2 :
+            $self->modifiers->has('thinner-grid') ? 1 :
             0;                  # 0 to 2
         $thinness +=
-            $self->hasModifier->{'denser-grid'} ? 1 :
+            $self->modifiers->has('denser-grid') ? 1 :
             0;                  # 0 to 3
         $thinness += $self->lineGridThinness; # 0 to 4
     } else {
         $thinness =
-            $self->hasModifier->{'x-thinner-lines'} ? 2 :
-            $self->hasModifier->{'thinner-lines'} ? 1 :
+            $self->modifiers->has('x-thinner-lines') ? 2 :
+            $self->modifiers->has('thinner-lines') ? 1 :
             0;                  # 0 to 2
         $thinness += $self->lineThinness; # 0 to 5
     }
@@ -211,8 +210,8 @@ sub getDotCSSClass {
     my ($self) = @_;
 
     my $thinness =
-        $self->hasModifier->{'x-thinner-dots'} ? 2 :
-        $self->hasModifier->{'thinner-dots'} ? 1 :
+        $self->modifiers->has('x-thinner-dots') ? 2 :
+        $self->modifiers->has('thinner-dots') ? 1 :
         0;                           # 0 to 2
     $thinness += $self->dotThinness; # -1 to 4
     $thinness += 1;                  # 0 to 5

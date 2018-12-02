@@ -6,6 +6,9 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
+use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
+use My::Printable::ModifierList;
+
 public 'id';
 public 'filename';
 
@@ -82,8 +85,8 @@ public "unit";
 public "unitX";
 public "unitY";
 
-public "modifiers",     builder => sub { return []; };         # arrayref via setModifiers
-public "hasModifier",   builder => sub { return {}; };         # hashref  via setModifiers
+public "modifiers", builder => sub { return new My::Printable::ModifierList; };
+
 public "elements",      builder => sub { return []; };         # via appendElement
 public "elementsById",  builder => sub { return {}; };         # via appendElement
 
@@ -197,55 +200,6 @@ sub reset {
     my ($self) = @_;
     $self->elements([]);
     $self->elementsById({});
-}
-
-sub setPaperSize {
-    my ($self, $spec) = @_;
-    my ($name, $width, $height, $unit_type) = My::Printable::PaperSizes->parse($spec);
-    $self->unitType($unit_type);
-    $self->rawPaperSizeName($name);
-    $self->rawWidth($width);
-    $self->rawHeight($height);
-    $self->unitX->setPercentageBasis($width);
-    $self->unitY->setPercentageBasis($height);
-    $self->originX($width / 2);
-    $self->originY($height / 2);
-    $self->setBottomMargin(0);
-    $self->setTopMargin(0);
-    $self->setLeftMargin(0);
-    $self->setRightMargin(0);
-}
-
-sub setWidth {
-    my ($self, $value) = @_;
-    my ($pt, $unit_type) = $self->pt($value);
-    $self->unitType($unit_type);
-    $self->rawWidth($pt);
-    $self->rawPaperSizeName(undef);
-    $self->unitX->setPercentageBasis($pt);
-    $self->originX($pt / 2);
-    $self->setLeftMargin(0);
-    $self->setRightMargin(0);
-}
-
-sub setHeight {
-    my ($self, $value) = @_;
-    my ($pt, $unit_type) = $self->pt($value);
-    $self->unitType($unit_type);
-    $self->rawHeight($pt);
-    $self->rawPaperSizeName(undef);
-    $self->unitY->setPercentageBasis($pt);
-    $self->originY($pt / 2);
-    $self->setBottomMargin(0);
-    $self->setTopMargin(0);
-}
-
-sub setModifiers {
-    my ($self, @modifiers) = @_;
-    @modifiers = grep { defined $_ } @modifiers;
-    my %modifiers = map { ($_, 1) } @modifiers;
-    $self->modifiers(\@modifiers);
-    $self->hasModifier(\%modifiers);
 }
 
 sub setLeftMargin {

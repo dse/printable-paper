@@ -34,7 +34,7 @@ sub generate {
     $grid->setY1($self->getTopLineY);
     $grid->setY2($self->getBottomLineY);
     $grid->setSpacing('1unit');
-    if ($self->hasModifier->{'three-line'}) {
+    if ($self->modifiers->has('three-line')) {
         $grid->verticalDots(3);
     } else {
         $grid->verticalDots(4);

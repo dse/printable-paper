@@ -30,7 +30,7 @@ sub generate {
     );
     $grid->setSpacing('1/3unit');
 
-    if ($self->hasModifier->{'denser-grid'}) {
+    if ($self->modifiers->has('denser-grid')) {
         $grid->originY('50%');
         $grid->originY($grid->originY + $grid->ptY('1/3unit'));
     }
@@ -42,7 +42,7 @@ sub generate {
     );
     $lines->setSpacing('1unit');
 
-    if ($self->hasModifier->{'denser-grid'}) {
+    if ($self->modifiers->has('denser-grid')) {
         $lines->originY('50%');
         $lines->originY($lines->originY + $lines->ptY('1/3unit'));
     }
@@ -56,13 +56,13 @@ sub generate {
 sub getUnit {
     my ($self) = @_;
     if ($self->unitType eq 'imperial') {
-        if ($self->hasModifier->{'denser-grid'}) {
+        if ($self->modifiers->has('denser-grid')) {
             return '1/4in';
         } else {
             return '3/8in';
         }
     } else {
-        if ($self->hasModifier->{'denser-grid'}) {
+        if ($self->modifiers->has('denser-grid')) {
             return '6mm';
         } else {
             return '9mm';

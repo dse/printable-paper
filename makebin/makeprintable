@@ -301,9 +301,9 @@ my %build = (
                 }
                 my $ruling = $ruling_class_name->new();
                 $ruling->id($id);
-                $ruling->setPaperSize($template->{size});
+                $ruling->paperSizeName($template->{size});
                 $ruling->colorType($template->{color_type});
-                $ruling->setModifiers(@modifiers);
+                $ruling->modifiers->set(@modifiers);
                 $ruling->generate();
                 $ruling->printToFile($target);
             }
