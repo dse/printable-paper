@@ -19,28 +19,28 @@ use My::Printable::Document;
 use Data::Dumper;
 
 my $d1 = My::Printable::Document->new;
-$d1->setPaperSize('a3');
+$d1->paperSizeName('a3');
 
 my $d2 = My::Printable::Document->new;
-$d2->setPaperSize('a4');
+$d2->paperSizeName('a4');
 
 my $d3 = My::Printable::Document->new;
-$d3->setPaperSize('a5');
+$d3->paperSizeName('a5');
 
 my $d4 = My::Printable::Document->new;
-$d4->setPaperSize('a6');
+$d4->paperSizeName('a6');
 
 my $d5 = My::Printable::Document->new;
-$d5->setPaperSize('11in * 17in');
+$d5->paperSizeName('11in * 17in');
 
 my $d6 = My::Printable::Document->new;
-$d6->setPaperSize('letter');
+$d6->paperSizeName('letter');
 
 my $d7 = My::Printable::Document->new;
-$d7->setPaperSize('halfletter');
+$d7->paperSizeName('halfletter');
 
 my $d8 = My::Printable::Document->new;
-$d8->setPaperSize('4.25in * 5.5in');
+$d8->paperSizeName('4.25in * 5.5in');
 
 ok(!$d1->isA4SizeClass);
 ok(!$d1->isA5SizeClass);

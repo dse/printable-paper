@@ -80,13 +80,13 @@ foreach my $ruling (@ARGV) {
         die $@;
     }
     my $ruling = $ruling_class_name->new();
-    $ruling->id($opt_id)                  if defined $opt_id;
-    $ruling->filename($opt_filename)      if defined $opt_filename;
-    $ruling->setPaperSize($opt_papersize) if defined $opt_papersize;
-    $ruling->setWidth($opt_width)         if defined $opt_width;
-    $ruling->setHeight($opt_height)       if defined $opt_height;
-    $ruling->unitType($opt_unit_type)     if defined $opt_unit_type;
-    $ruling->colorType($opt_color_type)   if defined $opt_color_type;
+    $ruling->id($opt_id)                   if defined $opt_id;
+    $ruling->filename($opt_filename)       if defined $opt_filename;
+    $ruling->paperSizeName($opt_papersize) if defined $opt_papersize;
+    $ruling->width($opt_width)             if defined $opt_width;
+    $ruling->height($opt_height)           if defined $opt_height;
+    $ruling->unitType($opt_unit_type)      if defined $opt_unit_type;
+    $ruling->colorType($opt_color_type)    if defined $opt_color_type;
     $ruling->setModifiers(@opt_modifiers);
     $ruling->generate();
     $ruling->print();

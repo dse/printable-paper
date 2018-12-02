@@ -17,9 +17,9 @@ public 'document', builder => sub {
 
 delegate 'id',            via => 'document';
 delegate 'filename',      via => 'document';
-delegate 'setPaperSize',  via => 'document';
-delegate 'setWidth',      via => 'document';
-delegate 'setHeight',     via => 'document';
+delegate 'paperSizeName', via => 'document';
+delegate 'width',         via => 'document';
+delegate 'height',        via => 'document';
 delegate 'setModifiers',  via => 'document';
 delegate 'hasModifier',   via => 'document';
 delegate 'unitType',      via => 'document';

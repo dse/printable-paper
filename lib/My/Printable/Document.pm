@@ -12,14 +12,55 @@ public 'filename';
 # 'letter', 'A4', etc.
 public "paperSizeName",
     default => "letter",
+    set => sub {
+        my ($self, $spec) = @_;
+        my ($name, $width, $height, $unit_type) = My::Printable::PaperSizes->parse($spec);
+        $self->unitType($unit_type);
+        $self->rawWidth($width);
+        $self->rawHeight($height);
+        $self->unitX->setPercentageBasis($width);
+        $self->unitY->setPercentageBasis($height);
+        $self->originX($width / 2);
+        $self->originY($height / 2);
+        $self->setBottomMargin(0);
+        $self->setTopMargin(0);
+        $self->setLeftMargin(0);
+        $self->setRightMargin(0);
+        return $name;
+    },
     raw_accessor_name => "rawPaperSizeName";
 
 # in pt
 public "width",
     default => 612,
+    set => sub {
+        my ($self, $value) = @_;
+        my ($pt, $unit_type) = $self->pt($value);
+        $self->unitType($unit_type);
+        $self->rawPaperSizeName(undef);
+        $self->unitX->setPercentageBasis($pt);
+        $self->originX($pt / 2);
+        $self->setLeftMargin(0);
+        $self->setRightMargin(0);
+        return $pt;
+    },
     raw_accessor_name => "rawWidth";
+
+# in pt
 public "height",
     default => 792,
+    set => sub {
+        my ($self, $value) = @_;
+        my ($pt, $unit_type) = $self->pt($value);
+        $self->unitType($unit_type);
+        $self->rawHeight($pt);
+        $self->rawPaperSizeName(undef);
+        $self->unitY->setPercentageBasis($pt);
+        $self->originY($pt / 2);
+        $self->setBottomMargin(0);
+        $self->setTopMargin(0);
+        return $pt;
+    },
     raw_accessor_name => "rawHeight";
 
 # 'imperial', 'metric';
