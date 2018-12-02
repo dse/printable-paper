@@ -154,8 +154,8 @@ sub reset {
 
 sub setPaperSize {
     my ($self, $spec) = @_;
-    my ($name, $width, $height, $type) = My::Printable::PaperSizes->parse($spec);
-    $self->unitType($type);
+    my ($name, $width, $height, $unit_type) = My::Printable::PaperSizes->parse($spec);
+    $self->unitType($unit_type);
     $self->paperSizeName($name);
     $self->width($width);
     $self->height($height);
@@ -171,8 +171,8 @@ sub setPaperSize {
 
 sub setWidth {
     my ($self, $value) = @_;
-    my ($pt, $type) = $self->pt($value);
-    $self->unitType($type);
+    my ($pt, $unit_type) = $self->pt($value);
+    $self->unitType($unit_type);
     $self->width($pt);
     $self->paperSizeName(undef);
     $self->unitX->setPercentageBasis($pt);
@@ -183,8 +183,8 @@ sub setWidth {
 
 sub setHeight {
     my ($self, $value) = @_;
-    my ($pt, $type) = $self->pt($value);
-    $self->unitType($type);
+    my ($pt, $unit_type) = $self->pt($value);
+    $self->unitType($unit_type);
     $self->height($pt);
     $self->papersize(undef);
     $self->unitY->setPercentageBasis($pt);
@@ -208,7 +208,7 @@ sub setLeftMargin {
 
 sub setRightMargin {
     my ($self, $value) = @_;
-    my ($pt, $type, $is_from_end) = $self->ptX($value);
+    my ($pt, $unit_type, $is_from_end) = $self->ptX($value);
     if ($is_from_end) {
         $self->rightMarginX($self->ptX($value));
     } else {
@@ -223,7 +223,7 @@ sub setTopMargin {
 
 sub setBottomMargin {
     my ($self, $value) = @_;
-    my ($pt, $type, $is_from_end) = $self->ptY($value);
+    my ($pt, $unit_type, $is_from_end) = $self->ptY($value);
     if ($is_from_end) {
         $self->bottomMarginY($self->ptY($value));
     } else {
