@@ -6,38 +6,42 @@
 
         .rectangle { fill: #ffffff; }
 
-        .line            { stroke-width: 0.72pt; }
         .line.xx-thin    { stroke-width: 0.24pt; }
         .line.x-thin     { stroke-width: 0.36pt; }
         .line.thin       { stroke-width: 0.48pt; }
-        .line.thick      { stroke-width: 1.08pt; }
         .line.semi-thin  { stroke-width: 0.588pt; }
+        .line            { stroke-width: 0.72pt; }
         .line.semi-thick { stroke-width: 0.882pt; }
+        .line.thick      { stroke-width: 1.08pt; }
 
-        .dot             { stroke-width: 1.44pt; }
+        .dot.xx-thin     { stroke-width: 0.48pt; }
+        .dot.x-thin      { stroke-width: 0.72pt; }
         .dot.thin        { stroke-width: 0.96pt; }
-        .dot.thick       { stroke-width: 2.16pt; }
         .dot.semi-thin   { stroke-width: 1.176pt; }
+        .dot             { stroke-width: 1.44pt; }
         .dot.semi-thick  { stroke-width: 1.764pt; }
+        .dot.thick       { stroke-width: 2.16pt; }
 
-        .stroke-1     { stroke-width: 0.12pt; stroke-linecap: round; } /* 1/600 in */
+        .stroke-1     { stroke-width: 0.12pt; stroke-linecap: round; }
         .stroke-2     { stroke-width: 0.24pt; stroke-linecap: round; }
         .stroke-3     { stroke-width: 0.36pt; stroke-linecap: round; }
         .stroke-4     { stroke-width: 0.48pt; stroke-linecap: round; }
-        .stroke-5     { stroke-width: 0.60pt; stroke-linecap: round; }
+        .stroke-5     { stroke-width: 0.6pt; stroke-linecap: round; }
         .stroke-6     { stroke-width: 0.72pt; stroke-linecap: round; }
         .stroke-7     { stroke-width: 0.84pt; stroke-linecap: round; }
         .stroke-8     { stroke-width: 0.96pt; stroke-linecap: round; }
         .stroke-9     { stroke-width: 1.08pt; stroke-linecap: round; }
-        .stroke-10    { stroke-width: 1.20pt; stroke-linecap: round; }
+        .stroke-10    { stroke-width: 1.2pt; stroke-linecap: round; }
 
         .blue  { stroke: #b3b3ff; }
         .red   { stroke: #ff9999; }
         .green { stroke: #b3ffb3; }
         .gray  { stroke: #b3b3b3; }
+
         .black         { stroke: #000000; }
         .half-black    { stroke: #808080; }
         .quarter-black { stroke: #c0c0c0; }
+
         .light.blue  { stroke: #d9d9ff; }
         .light.red   { stroke: #ffcccc; }
         .light.green { stroke: #d9ffd9; }
