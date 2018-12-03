@@ -395,21 +395,21 @@ sub defaultStyles {
 
         .rectangle { fill: #ffffff; }
 
-        .line.xx-thin    { stroke-width: {{ 2/450 in }}; }
-        .line.x-thin     { stroke-width: {{ 3/450 in }}; }
-        .line.thin       { stroke-width: {{ 4/450 in }}; }
-        .line.semi-thin  { stroke-width: {{ 4.9/450 in }}; }
-        .line            { stroke-width: {{ 6/450 in }}; }
-        .line.semi-thick { stroke-width: {{ 7.35/450 in }}; }
-        .line.thick      { stroke-width: {{ 9/450 in }}; }
+        .line.xx-thin    { stroke-width: {{ 2.667/600 in }}; }
+        .line.x-thin     { stroke-width: {{ 4/600 in }}; }
+        .line.thin       { stroke-width: {{ 5.333/600 in }}; }
+        .line.semi-thin  { stroke-width: {{ 6.532/600 in }}; }
+        .line            { stroke-width: {{ 8/600 in }}; }
+        .line.semi-thick { stroke-width: {{ 9.798/600 in }}; }
+        .line.thick      { stroke-width: {{ 12/600 in }}; }
 
-        .dot.xx-thin     { stroke-width: {{ 2/225 in }}; }
-        .dot.x-thin      { stroke-width: {{ 3/225 in }}; }
-        .dot.thin        { stroke-width: {{ 4/225 in }}; }
-        .dot.semi-thin   { stroke-width: {{ 4.9/225 in }}; }
-        .dot             { stroke-width: {{ 6/225 in }}; }
-        .dot.semi-thick  { stroke-width: {{ 7.35/225 in }}; }
-        .dot.thick       { stroke-width: {{ 9/225 in }}; }
+        .dot.xx-thin     { stroke-width: {{ 2.667/300 in }}; }
+        .dot.x-thin      { stroke-width: {{ 4/300 in }}; }
+        .dot.thin        { stroke-width: {{ 5.333/300 in }}; }
+        .dot.semi-thin   { stroke-width: {{ 6.532/300 in }}; }
+        .dot             { stroke-width: {{ 8/300 in }}; }
+        .dot.semi-thick  { stroke-width: {{ 9.798/300 in }}; }
+        .dot.thick       { stroke-width: {{ 12/300 in }}; }
 
         .stroke-1     { stroke-width: {{  1/600 in }}; stroke-linecap: round; }
         .stroke-2     { stroke-width: {{  2/600 in }}; stroke-linecap: round; }
