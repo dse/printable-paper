@@ -427,12 +427,10 @@ sub defaultStyles {
         .green { stroke: #b3ffb3; }
         .gray  { stroke: #b3b3b3; }
 
-/* begin enable if black */
         .black         { stroke: #000000; }
         .half-black    { stroke: #808080; }
         .quarter-black { stroke: #c0c0c0; }
 
-/* end enable if black */
         .light.blue  { stroke: #d9d9ff; }
         .light.red   { stroke: #ffcccc; }
         .light.green { stroke: #d9ffd9; }
@@ -452,20 +450,6 @@ EOF
     # {{ 1/600 in }} => 0.12pt
     $style =~ s{\{\{\s*(.*?)\s*\}\}}{$self->unit->pt($1) . 'pt'}gxe;
 
-    if ($self->colorType eq 'black') {
-        $style =~ s{^\s*
-                    \Q/* begin enable if black */\E
-                    [\ \t]*\R?}{}msxg;
-        $style =~ s{^\s*
-                    \Q/* end enable if black */\E
-                    [\ \t]*\R?}{}msxg;
-    } else {
-        $style =~ s{^\s*
-                    \Q/* begin enable if black */\E
-                    .*?
-                    \Q/* end enable if black */\E
-                    [\ \t]*\R?}{}msxg;
-    }
     return $style;
 }
 
