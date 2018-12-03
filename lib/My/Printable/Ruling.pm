@@ -27,6 +27,11 @@ delegate 'print',         via => 'document';
 delegate 'printToFile',   via => 'document';
 delegate 'isA4SizeClass', via => 'document';
 delegate 'isA5SizeClass', via => 'document';
+delegate 'ptX',           via => 'document';
+delegate 'ptY',           via => 'document';
+delegate 'pt',            via => 'document';
+delegate 'originX',       via => 'document';
+delegate 'originY',       via => 'document';
 
 use constant rulingName => 'none';
 use constant hasLineGrid => 0;
