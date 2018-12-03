@@ -8,6 +8,8 @@ use Class::Thingy;
 
 public "cssClassHorizontal";
 public "cssClassVertical";
+public "cssStyleHorizontal";
+public "cssStyleVertical";
 
 public "isDotGrid",                    default => 0;
 public "hasDottedGridLines",           default => 0;
@@ -112,8 +114,10 @@ sub draw {
 
     if ($self->isDotGrid) {
         my $cssClass = $self->cssClass // "blue dot";
+        my $cssStyle = $self->cssStyle;
         $self->drawDotPattern(
             cssClass => $cssClass,
+            cssStyle => $cssStyle,
             xPointSeries => $self->xPointSeries,
             yPointSeries => $self->yPointSeries,
             x1 => $x1,
@@ -129,6 +133,7 @@ sub draw {
             my @x = $xLinePointSeries->getPoints();
             $self->drawDotPattern(
                 cssClass => ($self->cssClassHorizontal // $self->cssClass // "blue dot"),
+                cssStyle => ($self->cssStyleHorizontal // $self->cssStyle),
                 xPointSeries => $xLinePointSeries,
                 yPointSeries => $self->yPointSeries,
                 x1 => $x1,
@@ -143,6 +148,7 @@ sub draw {
             }
             $self->drawHorizontalLinePattern(
                 cssClass => ($self->cssClassHorizontal // $self->cssClass // "thin blue line"),
+                cssStyle => ($self->cssStyleHorizontal // $self->cssStyle),
                 yPointSeries => $self->yPointSeries,
                 x1 => $x1,
                 x2 => $x2,
@@ -155,6 +161,7 @@ sub draw {
             my @y = $yLinePointSeries->getPoints();
             $self->drawDotPattern(
                 cssClass => ($self->cssClassVertical // $self->cssClass // "blue dot"),
+                cssStyle => ($self->cssStyleVertical // $self->cssStyle),
                 xPointSeries => $self->xPointSeries,
                 yPointSeries => $yLinePointSeries,
                 x1 => $x1,
@@ -169,6 +176,7 @@ sub draw {
             }
             $self->drawVerticalLinePattern(
                 cssClass => ($self->cssClassVertical // $self->cssClass // "thin blue line"),
+                cssStyle => ($self->cssStyleVertical // $self->cssStyle),
                 xPointSeries => $self->xPointSeries,
                 y1 => $y1,
                 y2 => $y2,
