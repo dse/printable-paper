@@ -110,7 +110,7 @@ sub createSVGLine {
     $line->setAttribute('y1', round3($args{y1} // $args{y}));
     $line->setAttribute('y2', round3($args{y2} // $args{y}));
     $line->setAttribute('class', $args{cssClass}) if defined $args{cssClass};
-    $line->setAttribute('style', $args{cssStyle}) if defined $args{cssStyle};
+    $line->setAttribute('style', $self->document->doubleCurly($args{cssStyle})) if defined $args{cssStyle};
     return $line;
 }
 
@@ -118,15 +118,14 @@ sub createSVGRectangle {
     my ($self, %args) = @_;
     my $doc = $self->document->svgDocument;
     my $rectangle = $doc->createElement('rect');
-
-    $rectangle->setAttribute('x',      round3($args{x}));
-    $rectangle->setAttribute('y',      round3($args{y}));
+    $rectangle->setAttribute('x', round3($args{x}));
+    $rectangle->setAttribute('y', round3($args{y}));
     $rectangle->setAttribute('width',  round3($args{width}));
     $rectangle->setAttribute('height', round3($args{height}));
-    $rectangle->setAttribute('rx',     round3($args{rx})) if $args{rx};
-    $rectangle->setAttribute('ry',     round3($args{ry})) if $args{ry};
-    $rectangle->setAttribute('class',  $args{cssClass})   if defined $args{cssClass};
-    $rectangle->setAttribute('style',  $args{cssStyle})   if defined $args{cssStyle};
+    $rectangle->setAttribute('rx', round3($args{rx})) if $args{rx};
+    $rectangle->setAttribute('ry', round3($args{ry})) if $args{ry};
+    $rectangle->setAttribute('class', $args{cssClass}) if defined $args{cssClass};
+    $rectangle->setAttribute('style', $self->document->doubleCurly($args{cssStyle})) if defined $args{cssStyle};
     return $rectangle;
 }
 
@@ -411,7 +410,7 @@ sub drawDotPattern {
                     $ellipse->setAttribute('rx', $self->dotWidth / 2);
                     $ellipse->setAttribute('ry', $self->dotHeight / 2);
                     $ellipse->setAttribute('class', $self->cssClass) if defined $self->cssClass;
-                    $ellipse->setAttribute('style', $self->cssStyle) if defined $self->cssStyle;
+                    $ellipse->setAttribute('style', $self->document->doubleCurly($self->cssStyle)) if defined $self->cssStyle;
                     $self->svgLayer->appendChild($ellipse);
                 } else {
                     if ($self->dotWidth) {
