@@ -389,50 +389,38 @@ sub getSquarePoints {
 sub defaultStyles {
     my ($self) = @_;
 
-    my $xx_thin_line_stroke_width    = $self->unit->pt("2/600in");
-    my $x_thin_line_stroke_width     = $self->unit->pt("3/600in");
-    my $thin_line_stroke_width       = $self->unit->pt("4/600in");
-    my $semi_thin_line_stroke_width  = $self->unit->pt("4.9/600in");
-    my $line_stroke_width            = $self->unit->pt("6/600in");
-    my $semi_thick_line_stroke_width = $self->unit->pt("7.35/600in");
-    my $thick_line_stroke_width      = $self->unit->pt("9/600in");
-
-    my $thin_dot_stroke_width        = $self->unit->pt("4/300in");
-    my $semi_thin_dot_stroke_width   = $self->unit->pt("4.9/300in");
-    my $dot_stroke_width             = $self->unit->pt("6/300in");
-    my $semi_thick_dot_stroke_width  = $self->unit->pt("7.35/300in");
-    my $thick_dot_stroke_width       = $self->unit->pt("9/300in");
-
     my $style = <<"EOF";
         .line, .dot { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
 
         .rectangle { fill: #ffffff; }
 
-        .line            { stroke-width: ${line_stroke_width}pt; }
-        .line.xx-thin    { stroke-width: ${xx_thin_line_stroke_width}pt; }
-        .line.x-thin     { stroke-width: ${x_thin_line_stroke_width}pt; }
-        .line.thin       { stroke-width: ${thin_line_stroke_width}pt; }
-        .line.thick      { stroke-width: ${thick_line_stroke_width}pt; }
-        .line.semi-thin  { stroke-width: ${semi_thin_line_stroke_width}pt; }
-        .line.semi-thick { stroke-width: ${semi_thick_line_stroke_width}pt; }
+        .line.xx-thin    { stroke-width: {{ 2/600 in }}; }
+        .line.x-thin     { stroke-width: {{ 3/600 in }}; }
+        .line.thin       { stroke-width: {{ 4/600 in }}; }
+        .line.semi-thin  { stroke-width: {{ 4.9/600 in }}; }
+        .line            { stroke-width: {{ 6/600 in }}; }
+        .line.semi-thick { stroke-width: {{ 7.35/600 in }}; }
+        .line.thick      { stroke-width: {{ 9/600 in }}; }
 
-        .dot             { stroke-width: ${dot_stroke_width}pt; }
-        .dot.thin        { stroke-width: ${thin_dot_stroke_width}pt; }
-        .dot.thick       { stroke-width: ${thick_dot_stroke_width}pt; }
-        .dot.semi-thin   { stroke-width: ${semi_thin_dot_stroke_width}pt; }
-        .dot.semi-thick  { stroke-width: ${semi_thick_dot_stroke_width}pt; }
+        .dot.xx-thin     { stroke-width: {{ 2/300 in }}; }
+        .dot.x-thin      { stroke-width: {{ 3/300 in }}; }
+        .dot.thin        { stroke-width: {{ 4/300 in }}; }
+        .dot.semi-thin   { stroke-width: {{ 4.9/300 in }}; }
+        .dot             { stroke-width: {{ 6/300 in }}; }
+        .dot.semi-thick  { stroke-width: {{ 7.35/300 in }}; }
+        .dot.thick       { stroke-width: {{ 9/300 in }}; }
 
-        .stroke-1     { stroke-width: 0.12pt; stroke-linecap: round; } /* 1/600 in */
-        .stroke-2     { stroke-width: 0.24pt; stroke-linecap: round; }
-        .stroke-3     { stroke-width: 0.36pt; stroke-linecap: round; }
-        .stroke-4     { stroke-width: 0.48pt; stroke-linecap: round; }
-        .stroke-5     { stroke-width: 0.60pt; stroke-linecap: round; }
-        .stroke-6     { stroke-width: 0.72pt; stroke-linecap: round; }
-        .stroke-7     { stroke-width: 0.84pt; stroke-linecap: round; }
-        .stroke-8     { stroke-width: 0.96pt; stroke-linecap: round; }
-        .stroke-9     { stroke-width: 1.08pt; stroke-linecap: round; }
-        .stroke-10    { stroke-width: 1.20pt; stroke-linecap: round; }
+        .stroke-1     { stroke-width: {{  1/600 in }}; stroke-linecap: round; }
+        .stroke-2     { stroke-width: {{  2/600 in }}; stroke-linecap: round; }
+        .stroke-3     { stroke-width: {{  3/600 in }}; stroke-linecap: round; }
+        .stroke-4     { stroke-width: {{  4/600 in }}; stroke-linecap: round; }
+        .stroke-5     { stroke-width: {{  5/600 in }}; stroke-linecap: round; }
+        .stroke-6     { stroke-width: {{  6/600 in }}; stroke-linecap: round; }
+        .stroke-7     { stroke-width: {{  7/600 in }}; stroke-linecap: round; }
+        .stroke-8     { stroke-width: {{  8/600 in }}; stroke-linecap: round; }
+        .stroke-9     { stroke-width: {{  9/600 in }}; stroke-linecap: round; }
+        .stroke-10    { stroke-width: {{ 10/600 in }}; stroke-linecap: round; }
 
         .blue  { stroke: #b3b3ff; }
         .red   { stroke: #ff9999; }
@@ -460,6 +448,9 @@ sub defaultStyles {
         .alternate-green { stroke: #67ff67; opacity: 0.5; }
         .alternate-gray  { stroke: #676767; opacity: 0.5; }
 EOF
+
+    # {{ 1/600 in }} => 0.12pt
+    $style =~ s{\{\{\s*(.*?)\s*\}\}}{$self->unit->pt($1) . 'pt'}gxe;
 
     if ($self->colorType eq 'black') {
         $style =~ s{^\s*
