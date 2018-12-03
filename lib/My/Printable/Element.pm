@@ -155,6 +155,11 @@ sub ptY {
     return $self->unitY->pt($value);
 }
 
+sub pt {
+    my ($self, $value) = @_;
+    return $self->unit->pt($value);
+}
+
 sub setX1 {
     my ($self, $value) = @_;
     $self->x1($self->ptX($value));
