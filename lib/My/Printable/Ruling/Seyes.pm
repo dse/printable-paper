@@ -57,13 +57,8 @@ sub generate {
     $lines->setY2($self->getBottomLineY);
     $lines->setSpacing('1unit');
 
-    my $head_line        = $self->generateHeadLine();
-    my $page_number_line = $self->generatePageNumberLine(nearest => $grid);
-
     $self->document->appendElement($grid);
     $self->document->appendElement($lines);
-    $self->document->appendElement($head_line);
-    $self->document->appendElement($page_number_line);
 
     $self->My::Printable::Ruling::generate();
 }
