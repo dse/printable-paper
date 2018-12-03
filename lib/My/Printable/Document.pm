@@ -395,21 +395,21 @@ sub defaultStyles {
 
         .rectangle { fill: #ffffff; }
 
-        .line.xx-thin    { stroke-width: {{ 2/600 in }}; }
-        .line.x-thin     { stroke-width: {{ 3/600 in }}; }
-        .line.thin       { stroke-width: {{ 4/600 in }}; }
-        .line.semi-thin  { stroke-width: {{ 4.9/600 in }}; }
-        .line            { stroke-width: {{ 6/600 in }}; }
-        .line.semi-thick { stroke-width: {{ 7.35/600 in }}; }
-        .line.thick      { stroke-width: {{ 9/600 in }}; }
+        .line.xx-thin    { stroke-width: {{ 2/450 in }}; }
+        .line.x-thin     { stroke-width: {{ 3/450 in }}; }
+        .line.thin       { stroke-width: {{ 4/450 in }}; }
+        .line.semi-thin  { stroke-width: {{ 4.9/450 in }}; }
+        .line            { stroke-width: {{ 6/450 in }}; }
+        .line.semi-thick { stroke-width: {{ 7.35/450 in }}; }
+        .line.thick      { stroke-width: {{ 9/450 in }}; }
 
-        .dot.xx-thin     { stroke-width: {{ 2/300 in }}; }
-        .dot.x-thin      { stroke-width: {{ 3/300 in }}; }
-        .dot.thin        { stroke-width: {{ 4/300 in }}; }
-        .dot.semi-thin   { stroke-width: {{ 4.9/300 in }}; }
-        .dot             { stroke-width: {{ 6/300 in }}; }
-        .dot.semi-thick  { stroke-width: {{ 7.35/300 in }}; }
-        .dot.thick       { stroke-width: {{ 9/300 in }}; }
+        .dot.xx-thin     { stroke-width: {{ 2/225 in }}; }
+        .dot.x-thin      { stroke-width: {{ 3/225 in }}; }
+        .dot.thin        { stroke-width: {{ 4/225 in }}; }
+        .dot.semi-thin   { stroke-width: {{ 4.9/225 in }}; }
+        .dot             { stroke-width: {{ 6/225 in }}; }
+        .dot.semi-thick  { stroke-width: {{ 7.35/225 in }}; }
+        .dot.thick       { stroke-width: {{ 9/225 in }}; }
 
         .stroke-1     { stroke-width: {{  1/600 in }}; stroke-linecap: round; }
         .stroke-2     { stroke-width: {{  2/600 in }}; stroke-linecap: round; }
@@ -447,10 +447,16 @@ sub defaultStyles {
         .alternate-gray  { stroke: #676767; opacity: 0.5; }
 EOF
 
-    # {{ 1/600 in }} => 0.12pt
-    $style =~ s{\{\{\s*(.*?)\s*\}\}}{$self->unit->pt($1) . 'pt'}gxe;
+    $style = $self->doubleCurly($style);
 
     return $style;
+}
+
+# {{ 1/600 in }} => 0.12pt
+sub doubleCurly {
+    my ($self, $text) = @_;
+    $text =~ s{\{\{\s*(.*?)\s*\}\}}{$self->unit->pt($1) . 'px'}gxe;
+    return $text;
 }
 
 1;
