@@ -7,9 +7,13 @@ use base "Exporter";
 
 our @EXPORT_OK = qw(exclude
                     round3
+                    with_temp
                     linear_interpolate);
 
 use Data::Dumper;
+use File::Basename qw(basename dirname);
+use File::Path qw(make_path);
+use Text::Trim;
 
 sub exclude(\@@) {
     my ($a, @b) = @_;
@@ -28,6 +32,32 @@ sub round3 {
 sub linear_interpolate {
     my ($v0, $v1, $t) = @_;
     return $v0 + $t * ($v1 - $v0);
+}
+
+sub with_temp {
+    my ($filename, $sub) = @_;
+    my $tempname = $filename;
+    if ($filename =~ m{(?![^\.\\\/])(\.[^\.\/\\]+)$}x) {
+        $tempname .= ".tmp" . $1;
+    } else {
+        $tempname .= ".tmp";
+    }
+    make_path(dirname($tempname));
+    my $result;
+    my @result;
+    if (wantarray) {
+        @result = $sub->($tempname);
+    } elsif (defined wantarray) {
+        $result = $sub->($tempname);
+    } else {
+        $sub->($tempname);
+    }
+    if (!rename($tempname, $filename)) {
+        warn("cannot rename $tempname to $filename: $!\n");
+    }
+    return @result if wantarray;
+    return $result if defined wantarray;
+    return;
 }
 
 1;
