@@ -21,12 +21,14 @@ sub generate {
 
     $self->document->setUnit($self->getUnit);
 
+    my $color = $self->colorType eq 'black' ? '#000000' : '#666666';
+
     my $horizontal_lines = My::Printable::Element::Lines->new(
         document => $self->document,
         id => 'lines',
         direction => 'horizontal',
         spacing => "1unit",
-        cssStyle => 'stroke: #666666; stroke-width: {{ 1/600in }};',
+        cssStyle => "stroke: $color; stroke-width: {{ 1/600in }};",
     );
 
     my $vertical_dotted_lines = My::Printable::Element::Grid->new(
@@ -36,7 +38,7 @@ sub generate {
         spacingX => '1unit',
         spacingY => '1/6unit',
         cssClass => $self->getDotCSSClass,
-        cssStyle => 'stroke: #666666; stroke-width: {{ 1/300in }}; stroke-linecap: butt;',
+        cssStyle => "stroke: $color; stroke-width: {{ 1/300in }}; stroke-linecap: butt;",
         dotHeight => '1.5/300in',
     );
 
@@ -48,7 +50,7 @@ sub generate {
         spacingY => '1unit',
         originY => $self->originY + $self->ptY('1/3unit'),
         cssClass => $self->getDotCSSClass,
-        cssStyle => 'stroke: #666666; stroke-width: {{ 1/300in }}; stroke-linecap: butt;',
+        cssStyle => "stroke: $color; stroke-width: {{ 1/300in }}; stroke-linecap: butt;",
         dotWidth => '1.5/300in',
     );
 
@@ -60,7 +62,7 @@ sub generate {
         spacingY => '1unit',
         originY => $self->originY - $self->ptY('1/3unit'),
         cssClass => $self->getDotCSSClass,
-        cssStyle => 'stroke: #666666; stroke-width: {{ 1/300in }}; stroke-linecap: butt;',
+        cssStyle => "stroke: $color; stroke-width: {{ 1/300in }}; stroke-linecap: butt;",
         dotWidth => '1.5/300in',
     );
 
@@ -71,7 +73,7 @@ sub generate {
         spacingX => '1unit',
         spacingY => '1unit',
         cssClass => $self->getDotCSSClass,
-        cssStyle => 'stroke: #666666; stroke-width: {{ 1/300in }}; stroke-linecap: butt;',
+        cssStyle => "stroke: $color; stroke-width: {{ 1/300in }}; stroke-linecap: butt;",
         dotHeight => '2/300in',
     );
 
