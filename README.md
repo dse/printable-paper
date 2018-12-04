@@ -40,7 +40,8 @@ double-sided printing, flip on long edge:
     instead of four.  (Do not use for Lego bricks, as the proportions
     are not correct.)
 
--   Doane Paper style ruling.
+-   A 3-per-line French style ruling, but with dotted lines for the
+    grid instead of solid lines.
 
 ## Utilities Required
 
