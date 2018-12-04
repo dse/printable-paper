@@ -261,7 +261,7 @@ sub leaveAMark {
     my $text_data = 'https://github.com/dse/printable-paper';
     my $text_style = 'font-family: "Courier", "Courier New", monospace; font-size: 6pt;';
     my $text_color =
-        $self->colorType eq 'color' ? '#b3b3ff' :
+        $self->colorType eq 'color'     ? '#b3b3ff' :
         $self->colorType eq 'grayscale' ? '#b3b3b3' :
         '#808080';
     {
@@ -275,10 +275,10 @@ sub leaveAMark {
         $rect->setAttribute('width', $rect_width);
         $rect->setAttribute('height', $rect_height);
         $rect->setAttribute('stroke', $text_color);
-        $rect->setAttribute('stroke-width', $self->pt('2/600in'));
+        # $rect->setAttribute('stroke-width', $self->pt('2/600in'));
         $rect->setAttribute('fill', '#ffffff');
-        $rect->setAttribute('rx', '2pt');
-        $rect->setAttribute('ry', '2pt');
+        # $rect->setAttribute('rx', '2pt');
+        # $rect->setAttribute('ry', '2pt');
         $self->svgRoot->appendChild($rect);
     }
     {
