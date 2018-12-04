@@ -63,8 +63,11 @@ my @collections = (
     {
         ruling => 'oasis',
         sizes => [@sizes],
-        variants => [[]],
-        color_types => ['color'],
+        variants => [
+            [qw()],
+            [qw(denser-grid)],
+        ],
+        color_types => ['color', 'black'],
     },
     {
         ruling => 'anode',
