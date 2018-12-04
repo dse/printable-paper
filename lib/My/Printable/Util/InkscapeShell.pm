@@ -13,7 +13,7 @@ public 'expect', lazy => 1, builder => sub {
     my $expect = Expect->new();
     $expect->raw_pty(0);
     $expect->spawn(@cmd) or die("Cannot spawn @cmd: $!\n");
-    $expect->expect(5, ">");
+    $expect->expect(60, ">");
     return $expect;
 };
 
@@ -21,7 +21,7 @@ sub cmd {
     my ($self, $cmd) = @_;
     $cmd =~ s{\R\z}{};          # safer chomp
     $self->expect->send("$cmd\n");
-    $self->expect->expect(5, ">");
+    $self->expect->expect(60, ">");
 }
 
 1;
