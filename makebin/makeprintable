@@ -61,6 +61,12 @@ my @sizes = (
 
 my @collections = (
     {
+        ruling => 'oasis',
+        sizes => ['letter'],
+        variants => [[]],
+        color_types => ['color', 'black'],
+    },
+    {
         ruling => 'doane',
         sizes => [@sizes],
         variants => [
@@ -361,10 +367,12 @@ my %build = (
 
             my $cmd;
             if (scalar @$dependencies == 1) {
+                # has no special even page
                 $cmd = sprintf("pdfunite %s %s {FILENAME}",
                                shell_quote($dependencies->[0]),
                                shell_quote($dependencies->[0]));
             } else {
+                # has a special even page
                 $cmd = sprintf("pdfunite %s %s {FILENAME}",
                                shell_quote($dependencies->[0]),
                                shell_quote($dependencies->[1]));
@@ -381,8 +389,10 @@ my %build = (
 
             my $cmd;
             if (scalar @$dependencies == 1) {
+                # has no special even page
                 $cmd = sprintf("psselect 1,1 %s >{FILENAME}", shell_quote($dependencies->[0]));
             } else {
+                # has a special even page
                 $cmd = sprintf("psjoin %s %s >{FILENAME}", shell_quote($dependencies->[0]), shell_quote($dependencies->[1]));
             }
 
@@ -515,10 +525,6 @@ sub build_file {
 foreach my $template (@templates) {
     my $ruling = $template->{ruling};
     my $base = $template->{base};
-
-    if ($ruling eq "seyes") {
-        $template->{has_even_pages} = 1;
-    }
 
     my $svg = "templates/svg/${base}.svg";
     my $pdf = "templates/pdf/${base}.pdf";
