@@ -264,6 +264,7 @@ sub leaveAMark {
         $self->colorType eq 'color'     ? '#b3b3ff' :
         $self->colorType eq 'grayscale' ? '#b3b3b3' :
         '#808080';
+    my $add_rectangle_stroke = 0;
     {
         my $rect_width = $self->ptX('2.625in');
         my $rect_height = $self->ptY('12pt');
@@ -274,11 +275,16 @@ sub leaveAMark {
         $rect->setAttribute('y', $rect_y);
         $rect->setAttribute('width', $rect_width);
         $rect->setAttribute('height', $rect_height);
-        $rect->setAttribute('stroke', $text_color);
-        # $rect->setAttribute('stroke-width', $self->pt('2/600in'));
         $rect->setAttribute('fill', '#ffffff');
-        # $rect->setAttribute('rx', '2pt');
-        # $rect->setAttribute('ry', '2pt');
+        if ($add_rectangle_stroke) {
+            $rect->setAttribute('stroke', $text_color);
+            $rect->setAttribute('stroke-width', $self->pt('2/600in'));
+            $rect->setAttribute('rx', '2pt');
+            $rect->setAttribute('ry', '2pt');
+        } else {
+            $rect->setAttribute('stroke', 'none');
+            $rect->setAttribute('stroke-width', '0px');
+        }
         $self->svgRoot->appendChild($rect);
     }
     {
