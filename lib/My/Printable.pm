@@ -68,7 +68,7 @@ BEGIN {
         "10mm"       => { DEFAULT => "3/8in",  metric => "10mm" },
         "three-line" => { DEFAULT => "1/4in",  metric => "6mm"  },
     };
-    my $unit_doane = {
+    my $unit_anode = {
         DEFAULT => {
             DEFAULT => "1/8in",
             smaller => "1/12in",
@@ -125,8 +125,8 @@ BEGIN {
                 y_snap_to => "margins",
             },
         },
-        doane => {
-            unit => $unit_doane,
+        anode => {
+            unit => $unit_anode,
             grid => {
                 x_spacing => "1unit",
                 y_spacing => "1unit",

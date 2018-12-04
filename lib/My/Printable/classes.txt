@@ -1,0 +1,41 @@
+#-------#-------#-------#-------#-------#-------#-------#-------#-------#-------
+all rulings:
+    {red,gray} margin line for the margin line
+quadrille:
+    x-thin {blue,gray} line for the grid
+anode:
+    xx-thin {blue,gray} line for the grid
+    {blue,gray} line for the horizontal lines
+dot grid:
+    {blue,gray} dot for the dot grid
+line dot grid:
+    {semi-thick,<regular>,semi-thin} {blue,gray} dot for the dots on the lines
+    {thin,x-thin,xx-thin} {blue,gray} line for the horizontal lines
+line dot graph:
+    thin {blue,gray} dot for the dotted vertical lines
+    thin {blue,gray} line for the horizontal lines
+seyes:
+    {blue,gray} line for thoe horizontal lines
+    {thin,x-thin} {blue,gray} line for the horizontal and vertical grid lines
+
+		margin  major   grid    grid    line
+old		line    lines   lines   dots    dots
+#-------#-------#-------#-------#-------#-------#-------#-------#-------#-------
+<all>           <reg>   x       x       x       x       x       x       x
+quadrille       "       n/a     x-thin  x       x       x       x       x
+anode           "       <reg>   xx-thin x       x       x       x       x
+dot grid        "       n/a     x       <reg>   x       x       x       x
+line dot grid   "       thin    x       s-thick x       x       x       x
+line dot graph  "       thin    x       thin    x       x       x       x
+seyes           "       <reg>   thin    x       x       x       x       x
+
+		margin  major   grid    grid    line
+new		line    lines   lines   dots    dots
+#-------#-------#-------#-------#-------#-------#-------#-------#-------#-------
+<all>           <reg>   x       x       x       x       x       x       x
+quadrille       "       n/a     x-thin  x       x       x       x       x
+anode           "       <reg>   xx-thin x       x       x       x       x
+dot grid        "       n/a     x       <reg>   x       x       x       x
+line dot grid   "       thin    x       s-thick x       x       x       x
+line dot graph  "       <reg>*  x       thin    x       x       x       x
+seyes           "       <reg>   thin    x       x       x       x       x

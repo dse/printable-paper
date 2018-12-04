@@ -62,12 +62,12 @@ my @sizes = (
 my @collections = (
     {
         ruling => 'oasis',
-        sizes => ['letter'],
+        sizes => [@sizes],
         variants => [[]],
-        color_types => ['color', 'black'],
+        color_types => ['color'],
     },
     {
-        ruling => 'doane',
+        ruling => 'anode',
         sizes => [@sizes],
         variants => [
             [qw()],

@@ -158,7 +158,7 @@ sub getLineCSSClass {
         return trim("$thinness_class_B line");
     }
 
-    # regular for doane
+    # regular for anode
     # thin/x-thin/xx-thin for line-dot-grid
     # x-thin for quadrille
     # regular for seyes

@@ -1,4 +1,4 @@
-package My::Printable::Ruling::Doane;
+package My::Printable::Ruling::Anode;
 use warnings;
 use strict;
 use v5.10.0;
@@ -13,7 +13,7 @@ use My::Printable::Element::Line;
 use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
 use Class::Thingy;
 
-use constant rulingName => 'doane';
+use constant rulingName => 'anode';
 use constant hasLineGrid => 1;
 use constant lineGridThinness => 2;
 use constant hasMarginLine => 1;
