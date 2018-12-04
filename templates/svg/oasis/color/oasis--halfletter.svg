@@ -11120,6 +11120,6 @@
     <line x1="392.4" x2="392.4" y1="586.56" y2="587.04" class="x-thin blue dot" style="stroke: #666666; stroke-width: 0.24px; stroke-linecap: butt;"/>
     <line x1="392.4" x2="392.4" y1="608.16" y2="608.64" class="x-thin blue dot" style="stroke: #666666; stroke-width: 0.24px; stroke-linecap: butt;"/>
   </g>
-  <rect x="103.5" y="586" width="189" height="12" stroke="#b3b3ff" stroke-width="0.24" fill="#ffffff" rx="2pt" ry="2pt"/>
+  <rect x="103.5" y="586" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
   <text x="198" y="594" text-anchor="middle" fill="#b3b3ff" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>
 </svg>
