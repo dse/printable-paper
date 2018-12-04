@@ -36,8 +36,8 @@ sub generate {
         spacingX => '1unit',
         spacingY => '1/6unit',
         cssClass => $self->getDotCSSClass,
-        cssStyle => 'stroke: #666666; stroke-width: {{ 5/300in }}; stroke-linecap: butt;',
-        dotHeight => '5/300in',
+        cssStyle => 'stroke: #666666; stroke-width: {{ 1/300in }}; stroke-linecap: butt;',
+        dotHeight => '1.5/300in',
     );
 
     my $horizontal_dotted_lines_1 = My::Printable::Element::Grid->new(
@@ -48,8 +48,8 @@ sub generate {
         spacingY => '1unit',
         originY => $self->originY + $self->ptY('1/3unit'),
         cssClass => $self->getDotCSSClass,
-        cssStyle => 'stroke: #666666; stroke-width: {{ 5/300in }}; stroke-linecap: butt;',
-        dotWidth => '5/300in',
+        cssStyle => 'stroke: #666666; stroke-width: {{ 1/300in }}; stroke-linecap: butt;',
+        dotWidth => '1.5/300in',
     );
 
     my $horizontal_dotted_lines_2 = My::Printable::Element::Grid->new(
@@ -60,14 +60,26 @@ sub generate {
         spacingY => '1unit',
         originY => $self->originY - $self->ptY('1/3unit'),
         cssClass => $self->getDotCSSClass,
-        cssStyle => 'stroke: #666666; stroke-width: {{ 5/300in }}; stroke-linecap: butt;',
-        dotWidth => '5/300in',
+        cssStyle => 'stroke: #666666; stroke-width: {{ 1/300in }}; stroke-linecap: butt;',
+        dotWidth => '1.5/300in',
+    );
+
+    my $grid_4 = My::Printable::Element::Grid->new(
+        document => $self->document,
+        id => 'grid-4',
+        isDotGrid => 1,
+        spacingX => '1unit',
+        spacingY => '1unit',
+        cssClass => $self->getDotCSSClass,
+        cssStyle => 'stroke: #666666; stroke-width: {{ 1/300in }}; stroke-linecap: butt;',
+        dotHeight => '2/300in',
     );
 
     $self->document->appendElement($horizontal_lines);
     $self->document->appendElement($vertical_dotted_lines);
     $self->document->appendElement($horizontal_dotted_lines_1);
     $self->document->appendElement($horizontal_dotted_lines_2);
+    $self->document->appendElement($grid_4);
 
     $self->My::Printable::Ruling::generate();
 }
