@@ -6,32 +6,32 @@
 
         .rectangle { fill: #ffffff; }
 
-        .line.xx-thin    { stroke-width: 0.24pt; }
-        .line.x-thin     { stroke-width: 0.36pt; }
-        .line.thin       { stroke-width: 0.48pt; }
-        .line.semi-thin  { stroke-width: 0.588pt; }
-        .line            { stroke-width: 0.72pt; }
-        .line.semi-thick { stroke-width: 0.882pt; }
-        .line.thick      { stroke-width: 1.08pt; }
+        .line.xx-thin    { stroke-width: 0.32004px; }
+        .line.x-thin     { stroke-width: 0.48px; }
+        .line.thin       { stroke-width: 0.63996px; }
+        .line.semi-thin  { stroke-width: 0.78384px; }
+        .line            { stroke-width: 0.96px; }
+        .line.semi-thick { stroke-width: 1.17576px; }
+        .line.thick      { stroke-width: 1.44px; }
 
-        .dot.xx-thin     { stroke-width: 0.48pt; }
-        .dot.x-thin      { stroke-width: 0.72pt; }
-        .dot.thin        { stroke-width: 0.96pt; }
-        .dot.semi-thin   { stroke-width: 1.176pt; }
-        .dot             { stroke-width: 1.44pt; }
-        .dot.semi-thick  { stroke-width: 1.764pt; }
-        .dot.thick       { stroke-width: 2.16pt; }
+        .dot.xx-thin     { stroke-width: 0.64008px; }
+        .dot.x-thin      { stroke-width: 0.96px; }
+        .dot.thin        { stroke-width: 1.27992px; }
+        .dot.semi-thin   { stroke-width: 1.56768px; }
+        .dot             { stroke-width: 1.92px; }
+        .dot.semi-thick  { stroke-width: 2.35152px; }
+        .dot.thick       { stroke-width: 2.88px; }
 
-        .stroke-1     { stroke-width: 0.12pt; stroke-linecap: round; }
-        .stroke-2     { stroke-width: 0.24pt; stroke-linecap: round; }
-        .stroke-3     { stroke-width: 0.36pt; stroke-linecap: round; }
-        .stroke-4     { stroke-width: 0.48pt; stroke-linecap: round; }
-        .stroke-5     { stroke-width: 0.6pt; stroke-linecap: round; }
-        .stroke-6     { stroke-width: 0.72pt; stroke-linecap: round; }
-        .stroke-7     { stroke-width: 0.84pt; stroke-linecap: round; }
-        .stroke-8     { stroke-width: 0.96pt; stroke-linecap: round; }
-        .stroke-9     { stroke-width: 1.08pt; stroke-linecap: round; }
-        .stroke-10    { stroke-width: 1.2pt; stroke-linecap: round; }
+        .stroke-1     { stroke-width: 0.12px; stroke-linecap: round; }
+        .stroke-2     { stroke-width: 0.24px; stroke-linecap: round; }
+        .stroke-3     { stroke-width: 0.36px; stroke-linecap: round; }
+        .stroke-4     { stroke-width: 0.48px; stroke-linecap: round; }
+        .stroke-5     { stroke-width: 0.6px; stroke-linecap: round; }
+        .stroke-6     { stroke-width: 0.72px; stroke-linecap: round; }
+        .stroke-7     { stroke-width: 0.84px; stroke-linecap: round; }
+        .stroke-8     { stroke-width: 0.96px; stroke-linecap: round; }
+        .stroke-9     { stroke-width: 1.08px; stroke-linecap: round; }
+        .stroke-10    { stroke-width: 1.2px; stroke-linecap: round; }
 
         .blue  { stroke: #b3b3ff; }
         .red   { stroke: #ff9999; }
@@ -248,12 +248,6 @@
     <line x1="0" x2="595.276" y1="717.165" y2="717.165" class="stroke-3 black line"/>
     <line x1="0" x2="595.276" y1="734.173" y2="734.173" class="stroke-3 black line"/>
     <line x1="0" x2="595.276" y1="751.181" y2="751.181" class="stroke-3 black line"/>
-  </g>
-  <g id="head-line">
-    <line x1="0" x2="595.276" y1="34.016" y2="34.016" class="stroke-3 black line"/>
-  </g>
-  <g id="page-number-line">
-    <line x1="524.409" x2="575.433" y1="824.882" y2="824.882" class="stroke-3 black line"/>
   </g>
   <g id="margin-line">
     <line x1="116.22" x2="116.22" y1="0" y2="841.89" class="stroke-3 black line"/>
