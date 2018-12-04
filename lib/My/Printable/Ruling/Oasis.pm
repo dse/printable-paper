@@ -84,4 +84,21 @@ sub generate {
     $self->My::Printable::Ruling::generate();
 }
 
+sub getUnit {
+    my ($self) = @_;
+    if ($self->unitType eq 'imperial') {
+        if ($self->modifiers->has('denser-grid')) {
+            return '1/4in';
+        } else {
+            return '3/10in';
+        }
+    } else {
+        if ($self->modifiers->has('denser-grid')) {
+            return '6mm';
+        } else {
+            return '23/3mm';
+        }
+    }
+}
+
 1;
