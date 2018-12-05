@@ -7,6 +7,7 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Document;
 use My::Printable::Ruling;
 use My::Printable::Util::InkscapeShell;
+use My::Printable::Util qw(with_temp);
 
 use String::ShellQuote qw(shell_quote);
 use Cwd qw(realpath);
@@ -17,6 +18,7 @@ use Text::Trim qw(trim);
 use Getopt::Long qw();
 use Data::Dumper qw(Dumper);
 use Storable qw(dclone);
+use PDF::API2 qw();
 
 our $opt_verbose = 0;
 our $opt_dry_run = 0;
@@ -212,57 +214,19 @@ sub path {
 
 sub cmd {
     my ($filename, $cmd) = @_;
-
-    my $use_temp_file = 0;
-
-    my $temp;
-    if ($use_temp_file) {
-        $temp = "$filename.tmp";
-        if ($filename =~ m{\.([^\.\\\/]+)$}) {
-            my $ext = $1;
-            $temp = "$filename.tmp.$ext";
-        }
-    }
-
-    my $dirname = dirname($filename);
-    if (!-e $dirname) {
-        if ($opt_verbose) {
-            warn(sprintf("+ mkdir -p %s\n", shell_quote($dirname)));
-        }
-        mkpath($dirname);
-    }
-
     $filename = path($filename);
-    if ($use_temp_file) {
-        $temp = path($temp);
-    }
-
-    if ($use_temp_file) {
-        $cmd =~ s{\{FILENAME\}}{shell_quote($temp)}ge;
-    } else {
-        $cmd =~ s{\{FILENAME\}}{shell_quote($filename)}ge;
-    }
-
-    if ($opt_verbose) {
-        warn("+ $cmd\n");
-    }
-    if (system($cmd)) {
-        if (!$use_temp_file) {
-            unlink($filename);
+    with_temp(
+        $filename,
+        sub {
+            my ($tempname) = @_;
+            $cmd =~ s{\{FILENAME\}}{shell_quote($tempname)}ge;
+            warn("+ $cmd\n") if $opt_verbose;
+            if (system($cmd)) {
+                unlink($tempname);
+                die("command failed --- exiting.\n");
+            }
         }
-        die("Command failed -- Exiting.");
-    }
-    if ($use_temp_file) {
-        if (!-e $temp) {
-            die("$temp does not exist -- Exiting.\n");
-        }
-        if ($opt_verbose) {
-            warn(sprintf("+ mv %s %s\n", shell_quote($temp), shell_quote($filename)));
-        }
-        if (!rename($temp, $filename)) {
-            die("Could not rename $temp to $filename: $! -- Exiting.\n");
-        }
-    }
+    );
 }
 
 my @modules;
@@ -274,6 +238,7 @@ find(sub {
 
 use constant USE_EXTERNAL_BIN_PRINTABLE => 0;
 use constant USE_INKSCAPE_SHELL => 1;
+use constant USE_PDF_API2 => 1;
 
 our $inkscape_shell;
 
@@ -303,18 +268,23 @@ my %build = (
                 $cmd .= sprintf(" %s >{FILENAME}", shell_quote($template->{ruling}));
                 cmd($target, $cmd);
             } else {
-                my $ruling_class_name = My::Printable::Ruling->getRulingClassName($template->{ruling});
-                eval "use $ruling_class_name";
-                if ($@) {
-                    die $@;
-                }
-                my $ruling = $ruling_class_name->new();
-                $ruling->id($id);
-                $ruling->paperSizeName($template->{size});
-                $ruling->colorType($template->{color_type});
-                $ruling->modifiers->set(@modifiers);
-                $ruling->generate();
-                $ruling->printToFile($target);
+                with_temp(
+                    $target, sub {
+                        my ($tempname) = @_;
+                        my $ruling_class_name = My::Printable::Ruling->getRulingClassName($template->{ruling});
+                        eval "use $ruling_class_name";
+                        if ($@) {
+                            die $@;
+                        }
+                        my $ruling = $ruling_class_name->new();
+                        $ruling->id($id);
+                        $ruling->paperSizeName($template->{size});
+                        $ruling->colorType($template->{color_type});
+                        $ruling->modifiers->set(@modifiers);
+                        $ruling->generate();
+                        $ruling->printToFile($tempname);
+                    }
+                );
             }
         },
     },
@@ -325,25 +295,22 @@ my %build = (
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
             if (USE_INKSCAPE_SHELL) {
                 $inkscape_shell //= My::Printable::Util::InkscapeShell->new();
-                my $temp = "${target}.tmp.pdf";
-                mkpath(dirname($temp));
-                my $temp_realpath = realpath($temp);
-                unlink($temp);
-                $inkscape_shell->cmd(sprintf("%s --export-background=transparent --export-pdf=%s",
-                                             shell_quote($dependencies->[0]),
-                                             shell_quote($temp_realpath)));
-                if (-e $temp) {
-                    if (!rename($temp, $target)) {
-                        die("Cannot rename $temp to $target: $!\n");
+                with_temp(
+                    $target,
+                    sub {
+                        my ($tempname) = @_;
+                        my $realpath_tempname = realpath($tempname);
+                        die("realpath $tempname failed\n") if !defined $realpath_tempname;
+                        unlink($tempname);
+                        $inkscape_shell->cmd(sprintf("%s --export-background=transparent --export-pdf=%s",
+                                                     shell_quote($dependencies->[0]),
+                                                     shell_quote($realpath_tempname)));
                     }
-                } else {
-                    die("Inkscape shell apparently failed; $temp doesn't exist.  Exiting.\n");
-                }
+                );
             } else {
                 # svg2pdf will not work
-                # rsvg-convert does not work
+                # rsvg-convert does not work, output looks like shit
                 # imagenagick works but is not fast and rasterizes
-
                 my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-pdf {FILENAME} %s",
                                   shell_quote($dependencies->[0]));
                 cmd($target, $cmd);
@@ -355,11 +322,25 @@ my %build = (
         code => sub {
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
-
-            my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-ps {FILENAME} %s",
-                              shell_quote($dependencies->[0]));
-
-            cmd($target, $cmd);
+            if (USE_INKSCAPE_SHELL) {
+                $inkscape_shell //= My::Printable::Util::InkscapeShell->new();
+                with_temp(
+                    $target,
+                    sub {
+                        my ($tempname) = @_;
+                        my $realpath_tempname = realpath($tempname);
+                        die("realpath $tempname failed\n") if !defined $realpath_tempname;
+                        unlink($tempname);
+                        $inkscape_shell->cmd(sprintf("%s --export-background=transparent --export-ps=%s",
+                                                     shell_quote($dependencies->[0]),
+                                                     shell_quote($realpath_tempname)));
+                    }
+                );
+            } else {
+                my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-ps {FILENAME} %s",
+                                  shell_quote($dependencies->[0]));
+                cmd($target, $cmd);
+            }
         },
     },
     two_page_pdf => {
@@ -367,21 +348,35 @@ my %build = (
         code => sub {
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
-
-            my $cmd;
-            if (scalar @$dependencies == 1) {
-                # has no special even page
-                $cmd = sprintf("pdfunite %s %s {FILENAME}",
-                               shell_quote($dependencies->[0]),
-                               shell_quote($dependencies->[0]));
+            if (USE_PDF_API2) {
+                my @source_pdf = map { PDF::API2->open($_) } @$dependencies;
+                if (scalar @$dependencies == 1) {
+                    my $pdf = PDF::API2->new();
+                    $pdf->import_page($source_pdf[0], 1, 0);
+                    $pdf->import_page($source_pdf[0], 1, 0);
+                    $pdf->saveas($target);
+                } else {
+                    my $pdf = PDF::API2->new();
+                    $pdf->import_page($source_pdf[0], 1, 0);
+                    $pdf->import_page($source_pdf[1], 1, 0);
+                    $pdf->saveas($target);
+                }
             } else {
-                # has a special even page
-                $cmd = sprintf("pdfunite %s %s {FILENAME}",
-                               shell_quote($dependencies->[0]),
-                               shell_quote($dependencies->[1]));
+                # pdfunite is part of poppler
+                my $cmd;
+                if (scalar @$dependencies == 1) {
+                    # has no special even page
+                    $cmd = sprintf("pdfunite %s %s {FILENAME}",
+                                   shell_quote($dependencies->[0]),
+                                   shell_quote($dependencies->[0]));
+                } else {
+                    # has a special even page
+                    $cmd = sprintf("pdfunite %s %s {FILENAME}",
+                                   shell_quote($dependencies->[0]),
+                                   shell_quote($dependencies->[1]));
+                }
+                cmd($target, $cmd);
             }
-
-            cmd($target, $cmd);
         },
     },
     two_page_ps => {
@@ -389,6 +384,8 @@ my %build = (
         code => sub {
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
+
+            # consider using GSAPI
 
             my $cmd;
             if (scalar @$dependencies == 1) {
