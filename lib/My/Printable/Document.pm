@@ -163,6 +163,7 @@ sub deleteSVG {
     $self->deleteSVGDefs();
     $self->deleteSVGRoot();
     $self->deleteSVGDocument();
+    $self->resetCSSClasses();
     $self->isGenerated(0);
 }
 
@@ -463,6 +464,33 @@ sub doubleCurly {
     my ($self, $text) = @_;
     $text =~ s{\{\{\s*(.*?)\s*\}\}}{$self->unit->pt($1) . 'px'}gxe;
     return $text;
+}
+
+public 'cssClasses', builder => sub { return {}; };
+public 'cssClassCounter', default => 0;
+
+sub resetCSSClasses {
+    my ($self) = @_;
+    $self->cssClasses({});
+    $self->cssClassCounter(0);
+}
+
+sub styleToCSSClass {
+    my ($self, $style) = @_;
+    my $cssClasses = $self->cssClasses;
+    return $cssClasses->{$style} if exists $cssClasses->{$style};
+    my $class = $cssClasses->{$style} = 'class-' . $self->cssClassCounter;
+    $self->cssClassCounter($self->cssClassCounter + 1);
+    return $class;
+}
+
+sub appendCSSClass {
+    my ($self, $string, @add_classes) = @_;
+    my @classes = split(/\s+/, trim($string));
+    foreach my $class (@add_classes) {
+        push(@classes, $class) unless grep { $_ eq $class } @classes;
+    }
+    return join(" ", @classes);
 }
 
 1;
