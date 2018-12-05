@@ -28,7 +28,7 @@ sub generate {
         id => 'lines',
         direction => 'horizontal',
         spacing => "1unit",
-        cssStyle => "stroke: $color; stroke-width: {{ 1/600in }};",
+        cssStyle => "stroke: $color; stroke-width: {{ 1/300in }};",
     );
 
     my $vertical_dotted_lines = My::Printable::Element::Grid->new(
@@ -38,8 +38,8 @@ sub generate {
         spacingX => '1unit',
         spacingY => '1/6unit',
         cssClass => $self->getDotCSSClass,
-        cssStyle => "stroke: $color; stroke-width: {{ 1/300in }}; stroke-linecap: butt;",
-        dotHeight => '1.5/300in',
+        cssStyle => "stroke: $color; stroke-width: {{ 3/300in }}; stroke-linecap: butt;",
+        dotHeight => '3/300in',
     );
 
     my $horizontal_dotted_lines_1 = My::Printable::Element::Grid->new(
@@ -50,8 +50,8 @@ sub generate {
         spacingY => '1unit',
         originY => $self->originY + $self->ptY('1/3unit'),
         cssClass => $self->getDotCSSClass,
-        cssStyle => "stroke: $color; stroke-width: {{ 1/300in }}; stroke-linecap: butt;",
-        dotWidth => '1.5/300in',
+        cssStyle => "stroke: $color; stroke-width: {{ 3/300in }}; stroke-linecap: butt;",
+        dotWidth => '3/300in',
     );
 
     my $horizontal_dotted_lines_2 = My::Printable::Element::Grid->new(
@@ -62,8 +62,8 @@ sub generate {
         spacingY => '1unit',
         originY => $self->originY - $self->ptY('1/3unit'),
         cssClass => $self->getDotCSSClass,
-        cssStyle => "stroke: $color; stroke-width: {{ 1/300in }}; stroke-linecap: butt;",
-        dotWidth => '1.5/300in',
+        cssStyle => "stroke: $color; stroke-width: {{ 3/300in }}; stroke-linecap: butt;",
+        dotWidth => '3/300in',
     );
 
     my $grid_4 = My::Printable::Element::Grid->new(
@@ -73,8 +73,8 @@ sub generate {
         spacingX => '1unit',
         spacingY => '1unit',
         cssClass => $self->getDotCSSClass,
-        cssStyle => "stroke: $color; stroke-width: {{ 1/300in }}; stroke-linecap: butt;",
-        dotHeight => '2/300in',
+        cssStyle => "stroke: $color; stroke-width: {{ 3/300in }}; stroke-linecap: butt;",
+        dotHeight => '6/300in',
     );
 
     $self->document->appendElement($horizontal_lines);
