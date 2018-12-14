@@ -102,6 +102,8 @@ public "originY", set => sub {
 public "isGenerated",   default => 0;
 public "verbose",       default => 0;
 
+public "additionalStyles";
+
 use XML::LibXML;
 use Scalar::Util qw(refaddr);
 
@@ -128,6 +130,7 @@ public "svgRoot", lazy_default => sub {
     my ($self) = @_;
     $self->svgDefs;
     $self->svgStyle;
+    $self->svgAdditionalStyle;
 }, delete => "deleteSVGRoot";
 
 public 'svgDefs', lazy => 1, builder => sub {
@@ -141,13 +144,45 @@ public 'svgDefs', lazy => 1, builder => sub {
 
 public 'svgStyle', lazy => 1, builder => sub {
     my ($self) = @_;
+    return $self->addStyleElement($self->defaultStyles);
+}, delete => 'deleteSVGStyle';
+
+public 'svgAdditionalStyle', lazy => 1, builder => sub {
+    my ($self) = @_;
+    if (!defined $self->additionalStyles) {
+        return;
+    }
+    return $self->addStyleElement($self->doubleCurly($self->additionalStyles));
+}, delete => 'deleteSVGAdditionalStyle';
+
+public 'svgContext', lazy => 1, builder => sub {
+    my ($self) = @_;
+    my $ctx = XML::LibXML::XPathContext->new($self->svgDocument);
+    $ctx->registerNs('svg', 'http://www.w3.org/2000/svg');
+    return $ctx;
+}, delete => 'deleteSVGContext';
+
+sub addStyleElement {
+    my ($self, $cssText) = @_;
     my $doc = $self->svgDocument;
     my $root = $self->svgRoot;
     my $style = $doc->createElement('style');
-    $style->appendText($self->defaultStyles);
-    $root->appendChild($style);
+    $style->appendText($cssText);
+    my $after = $self->findStyleNodeInsertionPoint();
+    if ($after) {
+        $root->insertAfter($style, $after);
+    } else {
+        $root->appendChild($style);
+    }
     return $style;
-}, delete => 'deleteSVGStyle';
+}
+
+sub findStyleNodeInsertionPoint {
+    my ($self) = @_;
+    my $doc = $self->svgDocument;
+    my ($after) = reverse $self->svgContext->findnodes('svg/style|svg/defs');
+    return $after;
+}
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Util qw(round3);
@@ -162,6 +197,7 @@ sub deleteSVG {
     $self->deleteSVGStyle();
     $self->deleteSVGDefs();
     $self->deleteSVGRoot();
+    $self->deleteSVGContext();
     $self->deleteSVGDocument();
     $self->resetCSSClasses();
     $self->isGenerated(0);
