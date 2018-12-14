@@ -56,6 +56,11 @@
         .alternate-red   { stroke: #ff3333; opacity: 0.5; }
         .alternate-green { stroke: #67ff67; opacity: 0.5; }
         .alternate-gray  { stroke: #676767; opacity: 0.5; }
+
+        .gray20 { stroke: #333333; }
+        .gray40 { stroke: #666666; }
+        .gray60 { stroke: #999999; }
+        .gray80 { stroke: #cccccc; }
 </style>
   <g id="grid">
     <line x1="8.504" x2="8.504" y1="12.756" y2="12.756" class="stroke-5 black dot"/>
