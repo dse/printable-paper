@@ -109,7 +109,7 @@ sub createSVGLine {
     $line->setAttribute('x2', round3($args{x2} // $args{x}));
     $line->setAttribute('y1', round3($args{y1} // $args{y}));
     $line->setAttribute('y2', round3($args{y2} // $args{y}));
-    $line->setAttribute('class', $args{cssClass}) if defined $args{cssClass};
+    $line->setAttribute('class', $args{cssClass}) if defined $args{cssClass} && $args{cssClass} =~ m{\S};
     $line->setAttribute('style', $self->document->doubleCurly($args{cssStyle})) if defined $args{cssStyle};
     return $line;
 }
@@ -124,7 +124,7 @@ sub createSVGRectangle {
     $rectangle->setAttribute('height', round3($args{height}));
     $rectangle->setAttribute('rx', round3($args{rx})) if $args{rx};
     $rectangle->setAttribute('ry', round3($args{ry})) if $args{ry};
-    $rectangle->setAttribute('class', $args{cssClass}) if defined $args{cssClass};
+    $rectangle->setAttribute('class', $args{cssClass}) if defined $args{cssClass} && $args{cssClass} =~ m{\S};
     $rectangle->setAttribute('style', $self->document->doubleCurly($args{cssStyle})) if defined $args{cssStyle};
     return $rectangle;
 }
@@ -409,7 +409,7 @@ sub drawDotPattern {
                     $ellipse->setAttribute('cy', $y);
                     $ellipse->setAttribute('rx', $self->dotWidth / 2);
                     $ellipse->setAttribute('ry', $self->dotHeight / 2);
-                    $ellipse->setAttribute('class', $self->cssClass) if defined $self->cssClass;
+                    $ellipse->setAttribute('class', $self->cssClass) if defined $self->cssClass && $args{cssClass} =~ m{\S};
                     $ellipse->setAttribute('style', $self->document->doubleCurly($self->cssStyle)) if defined $self->cssStyle;
                     $self->svgLayer->appendChild($ellipse);
                 } else {
