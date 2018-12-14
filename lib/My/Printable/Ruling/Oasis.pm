@@ -89,13 +89,13 @@ sub getUnit {
         if ($self->modifiers->has('denser-grid')) {
             return '1/4in';
         } else {
-            return '3/10in';
+            return '3/10in';    # close to 23/3mm
         }
     } else {
         if ($self->modifiers->has('denser-grid')) {
             return '6mm';
         } else {
-            return '23/3mm';
+            return '23/3mm';    # actual measured line height
         }
     }
 }
