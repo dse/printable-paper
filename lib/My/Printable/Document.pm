@@ -452,6 +452,11 @@ sub defaultStyles {
         .alternate-red   { stroke: #ff3333; opacity: 0.5; }
         .alternate-green { stroke: #67ff67; opacity: 0.5; }
         .alternate-gray  { stroke: #676767; opacity: 0.5; }
+
+        .gray20 { stroke: #333333; }
+        .gray40 { stroke: #666666; }
+        .gray60 { stroke: #999999; }
+        .gray80 { stroke: #cccccc; }
 EOF
 
     $style = $self->doubleCurly($style);
@@ -462,6 +467,12 @@ EOF
 # {{ 1/600 in }} => 0.12pt
 sub doubleCurly {
     my ($self, $text) = @_;
+    if (!defined $text) {
+        if (scalar @_ >= 2) {
+            return undef;
+        }
+        return;
+    }
     $text =~ s{\{\{\s*(.*?)\s*\}\}}{$self->unit->pt($1) . 'px'}gxe;
     return $text;
 }
@@ -486,7 +497,10 @@ sub styleToCSSClass {
 
 sub appendCSSClass {
     my ($self, $string, @add_classes) = @_;
-    my @classes = split(/\s+/, trim($string));
+    my @classes;
+    if (defined $string) {
+        @classes = split(/\s+/, trim($string));
+    }
     foreach my $class (@add_classes) {
         push(@classes, $class) unless grep { $_ eq $class } @classes;
     }
