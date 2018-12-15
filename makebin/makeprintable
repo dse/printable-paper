@@ -311,7 +311,7 @@ my %build = (
                 # svg2pdf will not work
                 # rsvg-convert does not work, output looks like shit
                 # imagenagick works but is not fast and rasterizes
-                my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-pdf {FILENAME} %s",
+                my $cmd = sprintf("inkscape --without-gui --export-dpi=600 --export-pdf {FILENAME} %s",
                                   shell_quote($dependencies->[0]));
                 cmd($target, $cmd);
             }
