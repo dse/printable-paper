@@ -23,9 +23,15 @@ sub exclude(\@@) {
 
 sub round3 {
     my ($value) = @_;
+    if (!defined $value) {
+        if (scalar @_) {
+            return undef;
+        }
+        return;
+    }
     $value = sprintf('%.3f', $value);
-    $value =~ s{(\.\d*?)0+$}{$1};
-    $value =~ s{\.$}{};
+#    $value =~ s{(\.\d*?)0+$}{$1};
+#    $value =~ s{\.$}{};
     return $value;
 }
 
