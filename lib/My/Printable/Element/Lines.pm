@@ -16,7 +16,6 @@ use base qw(My::Printable::Element);
 sub draw {
     my ($self) = @_;
     my $cssClass = $self->cssClass // "thin blue line";
-    my $cssStyle = $self->cssStyle;
     if ($self->direction eq "horizontal") {
         my $x1 = $self->x1 // $self->document->leftMarginX;
         my $x2 = $self->x2 // $self->document->rightMarginX;
@@ -24,7 +23,6 @@ sub draw {
             my $line = $self->createSVGLine(
                 y => $y, x1 => $x1, x2 => $x2,
                 cssClass => $cssClass,
-                cssStyle => $cssStyle,
             );
             $self->appendSVGElement($line);
         }
@@ -35,7 +33,6 @@ sub draw {
             my $line = $self->createSVGLine(
                 x => $x, y1 => $y1, y2 => $y2,
                 cssClass => $cssClass,
-                cssStyle => $cssStyle,
             );
             $self->appendSVGElement($line);
         }

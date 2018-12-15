@@ -16,11 +16,9 @@ sub draw {
     my $y1 = $self->y1 // $self->document->topMarginY;
     my $y2 = $self->y2 // $self->document->bottomMarginY;
     my $cssClass = $self->cssClass // "blue line";
-    my $cssStyle = $self->cssStyle;
     my $line = $self->createSVGLine(
         x1 => $x1, y1 => $y1, x2 => $x2, y2 => $y2,
         cssClass => $cssClass,
-        cssStyle => $cssStyle,
     );
     $self->svgLayer->appendChild($line);
 }

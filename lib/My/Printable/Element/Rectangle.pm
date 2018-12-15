@@ -100,12 +100,10 @@ sub draw {
     my $ry = $self->ry // $self->r // 0;
 
     my $cssClass = $self->cssClass // "blue line";
-    my $cssStyle = $self->cssStyle;
     my $rectangle = $self->createSVGRectangle(
         x => $x, y => $y, width => $width, height => $height,
         rx => $rx, ry => $ry,
         cssClass => $cssClass,
-        cssStyle => $cssStyle,
     );
     $self->appendSVGElement($rectangle);
 }

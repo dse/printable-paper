@@ -52,7 +52,6 @@ public "spacingY", set => sub {
 };
 
 public "cssClass";
-public "cssStyle";
 
 public "originX", set => sub {
     my ($self, $value) = @_;
@@ -108,26 +107,22 @@ sub createSVGLine {
     my $line = $doc->createElement('line');
 
     my $cssClass = $args{cssClass} // $self->cssClass;
-    my $cssStyle = $args{cssStyle} // $self->cssStyle;
-    $cssStyle = $self->document->doubleCurly($cssStyle);
 
     $line->setAttribute('x1', sprintf('%.3f', $args{x1} // $args{x}));
     $line->setAttribute('x2', sprintf('%.3f', $args{x2} // $args{x}));
     $line->setAttribute('y1', sprintf('%.3f', $args{y1} // $args{y}));
     $line->setAttribute('y2', sprintf('%.3f', $args{y2} // $args{y}));
     $line->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
-    $line->setAttribute('style', $cssStyle) if defined $cssStyle && $cssStyle ne '';
     return $line;
 }
 
+# MAKE FASTER?
 sub createSVGDot {
     my ($self, %args) = @_;
     my $doc = $self->document->svgDocument;
     my $line = $doc->createElement('line');
 
     my $cssClass = $args{cssClass} // $self->cssClass;
-    my $cssStyle = $args{cssStyle} // $self->cssStyle;
-    $cssStyle = $self->document->doubleCurly($cssStyle);
 
     my $x = sprintf('%.3f', $args{x});
     my $y = sprintf('%.3f', $args{y});
@@ -136,7 +131,6 @@ sub createSVGDot {
     $line->setAttribute('y1', $y);
     $line->setAttribute('y2', $y);
     $line->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
-    $line->setAttribute('style', $cssStyle) if defined $cssStyle && $cssStyle ne '';
     return $line;
 }
 
@@ -146,8 +140,6 @@ sub createSVGRectangle {
     my $rectangle = $doc->createElement('rect');
 
     my $cssClass = $args{cssClass} // $self->cssClass;
-    my $cssStyle = $args{cssStyle} // $self->cssStyle;
-    $cssStyle = $self->document->doubleCurly($cssStyle);
 
     $rectangle->setAttribute('x', sprintf('%.3f', $args{x}));
     $rectangle->setAttribute('y', sprintf('%.3f', $args{y}));
@@ -156,7 +148,6 @@ sub createSVGRectangle {
     $rectangle->setAttribute('rx', sprintf('%.3f', $args{rx})) if $args{rx};
     $rectangle->setAttribute('ry', sprintf('%.3f', $args{ry})) if $args{ry};
     $rectangle->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
-    $rectangle->setAttribute('style', $cssStyle) if defined $cssStyle && $cssStyle ne '';
     return $rectangle;
 }
 
@@ -372,8 +363,6 @@ sub drawDotPattern {
     my ($self, %args) = @_;
 
     my $cssClass = $args{cssClass} // $self->cssClass;
-    my $cssStyle = $args{cssStyle} // $self->cssStyle;
-    $cssStyle = $self->document->doubleCurly($cssStyle);
 
     my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
     my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
@@ -410,10 +399,11 @@ sub drawDotPattern {
             $pattern->setAttribute('patternUnits', 'userSpaceOnUse');
             $pattern->setAttribute('viewBox', $viewBox);
 
-            my $line = $self->createSVGLine(x => $xPointSeries->spacing / 2,
-                                            y => $yPointSeries->spacing / 2,
-                                            cssClass => $cssClass,
-                                            cssStyle => $cssStyle);
+            my $line = $self->createSVGLine(
+                x => $xPointSeries->spacing / 2,
+                y => $yPointSeries->spacing / 2,
+                cssClass => $cssClass,
+            );
             $pattern->appendChild($line);
 
             $self->svgDefs->appendChild($pattern);
@@ -441,7 +431,6 @@ sub drawDotPattern {
                     $ellipse->setAttribute('rx', $dw2);
                     $ellipse->setAttribute('ry', $dh2);
                     $ellipse->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
-                    $ellipse->setAttribute('style', $cssStyle) if defined $cssStyle && $cssStyle ne '';
                     $layer->appendChild($ellipse);
                 } else {
                     my %a;
@@ -453,7 +442,6 @@ sub drawDotPattern {
                         $a{x2} = $x2;
                         $a{y} = $y;
                         $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
-                        $a{cssStyle} = $cssStyle if defined $cssStyle && $cssStyle ne '';
                         $line = $self->createSVGLine(%a);
                     } elsif ($dh2) {
                         my $y1 = $y - $dh2;
@@ -462,13 +450,11 @@ sub drawDotPattern {
                         $a{y2} = $y2;
                         $a{x} = $x;
                         $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
-                        $a{cssStyle} = $cssStyle if defined $cssStyle && $cssStyle ne '';
                         $line = $self->createSVGLine(%a);
                     } else {
                         $a{y} = $y;
                         $a{x} = $x;
                         $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
-                        $a{cssStyle} = $cssStyle if defined $cssStyle && $cssStyle ne '';
                         $line = $self->createSVGDot(%a);
                     }
                     $layer->appendChild($line);
@@ -495,7 +481,6 @@ sub drawLinePattern {
         my $direction = $args{direction};
         my $pattern = $self->svgDocument->createElement('pattern');
         my $cssClass = $args{cssClass};
-        my $cssStyle = $args{cssStyle};
         my $xPointSeries = $args{xPointSeries};
         my $yPointSeries = $args{yPointSeries};
         my $x1 = $args{x1} // $xPointSeries->startPoint;
@@ -525,7 +510,6 @@ sub drawLinePattern {
                 x1 => $fudge,
                 x2 => $fudge + $x2 - $x1,
                 cssClass => $cssClass,
-                cssStyle => $cssStyle,
             );
             $pattern->setAttribute('x', $x1 - $fudge);
             $pattern->setAttribute('y', $yPointSeries->startPoint - $spacing / 2);
@@ -547,7 +531,6 @@ sub drawLinePattern {
                 y1 => $fudge,
                 y2 => $fudge + $y2 - $y1,
                 cssClass => $cssClass,
-                cssStyle => $cssStyle,
             );
             $pattern->setAttribute('x', $xPointSeries->startPoint - $spacing / 2);
             $pattern->setAttribute('y', $y1 - $fudge);
@@ -571,7 +554,6 @@ sub drawLinePattern {
     } else {
         my $direction = $args{direction};
         my $cssClass = $args{cssClass};
-        my $cssStyle = $args{cssStyle};
         my $xPointSeries = $args{xPointSeries};
         my $yPointSeries = $args{yPointSeries};
         my $x1 = $args{x1} // $xPointSeries->startPoint;
@@ -585,7 +567,6 @@ sub drawLinePattern {
                 my $line = $self->createSVGLine(
                     x1 => $x1, x2 => $x2, y => $y,
                     cssClass => $cssClass,
-                    cssStyle => $cssStyle,
                 );
                 $self->svgLayer->appendChild($line);
             }
@@ -595,7 +576,6 @@ sub drawLinePattern {
                 my $line = $self->createSVGLine(
                     y1 => $y1, y2 => $y2, x => $x,
                     cssClass => $cssClass,
-                    cssStyle => $cssStyle,
                 );
                 $self->svgLayer->appendChild($line);
             }
