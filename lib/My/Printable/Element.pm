@@ -87,8 +87,6 @@ delegate "svgDocument", via => "document";
 delegate "svgRoot",     via => "document";
 delegate 'svgDefs',     via => 'document';
 
-use constant USE_SVG_PATTERNS => 0;
-
 public "svgLayer", lazy_default => sub {
     my ($self) = @_;
     my $id = $self->id;
@@ -367,98 +365,47 @@ sub drawDotPattern {
     my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
     my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
 
-    if (USE_SVG_PATTERNS) {
-        # THIS CODE MAY NOT WORK ANYMORE.
-        # IT DOES NOT YET ACCOUNT FOR DOTHEIGHT OR DOTWIDTH.
-        my $pattern = $self->svgDocument->createElement('pattern');
-
-        my $x1 = $xPointSeries->startPoint;
-        my $x2 = $xPointSeries->endPoint;
-        my $y1 = $yPointSeries->startPoint;
-        my $y2 = $yPointSeries->endPoint;
-
-        my $type = $args{type} // "dots";
-
-        my $x = $xPointSeries->startPoint;
-        my $y = $yPointSeries->startPoint;
-
-        if (defined $xPointSeries && defined $yPointSeries) {
-            my $pattern_id = sprintf('%s-pattern-%d-%s',
-                                     $self->id,
-                                     $self->getPatternCounter,
-                                     $type);
-            my $pattern = $self->svgDocument->createElement('pattern');
-            my $viewBox = sprintf('0 0 %.3f %.3f',
-                                  $xPointSeries->spacing,
-                                  $yPointSeries->spacing);
-            $pattern->setAttribute('id', $pattern_id);
-            $pattern->setAttribute('x', $x - $xPointSeries->spacing / 2);
-            $pattern->setAttribute('y', $y - $yPointSeries->spacing / 2);
-            $pattern->setAttribute('width', $xPointSeries->spacing);
-            $pattern->setAttribute('height', $yPointSeries->spacing);
-            $pattern->setAttribute('patternUnits', 'userSpaceOnUse');
-            $pattern->setAttribute('viewBox', $viewBox);
-
-            my $line = $self->createSVGLine(
-                x => $xPointSeries->spacing / 2,
-                y => $yPointSeries->spacing / 2,
-                cssClass => $cssClass,
-            );
-            $pattern->appendChild($line);
-
-            $self->svgDefs->appendChild($pattern);
-
-            my $rect = $self->svgDocument->createElement('rect');
-            $rect->setAttribute('x', $x1 - $xPointSeries->spacing / 2);
-            $rect->setAttribute('y', $y1 - $yPointSeries->spacing / 2);
-            $rect->setAttribute('width',  ($x2 - $x1) + ($xPointSeries->spacing));
-            $rect->setAttribute('height', ($y2 - $y1) + ($yPointSeries->spacing));
-            $rect->setAttribute('fill', sprintf('url(#%s)', $pattern_id));
-            $self->svgLayer->appendChild($rect);
-        }
-    } else {
-        my $dw2 = $self->dotWidth / 2;
-        my $dh2 = $self->dotHeight / 2;
-        my @x = $xPointSeries->getPoints();
-        my @y = $yPointSeries->getPoints();
-        my $layer = $self->svgLayer;
-        foreach my $x (@x) {
-            foreach my $y (@y) {
-                if ($dw2 && $dh2) {
-                    my $ellipse = $self->document->svgDocument->createElement('circle');
-                    $ellipse->setAttribute('cx', $x);
-                    $ellipse->setAttribute('cy', $y);
-                    $ellipse->setAttribute('rx', $dw2);
-                    $ellipse->setAttribute('ry', $dh2);
-                    $ellipse->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
-                    $layer->appendChild($ellipse);
+    my $dw2 = $self->dotWidth / 2;
+    my $dh2 = $self->dotHeight / 2;
+    my @x = $xPointSeries->getPoints();
+    my @y = $yPointSeries->getPoints();
+    my $layer = $self->svgLayer;
+    foreach my $x (@x) {
+        foreach my $y (@y) {
+            if ($dw2 && $dh2) {
+                my $ellipse = $self->document->svgDocument->createElement('circle');
+                $ellipse->setAttribute('cx', $x);
+                $ellipse->setAttribute('cy', $y);
+                $ellipse->setAttribute('rx', $dw2);
+                $ellipse->setAttribute('ry', $dh2);
+                $ellipse->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
+                $layer->appendChild($ellipse);
+            } else {
+                my %a;
+                my $line;
+                if ($dw2) {
+                    my $x1 = $x - $dw2;
+                    my $x2 = $x + $dw2;
+                    $a{x1} = $x1;
+                    $a{x2} = $x2;
+                    $a{y} = $y;
+                    $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+                    $line = $self->createSVGLine(%a);
+                } elsif ($dh2) {
+                    my $y1 = $y - $dh2;
+                    my $y2 = $y + $dh2;
+                    $a{y1} = $y1;
+                    $a{y2} = $y2;
+                    $a{x} = $x;
+                    $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+                    $line = $self->createSVGLine(%a);
                 } else {
-                    my %a;
-                    my $line;
-                    if ($dw2) {
-                        my $x1 = $x - $dw2;
-                        my $x2 = $x + $dw2;
-                        $a{x1} = $x1;
-                        $a{x2} = $x2;
-                        $a{y} = $y;
-                        $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
-                        $line = $self->createSVGLine(%a);
-                    } elsif ($dh2) {
-                        my $y1 = $y - $dh2;
-                        my $y2 = $y + $dh2;
-                        $a{y1} = $y1;
-                        $a{y2} = $y2;
-                        $a{x} = $x;
-                        $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
-                        $line = $self->createSVGLine(%a);
-                    } else {
-                        $a{y} = $y;
-                        $a{x} = $x;
-                        $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
-                        $line = $self->createSVGDot(%a);
-                    }
-                    $layer->appendChild($line);
+                    $a{y} = $y;
+                    $a{x} = $x;
+                    $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+                    $line = $self->createSVGDot(%a);
                 }
+                $layer->appendChild($line);
             }
         }
     }
@@ -477,108 +424,32 @@ sub drawVerticalLinePattern {
 sub drawLinePattern {
     my ($self, %args) = @_;
 
-    if (USE_SVG_PATTERNS) {
-        my $direction = $args{direction};
-        my $pattern = $self->svgDocument->createElement('pattern');
-        my $cssClass = $args{cssClass};
-        my $xPointSeries = $args{xPointSeries};
-        my $yPointSeries = $args{yPointSeries};
-        my $x1 = $args{x1} // $xPointSeries->startPoint;
-        my $x2 = $args{x2} // $xPointSeries->endPoint;
-        my $y1 = $args{y1} // $yPointSeries->startPoint;
-        my $y2 = $args{y2} // $yPointSeries->endPoint;
-        my $spacing;
-
-        my $type = $args{type} // sprintf("%s-lines", $direction);
-
-        my $pattern_id = sprintf('%s-pattern-%d-%s',
-                                 $self->id,
-                                 $self->getPatternCounter,
-                                 $type);
-        my $viewBox;
-        my $fudge = 18;
-        my $line;
-        my $rect;
-
-        if ($direction eq "horizontal") {
-            $spacing = $yPointSeries->spacing;
-            $viewBox = sprintf('0 0 %.3f %.3f',
-                               ($x2 - $x1 + $fudge * 2),
-                               $spacing);
-            $line = $self->createSVGLine(
-                y => $spacing / 2,
-                x1 => $fudge,
-                x2 => $fudge + $x2 - $x1,
+    my $direction = $args{direction};
+    my $cssClass = $args{cssClass};
+    my $xPointSeries = $args{xPointSeries};
+    my $yPointSeries = $args{yPointSeries};
+    my $x1 = $args{x1} // $xPointSeries->startPoint;
+    my $x2 = $args{x2} // $xPointSeries->endPoint;
+    my $y1 = $args{y1} // $yPointSeries->startPoint;
+    my $y2 = $args{y2} // $yPointSeries->endPoint;
+    my $spacing;
+    if ($direction eq "horizontal") {
+        my @y = $yPointSeries->getPoints();
+        foreach my $y (@y) {
+            my $line = $self->createSVGLine(
+                x1 => $x1, x2 => $x2, y => $y,
                 cssClass => $cssClass,
             );
-            $pattern->setAttribute('x', $x1 - $fudge);
-            $pattern->setAttribute('y', $yPointSeries->startPoint - $spacing / 2);
-            $pattern->setAttribute('width', $x2 - $x1 + $fudge * 2);
-            $pattern->setAttribute('height', $spacing);
-
-            $rect = $self->svgDocument->createElement('rect');
-            $rect->setAttribute('x', $x1 - $fudge);
-            $rect->setAttribute('y', $y1 - $spacing / 2);
-            $rect->setAttribute('width', $x2 - $x1 + $fudge * 2);
-            $rect->setAttribute('height', $y2 - $y1 + $spacing);
-        } elsif ($direction eq "vertical") {
-            $spacing = $xPointSeries->spacing;
-            $viewBox = sprintf('0 0 %.3f %.3f',
-                               $spacing,
-                               ($y2 - $y1 + $fudge * 2));
-            $line = $self->createSVGLine(
-                x => $spacing / 2,
-                y1 => $fudge,
-                y2 => $fudge + $y2 - $y1,
-                cssClass => $cssClass,
-            );
-            $pattern->setAttribute('x', $xPointSeries->startPoint - $spacing / 2);
-            $pattern->setAttribute('y', $y1 - $fudge);
-            $pattern->setAttribute('width', $spacing);
-            $pattern->setAttribute('height', $y2 - $y1 + $fudge * 2);
-
-            $rect = $self->svgDocument->createElement('rect');
-            $rect->setAttribute('x', $x1 - $spacing / 2);
-            $rect->setAttribute('y', $y1 - $fudge);
-            $rect->setAttribute('width', $x2 - $x1 + $spacing);
-            $rect->setAttribute('height', $y2 - $y1 + $fudge * 2);
+            $self->svgLayer->appendChild($line);
         }
-        $pattern->setAttribute('id', $pattern_id);
-        $pattern->setAttribute('patternUnits', 'userSpaceOnUse');
-        $pattern->setAttribute('viewBox', $viewBox);
-        $pattern->appendChild($line);
-        $self->svgDefs->appendChild($pattern);
-
-        $rect->setAttribute('fill', sprintf('url(#%s)', $pattern_id));
-        $self->svgLayer->appendChild($rect);
-    } else {
-        my $direction = $args{direction};
-        my $cssClass = $args{cssClass};
-        my $xPointSeries = $args{xPointSeries};
-        my $yPointSeries = $args{yPointSeries};
-        my $x1 = $args{x1} // $xPointSeries->startPoint;
-        my $x2 = $args{x2} // $xPointSeries->endPoint;
-        my $y1 = $args{y1} // $yPointSeries->startPoint;
-        my $y2 = $args{y2} // $yPointSeries->endPoint;
-        my $spacing;
-        if ($direction eq "horizontal") {
-            my @y = $yPointSeries->getPoints();
-            foreach my $y (@y) {
-                my $line = $self->createSVGLine(
-                    x1 => $x1, x2 => $x2, y => $y,
-                    cssClass => $cssClass,
-                );
-                $self->svgLayer->appendChild($line);
-            }
-        } elsif ($direction eq "vertical") {
-            my @x = $xPointSeries->getPoints();
-            foreach my $x (@x) {
-                my $line = $self->createSVGLine(
-                    y1 => $y1, y2 => $y2, x => $x,
-                    cssClass => $cssClass,
-                );
-                $self->svgLayer->appendChild($line);
-            }
+    } elsif ($direction eq "vertical") {
+        my @x = $xPointSeries->getPoints();
+        foreach my $x (@x) {
+            my $line = $self->createSVGLine(
+                y1 => $y1, y2 => $y2, x => $x,
+                cssClass => $cssClass,
+            );
+            $self->svgLayer->appendChild($line);
         }
     }
 }
