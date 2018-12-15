@@ -101,16 +101,42 @@ public "svgLayer", lazy_default => sub {
     return $g;
 }, delete => "deleteSVGLayer";
 
+# MAKE FASTER
 sub createSVGLine {
     my ($self, %args) = @_;
     my $doc = $self->document->svgDocument;
     my $line = $doc->createElement('line');
-    $line->setAttribute('x1', round3($args{x1} // $args{x}));
-    $line->setAttribute('x2', round3($args{x2} // $args{x}));
-    $line->setAttribute('y1', round3($args{y1} // $args{y}));
-    $line->setAttribute('y2', round3($args{y2} // $args{y}));
-    $line->setAttribute('class', $args{cssClass}) if defined $args{cssClass} && $args{cssClass} =~ m{\S};
-    $line->setAttribute('style', $self->document->doubleCurly($args{cssStyle})) if defined $args{cssStyle};
+
+    my $cssClass = $args{cssClass} // $self->cssClass;
+    my $cssStyle = $args{cssStyle} // $self->cssStyle;
+    $cssStyle = $self->document->doubleCurly($cssStyle);
+
+    $line->setAttribute('x1', sprintf('%.3f', $args{x1} // $args{x}));
+    $line->setAttribute('x2', sprintf('%.3f', $args{x2} // $args{x}));
+    $line->setAttribute('y1', sprintf('%.3f', $args{y1} // $args{y}));
+    $line->setAttribute('y2', sprintf('%.3f', $args{y2} // $args{y}));
+    $line->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
+    $line->setAttribute('style', $cssStyle) if defined $cssStyle && $cssStyle ne '';
+    return $line;
+}
+
+sub createSVGDot {
+    my ($self, %args) = @_;
+    my $doc = $self->document->svgDocument;
+    my $line = $doc->createElement('line');
+
+    my $cssClass = $args{cssClass} // $self->cssClass;
+    my $cssStyle = $args{cssStyle} // $self->cssStyle;
+    $cssStyle = $self->document->doubleCurly($cssStyle);
+
+    my $x = sprintf('%.3f', $args{x});
+    my $y = sprintf('%.3f', $args{y});
+    $line->setAttribute('x1', $x);
+    $line->setAttribute('x2', $x);
+    $line->setAttribute('y1', $y);
+    $line->setAttribute('y2', $y);
+    $line->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
+    $line->setAttribute('style', $cssStyle) if defined $cssStyle && $cssStyle ne '';
     return $line;
 }
 
@@ -118,14 +144,19 @@ sub createSVGRectangle {
     my ($self, %args) = @_;
     my $doc = $self->document->svgDocument;
     my $rectangle = $doc->createElement('rect');
-    $rectangle->setAttribute('x', round3($args{x}));
-    $rectangle->setAttribute('y', round3($args{y}));
-    $rectangle->setAttribute('width',  round3($args{width}));
-    $rectangle->setAttribute('height', round3($args{height}));
-    $rectangle->setAttribute('rx', round3($args{rx})) if $args{rx};
-    $rectangle->setAttribute('ry', round3($args{ry})) if $args{ry};
-    $rectangle->setAttribute('class', $args{cssClass}) if defined $args{cssClass} && $args{cssClass} =~ m{\S};
-    $rectangle->setAttribute('style', $self->document->doubleCurly($args{cssStyle})) if defined $args{cssStyle};
+
+    my $cssClass = $args{cssClass} // $self->cssClass;
+    my $cssStyle = $args{cssStyle} // $self->cssStyle;
+    $cssStyle = $self->document->doubleCurly($cssStyle);
+
+    $rectangle->setAttribute('x', sprintf('%.3f', $args{x}));
+    $rectangle->setAttribute('y', sprintf('%.3f', $args{y}));
+    $rectangle->setAttribute('width',  sprintf('%.3f', $args{width}));
+    $rectangle->setAttribute('height', sprintf('%.3f', $args{height}));
+    $rectangle->setAttribute('rx', sprintf('%.3f', $args{rx})) if $args{rx};
+    $rectangle->setAttribute('ry', sprintf('%.3f', $args{ry})) if $args{ry};
+    $rectangle->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
+    $rectangle->setAttribute('style', $cssStyle) if defined $cssStyle && $cssStyle ne '';
     return $rectangle;
 }
 
@@ -336,16 +367,21 @@ sub getPatternCounter {
     return $self->patternCounter($self->patternCounter + 1);
 }
 
+# MAKE FASTER
 sub drawDotPattern {
     my ($self, %args) = @_;
 
+    my $cssClass = $args{cssClass} // $self->cssClass;
+    my $cssStyle = $args{cssStyle} // $self->cssStyle;
+    $cssStyle = $self->document->doubleCurly($cssStyle);
+
+    my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
+    my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
+
     if (USE_SVG_PATTERNS) {
-        # NOT YET ACCOUNTING FOR DOTHEIGHT OR DOTWIDTH
+        # THIS CODE MAY NOT WORK ANYMORE.
+        # IT DOES NOT YET ACCOUNT FOR DOTHEIGHT OR DOTWIDTH.
         my $pattern = $self->svgDocument->createElement('pattern');
-        my $cssClass = delete $args{cssClass};
-        my $cssStyle = delete $args{cssStyle};
-        my $xPointSeries = delete $args{xPointSeries};
-        my $yPointSeries = delete $args{yPointSeries};
 
         my $x1 = $xPointSeries->startPoint;
         my $x2 = $xPointSeries->endPoint;
@@ -391,44 +427,51 @@ sub drawDotPattern {
             $self->svgLayer->appendChild($rect);
         }
     } else {
-        my $cssClass = delete $args{cssClass};
-        my $cssStyle = delete $args{cssStyle};
-        my $xPointSeries = delete $args{xPointSeries};
-        my $yPointSeries = delete $args{yPointSeries};
+        my $dw2 = $self->dotWidth / 2;
+        my $dh2 = $self->dotHeight / 2;
         my @x = $xPointSeries->getPoints();
         my @y = $yPointSeries->getPoints();
+        my $layer = $self->svgLayer;
         foreach my $x (@x) {
             foreach my $y (@y) {
-                my $x1 = $x;
-                my $x2 = $x;
-                my $y1 = $y;
-                my $y2 = $y;
-                if ($self->dotWidth && $self->dotHeight) {
+                if ($dw2 && $dh2) {
                     my $ellipse = $self->document->svgDocument->createElement('circle');
                     $ellipse->setAttribute('cx', $x);
                     $ellipse->setAttribute('cy', $y);
-                    $ellipse->setAttribute('rx', $self->dotWidth / 2);
-                    $ellipse->setAttribute('ry', $self->dotHeight / 2);
-                    $ellipse->setAttribute('class', $self->cssClass) if defined $self->cssClass && $args{cssClass} =~ m{\S};
-                    $ellipse->setAttribute('style', $self->document->doubleCurly($self->cssStyle)) if defined $self->cssStyle;
-                    $self->svgLayer->appendChild($ellipse);
+                    $ellipse->setAttribute('rx', $dw2);
+                    $ellipse->setAttribute('ry', $dh2);
+                    $ellipse->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
+                    $ellipse->setAttribute('style', $cssStyle) if defined $cssStyle && $cssStyle ne '';
+                    $layer->appendChild($ellipse);
                 } else {
-                    if ($self->dotWidth) {
-                        $x1 -= $self->dotWidth / 2;
-                        $x2 += $self->dotWidth / 2;
-                    } elsif ($self->dotHeight) {
-                        $y1 -= $self->dotHeight / 2;
-                        $y2 += $self->dotHeight / 2;
+                    my %a;
+                    my $line;
+                    if ($dw2) {
+                        my $x1 = $x - $dw2;
+                        my $x2 = $x + $dw2;
+                        $a{x1} = $x1;
+                        $a{x2} = $x2;
+                        $a{y} = $y;
+                        $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+                        $a{cssStyle} = $cssStyle if defined $cssStyle && $cssStyle ne '';
+                        $line = $self->createSVGLine(%a);
+                    } elsif ($dh2) {
+                        my $y1 = $y - $dh2;
+                        my $y2 = $y + $dh2;
+                        $a{y1} = $y1;
+                        $a{y2} = $y2;
+                        $a{x} = $x;
+                        $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+                        $a{cssStyle} = $cssStyle if defined $cssStyle && $cssStyle ne '';
+                        $line = $self->createSVGLine(%a);
+                    } else {
+                        $a{y} = $y;
+                        $a{x} = $x;
+                        $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+                        $a{cssStyle} = $cssStyle if defined $cssStyle && $cssStyle ne '';
+                        $line = $self->createSVGDot(%a);
                     }
-                    my $line = $self->createSVGLine(
-                        x1 => $x1,
-                        y1 => $y1,
-                        x2 => $x2,
-                        y2 => $y2,
-                        cssClass => $cssClass,
-                        cssStyle => $cssStyle,
-                    );
-                    $self->svgLayer->appendChild($line);
+                    $layer->appendChild($line);
                 }
             }
         }
