@@ -8,7 +8,7 @@ use Class::Thingy;
 use Class::Thingy::Delegate;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(round3);
+use My::Printable::Util qw(:const);
 
 use List::Util qw(min max);
 use Storable qw(dclone);
@@ -350,18 +350,87 @@ sub chopY {
     $self->yPointSeries->chopAhead($self->document->bottomMarginY);
 }
 
-public 'patternCounter', default => 0;
-sub getPatternCounter {
-    my ($self) = @_;
-    return $self->patternCounter($self->patternCounter + 1);
-}
-
-# MAKE FASTER
-sub drawDotPattern {
+sub drawDotPatternUsingSVGPatterns {
     my ($self, %args) = @_;
 
     my $cssClass = $args{cssClass} // $self->cssClass;
+    my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
+    my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
 
+    my $dw2 = $self->dotWidth / 2;
+    my $dh2 = $self->dotHeight / 2;
+
+    my $layer = $self->svgLayer;
+
+    my $patternId = $self->id . '-pattern';
+    my $pattern = $self->document->svgDocument->createElement('pattern');
+    my $patternWidth  = $xPointSeries->spacing;
+    my $patternHeight = $yPointSeries->spacing;
+    my $patternViewBox = sprintf('0 0 %.3f %.3f', $patternWidth, $patternHeight);
+    my $translateX = $xPointSeries->startPoint - $patternWidth / 2;
+    my $translateY = $yPointSeries->startPoint - $patternHeight / 2;
+
+    $pattern->setAttribute('id', $patternId);
+    $pattern->setAttribute('x', '0');
+    $pattern->setAttribute('y', '0');
+    $pattern->setAttribute('width', sprintf('%.3f', $patternWidth));
+    $pattern->setAttribute('height', sprintf('%.3f', $patternHeight));
+    $pattern->setAttribute('viewBox', $patternViewBox);
+    $pattern->setAttribute('patternUnits', 'userSpaceOnUse');
+    $pattern->setAttribute('patternTransform', sprintf('translate(%.3f, %.3f)', $translateX, $translateY));
+
+    if ($dw2 && $dh2) {
+        my $ellipse = $self->document->svgDocument->createElement('circle');
+        $ellipse->setAttribute('cx', sprintf('%.3f', $patternWidth / 2));
+        $ellipse->setAttribute('cy', sprintf('%.3f', $patternHeight / 2));
+        $ellipse->setAttribute('rx', $dw2);
+        $ellipse->setAttribute('ry', $dh2);
+        $ellipse->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
+        $pattern->appendChild($ellipse);
+    } else {
+        my %a;
+        if ($dw2) {
+            $a{x1} = $patternWidth / 2 - $dw2;
+            $a{x2} = $patternWidth / 2 + $dw2;
+            $a{y} = $patternHeight / 2;
+        } elsif ($dh2) {
+            $a{y1} = $patternHeight / 2 - $dh2;
+            $a{y2} = $patternHeight / 2 + $dh2;
+            $a{x} = $patternWidth / 2;
+        } else {
+            $a{x} = $patternWidth / 2;
+            $a{y} = $patternHeight / 2;
+        }
+        $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+        my $line = $self->createSVGLine(%a);
+        $pattern->appendChild($line);
+    }
+    $self->document->svgDefs->appendChild($pattern);
+
+    my $rect = $self->document->svgDocument->createElement('rect');
+    my $rectX = $xPointSeries->startPoint - $patternWidth / 2;
+    my $rectY = $yPointSeries->startPoint - $patternHeight / 2;
+    my $rectWidth  = $xPointSeries->endPoint - $xPointSeries->startPoint + $xPointSeries->spacing;
+    my $rectHeight = $yPointSeries->endPoint - $yPointSeries->startPoint + $yPointSeries->spacing;
+
+    $rect->setAttribute('x', sprintf('%.3f', $rectX));
+    $rect->setAttribute('y', sprintf('%.3f', $rectY));
+    $rect->setAttribute('width', sprintf('%.3f', $rectWidth));
+    $rect->setAttribute('height', sprintf('%.3f', $rectHeight));
+    my $style = sprintf('stroke: none; fill: url(\'#%s\');', $patternId);
+    if (USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND) {
+        $style .= ' filter: url(\'#inkscapeBugWorkaroundFilter\');';
+    }
+    $rect->setAttribute('style', $style);
+    $layer->appendChild($rect);
+    $self->document->svgInkscapeBugWorkaroundFilter();
+}
+
+# MAKE FASTER
+sub drawDotPatternUsingDots {
+    my ($self, %args) = @_;
+
+    my $cssClass = $args{cssClass} // $self->cssClass;
     my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
     my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
 
@@ -374,10 +443,10 @@ sub drawDotPattern {
         foreach my $y (@y) {
             if ($dw2 && $dh2) {
                 my $ellipse = $self->document->svgDocument->createElement('circle');
-                $ellipse->setAttribute('cx', $x);
-                $ellipse->setAttribute('cy', $y);
-                $ellipse->setAttribute('rx', $dw2);
-                $ellipse->setAttribute('ry', $dh2);
+                $ellipse->setAttribute('cx', sprintf('%.3f', $x));
+                $ellipse->setAttribute('cy', sprintf('%.3f', $y));
+                $ellipse->setAttribute('rx', sprintf('%.3f', $dw2));
+                $ellipse->setAttribute('ry', sprintf('%.3f', $dh2));
                 $ellipse->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
                 $layer->appendChild($ellipse);
             } else {
@@ -409,6 +478,14 @@ sub drawDotPattern {
             }
         }
     }
+}
+
+sub drawDotPattern {
+    my ($self, %args) = @_;
+    if (USE_SVG_PATTERNS_FOR_DOT_GRIDS) {
+        return $self->drawDotPatternUsingSVGPatterns();
+    }
+    return $self->drawDotPatternUsingDots();
 }
 
 sub drawHorizontalLinePattern {
