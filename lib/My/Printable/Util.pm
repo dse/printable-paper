@@ -8,7 +8,17 @@ use base "Exporter";
 our @EXPORT_OK = qw(exclude
                     round3
                     with_temp
-                    linear_interpolate);
+                    linear_interpolate
+                    USE_SVG_PATTERNS_FOR_DOT_GRIDS
+                    USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND);
+
+our %EXPORT_TAGS = (
+    const => [qw(USE_SVG_PATTERNS_FOR_DOT_GRIDS
+                 USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND)]
+);
+
+use constant USE_SVG_PATTERNS_FOR_DOT_GRIDS => 0;
+use constant USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND => 0;
 
 use Data::Dumper;
 use File::Basename qw(basename dirname);
