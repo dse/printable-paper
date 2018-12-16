@@ -8,6 +8,7 @@ use Class::Thingy;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::ModifierList;
+use My::Printable::Util qw(:const);
 
 public 'id';
 public 'filename';
@@ -142,6 +143,22 @@ public 'svgDefs', lazy => 1, builder => sub {
     return $defs;
 }, delete => 'deleteSVGDefs';
 
+public 'svgInkscapeBugWorkaroundFilter', lazy => 1, builder => sub {
+    my ($self) = @_;
+    my $filter = $self->svgDocument->createElement('filter');
+    $filter->setAttribute('id', 'inkscapeBugWorkaroundFilter');
+
+    # an arbitrarily selected filter that does nothing.
+    my $feOffset = $self->svgDocument->createElement('feOffset');
+    $feOffset->setAttribute('in', 'SourceGraphic');
+    $feOffset->setAttribute('dx', '0');
+    $feOffset->setAttribute('dy', '0');
+    $filter->appendChild($feOffset);
+
+    $self->svgDefs->appendChild($filter);
+    return $filter;
+}, delete => 'deleteSVGInkscapeBugWorkaroundFilter';
+
 public 'svgStyle', lazy => 1, builder => sub {
     my ($self) = @_;
     return $self->addStyleElement($self->defaultStyles);
@@ -172,7 +189,7 @@ sub addStyleElement {
     if ($after) {
         $root->insertAfter($style, $after);
     } else {
-        $root->appendChild($style);
+        $root->insertBefore($style, $root->firstChild);
     }
     return $style;
 }
@@ -180,7 +197,7 @@ sub addStyleElement {
 sub findStyleNodeInsertionPoint {
     my ($self) = @_;
     my $doc = $self->svgDocument;
-    my ($after) = reverse $self->svgContext->findnodes('svg/style|svg/defs');
+    my ($after) = $self->svgContext->findnodes('svg/style');
     return $after;
 }
 
@@ -195,6 +212,9 @@ sub deleteSVG {
         $element->deleteSVGLayer();
     }
     $self->deleteSVGStyle();
+    if (USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND) {
+        $self->deleteSVGInkscapeBugWorkaroundFilter();
+    }
     $self->deleteSVGDefs();
     $self->deleteSVGRoot();
     $self->deleteSVGContext();
