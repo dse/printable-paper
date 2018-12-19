@@ -302,7 +302,7 @@ my %build = (
                         my $realpath_tempname = realpath($tempname);
                         die("realpath $tempname failed\n") if !defined $realpath_tempname;
                         unlink($tempname);
-                        $inkscape_shell->cmd(sprintf("%s --export-background=transparent --export-pdf=%s",
+                        $inkscape_shell->cmd(sprintf("%s --export-dpi=600 --export-pdf %s",
                                                      shell_quote($dependencies->[0]),
                                                      shell_quote($realpath_tempname)));
                     }
@@ -311,7 +311,7 @@ my %build = (
                 # svg2pdf will not work
                 # rsvg-convert does not work, output looks like shit
                 # imagenagick works but is not fast and rasterizes
-                my $cmd = sprintf("inkscape --without-gui --export-dpi=600 --export-pdf {FILENAME} %s",
+                my $cmd = sprintf("inkscape --without-gui %s --export-dpi=600 --export-pdf {FILENAME}",
                                   shell_quote($dependencies->[0]));
                 cmd($target, $cmd);
             }
@@ -593,12 +593,14 @@ sub EQ {
 
 my @builds_to_perform;
 my @filters;
+my $can_do_all_builds = 1;
 
 foreach my $arg (@ARGV) {
     if ($arg eq "LIST" || $arg eq "CLEAN" || $arg eq "MAKE") {
         $operation = $arg;
     } else {
         if ($arg =~ m{[\.\/\\]}) {
+            $can_do_all_builds = 0;
             my $build = $build_by_filename{$arg};
             if ($build) {
                 push(@builds_to_perform, $build);
@@ -635,6 +637,10 @@ foreach my $arg (@ARGV) {
 }
 
 if (!scalar @builds_to_perform) {
+    if (!$can_do_all_builds) {
+        warn("Nothing to do.  Exiting.\n");
+        exit(0);
+    }
     @builds_to_perform = @all_builds;
 }
 
