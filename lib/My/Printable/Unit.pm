@@ -123,7 +123,9 @@ sub rx_units {
 sub rx_number {
     my ($self) = @_;
     $self = $self->REQUIRE_OBJECT();
-    return qr{[\-\+]?\d+(?:\.\d*)?|\.\d+}ix;
+    return qr{[\-\+]?
+              (?:\d+(?:\.\d*)?|\.\d+)
+              (?:e[\-\+]?\d+)?}ix;
 }
 
 sub pt {
