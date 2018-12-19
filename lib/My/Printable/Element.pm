@@ -87,6 +87,15 @@ has "svgLayer" => (
     clearer => "deleteSVGLayer",
 );
 
+sub BUILD {
+    my ($self) = @_;
+    foreach my $method (qw(x1 x2 y1 y2
+                           spacing spacingX spacingY
+                           originX originY dotWidth dotHeight)) {
+        $self->$method($self->$method) if defined $self->$method;
+    }
+}
+
 # MAKE FASTER
 sub createSVGLine {
     my ($self, %args) = @_;

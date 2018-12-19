@@ -85,34 +85,38 @@ sub with_temp {
 sub aroundUnit {
     my $orig = shift;
     my $self = shift;
-    if (scalar @_) {
-        my $value = shift;
-        $value = $self->pt($value);
-        return $self->$orig($value, @_);
+    if (!scalar @_) {
+        return $self->$orig;
     }
-    return $self->$orig();
+    my $value = shift;
+    if ($self->can('pt')) {
+        $value = $self->pt($value);
+    } else {
+        $value = My::Printable::Unit->pt($value);
+    }
+    $self->$orig($value, @_);
 }
 
 sub aroundUnitX {
     my $orig = shift;
     my $self = shift;
-    if (scalar @_) {
-        my $value = shift;
-        $value = $self->ptX($value);
-        return $self->$orig($value, @_);
+    if (!scalar @_) {
+        return $self->$orig;
     }
-    return $self->$orig();
+    my $value = shift;
+    $value = $self->ptX($value);
+    $self->$orig($value, @_);
 }
 
 sub aroundUnitY {
     my $orig = shift;
     my $self = shift;
-    if (scalar @_) {
-        my $value = shift;
-        $value = $self->ptY($value);
-        return $self->$orig($value, @_);
+    if (!scalar @_) {
+        return $self->$orig;
     }
-    return $self->$orig();
+    my $value = shift;
+    $value = $self->ptY($value);
+    $self->$orig($value, @_);
 }
 
 1;

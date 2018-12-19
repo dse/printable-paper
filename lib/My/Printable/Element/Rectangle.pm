@@ -22,6 +22,13 @@ around 'rx'     => \&aroundUnitX;
 around 'ry'     => \&aroundUnitY;
 around 'r'      => \&aroundUnit;
 
+sub BUILD {
+    my ($self) = @_;
+    foreach my $method (qw(width height rx ry r)) {
+        $self->$method($self->$method) if defined $self->$method;
+    }
+}
+
 sub draw {
     my ($self) = @_;
 

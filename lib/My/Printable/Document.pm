@@ -169,9 +169,16 @@ has 'svgRoot' => (
 );
 after 'svgRoot' => sub {
     my ($self) = @_;
+
+    state $in = 0;              # recursion avoidance
+    return if $in;              # recursion avoidance
+    $in += 1;                   # recursion avoidance
+
     $self->svgDefs;
     $self->svgStyle;
     $self->svgAdditionalStyle;
+
+    $in -= 1;                   # recursion avoidance
 };
 
 has 'svgDefs' => (

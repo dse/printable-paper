@@ -16,16 +16,23 @@ has 'min' => (is => 'rw');
 has 'max' => (is => 'rw');
 
 around 'startPoint' => \&aroundUnit;
-around 'endPoint' => \&aroundUnit;
-around 'spacing' => \&aroundUnit;
-around 'origin' => \&aroundUnit;
-around 'min' => \&aroundUnit;
-around 'max' => \&aroundUnit;
+around 'endPoint'   => \&aroundUnit;
+around 'spacing'    => \&aroundUnit;
+around 'origin'     => \&aroundUnit;
+around 'min'        => \&aroundUnit;
+around 'max'        => \&aroundUnit;
 
 our $FUDGE = 0.0001;
 
+use Data::Dumper qw(Dumper);
+
 sub BUILD {
     my $self = shift;
+
+    foreach my $method (qw(startPoint endPoint spacing origin min max)) {
+        $self->$method($self->$method) if defined $self->$method;
+    }
+
     if (defined $self->origin && defined $self->spacing) {
         if (defined $self->min && !defined $self->startPoint) {
             my $start = $self->origin;
