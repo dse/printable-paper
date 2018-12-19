@@ -28,16 +28,16 @@ sub generate {
         #lines line {
             stroke: $color; stroke-width: {{ 2/600in }};
         }
-        #grid-1 line {
+        #grid-1 line, #grid-1-pattern line {
             stroke: $color; stroke-width: {{ 6/600in }}; stroke-linecap: butt;
         }
-        #grid-2 line {
+        #grid-2 line, #grid-2-pattern line {
             stroke: $color; stroke-width: {{ 6/600in }}; stroke-linecap: butt;
         }
-        #grid-3 line {
+        #grid-3 line, #grid-3-pattern line {
             stroke: $color; stroke-width: {{ 6/600in }}; stroke-linecap: butt;
         }
-        #grid-4 line {
+        #grid-4 line, #grid-4-pattern line {
             stroke: $color; stroke-width: {{ 6/600in }}; stroke-linecap: butt;
         }
 END
