@@ -4,7 +4,10 @@ use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use base qw(My::Printable::Element);
+
+use Moo;
+
+extends qw(My::Printable::Element);
 
 sub draw {
     my ($self) = @_;

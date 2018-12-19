@@ -70,7 +70,8 @@ around 'dotWidth'  => \&aroundUnitX;
 around 'dotHeight' => \&aroundUnitY;
 
 has "svgLayer" => (
-    is => 'lazy',
+    is => 'rw',
+    lazy => 1,
     default => sub {
         my ($self) = @_;
         my $id = $self->id;

@@ -3,6 +3,9 @@ use warnings;
 use strict;
 use v5.10.0;
 
+use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
+use My::Printable::Util qw(:around);
+
 use Moo;
 
 has 'startPoint' => (is => 'rw');
@@ -11,6 +14,13 @@ has 'spacing' => (is => 'rw');
 has 'origin' => (is => 'rw');
 has 'min' => (is => 'rw');
 has 'max' => (is => 'rw');
+
+around 'startPoint' => \&aroundUnit;
+around 'endPoint' => \&aroundUnit;
+around 'spacing' => \&aroundUnit;
+around 'origin' => \&aroundUnit;
+around 'min' => \&aroundUnit;
+around 'max' => \&aroundUnit;
 
 our $FUDGE = 0.0001;
 

@@ -4,10 +4,12 @@ use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Element::Grid;
 
-use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use base 'My::Printable::Ruling';
+use Moo;
+
+extends 'My::Printable::Ruling';
+
+use My::Printable::Element::Grid;
 
 use constant rulingName => 'quadrille';
 use constant hasLineGrid => 1;

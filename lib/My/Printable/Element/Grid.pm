@@ -28,7 +28,9 @@ has "origDottedLineYPointSeries" => (is => 'rw');
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::PointSeries;
 
-use base qw(My::Printable::Element);
+use Moo;
+
+extends qw(My::Printable::Element);
 
 use List::Util qw(min max);
 use Storable qw(dclone);

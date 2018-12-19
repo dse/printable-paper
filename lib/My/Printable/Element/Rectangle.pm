@@ -5,9 +5,10 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Util qw(:around);
-use base qw(My::Printable::Element);
 
 use Moo;
+
+extends qw(My::Printable::Element);
 
 has 'width' => (is => 'rw');
 has 'height' => (is => 'rw');
