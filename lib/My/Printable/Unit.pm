@@ -3,14 +3,11 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
-use Class::Thingy::RequireObject;
+use Moo;
 
-require_object;
-public "units";
-public "axis";
-public "size";
+has "units" => (is => 'rw');
+has "axis" => (is => 'rw');
+has "size" => (is => 'rw');
 
 use Storable qw(dclone);
 
@@ -45,7 +42,7 @@ our $UNITS = {
     }
 };
 
-sub init {
+sub BUILD {
     my ($self) = @_;
     $self->units(dclone($UNITS));
 }
@@ -235,6 +232,15 @@ sub pt {
 
     return ($result_pt, $result_type, $is_from_end) if wantarray;
     return $result_pt;
+}
+
+sub REQUIRE_OBJECT {
+    my $self = shift;
+    my $class = shift // __PACKAGE__;
+    return $self if ref $self && $self->isa($class);
+    state %singleton;
+    return $singleton{$class} if exists $singleton{$class};
+    return $singleton{$class} = $class->new();
 }
 
 1;

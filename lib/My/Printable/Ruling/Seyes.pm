@@ -10,9 +10,6 @@ use My::Printable::Element::Grid;
 use My::Printable::Element::Lines;
 use My::Printable::Element::Line;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
-
 use constant rulingName => 'seyes';
 use constant hasLineGrid => 1;
 use constant hasMarginLine => 1;

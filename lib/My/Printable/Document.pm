@@ -3,181 +3,241 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
-
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::ModifierList;
 use My::Printable::Util qw(:const);
 
-public 'id';
-public 'filename';
-
-# 'letter', 'A4', etc.
-public "paperSizeName",
-    default => "letter",
-    set => sub {
-        my ($self, $spec) = @_;
-        my ($name, $width, $height, $unit_type) = My::Printable::PaperSizes->parse($spec);
-        $self->unitType($unit_type);
-        $self->rawWidth($width);
-        $self->rawHeight($height);
-        $self->unitX->setPercentageBasis($width);
-        $self->unitY->setPercentageBasis($height);
-        $self->originX($width / 2);
-        $self->originY($height / 2);
-        $self->setBottomMargin(0);
-        $self->setTopMargin(0);
-        $self->setLeftMargin(0);
-        $self->setRightMargin(0);
-        return $name;
-    },
-    raw_accessor_name => "rawPaperSizeName";
-
-# in pt
-public "width",
-    default => 612,
-    set => sub {
-        my ($self, $value) = @_;
-        my ($pt, $unit_type) = $self->pt($value);
-        $self->unitType($unit_type);
-        $self->rawPaperSizeName(undef);
-        $self->unitX->setPercentageBasis($pt);
-        $self->originX($pt / 2);
-        $self->setLeftMargin(0);
-        $self->setRightMargin(0);
-        return $pt;
-    },
-    raw_accessor_name => "rawWidth";
-
-# in pt
-public "height",
-    default => 792,
-    set => sub {
-        my ($self, $value) = @_;
-        my ($pt, $unit_type) = $self->pt($value);
-        $self->unitType($unit_type);
-        $self->rawHeight($pt);
-        $self->rawPaperSizeName(undef);
-        $self->unitY->setPercentageBasis($pt);
-        $self->originY($pt / 2);
-        $self->setBottomMargin(0);
-        $self->setTopMargin(0);
-        return $pt;
-    },
-    raw_accessor_name => "rawHeight";
-
-# 'imperial', 'metric';
-public "unitType", default => "imperial";
-
-# 'color', 'grayscale', 'black'
-public "colorType", default => "color";
-
-# 'seyes', etc.
-public "rulingName";
-
-public "leftMarginX";                          # in pt, left = 0
-public "rightMarginX";                         # in pt, left = 0
-public "topMarginY";                           # in pt, top = 0
-public "bottomMarginY";                        # in pt, top = 0
-
-# My::Printable::Unit
-public "unit";
-public "unitX";
-public "unitY";
-
-public "modifiers", builder => sub { return new My::Printable::ModifierList; };
-
-public "elements",      builder => sub { return []; };         # via appendElement
-public "elementsById",  builder => sub { return {}; };         # via appendElement
-
-public "originX", set => sub {
-    my ($self, $value) = @_;
-    return $self->ptX($value);
-};
-public "originY", set => sub {
-    my ($self, $value) = @_;
-    return $self->ptY($value);
-};
-
-public "isGenerated",   default => 0;
-public "verbose",       default => 0;
-
-public "additionalStyles";
-
 use XML::LibXML;
 use Scalar::Util qw(refaddr);
 
-public "svgDocument", lazy_default => sub {
-    my ($self) = @_;
-    my $doc = XML::LibXML::Document->new("1.0", "UTF-8");
-    return $doc;
-}, delete => "deleteSVGDocument";
+use Moo;
 
-public "svgRoot", lazy_default => sub {
-    my ($self) = @_;
-    my $width = $self->width;
-    my $height = $self->height;
-    my $doc = $self->svgDocument;
-    my $viewBox = sprintf("%s %s %s %s", map { round3($_) } (0, 0, $width, $height));
-    my $root = $doc->createElement("svg");
-    $root->setAttribute("width", round3($width) . "pt");
-    $root->setAttribute("height", round3($height) . "pt");
-    $root->setAttribute("viewBox", $viewBox);
-    $root->setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    $doc->setDocumentElement($root);
-    return $root;
-}, after_builder => sub {
+has 'id' => (is => 'rw');
+has 'filename' => (is => 'rw');
+has 'rawPaperSizeName' => (
+    is => 'rw',
+    default => 'letter',
+);
+
+sub paperSizeName {
+    my $self = shift;
+    if (!scalar @_) {
+        return $self->rawPaperSizeName;
+    }
+    my $spec = shift;
+    my ($name, $width, $height, $unit_type) = My::Printable::PaperSizes->parse($spec);
+    $self->unitType($unit_type);
+    $self->rawWidth($width);
+    $self->rawHeight($height);
+    $self->unitX->setPercentageBasis($width);
+    $self->unitY->setPercentageBasis($height);
+    $self->originX($width / 2);
+    $self->originY($height / 2);
+    $self->setBottomMargin(0);
+    $self->setTopMargin(0);
+    $self->setLeftMargin(0);
+    $self->setRightMargin(0);
+    $self->rawPaperSizeName($spec);
+}
+
+has 'rawWidth' => (
+    is => 'rw',
+    default => 612,
+);
+sub width {
+    my $self = shift;
+    if (!scalar @_) {
+        return $self->rawWidth;
+    }
+    my $value = shift;
+    my ($pt, $unit_type) = $self->pt($value);
+    $self->unitType($unit_type);
+    $self->rawPaperSizeName(undef);
+    $self->unitX->setPercentageBasis($pt);
+    $self->originX($pt / 2);
+    $self->setLeftMargin(0);
+    $self->setRightMargin(0);
+    $self->rawWidth($pt);
+};
+
+has 'rawHeight' => (
+    is => 'rw',
+    default => 792,
+);
+sub height {
+    my $self = shift;
+    if (!scalar @_) {
+        return $self->rawHeight;
+    }
+    my $value = shift;
+    my ($pt, $unit_type) = $self->pt($value);
+    $self->unitType($unit_type);
+    $self->rawHeight($pt);
+    $self->rawPaperSizeName(undef);
+    $self->unitY->setPercentageBasis($pt);
+    $self->originY($pt / 2);
+    $self->setBottomMargin(0);
+    $self->setTopMargin(0);
+    $self->rawHeight($pt);
+};
+
+# 'imperial', 'metric';
+has 'unitType' => (is => 'rw', default => 'imperial');
+
+# 'color', 'grayscale', 'black'
+has 'colorType' => (is => 'rw', default => 'color');
+
+# 'seyes', etc.
+has 'rulingName' => (is => 'rw');
+
+has 'leftMarginX' => (is => 'rw');              # in pt, left = 0
+has 'rightMarginX' => (is => 'rw');             # in pt, left = 0
+has 'topMarginY' => (is => 'rw');               # in pt, top = 0
+has 'bottomMarginY' => (is => 'rw');            # in pt, top = 0
+
+# My::Printable::Unit
+has 'unit' => (is => 'rw');
+has 'unitX' => (is => 'rw');
+has 'unitY' => (is => 'rw');
+
+has 'modifiers' => (
+    is => 'rw',
+    default => sub { return My::Printable::ModifierList->new(); },
+);
+has 'elements' => (
+    is => 'rw',
+    default => sub { return []; },         # via appendElement
+);
+has 'elementsById' => (
+    is => 'rw',
+    default => sub { return {}; },         # via appendElement
+);
+
+has 'originX' => (is => 'rw');
+has 'originY' => (is => 'rw');
+
+around 'originX' => sub {
+    my $orig = shift;
+    my $self = shift;
+    if (scalar @_) {
+        my $value = shift;
+        return $self->$orig($self->ptX($value));
+    }
+    return $self->$orig();
+};
+around 'originY' => sub {
+    my $orig = shift;
+    my $self = shift;
+    if (scalar @_) {
+        my $value = shift;
+        return $self->$orig($self->ptY($value));
+    }
+    return $self->$orig();
+};
+
+has 'isGenerated' => (is => 'rw', default => 0);
+has 'verbose'     => (is => 'rw', default => 0);
+has 'additionalStyles' => (is => 'rw');
+
+has 'svgDocument' => (
+    is => 'rw',
+    lazy => 1, default => sub {
+        my ($self) = @_;
+        my $doc = XML::LibXML::Document->new("1.0", "UTF-8");
+        return $doc;
+    },
+    clearer => 'deleteSVGDocument',
+);
+
+has 'svgRoot' => (
+    is => 'rw',
+    lazy => 1, default => sub {
+        my ($self) = @_;
+        my $width = $self->width;
+        my $height = $self->height;
+        my $doc = $self->svgDocument;
+        my $viewBox = sprintf("%s %s %s %s", map { round3($_) } (0, 0, $width, $height));
+        my $root = $doc->createElement("svg");
+        $root->setAttribute("width", round3($width) . "pt");
+        $root->setAttribute("height", round3($height) . "pt");
+        $root->setAttribute("viewBox", $viewBox);
+        $root->setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        $doc->setDocumentElement($root);
+        return $root;
+    },
+    clearer => 'deleteSVGRoot',
+);
+after 'svgRoot' => sub {
     my ($self) = @_;
     $self->svgDefs;
     $self->svgStyle;
     $self->svgAdditionalStyle;
-}, delete => "deleteSVGRoot";
+};
 
-public 'svgDefs', lazy => 1, builder => sub {
-    my ($self) = @_;
-    my $doc = $self->svgDocument;
-    my $root = $self->svgRoot;
-    my $defs = $doc->createElement('defs');
-    $root->appendChild($defs);
-    return $defs;
-}, delete => 'deleteSVGDefs';
+has 'svgDefs' => (
+    is => 'rw',
+    lazy => 1, builder => sub {
+        my ($self) = @_;
+        my $doc = $self->svgDocument;
+        my $root = $self->svgRoot;
+        my $defs = $doc->createElement('defs');
+        $root->appendChild($defs);
+        return $defs;
+    },
+    clearer => 'deleteSVGDefs',
+);
 
-public 'svgInkscapeBugWorkaroundFilter', lazy => 1, builder => sub {
-    my ($self) = @_;
-    my $filter = $self->svgDocument->createElement('filter');
-    $filter->setAttribute('id', 'inkscapeBugWorkaroundFilter');
+has 'svgInkscapeBugWorkaroundFilter' => (
+    is => 'rw',
+    lazy => 1, builder => sub {
+        my ($self) = @_;
+        my $filter = $self->svgDocument->createElement('filter');
+        $filter->setAttribute('id', 'inkscapeBugWorkaroundFilter');
 
-    # an arbitrarily selected filter that does nothing.
-    my $feOffset = $self->svgDocument->createElement('feOffset');
-    $feOffset->setAttribute('in', 'SourceGraphic');
-    $feOffset->setAttribute('dx', '0');
-    $feOffset->setAttribute('dy', '0');
-    $filter->appendChild($feOffset);
+        # an arbitrarily selected filter that does nothing.
+        my $feOffset = $self->svgDocument->createElement('feOffset');
+        $feOffset->setAttribute('in', 'SourceGraphic');
+        $feOffset->setAttribute('dx', '0');
+        $feOffset->setAttribute('dy', '0');
+        $filter->appendChild($feOffset);
 
-    $self->svgDefs->appendChild($filter);
-    return $filter;
-}, delete => 'deleteSVGInkscapeBugWorkaroundFilter';
+        $self->svgDefs->appendChild($filter);
+        return $filter;
+    },
+    clearer => 'deleteSVGInkscapeBugWorkaroundFilter',
+);
 
-public 'svgStyle', lazy => 1, builder => sub {
-    my ($self) = @_;
-    return $self->addStyleElement($self->defaultStyles);
-}, delete => 'deleteSVGStyle';
+has 'svgStyle' => (
+    is => 'rw',
+    lazy => 1, builder => sub {
+        my ($self) = @_;
+        return $self->addStyleElement($self->defaultStyles);
+    },
+    clearer => 'deleteSVGStyle',
+);
 
-public 'svgAdditionalStyle', lazy => 1, builder => sub {
-    my ($self) = @_;
-    if (!defined $self->additionalStyles) {
-        return;
-    }
-    return $self->addStyleElement($self->doubleCurly($self->additionalStyles));
-}, delete => 'deleteSVGAdditionalStyle';
+has 'svgAdditionalStyle' => (
+    is => 'rw',
+    lazy => 1, builder => sub {
+        my ($self) = @_;
+        if (!defined $self->additionalStyles) {
+            return;
+        }
+        return $self->addStyleElement($self->doubleCurly($self->additionalStyles));
+    },
+    clearer => 'deleteSVGAdditionalStyle',
+);
 
-public 'svgContext', lazy => 1, builder => sub {
-    my ($self) = @_;
-    my $ctx = XML::LibXML::XPathContext->new($self->svgDocument);
-    $ctx->registerNs('svg', 'http://www.w3.org/2000/svg');
-    return $ctx;
-}, delete => 'deleteSVGContext';
+has 'svgContext' => (
+    is => 'rw',
+    lazy => 1, builder => sub {
+        my ($self) = @_;
+        my $ctx = XML::LibXML::XPathContext->new($self->svgDocument);
+        $ctx->registerNs('svg', 'http://www.w3.org/2000/svg');
+        return $ctx;
+    },
+    clearer => 'deleteSVGContext',
+);
 
 sub addStyleElement {
     my ($self, $cssText) = @_;
@@ -238,7 +298,7 @@ sub pt {
     return $self->unit->pt($value);
 }
 
-sub init {
+sub BUILD {
     my ($self) = @_;
     $self->unit(My::Printable::Unit->new());
     $self->unitX(My::Printable::Unit->new());
@@ -533,8 +593,8 @@ sub doubleCurly {
     return $text;
 }
 
-public 'cssClasses', builder => sub { return {}; };
-public 'cssClassCounter', default => 0;
+has 'cssClasses'      => (is => 'rw', builder => sub { return {}; });
+has 'cssClassCounter' => (is => 'rw', default => 0);
 
 sub resetCSSClasses {
     my ($self) = @_;

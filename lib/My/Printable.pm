@@ -43,7 +43,7 @@ public unit_y;
 public modifiers;
 public modifiers_hash;
 
-sub init {
+sub BUILD {
     my ($self) = @_;
     $self->unit(My::Printable::Unit->new);
     $self->unit_x(My::Printable::Unit->new);

@@ -3,35 +3,38 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
-use Class::Thingy::Delegate;
-
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Document;
 use My::Printable::Element::Rectangle;
 
-public 'document', builder => sub {
-    return My::Printable::Document->new();
-}, delete => 'deleteDocument';
+use Moo;
 
-delegate 'id',            via => 'document';
-delegate 'filename',      via => 'document';
-delegate 'paperSizeName', via => 'document';
-delegate 'width',         via => 'document';
-delegate 'height',        via => 'document';
-delegate 'modifiers',     via => 'document';
-delegate 'unitType',      via => 'document';
-delegate 'colorType',     via => 'document';
-delegate 'print',         via => 'document';
-delegate 'printToFile',   via => 'document';
-delegate 'isA4SizeClass', via => 'document';
-delegate 'isA5SizeClass', via => 'document';
-delegate 'ptX',           via => 'document';
-delegate 'ptY',           via => 'document';
-delegate 'pt',            via => 'document';
-delegate 'originX',       via => 'document';
-delegate 'originY',       via => 'document';
+has 'document' => (
+    is => 'rw',
+    default => sub {
+        return My::Printable::Document->new();
+    },
+    clearer => 'deleteDocument',
+    handles => [
+        'id',
+        'filename',
+        'paperSizeName',
+        'width',
+        'height',
+        'modifiers',
+        'unitType',
+        'colorType',
+        'print',
+        'printToFile',
+        'isA4SizeClass',
+        'isA5SizeClass',
+        'ptX',
+        'ptY',
+        'pt',
+        'originX',
+        'originY',
+    ],
+);
 
 use constant rulingName => 'none';
 use constant hasLineGrid => 0;

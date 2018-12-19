@@ -3,10 +3,13 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
+use Moo;
 
-public "direction", default => "horizontal"; # or 'vertical'
+# 'horizontal' or 'vertical'
+has 'direction' => (
+    is => 'rw',
+    default => 'horizontal',
+);
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::PointSeries;

@@ -3,20 +3,19 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
+use Moo;
 
-public 'startPoint';
-public 'endPoint';
-public 'spacing';
-public 'origin';
-public 'min';
-public 'max';
+has 'startPoint' => (is => 'rw');
+has 'endPoint' => (is => 'rw');
+has 'spacing' => (is => 'rw');
+has 'origin' => (is => 'rw');
+has 'min' => (is => 'rw');
+has 'max' => (is => 'rw');
 
 our $FUDGE = 0.0001;
 
-sub init {
-    my ($self) = @_;
+sub BUILD {
+    my $self = shift;
     if (defined $self->origin && defined $self->spacing) {
         if (defined $self->min && !defined $self->startPoint) {
             my $start = $self->origin;

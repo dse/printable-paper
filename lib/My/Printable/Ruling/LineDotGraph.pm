@@ -9,9 +9,6 @@ use base 'My::Printable::Ruling::Seyes';
 use My::Printable::Element::Grid;
 use My::Printable::Element::Line;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
-
 use constant rulingName => 'line-dot-graph';
 use constant hasLineGrid => 0;
 use constant dotThinness => 2;

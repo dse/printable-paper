@@ -3,100 +3,88 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
-use Class::Thingy::Delegate;
-
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(:const);
+use My::Printable::Util qw(:const :around);
 
 use List::Util qw(min max);
 use Storable qw(dclone);
+use Data::Dumper qw(Dumper);
 
-public "id";
+use Moo;
 
-public "x1", set => sub {
-    my ($self, $value) = @_;
-    return $self->ptX($value);
-};
-public "x2", set => sub {
-    my ($self, $value) = @_;
-    return $self->ptX($value);
-};
-public "y1", set => sub {
-    my ($self, $value) = @_;
-    return $self->ptY($value);
-};
-public "y2", set => sub {
-    my ($self, $value) = @_;
-    return $self->ptY($value);
-};
+has 'id' => (is => 'rw');
 
-public "xPointSeries";
-public "yPointSeries";
+has 'x1' => (is => 'rw');
+has 'x2' => (is => 'rw');
+has 'y1' => (is => 'rw');
+has 'y2' => (is => 'rw');
 
-public "origXPointSeries";
-public "origYPointSeries";
+around 'x1' => \&aroundUnitX;
+around 'x2' => \&aroundUnitX;
+around 'y1' => \&aroundUnitY;
+around 'y2' => \&aroundUnitY;
 
-public "spacing", set => sub {
-    my ($self, $value) = @_;
-    return $self->pt($value);
-};
-public "spacingX", set => sub {
-    my ($self, $value) = @_;
-    return $self->ptX($value);
-};
-public "spacingY", set => sub {
-    my ($self, $value) = @_;
-    return $self->ptY($value);
-};
+has 'xPointSeries' => (is => 'rw');
+has 'yPointSeries' => (is => 'rw');
+has 'origXPointSeries' => (is => 'rw');
+has 'origYPointSeries' => (is => 'rw');
 
-public "cssClass";
+has 'spacing' => (is => 'rw');
+has 'spacingX' => (is => 'rw');
+has 'spacingY' => (is => 'rw');
 
-public "originX", set => sub {
-    my ($self, $value) = @_;
-    return $self->ptX($value);
-};
-public "originY", set => sub {
-    my ($self, $value) = @_;
-    return $self->ptY($value);
-};
+around 'spacing' => \&aroundUnit;
+around 'spacingX' => \&aroundUnitX;
+around 'spacingY' => \&aroundUnitY;
 
-public "document";              # My::Printable::Document
+has "cssClass" => (is => 'rw');
 
-public "extendLeft";
-public "extendRight";
-public "extendTop";
-public "extendBottom";
+has 'originX' => (is => 'rw');
+has 'originY' => (is => 'rw');
+
+around 'originX' => \&aroundUnitX;
+around 'originY' => \&aroundUnitY;
+
+has "document" => (
+    is => 'rw',
+    handles => [
+        "unit",
+        "unitX",
+        "unitY",
+        "svgDocument",
+        "svgRoot",
+        'svgDefs',
+    ],
+);                              # My::Printable::Document
+
+has "extendLeft" => (is => 'rw');
+has "extendRight" => (is => 'rw');
+has "extendTop" => (is => 'rw');
+has "extendBottom" => (is => 'rw');
 
 # mainly for grids
-public 'dotHeight', default => 0, set => sub {
-    my ($self, $value) = @_;
-    return $self->ptX($value);
-};
-public 'dotWidth', default => 0, set => sub {
-    my ($self, $value) = @_;
-    return $self->ptY($value);
-};
+has 'dotWidth'  => (is => 'rw', default => 0);
+has 'dotHeight' => (is => 'rw', default => 0);
 
-delegate "unit",        via => "document";
-delegate "unitX",       via => "document";
-delegate "unitY",       via => "document";
+around 'dotWidth'  => \&aroundUnitX;
+around 'dotHeight' => \&aroundUnitY;
 
-delegate "svgDocument", via => "document";
-delegate "svgRoot",     via => "document";
-delegate 'svgDefs',     via => 'document';
-
-public "svgLayer", lazy_default => sub {
-    my ($self) = @_;
-    my $id = $self->id;
-    die("id not defined before node called\n") if !defined $id;
-    my $doc = $self->svgDocument;
-    my $g = $doc->createElement("g");
-    $g->setAttribute("id", $id);
-    $self->document->appendSVGLayer($g);
-    return $g;
-}, delete => "deleteSVGLayer";
+has "svgLayer" => (
+    is => 'lazy',
+    default => sub {
+        my ($self) = @_;
+        my $id = $self->id;
+        if (!defined $id) {
+            die("id not defined on $self before svgLayer called");
+        }
+        my $doc = $self->svgDocument;
+        my $g = $doc->createElement("g");
+        $g->setAttribute("id", $id);
+        $self->document->appendSVGLayer($g);
+        return $g;
+    },
+    clearer => "deleteSVGLayer",
+);
 
 # MAKE FASTER
 sub createSVGLine {

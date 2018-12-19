@@ -3,28 +3,27 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
+use Moo;
 
-public "cssClassHorizontal";
-public "cssClassVertical";
+has "cssClassHorizontal" => (is => 'rw');
+has "cssClassVertical" => (is => 'rw');
 
-public "isDotGrid",                    default => 0;
-public "hasDottedGridLines",           default => 0;
-public "hasDottedHorizontalGridLines", default => 0;
-public "hasDottedVerticalGridLines",   default => 0;
-public "extendGridLines",              default => 0;
-public "extendHorizontalGridLines",    default => 0;
-public "extendVerticalGridLines",      default => 0;
+has "isDotGrid" => (is => 'rw', default => 0);
+has "hasDottedGridLines" => (is => 'rw', default => 0);
+has "hasDottedHorizontalGridLines" => (is => 'rw', default => 0);
+has "hasDottedVerticalGridLines" => (is => 'rw', default => 0);
+has "extendGridLines" => (is => 'rw', default => 0);
+has "extendHorizontalGridLines" => (is => 'rw', default => 0);
+has "extendVerticalGridLines" => (is => 'rw', default => 0);
 
 # for dotted line grids
-public "horizontalDots",               default => 2;
-public "verticalDots",                 default => 2;
+has "horizontalDots" => (is => 'rw', default => 2);
+has "verticalDots" => (is => 'rw', default => 2);
 
-public "dottedLineXPointSeries";
-public "dottedLineYPointSeries";
-public "origDottedLineXPointSeries";
-public "origDottedLineYPointSeries";
+has "dottedLineXPointSeries" => (is => 'rw');
+has "dottedLineYPointSeries" => (is => 'rw');
+has "origDottedLineXPointSeries" => (is => 'rw');
+has "origDottedLineYPointSeries" => (is => 'rw');
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::PointSeries;

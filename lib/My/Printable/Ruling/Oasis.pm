@@ -9,9 +9,6 @@ use base 'My::Printable::Ruling';
 use My::Printable::Element::Grid;
 use My::Printable::Element::Lines;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
-
 use constant rulingName => 'oasis';
 use constant dotThinness => 3;
 use constant lineThinness => 4;

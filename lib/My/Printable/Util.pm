@@ -9,12 +9,18 @@ our @EXPORT_OK = qw(exclude
                     round3
                     with_temp
                     linear_interpolate
+                    aroundUnit
+                    aroundUnitX
+                    aroundUnitY
                     USE_SVG_PATTERNS_FOR_DOT_GRIDS
                     USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND);
 
 our %EXPORT_TAGS = (
     const => [qw(USE_SVG_PATTERNS_FOR_DOT_GRIDS
-                 USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND)]
+                 USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND)],
+    around => [qw(aroundUnit
+                  aroundUnitX
+                  aroundUnitY)],
 );
 
 use constant USE_SVG_PATTERNS_FOR_DOT_GRIDS => 0;
@@ -74,6 +80,39 @@ sub with_temp {
     return @result if wantarray;
     return $result if defined wantarray;
     return;
+}
+
+sub aroundUnit {
+    my $orig = shift;
+    my $self = shift;
+    if (scalar @_) {
+        my $value = shift;
+        $value = $self->pt($value);
+        return $self->$orig($value, @_);
+    }
+    return $self->$orig();
+}
+
+sub aroundUnitX {
+    my $orig = shift;
+    my $self = shift;
+    if (scalar @_) {
+        my $value = shift;
+        $value = $self->ptX($value);
+        return $self->$orig($value, @_);
+    }
+    return $self->$orig();
+}
+
+sub aroundUnitY {
+    my $orig = shift;
+    my $self = shift;
+    if (scalar @_) {
+        my $value = shift;
+        $value = $self->ptY($value);
+        return $self->$orig($value, @_);
+    }
+    return $self->$orig();
 }
 
 1;

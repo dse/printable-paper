@@ -3,35 +3,23 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use lib "$ENV{HOME}/git/dse.d/perl-class-thingy/lib";
-use Class::Thingy;
-
-# x1, x2, y1, and y2 inherited from My::Printable::Element.
-
-public 'width', set => sub {
-    my ($self, $value) = @_;
-    return $self->ptX($value);
-};
-public 'height', set => sub {
-    my ($self, $value) = @_;
-    return $self->ptY($value);
-};
-
-public 'rx', set => sub {
-    my ($self, $value) = @_;
-    return $self->ptX($value);
-};
-public 'ry', set => sub {
-    my ($self, $value) = @_;
-    return $self->ptY($value);
-};
-public 'r', set => sub {
-    my ($self, $value) = @_;
-    return $self->pt($value);
-};
-
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
+use My::Printable::Util qw(:around);
 use base qw(My::Printable::Element);
+
+use Moo;
+
+has 'width' => (is => 'rw');
+has 'height' => (is => 'rw');
+has 'rx' => (is => 'rw');
+has 'ry' => (is => 'rw');
+has 'r' => (is => 'rw');
+
+around 'width'  => \&aroundUnitX;
+around 'height' => \&aroundUnitY;
+around 'rx'     => \&aroundUnitX;
+around 'ry'     => \&aroundUnitY;
+around 'r'      => \&aroundUnit;
 
 sub draw {
     my ($self) = @_;
