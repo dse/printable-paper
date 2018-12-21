@@ -13,10 +13,12 @@ our @EXPORT_OK = qw(exclude
                     aroundUnitX
                     aroundUnitY
                     USE_SVG_PATTERNS_FOR_DOT_GRIDS
+                    USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS
                     USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND);
 
 our %EXPORT_TAGS = (
     const => [qw(USE_SVG_PATTERNS_FOR_DOT_GRIDS
+                 USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS
                  USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND)],
     around => [qw(aroundUnit
                   aroundUnitX
@@ -24,6 +26,7 @@ our %EXPORT_TAGS = (
 );
 
 use constant USE_SVG_PATTERNS_FOR_DOT_GRIDS => 0;
+use constant USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS => 1;
 use constant USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND => 0;
 
 use Data::Dumper;
