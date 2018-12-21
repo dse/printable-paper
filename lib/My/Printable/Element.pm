@@ -109,6 +109,11 @@ sub createSVGLine {
     $line->setAttribute('y1', sprintf('%.3f', $args{y1} // $args{y}));
     $line->setAttribute('y2', sprintf('%.3f', $args{y2} // $args{y}));
     $line->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
+    if ($args{attr}) {
+        foreach my $name (sort keys %{$args{attr}}) {
+            $line->setAttribute($name, $args{attr}->{$name});
+        }
+    }
     return $line;
 }
 
@@ -127,6 +132,11 @@ sub createSVGDot {
     $line->setAttribute('y1', $y);
     $line->setAttribute('y2', $y);
     $line->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
+    if ($args{attr}) {
+        foreach my $name (sort keys %{$args{attr}}) {
+            $line->setAttribute($name, $args{attr}->{$name});
+        }
+    }
     return $line;
 }
 
@@ -144,6 +154,11 @@ sub createSVGRectangle {
     $rectangle->setAttribute('rx', sprintf('%.3f', $args{rx})) if $args{rx};
     $rectangle->setAttribute('ry', sprintf('%.3f', $args{ry})) if $args{ry};
     $rectangle->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
+    if ($args{attr}) {
+        foreach my $name (sort keys %{$args{attr}}) {
+            $rectangle->setAttribute($name, $args{attr}->{$name});
+        }
+    }
     return $rectangle;
 }
 
@@ -348,6 +363,73 @@ sub chopY {
     $self->yPointSeries->chopAhead($self->document->bottomMarginY);
 }
 
+# another netscape pdf rendering bug workaround
+use constant DOTTED_LINE_FUDGE_FACTOR => 0.01;
+
+sub drawDotPatternUsingSVGDottedLines {
+    my ($self, %args) = @_;
+
+    my $dw = $self->dotWidth;
+    my $dh = $self->dotHeight;
+    if ($dw && $dh) {
+        # dotted lines won't achieve what we want.
+        return $self->drawDotPatternUsingDots(%args);
+    }
+
+    my $cssClass = $args{cssClass} // $self->cssClass;
+    my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
+    my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
+    my $dw2 = $dw / 2;
+    my $dh2 = $dw / 2;
+    my $layer = $self->svgLayer;
+
+    if ($dw) {
+        # series of horizontal dotted lines
+        my $dasharray = sprintf('%.3f %.3f',
+                                DOTTED_LINE_FUDGE_FACTOR + $dw,
+                                $xPointSeries->spacing - $dw - DOTTED_LINE_FUDGE_FACTOR);
+        my $dashoffset = sprintf('%.3f', DOTTED_LINE_FUDGE_FACTOR / 2);
+        my $x1 = $xPointSeries->startPoint - $dw / 2;
+        my $x2 = $xPointSeries->endPoint   + $dw / 2;
+        foreach my $y ($yPointSeries->getPoints()) {
+            my %a = (
+                x1 => $x1,
+                x2 => $x2,
+                y => $y,
+                attrs => {
+                    'stroke-dasharray' => $dasharray,
+                    'stroke-dashoffset' => $dashoffset,
+                },
+            );
+            $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+            my $line = $self->createSVGLine(%a);
+            $layer->appendChild($line);
+        }
+    } else {
+        # series of vertical dotted lines
+        my $dasharray = sprintf('%.3f %.3f',
+                                DOTTED_LINE_FUDGE_FACTOR + $dh,
+                                $yPointSeries->spacing - $dh - DOTTED_LINE_FUDGE_FACTOR);
+        my $dashoffset = sprintf('%.3f', DOTTED_LINE_FUDGE_FACTOR / 2);
+        my $y1 = $yPointSeries->startPoint - $dh / 2;
+        my $y2 = $yPointSeries->endPoint   + $dh / 2;
+        foreach my $x ($xPointSeries->getPoints()) {
+            my %a = (
+                y1 => $y1,
+                y2 => $y2,
+                x => $x,
+                attrs => {
+                    'stroke-dasharray' => $dasharray,
+                    'stroke-dashoffset' => $dashoffset,
+                },
+            );
+            $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+            my $line = $self->createSVGLine(%a);
+            $layer->appendChild($line);
+        }
+    }
+}
+
 sub drawDotPatternUsingSVGPatterns {
     my ($self, %args) = @_;
 
@@ -480,6 +562,9 @@ sub drawDotPatternUsingDots {
 
 sub drawDotPattern {
     my ($self, %args) = @_;
+    if (USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS) {
+        return $self->drawDotPatternUsingSVGDottedLines();
+    }
     if (USE_SVG_PATTERNS_FOR_DOT_GRIDS) {
         return $self->drawDotPatternUsingSVGPatterns();
     }
