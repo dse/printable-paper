@@ -396,7 +396,7 @@ sub drawDotPatternUsingSVGDottedLines {
                 x1 => $x1,
                 x2 => $x2,
                 y => $y,
-                attrs => {
+                attr => {
                     'stroke-dasharray' => $dasharray,
                     'stroke-dashoffset' => $dashoffset,
                 },
@@ -418,7 +418,7 @@ sub drawDotPatternUsingSVGDottedLines {
                 y1 => $y1,
                 y2 => $y2,
                 x => $x,
-                attrs => {
+                attr => {
                     'stroke-dasharray' => $dasharray,
                     'stroke-dashoffset' => $dashoffset,
                 },
