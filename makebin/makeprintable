@@ -11,7 +11,7 @@ use My::Printable::Util qw(with_temp);
 
 use String::ShellQuote qw(shell_quote);
 use Cwd qw(realpath);
-use File::Path qw(mkpath);
+use File::Path qw(make_path);
 use File::Basename qw(dirname basename);
 use File::Find qw(find);
 use Text::Trim qw(trim);
@@ -204,7 +204,10 @@ foreach my $collection (@collections) {
 # local $Data::Dumper::Indent = 1;
 # print Dumper(\@templates);
 
-sub path {
+# Path to pass to inkscape.  If inkscape is installed in /Applications
+# in macOS, it changes its current working directory before running,
+# so we need to pass absolute paths to it.
+sub inkscape_path {
     my ($filename) = @_;
     if ($^O =~ m{^darwin}) {
         return realpath($filename);
@@ -214,7 +217,7 @@ sub path {
 
 sub cmd {
     my ($filename, $cmd) = @_;
-    $filename = path($filename);
+    $filename = inkscape_path($filename);
     with_temp(
         $filename,
         sub {
@@ -299,12 +302,11 @@ my %build = (
                     $target,
                     sub {
                         my ($tempname) = @_;
-                        my $realpath_tempname = realpath($tempname);
-                        die("realpath $tempname failed\n") if !defined $realpath_tempname;
+                        make_path(dirname($tempname));
                         unlink($tempname);
                         $inkscape_shell->cmd(sprintf("%s --export-dpi=600 --export-pdf %s",
-                                                     shell_quote($dependencies->[0]),
-                                                     shell_quote($realpath_tempname)));
+                                                     shell_quote(inkscape_path($dependencies->[0])),
+                                                     shell_quote(inkscape_path($tempname))));
                     }
                 );
             } else {
@@ -312,7 +314,7 @@ my %build = (
                 # rsvg-convert does not work, output looks like shit
                 # imagenagick works but is not fast and rasterizes
                 my $cmd = sprintf("inkscape --without-gui %s --export-dpi=600 --export-pdf {FILENAME}",
-                                  shell_quote($dependencies->[0]));
+                                  shell_quote(inkscape_path($dependencies->[0])));
                 cmd($target, $cmd);
             }
         },
@@ -328,17 +330,16 @@ my %build = (
                     $target,
                     sub {
                         my ($tempname) = @_;
-                        my $realpath_tempname = realpath($tempname);
-                        die("realpath $tempname failed\n") if !defined $realpath_tempname;
+                        make_path(dirname($tempname));
                         unlink($tempname);
                         $inkscape_shell->cmd(sprintf("%s --export-background=transparent --export-ps=%s",
-                                                     shell_quote($dependencies->[0]),
-                                                     shell_quote($realpath_tempname)));
+                                                     shell_quote(inkscape_path($dependencies->[0])),
+                                                     shell_quote(inkscape_path($tempname))));
                     }
                 );
             } else {
                 my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-ps {FILENAME} %s",
-                                  shell_quote($dependencies->[0]));
+                                  shell_quote(inkscape_path($dependencies->[0])));
                 cmd($target, $cmd);
             }
         },
@@ -390,10 +391,13 @@ my %build = (
             my $cmd;
             if (scalar @$dependencies == 1) {
                 # has no special even page
-                $cmd = sprintf("psselect 1,1 %s >{FILENAME}", shell_quote($dependencies->[0]));
+                $cmd = sprintf("psselect 1,1 %s >{FILENAME}",
+                               shell_quote($dependencies->[0]));
             } else {
                 # has a special even page
-                $cmd = sprintf("psjoin %s %s >{FILENAME}", shell_quote($dependencies->[0]), shell_quote($dependencies->[1]));
+                $cmd = sprintf("psjoin %s %s >{FILENAME}",
+                               shell_quote($dependencies->[0]),
+                               shell_quote($dependencies->[1]));
             }
 
             cmd($target, $cmd);
@@ -503,15 +507,13 @@ sub build_file {
         }
     }
 
-    my @path_dependencies = map { path($_) } @dependencies;
-
     if ($make) {
         if ($opt_verbose >= 0) {
             warn("makeprintable: Building $target ...\n");
         }
         my $code = $build->{code};
         $code->(target => $target,
-                dependencies => \@path_dependencies,
+                dependencies => \@dependencies,
                 template => $template,
                 file => $file,
                 build => $build);
