@@ -21,24 +21,39 @@ sub generate {
 
     $self->document->setUnit($self->getUnit);
 
-    my $color      = $self->colorType eq 'black' ? '#000000' : '#666666';
-    my $colorClass = $self->colorType eq 'black' ? 'black' : 'gray40';
+    my $color = {
+        black     => '#000000',
+        grayscale => '#666666',
+        color     => '#6767ff',
+    }->{$self->colorType};
+
+    my $lineStrokeWidth = {
+        black     => '2/600in',
+        grayscale => '2/600in',
+        color     => '2/600in',
+    }->{$self->colorType};
+
+    my $gridStrokeWidth = {
+        black     => '6/600in',
+        grayscale => '6/600in',
+        color     => '6/600in',
+    }->{$self->colorType};
 
     $self->document->additionalStyles(<<"END");
         #lines line {
-            stroke: $color; stroke-width: {{ 2/600in }};
+            stroke: $color; stroke-width: {{ $lineStrokeWidth }};
         }
         #grid-1 line, #grid-1-pattern line {
-            stroke: $color; stroke-width: {{ 6/600in }}; stroke-linecap: butt;
+            stroke: $color; stroke-width: {{ $gridStrokeWidth }}; stroke-linecap: butt;
         }
         #grid-2 line, #grid-2-pattern line {
-            stroke: $color; stroke-width: {{ 6/600in }}; stroke-linecap: butt;
+            stroke: $color; stroke-width: {{ $gridStrokeWidth }}; stroke-linecap: butt;
         }
         #grid-3 line, #grid-3-pattern line {
-            stroke: $color; stroke-width: {{ 6/600in }}; stroke-linecap: butt;
+            stroke: $color; stroke-width: {{ $gridStrokeWidth }}; stroke-linecap: butt;
         }
         #grid-4 line, #grid-4-pattern line {
-            stroke: $color; stroke-width: {{ 6/600in }}; stroke-linecap: butt;
+            stroke: $color; stroke-width: {{ $gridStrokeWidth }}; stroke-linecap: butt;
         }
 END
 
