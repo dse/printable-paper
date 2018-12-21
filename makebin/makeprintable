@@ -19,6 +19,7 @@ use Getopt::Long qw();
 use Data::Dumper qw(Dumper);
 use Storable qw(dclone);
 use PDF::API2 qw();
+use File::Which;
 
 our $opt_verbose = 0;
 our $opt_dry_run = 0;
@@ -124,6 +125,13 @@ my @collections = (
 
 use constant USE_OLD_FILENAMES => 1;
 
+# sometimes yields an extra blank first page.
+use constant USE_PDFXUP => 0;
+
+# doesn't work well except with A series paper sizes.
+# and doesn't resize. (i.e., a5 -> a4, halfletter -> letter)
+use constant USE_PYTHON_PDFNUP => 0;
+
 my @templates;
 
 foreach my $collection (@collections) {
@@ -218,6 +226,9 @@ sub inkscape_path {
 sub cmd {
     my ($filename, $cmd) = @_;
     $filename = inkscape_path($filename);
+    if (ref $cmd && ref $cmd eq 'ARRAY') {
+        $cmd = join(' ', map { shell_quote($_) } @$cmd);
+    }
     with_temp(
         $filename,
         sub {
@@ -296,6 +307,9 @@ my %build = (
         code => sub {
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
+            if (!which('inkscape')) {
+                die("inkscape program not found\n");
+            }
             if (USE_INKSCAPE_SHELL) {
                 $inkscape_shell //= My::Printable::Util::InkscapeShell->new();
                 with_temp(
@@ -324,6 +338,9 @@ my %build = (
         code => sub {
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
+            if (!which('inkscape')) {
+                die("inkscape program not found\n");
+            }
             if (USE_INKSCAPE_SHELL) {
                 $inkscape_shell //= My::Printable::Util::InkscapeShell->new();
                 with_temp(
@@ -364,6 +381,9 @@ my %build = (
                 }
             } else {
                 # pdfunite is part of poppler
+                if (!which('pdfunite')) {
+                    die("pdfunite program, part of poppler, not found\n");
+                }
                 my $cmd;
                 if (scalar @$dependencies == 1) {
                     # has no special even page
@@ -390,10 +410,16 @@ my %build = (
 
             my $cmd;
             if (scalar @$dependencies == 1) {
+                if (!which('psselect')) {
+                    die("psselect program not found\n");
+                }
                 # has no special even page
                 $cmd = sprintf("psselect 1,1 %s >{FILENAME}",
                                shell_quote($dependencies->[0]));
             } else {
+                if (!which('psjoin')) {
+                    die("psjoin program not found\n");
+                }
                 # has a special even page
                 $cmd = sprintf("psjoin %s %s >{FILENAME}",
                                shell_quote($dependencies->[0]),
@@ -409,30 +435,62 @@ my %build = (
             my %args = @_;
             my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
-            my $cmd;
-
-            my $input_papersizename = $template->{size};
-            my ($input_width_pt, $input_height_pt) = split(/\s+/, `paperconf -s $input_papersizename`);
-
+            my $input_papersizename  = $template->{size};
             my $output_papersizename = $template->{"2up"}->{size};
-            my ($output_width_pt, $output_height_pt) = split(/\s+/, `paperconf -s $output_papersizename`);
+            my $iops = "${input_papersizename},${output_papersizename}";
+            my $can_use_pdfxup = 0;
+            if ($iops eq 'halfletter,letter' || $iops eq 'a5,a4') {
+                $can_use_pdfxup = 1;
+            }
 
-            my $output_papersize = sprintf('{%.3fbp,%.3fbp}', $output_width_pt, $output_height_pt);
+            if (USE_PYTHON_PDFNUP && (my $pdfnup = find_pdfnup(type => 'python'))) {
+                # pip install pdfnup --install-option="--install-scripts=/usr/local/bin"
+                # otherwise, overwrites a pdfjam /usr/bin/pdfnup executable.
+                my @cmd = (
+                    $pdfnup
+                );
+                if (!-x $pdfnup) {
+                    unshift(@cmd, 'python');
+                }
+                push(@cmd, (
+                    '-n', '2',
+                    '-o', '{FILENAME}',
+                    $dependencies->[0]
+                ));
+                return cmd($target, \@cmd);
+            }
 
-            my $p = $dependencies->[0];
+            if (USE_PDFXUP && $can_use_pdfxup && which('pdfxup')) {
+                # pdfxup is faster but may not support all papersizes.
+                local $ENV{dfpdfxupPAP} = $output_papersizename;
+                my ($output_width_pt, $output_height_pt) = split(/\s+/, `paperconf -s $output_papersizename`);
+                my $output_width_tex_pt  = $output_width_pt  / 72 * 72.27;
+                my $output_height_tex_pt = $output_height_pt / 72 * 72.27;
+                my $cmd = sprintf('pdfxup -b le -s 0 0 %.3f %.3f -im 0 -m 0 -is 0 -fw 0 -o {FILENAME} %s',
+                                  $output_width_pt,
+                                  $output_height_pt,
+                                  shell_quote($dependencies->[0]));
+                return cmd($target, $cmd);
+            }
 
-            # Ick.  There's a Python script called pdfnup, and
-            # something that comes with TeXlive called pdfnup.
+            if (which('pdfbook')) {
+                # pdfbook is slow.  It is based on pdfjam.
+                my ($input_width_pt,  $input_height_pt)  = split(/\s+/, `paperconf -s $input_papersizename`);
+                my ($output_width_pt, $output_height_pt) = split(/\s+/, `paperconf -s $output_papersizename`);
+                my $output_papersize = sprintf('{%.3fbp,%.3fbp}', $output_width_pt, $output_height_pt);
+                my $cmd = sprintf("pdfbook --no-tidy --outfile {FILENAME} --papersize %s --nup 2x1 --twoside %s 1,2,1,2",
+                                  shell_quote($output_papersize),
+                                  shell_quote($dependencies->[0]));
+                return cmd($target, $cmd);
+            }
 
-            $cmd = sprintf("pdfbook --no-tidy --outfile {FILENAME} --papersize %s --nup 2x1 --twoside %s 1,2,1,2",
-                           shell_quote($output_papersize),
-                           shell_quote($p));
+            die("No pdf N-up utility found.  :-(\n");
 
-            # ick.
-            # $cmd = sprintf("pdfxup -b le -im 0 -m 0 -is 0 -fw 0 -o {FILENAME} -d %s",
-            #                shell_quote($p));
+            # NOTES: There's a Python script called pdfnup, and
+            # something that comes with TeXlive called pdfnup, which
+            # is based on pdfjam.
 
-            cmd($target, $cmd);
+            # pdftk and qpdf do not offer N-up capability.
         },
     },
     two_up_ps => {
@@ -687,4 +745,98 @@ if ($operation eq "LIST") {
             }
         }
     }
+}
+
+# usage: $path = find_pdfnup(type => 'python');
+# usage: $path = find_pdfnup(type => 'pdfjam');
+sub find_pdfnup {
+    my (%args) = @_;
+    my $type = $args{type};
+
+    state @paths;
+    if (!scalar @paths) {
+        @paths = which('pdfnup');
+        push(
+            @paths,
+            '/usr/local/share/texmf-dist/scripts/pdfjam/pdfnup',
+            '/usr/local/share/texlive/texmf-dist/scripts/pdfjam/pdfnup',
+            '/usr/share/texmf-dist/scripts/pdfjam/pdfnup',
+            '/usr/share/texlive/texmf-dist/scripts/pdfjam/pdfnup',
+        );
+    }
+
+    state @syspath;
+    if (!scalar @syspath) {
+        @syspath = get_python_sys_path();
+    }
+
+    state @pdfnup;
+    if (!scalar @pdfnup) {
+        @pdfnup = grep { -e $_ } map { (
+            "$_/EGG-INFO/scripts/pdfnup",
+            "$_/pdfnup.py",
+        ) } @syspath;
+        push(@paths, @pdfnup);
+    }
+
+    state %pdfnup_type;
+
+    foreach my $path (@paths) {
+        my $pdfnup_type = $pdfnup_type{$path} //= get_pdfnup_type($path);
+        if (!defined $pdfnup_type) {
+            next;
+        }
+        if (defined $pdfnup_type && $pdfnup_type eq $type) {
+            return $path;
+        }
+    }
+    return;
+}
+
+sub get_pdfnup_type {
+    my ($path) = @_;
+    my $shebang = get_shebang($path);
+    if (!defined $shebang) {
+        return;
+    }
+    if ($shebang eq 'sh' || $shebang eq 'bash') {
+        return 'pdfjam';
+    }
+    if ($shebang eq 'python' || $shebang =~ m{^python-?\d}) {
+        return 'python';
+    }
+    return;
+}
+
+sub get_shebang {
+    my ($path) = @_;
+    local $/ = "\n";
+    my $fh;
+    open($fh, '<', $path) or return;
+    my $shebang = <$fh>;
+    $shebang =~ s{\R\z}{};
+    close($fh);
+    if ($shebang =~ m{^\s*\#\s*\!\s*\S*/([^\/]+)(?:$|\s)}) {
+        return $1;
+    }
+    return;
+}
+
+sub get_python_sys_path {
+    my $ph;
+    my $script = <<"END";
+import sys
+for component in sys.path:
+    print(component)
+END
+    local $/ = "\n";
+    local $_;
+    open($ph, '-|', 'python', '-c', $script) or return;
+    my @path;
+    while (<$ph>) {
+        s{\R\z}{};
+        push(@path, $_) if $_ =~ m{\S};
+    }
+    close($ph);
+    return @path;
 }
