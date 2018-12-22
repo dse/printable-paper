@@ -8,11 +8,13 @@ use My::Printable::Maker;
 
 our $opt_verbose = 0;
 our $opt_dry_run = 0;
+our $opt_force   = 0;
 
 Getopt::Long::Configure('bundling', 'gnu_compat', 'no_ignore_case');
 Getopt::Long::GetOptions(
     'v|verbose+' => \$opt_verbose,
     'n|dry-run'  => \$opt_dry_run,
+    'f|force'    => \$opt_force,
     'quiet'      => sub {
         if ($opt_verbose < 0) {
             $opt_verbose -= 1;
@@ -29,9 +31,11 @@ options:
   -h, --help
   -v, --verbose
   -n, --dry-run
+  -f, --force
 END
 
 my $maker = My::Printable::Maker->new();
 $maker->verbose($opt_verbose);
 $maker->dryRun($opt_dry_run);
+$maker->force($opt_force);
 $maker->run(@ARGV);
