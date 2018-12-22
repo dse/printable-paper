@@ -4,6 +4,41 @@ use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
+use My::Printable::Maker;
+
+our $opt_verbose = 0;
+our $opt_dry_run = 0;
+
+Getopt::Long::Configure('bundling', 'gnu_compat', 'no_ignore_case');
+Getopt::Long::GetOptions(
+    'v|verbose+' => \$opt_verbose,
+    'n|dry-run'  => \$opt_dry_run,
+    'quiet'      => sub {
+        if ($opt_verbose < 0) {
+            $opt_verbose -= 1;
+        } else {
+            $opt_verbose = -1;
+        }
+    },
+    'h|help' => sub { usage(); exit 0; },
+) or die("Type '$0 --help' for help.\n");
+
+sub usage { print <<END; }
+usage: $0 [<option> ...] [<keyword> ...]
+options:
+  -h, --help
+  -v, --verbose
+  -n, --dry-run
+END
+
+my $maker = My::Printable::Maker->new();
+$maker->verbose($opt_verbose);
+$maker->dryRun($opt_dry_run);
+$maker->run(@ARGV);
+
+__DATA__
+
+use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Document;
 use My::Printable::Ruling;
 use My::Printable::Util::InkscapeShell;
@@ -55,17 +90,17 @@ if ($? || !defined $projdir || $projdir !~ m{\S}) {
 }
 chdir($projdir);
 
-my @sizes = (
+my @SIZES = (
     { size => 'letter' },
     { size => 'a4' },
     { size => 'halfletter', '2up' => 'letter' },
     { size => 'a5',         '2up' => 'a4'     },
 );
 
-my @collections = (
+my @COLLECTIONS = (
     {
         ruling => 'oasis',
-        sizes => [@sizes],
+        sizes => [@SIZES],
         variants => [
             [qw()],
             [qw(denser-grid)],
@@ -74,7 +109,7 @@ my @collections = (
     },
     {
         ruling => 'anode',
-        sizes => [@sizes],
+        sizes => [@SIZES],
         variants => [
             [qw()],
             [qw(denser-grid)],
@@ -83,7 +118,7 @@ my @collections = (
     },
     {
         ruling => 'quadrille',
-        sizes => [@sizes],
+        sizes => [@SIZES],
         variants => [
             [qw()],
             [qw(5-per-inch)],
@@ -92,7 +127,7 @@ my @collections = (
     },
     {
         ruling => 'line-dot-grid',
-        sizes => [@sizes],
+        sizes => [@SIZES],
         variants => [
             [qw()],
             { name => 'thinner',   modifiers => [qw(thinner-dots thinner-lines)]     },
@@ -102,7 +137,7 @@ my @collections = (
     },
     {
         ruling => 'seyes',
-        sizes => [@sizes],
+        sizes => [@SIZES],
         variants => [
             { modifiers => []                            },
             { modifiers => [qw(thinner-grid)]            },
@@ -113,12 +148,12 @@ my @collections = (
     },
     {
         ruling => 'dot-grid',
-        sizes => [@sizes],
+        sizes => [@SIZES],
         color_types => ['color', 'black'],
     },
     {
         ruling => 'line-dot-graph',
-        sizes => [@sizes],
+        sizes => [@SIZES],
         color_types => ['color', 'black'],
     },
 );
@@ -134,7 +169,7 @@ use constant USE_PYTHON_PDFNUP => 0;
 
 my @templates;
 
-foreach my $collection (@collections) {
+foreach my $collection (@COLLECTIONS) {
     my $ruling      = $collection->{ruling};
     my $sizes       = $collection->{sizes};
     my $variants    = $collection->{variants};
