@@ -40,7 +40,6 @@ has 'verbose'             => (is => 'rw', default => 0);
 has 'dryRun'              => (is => 'rw', default => 0);
 has 'force'               => (is => 'rw', default => 0);
 has 'templatesArray'      => (is => 'rw', default => sub { return []; });
-has 'cwd'                 => (is => 'rw');
 has 'perlModulesArray'    => (is => 'rw', default => sub { return []; });
 has 'projectRoot'         => (is => 'rw');
 has 'buildHashByFilename' => (is => 'rw', default => sub { return {}; });
@@ -48,7 +47,6 @@ has 'buildsArray'         => (is => 'rw', default => sub { return []; });
 
 sub BUILD {
     my ($self) = @_;
-    $self->cwd(getcwd());
     $self->buildTemplatesArray();
     $self->getPerlModulesArray();
 }
@@ -111,6 +109,8 @@ sub run {
     foreach my $filter (@filters) {
         $filter->();
     }
+
+    $self->chdirProjectRoot();
 
     if ($operation eq 'LIST') {
         foreach my $build (@buildsToPerform) {
@@ -519,7 +519,7 @@ sub buildFile {
     my @build_dependencies = eval { @{$build->{dependencies}} };
 
     if ($build->{dependOnPerlModules}) {
-        push(@dependencies, @{$self->perlModulesArray});
+        push(@build_dependencies, @{$self->perlModulesArray});
     }
 
     if ($self->verbose) {
@@ -661,15 +661,11 @@ sub buildTemplatesArray {
                         $template->{'base_2up'} = $base_2up;
                     }
 
-                    say(Dumper($template));
-
                     push(@{$self->templatesArray}, $template);
                 }
             }
         }
     }
-
-    print(Dumper($self->templatesArray));
 
     foreach my $template (@{$self->templatesArray}) {
         my $ruling = $template->{ruling};
@@ -765,23 +761,28 @@ sub cmd {
 
 sub getPerlModulesArray {
     my ($self) = @_;
+    my $cwd = getcwd();
     $self->chdirProjectRoot();
     my @modules;
     my $wanted = sub {
         if (lstat($_) && -f _ && m{\.pm\z}) {
-            push(@modules, realpath($File::Find::name));
+            push(@modules, $File::Find::name);
         }
     };
     find($wanted, '.');
+    # warn(getcwd());
+    # warn($_) foreach @modules;
+    # @modules = map { realpath($_) } @modules;
     @{$self->perlModulesArray} = @modules;
-    chdir($self->cwd);
+    chdir($cwd);
 }
 
 sub findPdfnup {
     my ($self, %args) = @_;
     my $type = $args{type};
 
-    chdir($self->projectRoot);
+    my $cwd = getcwd();
+    $self->chdirProjectRoot();
 
     state @paths;
     if (!scalar @paths) {
@@ -817,11 +818,11 @@ sub findPdfnup {
             next;
         }
         if (defined $pdfnup_type && $pdfnup_type eq $type) {
-            chdir($self->cwd);
+            chdir($cwd);
             return $path;
         }
     }
-    chdir($self->cwd);
+    chdir($cwd);
     return;
 }
 
