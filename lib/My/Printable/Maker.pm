@@ -875,6 +875,8 @@ END
     return @path;
 }
 
+# returns true if both arguments are `eq` equal, or both are
+# undefined.
 sub EQ {
     my ($a, $b) = @_;
     return 1 if defined $a && defined $b && $a eq $b;
