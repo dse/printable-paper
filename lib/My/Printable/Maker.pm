@@ -36,12 +36,13 @@ use constant USE_PDF_API2 => 1;
 
 use Moo;
 
-has 'verbose'          => (is => 'rw', default => 0);
-has 'dryRun'           => (is => 'rw', default => 0);
-has 'templatesArray'   => (is => 'rw', default => sub { return []; });
-has 'cwd'              => (is => 'rw');
-has 'perlModulesArray' => (is => 'rw', default => sub { return []; });
-has 'projectRoot'      => (is => 'rw');
+has 'verbose'             => (is => 'rw', default => 0);
+has 'dryRun'              => (is => 'rw', default => 0);
+has 'force'               => (is => 'rw', default => 0);
+has 'templatesArray'      => (is => 'rw', default => sub { return []; });
+has 'cwd'                 => (is => 'rw');
+has 'perlModulesArray'    => (is => 'rw', default => sub { return []; });
+has 'projectRoot'         => (is => 'rw');
 has 'buildHashByFilename' => (is => 'rw', default => sub { return {}; });
 has 'buildsArray'         => (is => 'rw', default => sub { return []; });
 
@@ -461,6 +462,7 @@ our %BUILD = (
     svg => {
         dependencies => [qw(bin/printable makebin/makeprintable)],
         dependOnPerlModules => 1,
+        forceIfApplicable => 1,
         code => \&buildSVG,
     },
     svg_pdf => {
@@ -512,9 +514,13 @@ sub buildFile {
     my $target       = $file->{filename};
     my @dependencies = eval { @{$file->{dependencies}} };
     my $build        = $file->{build};
-    my $force        = $build->{force};
+    my $forceIfApplicable = $build->{forceIfApplicable};
 
     my @build_dependencies = eval { @{$build->{dependencies}} };
+
+    if ($build->{dependOnPerlModules}) {
+        push(@dependencies, @{$self->perlModulesArray});
+    }
 
     if ($self->verbose) {
         warn("$target requires:\n");
@@ -526,7 +532,7 @@ sub buildFile {
     my $target_age    = -M _;
 
     my $make = 0;
-    if ($force) {
+    if ($forceIfApplicable && $self->force) {
         $make = 1;
     }
     if (!$target_exists) {
