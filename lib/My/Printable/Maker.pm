@@ -770,9 +770,6 @@ sub getPerlModulesArray {
         }
     };
     find($wanted, '.');
-    # warn(getcwd());
-    # warn($_) foreach @modules;
-    # @modules = map { realpath($_) } @modules;
     @{$self->perlModulesArray} = @modules;
     chdir($cwd);
 }
