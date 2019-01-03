@@ -19,6 +19,8 @@ our $opt_height;
 our $opt_unit_type;
 our $opt_color_type;
 our @opt_modifiers;
+our $opt_list_ruling_names;
+our $opt_list_rulings;
 
 our $opt_id;
 our $opt_filename;
@@ -43,6 +45,8 @@ Getopt::Long::GetOptions(
     "modifier=s"                      => sub { push(@opt_modifiers, $_[1]); },
     'id=s'                            => \$opt_id,
     'filename=s'                      => \$opt_filename,
+    'list-ruling-names'               => \$opt_list_ruling_names,
+    'list-rulings'                    => \$opt_list_rulings,
     "help|?" => sub {
         usage();
         exit(0);
@@ -72,6 +76,31 @@ EOF
 
 use My::Printable::Document;
 use My::Printable::Ruling;
+
+if ($opt_list_ruling_names || $opt_list_rulings) {
+    use My::Printable::Util::Installed;
+    my $inst = My::Printable::Util::Installed->new();
+    if ($opt_list_ruling_names) {
+        say foreach @{$inst->rulingNameList};
+    }
+    if ($opt_list_rulings) {
+        foreach my $ruling (@{$inst->rulingNameList}) {
+            my $ruling_class_name = My::Printable::Ruling->getRulingClassName($ruling);
+            my $object = $ruling_class_name->new();
+
+            my $dotCSSClass       = eval { $object->getDotCSSClass; };
+            my $lineCSSClass      = eval { $object->getLineCSSClass; };
+            my $feintLineCSSClass = eval { $object->getFeintLineCSSClass; };
+
+            printf("%-16s  %-20s  %-20s  %-20s\n",
+                   $ruling,
+                   $dotCSSClass // '-',
+                   $lineCSSClass // '-',
+                   $feintLineCSSClass // '-',
+                   );
+        }
+    }
+}
 
 foreach my $ruling (@ARGV) {
     my $ruling_class_name = My::Printable::Ruling->getRulingClassName($ruling);
