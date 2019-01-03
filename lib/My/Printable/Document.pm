@@ -569,6 +569,9 @@ sub defaultStyles {
         .stroke-23    { stroke-width: {{ 23/600 in }}; stroke-linecap: round; }
         .stroke-24    { stroke-width: {{ 24/600 in }}; stroke-linecap: round; }
 
+        .stroke-half    { stroke-width: {{ 0.50/600 in }}; stroke-linecap: round; }
+        .stroke-quarter { stroke-width: {{ 0.25/600 in }}; stroke-linecap: round; }
+
         .blue  { stroke: #b3b3ff; }
         .red   { stroke: #ff9999; }
         .green { stroke: #b3ffb3; }
@@ -577,6 +580,9 @@ sub defaultStyles {
         .black         { stroke: #000000; }
         .half-black    { stroke: #808080; }
         .quarter-black { stroke: #c0c0c0; }
+
+        .black.stroke-half   { stroke-width: {{ 1/600 in }}; color: #808080; }
+        .black.stroke-quater { stroke-width: {{ 1/600 in }}; color: #c0c0c0; }
 
         .light.blue  { stroke: #d9d9ff; }
         .light.red   { stroke: #ffcccc; }
