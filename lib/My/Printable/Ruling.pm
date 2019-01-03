@@ -117,6 +117,74 @@ sub getUnit {
     }
 }
 
+###############################################################################
+
+sub getMarginLineThicknessCSSClassList {
+    my ($self) = @_;
+    if ($self->colorType eq 'black') {
+        return ('stroke-3');
+    } else {
+        return ();
+    }
+}
+
+sub getMarginLineColorCSSClassList {
+    my ($self) = @_;
+    if ($self->colorType eq 'grayscale') {
+        return ('gray');
+    } elsif ($self->colorType eq 'color') {
+        return ('red');
+    } else {
+        return ('black');
+    }
+}
+
+sub getMarginLineTypeCSSClassList {
+    my ($self) = @_;
+    return ('line');
+}
+
+sub getDotThicknessCSSClassList {
+    my ($self) = @_;
+}
+
+sub getDotColorCSSClassList {
+    my ($self) = @_;
+}
+
+sub getDotTypeCSSClassList {
+    my ($self) = @_;
+    return ('dot');
+}
+
+sub getLineThicknessCSSClassList {
+    my ($self) = @_;
+}
+
+sub getLineColorCSSClassList {
+    my ($self) = @_;
+}
+
+sub getLineTypeCSSClassList {
+    my ($self) = @_;
+    return ('line');
+}
+
+sub getFeintLineThicknessCSSClassList {
+    my ($self) = @_;
+}
+
+sub getFeintLineColorCSSClassList {
+    my ($self) = @_;
+}
+
+sub getFeintLineTypeCSSClassList {
+    my ($self) = @_;
+    return ('line');
+}
+
+###############################################################################
+
 sub getMarginLineCSSClass {
     my ($self) = @_;
 
@@ -149,8 +217,8 @@ sub getLineCSSClass {
         'stroke-3 black',
         'stroke-2 black',
         'stroke-1 black',
-        'stroke-1 half-black',
-        'stroke-1 quarter-black',
+        'stroke-1 black stroke-half',
+        'stroke-1 black stroke-quarter',
     ]->[$thinness];
 
     if ($self->colorType eq 'grayscale') {
@@ -198,11 +266,11 @@ sub getFeintLineCSSClass {
     ]->[$thinness];
     my $thinness_class_B = [
         'stroke-1 black',
-        'stroke-1 half-black',
-        'stroke-1 quarter-black',
-        'stroke-1 quarter-black',
-        'stroke-1 quarter-black',
-        'stroke-1 quarter-black',
+        'stroke-1 black stroke-half',
+        'stroke-1 black stroke-quarter',
+        'stroke-1 black stroke-quarter',
+        'stroke-1 black stroke-quarter',
+        'stroke-1 black stroke-quarter',
     ]->[$thinness];
 
     if ($self->colorType eq 'grayscale') {
