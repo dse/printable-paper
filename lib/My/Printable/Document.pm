@@ -170,15 +170,18 @@ has 'svgRoot' => (
 after 'svgRoot' => sub {
     my ($self) = @_;
 
-    state $in = 0;              # recursion avoidance
-    return if $in;              # recursion avoidance
-    $in += 1;                   # recursion avoidance
+    # Recursion avoidance is required because some of the methods we
+    # call call svgRoot.
+    state $in = 0;
+    return if $in;
+    $in += 1;
 
     $self->svgDefs;
     $self->svgStyle;
     $self->svgAdditionalStyle;
 
-    $in -= 1;                   # recursion avoidance
+    # Recursion avoidance is complete.
+    $in -= 1;
 };
 
 has 'svgDefs' => (
