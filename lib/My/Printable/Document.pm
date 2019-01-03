@@ -577,10 +577,7 @@ sub defaultStyles {
         .green { stroke: #b3ffb3; }
         .gray  { stroke: #b3b3b3; }
 
-        .black         { stroke: #000000; }
-        .half-black    { stroke: #808080; }
-        .quarter-black { stroke: #c0c0c0; }
-
+        .black               { stroke: #000000; }
         .black.stroke-half   { stroke-width: {{ 1/600 in }}; color: #808080; }
         .black.stroke-quater { stroke-width: {{ 1/600 in }}; color: #c0c0c0; }
 
