@@ -554,6 +554,20 @@ sub defaultStyles {
         .stroke-8     { stroke-width: {{  8/600 in }}; stroke-linecap: round; }
         .stroke-9     { stroke-width: {{  9/600 in }}; stroke-linecap: round; }
         .stroke-10    { stroke-width: {{ 10/600 in }}; stroke-linecap: round; }
+        .stroke-11    { stroke-width: {{ 11/600 in }}; stroke-linecap: round; }
+        .stroke-12    { stroke-width: {{ 12/600 in }}; stroke-linecap: round; }
+        .stroke-13    { stroke-width: {{ 13/600 in }}; stroke-linecap: round; }
+        .stroke-14    { stroke-width: {{ 14/600 in }}; stroke-linecap: round; }
+        .stroke-15    { stroke-width: {{ 15/600 in }}; stroke-linecap: round; }
+        .stroke-16    { stroke-width: {{ 16/600 in }}; stroke-linecap: round; }
+        .stroke-17    { stroke-width: {{ 17/600 in }}; stroke-linecap: round; }
+        .stroke-18    { stroke-width: {{ 18/600 in }}; stroke-linecap: round; }
+        .stroke-19    { stroke-width: {{ 19/600 in }}; stroke-linecap: round; }
+        .stroke-20    { stroke-width: {{ 20/600 in }}; stroke-linecap: round; }
+        .stroke-21    { stroke-width: {{ 21/600 in }}; stroke-linecap: round; }
+        .stroke-22    { stroke-width: {{ 22/600 in }}; stroke-linecap: round; }
+        .stroke-23    { stroke-width: {{ 23/600 in }}; stroke-linecap: round; }
+        .stroke-24    { stroke-width: {{ 24/600 in }}; stroke-linecap: round; }
 
         .blue  { stroke: #b3b3ff; }
         .red   { stroke: #ff9999; }
