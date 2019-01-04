@@ -16,44 +16,87 @@ use constant rulingName => 'oasis';
 use constant dotThinness => 3;
 use constant lineThinness => 4;
 
+sub getDotColorCSSClassList {
+    my ($self) = @_;
+    return {
+        color     => 'thin-blue',
+        grayscale => 'thin-gray',
+        black     => 'thin-black',
+    }->{$self->colorType};
+}
+sub getLineColorCSSClassList {
+    my ($self) = @_;
+    return {
+        color     => 'thin-blue',
+        grayscale => 'thin-gray',
+        black     => 'thin-black',
+    }->{$self->colorType};
+}
+sub getMarginLineColorCSSClassList {
+    my ($self) = @_;
+    return {
+        color     => 'thin-blue',
+        grayscale => 'thin-gray',
+        black     => 'thin-black',
+    }->{$self->colorType};
+}
+
+sub getDotThicknessCSSClassList {
+    my ($self) = @_;
+    return {
+        color     => 'stroke-4',
+        grayscale => 'stroke-4',
+        black     => 'stroke-6',
+    }->{$self->colorType};
+}
+sub getLineThicknessCSSClassList {
+    my ($self) = @_;
+    return {
+        color     => 'stroke-2',
+        grayscale => 'stroke-2',
+        black     => 'stroke-2',
+    }->{$self->colorType};
+    return 'stroke-2';
+}
+sub getMarginLineThicknessCSSClassList {
+    my ($self) = @_;
+    return {
+        color     => 'stroke-4',
+        grayscale => 'stroke-4',
+        black     => 'stroke-6',
+    }->{$self->colorType};
+}
+
+sub getDotTypeCSSClassList {
+    my ($self) = @_;
+    return 'line';
+}
+sub getLineTypeCSSClassList {
+    my ($self) = @_;
+    return 'line';
+}
+sub getMarginLineTypeCSSClassList {
+    my ($self) = @_;
+    return 'line';
+}
+
 sub generate {
     my ($self) = @_;
 
     $self->document->setUnit($self->getUnit);
 
-    my $color = {
-        black     => '#000000',
-        grayscale => '#666666',
-        color     => '#6767ff',
-    }->{$self->colorType};
-
-    my $lineStrokeWidth = {
-        black     => '2/600in',
-        grayscale => '2/600in',
-        color     => '2/600in',
-    }->{$self->colorType};
-
-    my $gridStrokeWidth = {
-        black     => '6/600in',
-        grayscale => '6/600in',
-        color     => '6/600in',
-    }->{$self->colorType};
-
     $self->document->additionalStyles(<<"END");
-        #lines line {
-            stroke: $color; stroke-width: {{ $lineStrokeWidth }};
-        }
         #grid-1 line, #grid-1-pattern line {
-            stroke: $color; stroke-width: {{ $gridStrokeWidth }}; stroke-linecap: butt;
+            stroke-linecap: butt;
         }
         #grid-2 line, #grid-2-pattern line {
-            stroke: $color; stroke-width: {{ $gridStrokeWidth }}; stroke-linecap: butt;
+            stroke-linecap: butt;
         }
         #grid-3 line, #grid-3-pattern line {
-            stroke: $color; stroke-width: {{ $gridStrokeWidth }}; stroke-linecap: butt;
+            stroke-linecap: butt;
         }
         #grid-4 line, #grid-4-pattern line {
-            stroke: $color; stroke-width: {{ $gridStrokeWidth }}; stroke-linecap: butt;
+            stroke-linecap: butt;
         }
 END
 
@@ -62,7 +105,7 @@ END
         id => 'lines',
         direction => 'horizontal',
         spacing => "1unit",
-        cssClass => '',
+        cssClass => $self->getLineCSSClass(),
     );
 
     my $vertical_dotted_lines = My::Printable::Element::Grid->new(
@@ -72,7 +115,7 @@ END
         spacingX => '1unit',
         spacingY => '1/6unit',
         dotHeight => '3/300in',
-        cssClass => '',
+        cssClass => $self->getDotCSSClass(),
     );
 
     my $horizontal_dotted_lines_1 = My::Printable::Element::Grid->new(
@@ -83,7 +126,7 @@ END
         spacingY => '1unit',
         originY => $self->originY + $self->ptY('1/3unit'),
         dotWidth => '3/300in',
-        cssClass => '',
+        cssClass => $self->getDotCSSClass(),
     );
 
     my $horizontal_dotted_lines_2 = My::Printable::Element::Grid->new(
@@ -94,7 +137,7 @@ END
         spacingY => '1unit',
         originY => $self->originY - $self->ptY('1/3unit'),
         dotWidth => '3/300in',
-        cssClass => '',
+        cssClass => $self->getDotCSSClass(),
     );
 
     my $grid_4 = My::Printable::Element::Grid->new(
@@ -104,7 +147,7 @@ END
         spacingX => '1unit',
         spacingY => '1unit',
         dotHeight => '6/300in',
-        cssClass => '',
+        cssClass => $self->getDotCSSClass(),
     );
 
     $self->document->appendElement($horizontal_lines);
