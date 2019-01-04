@@ -358,11 +358,11 @@ sub getLineCSSClassOld {
         'xx-thin',
     ]->[$thinness];
     my $thinness_class_B = [
-        'stroke-3 thin-black',
-        'stroke-2 thin-black',
-        'stroke-1 thin-black',
-        'stroke-1 thin-black stroke-half',
-        'stroke-1 thin-black stroke-quarter',
+        'stroke-3',
+        'stroke-2',
+        'stroke-1',
+        'stroke-half',
+        'stroke-quarter',
     ]->[$thinness];
 
     if ($self->colorType eq 'grayscale') {
@@ -370,7 +370,7 @@ sub getLineCSSClassOld {
     } elsif ($self->colorType eq 'color') {
         return trim("$thinness_class_A blue line");
     } else {
-        return trim("$thinness_class_B line");
+        return trim("$thinness_class_B thin-black line");
     }
 
     # regular for anode
@@ -409,12 +409,12 @@ sub getFeintLineCSSClassOld {
         'xx-thin',
     ]->[$thinness];
     my $thinness_class_B = [
-        'stroke-1 thin-black',
-        'stroke-1 thin-black stroke-half',
-        'stroke-1 thin-black stroke-quarter',
-        'stroke-1 thin-black stroke-quarter',
-        'stroke-1 thin-black stroke-quarter',
-        'stroke-1 thin-black stroke-quarter',
+        'stroke-1',
+        'stroke-half',
+        'stroke-quarter',
+        'stroke-quarter',
+        'stroke-quarter',
+        'stroke-quarter',
     ]->[$thinness];
 
     if ($self->colorType eq 'grayscale') {
@@ -422,7 +422,7 @@ sub getFeintLineCSSClassOld {
     } elsif ($self->colorType eq 'color') {
         return trim("$thinness_class_A blue line");
     } else {
-        return trim("$thinness_class_B line");
+        return trim("$thinness_class_B thin-black line");
     }
 }
 
@@ -445,12 +445,12 @@ sub getDotCSSClassOld {
         'xx-thin',
     ]->[$thinness];
     my $thinness_class_B = [
-        'stroke-7 thin-black',
-        'stroke-5 thin-black',
-        'stroke-4 thin-black',
-        'stroke-3 thin-black',
-        'stroke-2 thin-black',
-        'stroke-1 thin-black',
+        'stroke-7',
+        'stroke-5',
+        'stroke-4',
+        'stroke-3',
+        'stroke-2',
+        'stroke-1',
     ]->[$thinness];
 
     if ($self->colorType eq 'grayscale') {
@@ -458,7 +458,7 @@ sub getDotCSSClassOld {
     } elsif ($self->colorType eq 'color') {
         return trim("$thinness_class_A blue dot");
     } else {
-        return trim("$thinness_class_B dot");
+        return trim("$thinness_class_B thin-black dot");
     }
 
     # regular for dot-grid
