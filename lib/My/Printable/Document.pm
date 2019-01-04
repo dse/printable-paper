@@ -591,10 +591,10 @@ sub defaultStyles {
         .dark.green { stroke: #67ff67; }
         .dark.gray  { stroke: #676767; }
 
-        .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
-        .alternate-red   { stroke: #ff3333; opacity: 0.5; }
-        .alternate-green { stroke: #67ff67; opacity: 0.5; }
-        .alternate-gray  { stroke: #676767; opacity: 0.5; }
+        .alternate.blue  { stroke: #6767ff; opacity: 0.5; }
+        .alternate.red   { stroke: #ff3333; opacity: 0.5; }
+        .alternate.green { stroke: #67ff67; opacity: 0.5; }
+        .alternate.gray  { stroke: #676767; opacity: 0.5; }
 
         .gray20 { stroke: #333333; }
         .gray40 { stroke: #666666; }
