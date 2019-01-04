@@ -528,21 +528,21 @@ sub defaultStyles {
 
         .rectangle { fill: #ffffff; }
 
-        .line.xx-thin    { stroke-width: {{  2.667/600 in }}; }
-        .line.x-thin     { stroke-width: {{  4.000/600 in }}; }
-        .line.thin       { stroke-width: {{  5.333/600 in }}; }
-        .line.semi-thin  { stroke-width: {{ [[sqrt(5.333*8)]] /600 in }}; }
-        .line            { stroke-width: {{  8.000/600 in }}; }
-        .line.semi-thick { stroke-width: {{ [[sqrt(8*12)]] /600 in }}; }
-        .line.thick      { stroke-width: {{ 12.000/600 in }}; }
+        .line.xx-thin    { stroke-width: {{          8/3 / 600 \@ in }}; }
+        .line.x-thin     { stroke-width: {{            4 / 600 \@ in }}; }
+        .line.thin       { stroke-width: {{         16/3 / 600 \@ in }}; }
+        .line.semi-thin  { stroke-width: {{ sqrt(16/3*8) / 600 \@ in }}; }
+        .line            { stroke-width: {{            8 / 600 \@ in }}; }
+        .line.semi-thick { stroke-width: {{   sqrt(8*12) / 600 \@ in }}; }
+        .line.thick      { stroke-width: {{           12 / 600 \@ in }}; }
 
-        .dot.xx-thin     { stroke-width: {{  2.667/300 in }}; }
-        .dot.x-thin      { stroke-width: {{  4.000/300 in }}; }
-        .dot.thin        { stroke-width: {{  5.333/300 in }}; }
-        .dot.semi-thin   { stroke-width: {{ [[sqrt(5.333*8)]]/300 in }}; }
-        .dot             { stroke-width: {{  8.000/300 in }}; }
-        .dot.semi-thick  { stroke-width: {{ [[sqrt(8*12)]]/300 in }}; }
-        .dot.thick       { stroke-width: {{ 12.000/300 in }}; }
+        .dot.xx-thin     { stroke-width: {{          8/3 / 300 \@ in }}; }
+        .dot.x-thin      { stroke-width: {{            4 / 300 \@ in }}; }
+        .dot.thin        { stroke-width: {{         16/3 / 300 \@ in }}; }
+        .dot.semi-thin   { stroke-width: {{ sqrt(16/3*8) / 300 \@ in }}; }
+        .dot             { stroke-width: {{            8 / 300 \@ in }}; }
+        .dot.semi-thick  { stroke-width: {{   sqrt(8*12) / 300 \@ in }}; }
+        .dot.thick       { stroke-width: {{           12 / 300 \@ in }}; }
 
         .stroke-1  { stroke-width: {{  1/600 in }}; stroke-linecap: round; }
         .stroke-2  { stroke-width: {{  2/600 in }}; stroke-linecap: round; }
@@ -616,30 +616,39 @@ sub defaultStyles {
         .gray80 { stroke: #cccccc; }
 EOF
 
-    $style = $self->doubleCurly($style);
+    $style = $self->doubleCurly($style, '%g');
 
     return $style;
 }
 
 # {{ 1/600 in }} => 0.12pt
 # {{ [[ sqrt(2) ]] in }} => about 101.82pt
+# {{ sqrt(2) @ in }} => about 101.82pt
 
 sub doubleCurly {
-    my ($self, $text) = @_;
+    my ($self, $text, $format) = @_;
     if (!defined $text) {
         if (scalar @_ >= 2) {
             return undef;
         }
         return;
     }
-    $text =~ s{\{\{\s*(.*?)\s*\}\}}{$self->doubleCurlyExpr($1)}gxe;
+    $text =~ s{\{\{\s*(.*?)\s*\}\}}{$self->doubleCurlyExpr($1, $format)}gxe;
     return $text;
 }
 
 sub doubleCurlyExpr {
-    my ($self, $expr) = @_;
-    $expr =~ s{\[\[(.*?)\]\]}{$self->doubleBracketExpr($1)}gxe;
-    return $self->unit->pt($expr) . 'px';
+    my ($self, $expr, $format) = @_;
+    if ($expr =~ m{^\s*(.*?)\s*@\s*(.*?)\s*$}) {
+        $expr = $self->doubleBracketExpr($1) . $2;
+    } else {
+        $expr =~ s{\[\[(.*?)\]\]}{$self->doubleBracketExpr($1)}gxe;
+    }
+    my $pt = $self->unit->pt($expr);
+    if (defined $format) {
+        $pt = sprintf($format, $pt);
+    }
+    return $pt . 'px';
 }
 
 sub doubleBracketExpr {
