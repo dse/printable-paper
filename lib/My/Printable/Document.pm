@@ -581,6 +581,14 @@ sub defaultStyles {
         .thin-black.stroke-half   { stroke-width: {{ 1/600 in }}; stroke: #808080; }
         .thin-black.stroke-quater { stroke-width: {{ 1/600 in }}; stroke: #c0c0c0; }
 
+        .thin-blue                { stroke-width: {{ 2/600 in }}; stroke: #8080ff; }
+        .thin-blue.stroke-half    { stroke-width: {{ 1/600 in }}; stroke: #8080ff; }
+        .thin-blue.stroke-quarter { stroke-width: {{ 1/600 in }}; stroke: #c0c0ff; }
+
+        .thin-gray                { stroke-width: {{ 2/600 in }}; stroke: #808080; }
+        .thin-gray.stroke-half    { stroke-width: {{ 1/600 in }}; stroke: #808080; }
+        .thin-gray.stroke-quarter { stroke-width: {{ 1/600 in }}; stroke: #c0c0c0; }
+
         .light.blue  { stroke: #d9d9ff; }
         .light.red   { stroke: #ffcccc; }
         .light.green { stroke: #d9ffd9; }
