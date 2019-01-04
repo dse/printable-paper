@@ -84,16 +84,13 @@ if ($opt_list_ruling_names || $opt_list_rulings) {
         say foreach @{$inst->rulingNameList};
     }
     if ($opt_list_rulings) {
-        foreach my $ruling (@{$inst->rulingNameList}) {
-            my $ruling_class_name = My::Printable::Ruling->getRulingClassName($ruling);
-            my $object = $ruling_class_name->new();
-
+        foreach my $ruling_name (@{$inst->rulingNameList}) {
+            my $object = create_ruling_object($ruling_name);
             my $dotCSSClass       = eval { $object->getDotCSSClass; };
             my $lineCSSClass      = eval { $object->getLineCSSClass; };
             my $feintLineCSSClass = eval { $object->getFeintLineCSSClass; };
-
             printf("%-16s  %-20s  %-20s  %-20s\n",
-                   $ruling,
+                   $ruling_name,
                    $dotCSSClass // '-',
                    $lineCSSClass // '-',
                    $feintLineCSSClass // '-',
@@ -102,21 +99,27 @@ if ($opt_list_ruling_names || $opt_list_rulings) {
     }
 }
 
-foreach my $ruling (@ARGV) {
-    my $ruling_class_name = My::Printable::Ruling->getRulingClassName($ruling);
+foreach my $ruling_name (@ARGV) {
+    my $object = create_ruling_object($ruling_name);
+    $object->generate();
+    $object->print();
+}
+
+sub create_ruling_object {
+    my ($ruling_name) = @_;
+    my $ruling_class_name = My::Printable::Ruling->getRulingClassName($ruling_name);
     eval "use $ruling_class_name";
     if ($@) {
         die $@;
     }
-    my $ruling = $ruling_class_name->new();
-    $ruling->id($opt_id)                   if defined $opt_id;
-    $ruling->filename($opt_filename)       if defined $opt_filename;
-    $ruling->paperSizeName($opt_papersize) if defined $opt_papersize;
-    $ruling->width($opt_width)             if defined $opt_width;
-    $ruling->height($opt_height)           if defined $opt_height;
-    $ruling->unitType($opt_unit_type)      if defined $opt_unit_type;
-    $ruling->colorType($opt_color_type)    if defined $opt_color_type;
-    $ruling->modifiers->set(@opt_modifiers);
-    $ruling->generate();
-    $ruling->print();
+    my $object = $ruling_class_name->new();
+    $object->id($opt_id)                   if defined $opt_id;
+    $object->filename($opt_filename)       if defined $opt_filename;
+    $object->paperSizeName($opt_papersize) if defined $opt_papersize;
+    $object->width($opt_width)             if defined $opt_width;
+    $object->height($opt_height)           if defined $opt_height;
+    $object->unitType($opt_unit_type)      if defined $opt_unit_type;
+    $object->colorType($opt_color_type)    if defined $opt_color_type;
+    $object->modifiers->set(@opt_modifiers);
+    return $object;
 }
