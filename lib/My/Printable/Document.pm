@@ -531,63 +531,69 @@ sub defaultStyles {
         .line.xx-thin    { stroke-width: {{  2.667/600 in }}; }
         .line.x-thin     { stroke-width: {{  4.000/600 in }}; }
         .line.thin       { stroke-width: {{  5.333/600 in }}; }
-        .line.semi-thin  { stroke-width: {{  6.532/600 in }}; }
+        .line.semi-thin  { stroke-width: {{ [[sqrt(5.333*8)]] /600 in }}; }
         .line            { stroke-width: {{  8.000/600 in }}; }
-        .line.semi-thick { stroke-width: {{  9.798/600 in }}; }
+        .line.semi-thick { stroke-width: {{ [[sqrt(8*12)]] /600 in }}; }
         .line.thick      { stroke-width: {{ 12.000/600 in }}; }
 
         .dot.xx-thin     { stroke-width: {{  2.667/300 in }}; }
         .dot.x-thin      { stroke-width: {{  4.000/300 in }}; }
         .dot.thin        { stroke-width: {{  5.333/300 in }}; }
-        .dot.semi-thin   { stroke-width: {{  6.532/300 in }}; }
+        .dot.semi-thin   { stroke-width: {{ [[sqrt(5.333*8)]]/300 in }}; }
         .dot             { stroke-width: {{  8.000/300 in }}; }
-        .dot.semi-thick  { stroke-width: {{  9.798/300 in }}; }
+        .dot.semi-thick  { stroke-width: {{ [[sqrt(8*12)]]/300 in }}; }
         .dot.thick       { stroke-width: {{ 12.000/300 in }}; }
 
-        .stroke-1     { stroke-width: {{  1/600 in }}; stroke-linecap: round; }
-        .stroke-2     { stroke-width: {{  2/600 in }}; stroke-linecap: round; }
-        .stroke-3     { stroke-width: {{  3/600 in }}; stroke-linecap: round; }
-        .stroke-4     { stroke-width: {{  4/600 in }}; stroke-linecap: round; }
-        .stroke-5     { stroke-width: {{  5/600 in }}; stroke-linecap: round; }
-        .stroke-6     { stroke-width: {{  6/600 in }}; stroke-linecap: round; }
-        .stroke-7     { stroke-width: {{  7/600 in }}; stroke-linecap: round; }
-        .stroke-8     { stroke-width: {{  8/600 in }}; stroke-linecap: round; }
-        .stroke-9     { stroke-width: {{  9/600 in }}; stroke-linecap: round; }
-        .stroke-10    { stroke-width: {{ 10/600 in }}; stroke-linecap: round; }
-        .stroke-11    { stroke-width: {{ 11/600 in }}; stroke-linecap: round; }
-        .stroke-12    { stroke-width: {{ 12/600 in }}; stroke-linecap: round; }
-        .stroke-13    { stroke-width: {{ 13/600 in }}; stroke-linecap: round; }
-        .stroke-14    { stroke-width: {{ 14/600 in }}; stroke-linecap: round; }
-        .stroke-15    { stroke-width: {{ 15/600 in }}; stroke-linecap: round; }
-        .stroke-16    { stroke-width: {{ 16/600 in }}; stroke-linecap: round; }
-        .stroke-17    { stroke-width: {{ 17/600 in }}; stroke-linecap: round; }
-        .stroke-18    { stroke-width: {{ 18/600 in }}; stroke-linecap: round; }
-        .stroke-19    { stroke-width: {{ 19/600 in }}; stroke-linecap: round; }
-        .stroke-20    { stroke-width: {{ 20/600 in }}; stroke-linecap: round; }
-        .stroke-21    { stroke-width: {{ 21/600 in }}; stroke-linecap: round; }
-        .stroke-22    { stroke-width: {{ 22/600 in }}; stroke-linecap: round; }
-        .stroke-23    { stroke-width: {{ 23/600 in }}; stroke-linecap: round; }
-        .stroke-24    { stroke-width: {{ 24/600 in }}; stroke-linecap: round; }
-
-        .stroke-half    { stroke-width: {{ 0.50/600 in }}; stroke-linecap: round; }
-        .stroke-quarter { stroke-width: {{ 0.25/600 in }}; stroke-linecap: round; }
+        .stroke-1  { stroke-width: {{  1/600 in }}; stroke-linecap: round; }
+        .stroke-2  { stroke-width: {{  2/600 in }}; stroke-linecap: round; }
+        .stroke-3  { stroke-width: {{  3/600 in }}; stroke-linecap: round; }
+        .stroke-4  { stroke-width: {{  4/600 in }}; stroke-linecap: round; }
+        .stroke-5  { stroke-width: {{  5/600 in }}; stroke-linecap: round; }
+        .stroke-6  { stroke-width: {{  6/600 in }}; stroke-linecap: round; }
+        .stroke-7  { stroke-width: {{  7/600 in }}; stroke-linecap: round; }
+        .stroke-8  { stroke-width: {{  8/600 in }}; stroke-linecap: round; }
+        .stroke-9  { stroke-width: {{  9/600 in }}; stroke-linecap: round; }
+        .stroke-10 { stroke-width: {{ 10/600 in }}; stroke-linecap: round; }
+        .stroke-11 { stroke-width: {{ 11/600 in }}; stroke-linecap: round; }
+        .stroke-12 { stroke-width: {{ 12/600 in }}; stroke-linecap: round; }
+        .stroke-13 { stroke-width: {{ 13/600 in }}; stroke-linecap: round; }
+        .stroke-14 { stroke-width: {{ 14/600 in }}; stroke-linecap: round; }
+        .stroke-15 { stroke-width: {{ 15/600 in }}; stroke-linecap: round; }
+        .stroke-16 { stroke-width: {{ 16/600 in }}; stroke-linecap: round; }
+        .stroke-17 { stroke-width: {{ 17/600 in }}; stroke-linecap: round; }
+        .stroke-18 { stroke-width: {{ 18/600 in }}; stroke-linecap: round; }
+        .stroke-19 { stroke-width: {{ 19/600 in }}; stroke-linecap: round; }
+        .stroke-20 { stroke-width: {{ 20/600 in }}; stroke-linecap: round; }
+        .stroke-21 { stroke-width: {{ 21/600 in }}; stroke-linecap: round; }
+        .stroke-22 { stroke-width: {{ 22/600 in }}; stroke-linecap: round; }
+        .stroke-23 { stroke-width: {{ 23/600 in }}; stroke-linecap: round; }
+        .stroke-24 { stroke-width: {{ 24/600 in }}; stroke-linecap: round; }
 
         .blue  { stroke: #b3b3ff; }
         .red   { stroke: #ff9999; }
         .green { stroke: #b3ffb3; }
         .gray  { stroke: #b3b3b3; }
 
-        .thin-black               { stroke-width: {{ 1/600 in }}; stroke: #000000; }
-        .thin-black.stroke-half   { stroke-width: {{ 1/600 in }}; stroke: #808080; }
-        .thin-black.stroke-quater { stroke-width: {{ 1/600 in }}; stroke: #c0c0c0; }
+        .thin-black               { stroke-width: {{  1/600 in }}; stroke: #000000; }
+        .thin-black.stroke-6      { stroke-width: {{  6/600 in }}; }
+        .thin-black.stroke-4      { stroke-width: {{  4/600 in }}; }
+        .thin-black.stroke-2      { stroke-width: {{  2/600 in }}; }
+        .thin-black.stroke-half   { stroke-width: {{  1/600 in }}; stroke: #808080; }
+        .thin-black.stroke-quater { stroke-width: {{  1/600 in }}; stroke: #c0c0c0; }
 
-        .thin-blue                { stroke-width: {{ 2/600 in }}; stroke: #8080ff; }
-        .thin-blue.stroke-half    { stroke-width: {{ 1/600 in }}; stroke: #8080ff; }
-        .thin-blue.stroke-quarter { stroke-width: {{ 1/600 in }}; stroke: #c0c0ff; }
+        .thin-blue                { stroke-width: {{  2/600 in }}; stroke: #8080ff; }
+        .thin-blue.stroke-6       { stroke-width: {{ 12/600 in }}; }
+        .thin-blue.stroke-4       { stroke-width: {{  8/600 in }}; }
+        .thin-blue.stroke-2       { stroke-width: {{  4/600 in }}; }
+        .thin-blue.stroke-half    { stroke-width: {{  1/600 in }}; stroke: #8080ff; }
+        .thin-blue.stroke-quarter { stroke-width: {{  1/600 in }}; stroke: #c0c0ff; }
 
-        .thin-gray                { stroke-width: {{ 2/600 in }}; stroke: #808080; }
-        .thin-gray.stroke-half    { stroke-width: {{ 1/600 in }}; stroke: #808080; }
-        .thin-gray.stroke-quarter { stroke-width: {{ 1/600 in }}; stroke: #c0c0c0; }
+        .thin-gray                { stroke-width: {{  2/600 in }}; stroke: #808080; }
+        .thin-gray.stroke-6       { stroke-width: {{ 12/600 in }}; }
+        .thin-gray.stroke-4       { stroke-width: {{  8/600 in }}; }
+        .thin-gray.stroke-2       { stroke-width: {{  4/600 in }}; }
+        .thin-gray.stroke-half    { stroke-width: {{  1/600 in }}; stroke: #808080; }
+        .thin-gray.stroke-quarter { stroke-width: {{  1/600 in }}; stroke: #c0c0c0; }
 
         .light.blue  { stroke: #d9d9ff; }
         .light.red   { stroke: #ffcccc; }
@@ -616,6 +622,8 @@ EOF
 }
 
 # {{ 1/600 in }} => 0.12pt
+# {{ [[ sqrt(2) ]] in }} => about 101.82pt
+
 sub doubleCurly {
     my ($self, $text) = @_;
     if (!defined $text) {
@@ -624,8 +632,19 @@ sub doubleCurly {
         }
         return;
     }
-    $text =~ s{\{\{\s*(.*?)\s*\}\}}{$self->unit->pt($1) . 'px'}gxe;
+    $text =~ s{\{\{\s*(.*?)\s*\}\}}{$self->doubleCurlyExpr($1)}gxe;
     return $text;
+}
+
+sub doubleCurlyExpr {
+    my ($self, $expr) = @_;
+    $expr =~ s{\[\[(.*?)\]\]}{$self->doubleBracketExpr($1)}gxe;
+    return $self->unit->pt($expr) . 'px';
+}
+
+sub doubleBracketExpr {
+    my ($self, $expr) = @_;
+    return eval $expr;
 }
 
 has 'cssClasses'      => (is => 'rw', builder => sub { return {}; });
