@@ -94,36 +94,36 @@
 </style>
   <defs/>
   <g id="grid">
-    <line x1="0.000" x2="595.276" y1="104.882" y2="104.882" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="127.559" y2="127.559" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="150.236" y2="150.236" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="172.913" y2="172.913" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="195.591" y2="195.591" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="218.268" y2="218.268" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="240.945" y2="240.945" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="263.622" y2="263.622" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="286.299" y2="286.299" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="308.976" y2="308.976" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="331.654" y2="331.654" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="354.331" y2="354.331" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="377.008" y2="377.008" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="399.685" y2="399.685" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="422.362" y2="422.362" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="445.039" y2="445.039" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="467.717" y2="467.717" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="490.394" y2="490.394" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="513.071" y2="513.071" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="535.748" y2="535.748" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="558.425" y2="558.425" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="581.102" y2="581.102" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="603.780" y2="603.780" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="626.457" y2="626.457" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="649.134" y2="649.134" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="671.811" y2="671.811" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="694.488" y2="694.488" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="717.165" y2="717.165" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="739.843" y2="739.843" class=" blue line"/>
-    <line x1="0.000" x2="595.276" y1="762.520" y2="762.520" class=" blue line"/>
+    <line x1="0.000" x2="595.276" y1="104.882" y2="104.882" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="127.559" y2="127.559" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="150.236" y2="150.236" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="172.913" y2="172.913" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="195.591" y2="195.591" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="218.268" y2="218.268" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="240.945" y2="240.945" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="263.622" y2="263.622" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="286.299" y2="286.299" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="308.976" y2="308.976" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="331.654" y2="331.654" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="354.331" y2="354.331" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="377.008" y2="377.008" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="399.685" y2="399.685" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="422.362" y2="422.362" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="445.039" y2="445.039" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="467.717" y2="467.717" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="490.394" y2="490.394" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="513.071" y2="513.071" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="535.748" y2="535.748" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="558.425" y2="558.425" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="581.102" y2="581.102" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="603.780" y2="603.780" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="626.457" y2="626.457" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="649.134" y2="649.134" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="671.811" y2="671.811" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="694.488" y2="694.488" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="717.165" y2="717.165" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="739.843" y2="739.843" class="blue line"/>
+    <line x1="0.000" x2="595.276" y1="762.520" y2="762.520" class="blue line"/>
     <line x1="116.220" x2="116.220" y1="104.882" y2="762.520" stroke-dasharray="0.010 22.667" stroke-dashoffset="0.005"/>
     <line x1="138.898" x2="138.898" y1="104.882" y2="762.520" stroke-dasharray="0.010 22.667" stroke-dashoffset="0.005"/>
     <line x1="161.575" x2="161.575" y1="104.882" y2="762.520" stroke-dasharray="0.010 22.667" stroke-dashoffset="0.005"/>
@@ -148,7 +148,7 @@
     <line x1="592.441" x2="592.441" y1="104.882" y2="762.520" stroke-dasharray="0.010 22.667" stroke-dashoffset="0.005"/>
   </g>
   <g id="margin-line">
-    <line x1="116.220" x2="116.220" y1="0.000" y2="841.890" class="red line"/>
+    <line x1="116.220" x2="116.220" y1="0.000" y2="841.890" class="red margin line"/>
   </g>
   <rect x="203.138" y="815.89" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
   <text x="297.638" y="823.89" text-anchor="middle" fill="#b3b3ff" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>

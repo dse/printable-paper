@@ -134,7 +134,7 @@
     <line x1="408.189" x2="408.189" y1="68.031" y2="521.575" stroke-dasharray="0.010 22.667" stroke-dashoffset="0.005"/>
   </g>
   <g id="margin-line">
-    <line x1="45.354" x2="45.354" y1="0.000" y2="595.276" class="stroke-3 thin-black line"/>
+    <line x1="45.354" x2="45.354" y1="0.000" y2="595.276" class="stroke-3 thin-black margin line"/>
   </g>
   <rect x="115.264" y="569.276" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
   <text x="209.764" y="577.276" text-anchor="middle" fill="#808080" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>

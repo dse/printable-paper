@@ -202,30 +202,30 @@
     <line x1="408.189" x2="408.189" y1="0.000" y2="595.276" class="x-thin blue line"/>
   </g>
   <g id="lines">
-    <line x1="0.000" x2="419.528" y1="68.031" y2="68.031" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="90.709" y2="90.709" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="113.386" y2="113.386" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="136.063" y2="136.063" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="158.740" y2="158.740" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="181.417" y2="181.417" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="204.094" y2="204.094" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="226.772" y2="226.772" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="249.449" y2="249.449" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="272.126" y2="272.126" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="294.803" y2="294.803" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="317.480" y2="317.480" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="340.157" y2="340.157" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="362.835" y2="362.835" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="385.512" y2="385.512" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="408.189" y2="408.189" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="430.866" y2="430.866" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="453.543" y2="453.543" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="476.220" y2="476.220" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="498.898" y2="498.898" class=" blue line"/>
-    <line x1="0.000" x2="419.528" y1="521.575" y2="521.575" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="68.031" y2="68.031" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="90.709" y2="90.709" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="113.386" y2="113.386" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="136.063" y2="136.063" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="158.740" y2="158.740" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="181.417" y2="181.417" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="204.094" y2="204.094" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="226.772" y2="226.772" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="249.449" y2="249.449" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="272.126" y2="272.126" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="294.803" y2="294.803" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="317.480" y2="317.480" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="340.157" y2="340.157" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="362.835" y2="362.835" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="385.512" y2="385.512" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="408.189" y2="408.189" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="430.866" y2="430.866" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="453.543" y2="453.543" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="476.220" y2="476.220" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="498.898" y2="498.898" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="521.575" y2="521.575" class="blue line"/>
   </g>
   <g id="margin-line">
-    <line x1="45.354" x2="45.354" y1="0.000" y2="595.276" class="red line"/>
+    <line x1="45.354" x2="45.354" y1="0.000" y2="595.276" class="red margin line"/>
   </g>
   <rect x="115.264" y="569.276" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
   <text x="209.764" y="577.276" text-anchor="middle" fill="#b3b3ff" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>

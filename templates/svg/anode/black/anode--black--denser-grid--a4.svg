@@ -403,7 +403,7 @@
     <line x1="0.000" x2="595.276" y1="834.803" y2="834.803" class="stroke-3 thin-black line"/>
   </g>
   <g id="margin-line">
-    <line x1="62.362" x2="62.362" y1="0.000" y2="841.890" class="stroke-3 thin-black line"/>
+    <line x1="62.362" x2="62.362" y1="0.000" y2="841.890" class="stroke-3 thin-black margin line"/>
   </g>
   <rect x="203.138" y="815.89" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
   <text x="297.638" y="823.89" text-anchor="middle" fill="#808080" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>
