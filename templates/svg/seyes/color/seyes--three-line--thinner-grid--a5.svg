@@ -5,41 +5,72 @@
 
         .rectangle { fill: #ffffff; }
 
-        .line.xx-thin    { stroke-width: 0.32004px; }
+        .line.xx-thin    { stroke-width: 0.32px; }
         .line.x-thin     { stroke-width: 0.48px; }
-        .line.thin       { stroke-width: 0.63996px; }
-        .line.semi-thin  { stroke-width: 0.78384px; }
+        .line.thin       { stroke-width: 0.64px; }
+        .line.semi-thin  { stroke-width: 0.783837px; }
         .line            { stroke-width: 0.96px; }
         .line.semi-thick { stroke-width: 1.17576px; }
         .line.thick      { stroke-width: 1.44px; }
 
-        .dot.xx-thin     { stroke-width: 0.64008px; }
+        .dot.xx-thin     { stroke-width: 0.64px; }
         .dot.x-thin      { stroke-width: 0.96px; }
-        .dot.thin        { stroke-width: 1.27992px; }
-        .dot.semi-thin   { stroke-width: 1.56768px; }
+        .dot.thin        { stroke-width: 1.28px; }
+        .dot.semi-thin   { stroke-width: 1.56767px; }
         .dot             { stroke-width: 1.92px; }
-        .dot.semi-thick  { stroke-width: 2.35152px; }
+        .dot.semi-thick  { stroke-width: 2.35151px; }
         .dot.thick       { stroke-width: 2.88px; }
 
-        .stroke-1     { stroke-width: 0.12px; stroke-linecap: round; }
-        .stroke-2     { stroke-width: 0.24px; stroke-linecap: round; }
-        .stroke-3     { stroke-width: 0.36px; stroke-linecap: round; }
-        .stroke-4     { stroke-width: 0.48px; stroke-linecap: round; }
-        .stroke-5     { stroke-width: 0.6px; stroke-linecap: round; }
-        .stroke-6     { stroke-width: 0.72px; stroke-linecap: round; }
-        .stroke-7     { stroke-width: 0.84px; stroke-linecap: round; }
-        .stroke-8     { stroke-width: 0.96px; stroke-linecap: round; }
-        .stroke-9     { stroke-width: 1.08px; stroke-linecap: round; }
-        .stroke-10    { stroke-width: 1.2px; stroke-linecap: round; }
+        .stroke-1  { stroke-width: 0.12px; stroke-linecap: round; }
+        .stroke-2  { stroke-width: 0.24px; stroke-linecap: round; }
+        .stroke-3  { stroke-width: 0.36px; stroke-linecap: round; }
+        .stroke-4  { stroke-width: 0.48px; stroke-linecap: round; }
+        .stroke-5  { stroke-width: 0.6px; stroke-linecap: round; }
+        .stroke-6  { stroke-width: 0.72px; stroke-linecap: round; }
+        .stroke-7  { stroke-width: 0.84px; stroke-linecap: round; }
+        .stroke-8  { stroke-width: 0.96px; stroke-linecap: round; }
+        .stroke-9  { stroke-width: 1.08px; stroke-linecap: round; }
+        .stroke-10 { stroke-width: 1.2px; stroke-linecap: round; }
+        .stroke-11 { stroke-width: 1.32px; stroke-linecap: round; }
+        .stroke-12 { stroke-width: 1.44px; stroke-linecap: round; }
+        .stroke-13 { stroke-width: 1.56px; stroke-linecap: round; }
+        .stroke-14 { stroke-width: 1.68px; stroke-linecap: round; }
+        .stroke-15 { stroke-width: 1.8px; stroke-linecap: round; }
+        .stroke-16 { stroke-width: 1.92px; stroke-linecap: round; }
+        .stroke-17 { stroke-width: 2.04px; stroke-linecap: round; }
+        .stroke-18 { stroke-width: 2.16px; stroke-linecap: round; }
+        .stroke-19 { stroke-width: 2.28px; stroke-linecap: round; }
+        .stroke-20 { stroke-width: 2.4px; stroke-linecap: round; }
+        .stroke-21 { stroke-width: 2.52px; stroke-linecap: round; }
+        .stroke-22 { stroke-width: 2.64px; stroke-linecap: round; }
+        .stroke-23 { stroke-width: 2.76px; stroke-linecap: round; }
+        .stroke-24 { stroke-width: 2.88px; stroke-linecap: round; }
 
         .blue  { stroke: #b3b3ff; }
         .red   { stroke: #ff9999; }
         .green { stroke: #b3ffb3; }
         .gray  { stroke: #b3b3b3; }
 
-        .black         { stroke: #000000; }
-        .half-black    { stroke: #808080; }
-        .quarter-black { stroke: #c0c0c0; }
+        .thin-black               { stroke-width: 0.12px; stroke: #000000; }
+        .thin-black.stroke-6      { stroke-width: 0.72px; }
+        .thin-black.stroke-4      { stroke-width: 0.48px; }
+        .thin-black.stroke-2      { stroke-width: 0.24px; }
+        .thin-black.stroke-half   { stroke-width: 0.12px; stroke: #808080; }
+        .thin-black.stroke-quater { stroke-width: 0.12px; stroke: #c0c0c0; }
+
+        .thin-blue                { stroke-width: 0.24px; stroke: #8080ff; }
+        .thin-blue.stroke-6       { stroke-width: 1.44px; }
+        .thin-blue.stroke-4       { stroke-width: 0.96px; }
+        .thin-blue.stroke-2       { stroke-width: 0.48px; }
+        .thin-blue.stroke-half    { stroke-width: 0.12px; stroke: #8080ff; }
+        .thin-blue.stroke-quarter { stroke-width: 0.12px; stroke: #c0c0ff; }
+
+        .thin-gray                { stroke-width: 0.24px; stroke: #808080; }
+        .thin-gray.stroke-6       { stroke-width: 1.44px; }
+        .thin-gray.stroke-4       { stroke-width: 0.96px; }
+        .thin-gray.stroke-2       { stroke-width: 0.48px; }
+        .thin-gray.stroke-half    { stroke-width: 0.12px; stroke: #808080; }
+        .thin-gray.stroke-quarter { stroke-width: 0.12px; stroke: #c0c0c0; }
 
         .light.blue  { stroke: #d9d9ff; }
         .light.red   { stroke: #ffcccc; }
@@ -51,10 +82,10 @@
         .dark.green { stroke: #67ff67; }
         .dark.gray  { stroke: #676767; }
 
-        .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
-        .alternate-red   { stroke: #ff3333; opacity: 0.5; }
-        .alternate-green { stroke: #67ff67; opacity: 0.5; }
-        .alternate-gray  { stroke: #676767; opacity: 0.5; }
+        .alternate.blue  { stroke: #6767ff; opacity: 0.5; }
+        .alternate.red   { stroke: #ff3333; opacity: 0.5; }
+        .alternate.green { stroke: #67ff67; opacity: 0.5; }
+        .alternate.gray  { stroke: #676767; opacity: 0.5; }
 
         .gray20 { stroke: #333333; }
         .gray40 { stroke: #666666; }
@@ -175,37 +206,37 @@
     <line x1="419.528" x2="419.528" y1="0.000" y2="595.276" class="x-thin blue line"/>
   </g>
   <g id="lines">
-    <line x1="0.000" x2="419.528" y1="68.031" y2="68.031" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="85.039" y2="85.039" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="102.047" y2="102.047" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="119.055" y2="119.055" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="136.063" y2="136.063" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="153.071" y2="153.071" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="170.079" y2="170.079" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="187.087" y2="187.087" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="204.094" y2="204.094" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="221.102" y2="221.102" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="238.110" y2="238.110" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="255.118" y2="255.118" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="272.126" y2="272.126" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="289.134" y2="289.134" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="306.142" y2="306.142" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="323.150" y2="323.150" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="340.157" y2="340.157" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="357.165" y2="357.165" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="374.173" y2="374.173" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="391.181" y2="391.181" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="408.189" y2="408.189" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="425.197" y2="425.197" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="442.205" y2="442.205" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="459.213" y2="459.213" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="476.220" y2="476.220" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="493.228" y2="493.228" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="510.236" y2="510.236" class="blue line"/>
-    <line x1="0.000" x2="419.528" y1="527.244" y2="527.244" class="blue line"/>
+    <line x1="0.000" x2="419.528" y1="68.031" y2="68.031" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="85.039" y2="85.039" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="102.047" y2="102.047" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="119.055" y2="119.055" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="136.063" y2="136.063" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="153.071" y2="153.071" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="170.079" y2="170.079" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="187.087" y2="187.087" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="204.094" y2="204.094" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="221.102" y2="221.102" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="238.110" y2="238.110" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="255.118" y2="255.118" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="272.126" y2="272.126" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="289.134" y2="289.134" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="306.142" y2="306.142" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="323.150" y2="323.150" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="340.157" y2="340.157" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="357.165" y2="357.165" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="374.173" y2="374.173" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="391.181" y2="391.181" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="408.189" y2="408.189" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="425.197" y2="425.197" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="442.205" y2="442.205" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="459.213" y2="459.213" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="476.220" y2="476.220" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="493.228" y2="493.228" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="510.236" y2="510.236" class=" blue line"/>
+    <line x1="0.000" x2="419.528" y1="527.244" y2="527.244" class=" blue line"/>
   </g>
   <g id="margin-line">
-    <line x1="45.354" x2="45.354" y1="0.000" y2="595.276" class="red margin line"/>
+    <line x1="45.354" x2="45.354" y1="0.000" y2="595.276" class="red line"/>
   </g>
   <rect x="115.264" y="569.276" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
   <text x="209.764" y="577.276" text-anchor="middle" fill="#b3b3ff" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>

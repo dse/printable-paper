@@ -5,41 +5,72 @@
 
         .rectangle { fill: #ffffff; }
 
-        .line.xx-thin    { stroke-width: 0.32004px; }
+        .line.xx-thin    { stroke-width: 0.32px; }
         .line.x-thin     { stroke-width: 0.48px; }
-        .line.thin       { stroke-width: 0.63996px; }
-        .line.semi-thin  { stroke-width: 0.78384px; }
+        .line.thin       { stroke-width: 0.64px; }
+        .line.semi-thin  { stroke-width: 0.783837px; }
         .line            { stroke-width: 0.96px; }
         .line.semi-thick { stroke-width: 1.17576px; }
         .line.thick      { stroke-width: 1.44px; }
 
-        .dot.xx-thin     { stroke-width: 0.64008px; }
+        .dot.xx-thin     { stroke-width: 0.64px; }
         .dot.x-thin      { stroke-width: 0.96px; }
-        .dot.thin        { stroke-width: 1.27992px; }
-        .dot.semi-thin   { stroke-width: 1.56768px; }
+        .dot.thin        { stroke-width: 1.28px; }
+        .dot.semi-thin   { stroke-width: 1.56767px; }
         .dot             { stroke-width: 1.92px; }
-        .dot.semi-thick  { stroke-width: 2.35152px; }
+        .dot.semi-thick  { stroke-width: 2.35151px; }
         .dot.thick       { stroke-width: 2.88px; }
 
-        .stroke-1     { stroke-width: 0.12px; stroke-linecap: round; }
-        .stroke-2     { stroke-width: 0.24px; stroke-linecap: round; }
-        .stroke-3     { stroke-width: 0.36px; stroke-linecap: round; }
-        .stroke-4     { stroke-width: 0.48px; stroke-linecap: round; }
-        .stroke-5     { stroke-width: 0.6px; stroke-linecap: round; }
-        .stroke-6     { stroke-width: 0.72px; stroke-linecap: round; }
-        .stroke-7     { stroke-width: 0.84px; stroke-linecap: round; }
-        .stroke-8     { stroke-width: 0.96px; stroke-linecap: round; }
-        .stroke-9     { stroke-width: 1.08px; stroke-linecap: round; }
-        .stroke-10    { stroke-width: 1.2px; stroke-linecap: round; }
+        .stroke-1  { stroke-width: 0.12px; stroke-linecap: round; }
+        .stroke-2  { stroke-width: 0.24px; stroke-linecap: round; }
+        .stroke-3  { stroke-width: 0.36px; stroke-linecap: round; }
+        .stroke-4  { stroke-width: 0.48px; stroke-linecap: round; }
+        .stroke-5  { stroke-width: 0.6px; stroke-linecap: round; }
+        .stroke-6  { stroke-width: 0.72px; stroke-linecap: round; }
+        .stroke-7  { stroke-width: 0.84px; stroke-linecap: round; }
+        .stroke-8  { stroke-width: 0.96px; stroke-linecap: round; }
+        .stroke-9  { stroke-width: 1.08px; stroke-linecap: round; }
+        .stroke-10 { stroke-width: 1.2px; stroke-linecap: round; }
+        .stroke-11 { stroke-width: 1.32px; stroke-linecap: round; }
+        .stroke-12 { stroke-width: 1.44px; stroke-linecap: round; }
+        .stroke-13 { stroke-width: 1.56px; stroke-linecap: round; }
+        .stroke-14 { stroke-width: 1.68px; stroke-linecap: round; }
+        .stroke-15 { stroke-width: 1.8px; stroke-linecap: round; }
+        .stroke-16 { stroke-width: 1.92px; stroke-linecap: round; }
+        .stroke-17 { stroke-width: 2.04px; stroke-linecap: round; }
+        .stroke-18 { stroke-width: 2.16px; stroke-linecap: round; }
+        .stroke-19 { stroke-width: 2.28px; stroke-linecap: round; }
+        .stroke-20 { stroke-width: 2.4px; stroke-linecap: round; }
+        .stroke-21 { stroke-width: 2.52px; stroke-linecap: round; }
+        .stroke-22 { stroke-width: 2.64px; stroke-linecap: round; }
+        .stroke-23 { stroke-width: 2.76px; stroke-linecap: round; }
+        .stroke-24 { stroke-width: 2.88px; stroke-linecap: round; }
 
         .blue  { stroke: #b3b3ff; }
         .red   { stroke: #ff9999; }
         .green { stroke: #b3ffb3; }
         .gray  { stroke: #b3b3b3; }
 
-        .black         { stroke: #000000; }
-        .half-black    { stroke: #808080; }
-        .quarter-black { stroke: #c0c0c0; }
+        .thin-black               { stroke-width: 0.12px; stroke: #000000; }
+        .thin-black.stroke-6      { stroke-width: 0.72px; }
+        .thin-black.stroke-4      { stroke-width: 0.48px; }
+        .thin-black.stroke-2      { stroke-width: 0.24px; }
+        .thin-black.stroke-half   { stroke-width: 0.12px; stroke: #808080; }
+        .thin-black.stroke-quater { stroke-width: 0.12px; stroke: #c0c0c0; }
+
+        .thin-blue                { stroke-width: 0.24px; stroke: #8080ff; }
+        .thin-blue.stroke-6       { stroke-width: 1.44px; }
+        .thin-blue.stroke-4       { stroke-width: 0.96px; }
+        .thin-blue.stroke-2       { stroke-width: 0.48px; }
+        .thin-blue.stroke-half    { stroke-width: 0.12px; stroke: #8080ff; }
+        .thin-blue.stroke-quarter { stroke-width: 0.12px; stroke: #c0c0ff; }
+
+        .thin-gray                { stroke-width: 0.24px; stroke: #808080; }
+        .thin-gray.stroke-6       { stroke-width: 1.44px; }
+        .thin-gray.stroke-4       { stroke-width: 0.96px; }
+        .thin-gray.stroke-2       { stroke-width: 0.48px; }
+        .thin-gray.stroke-half    { stroke-width: 0.12px; stroke: #808080; }
+        .thin-gray.stroke-quarter { stroke-width: 0.12px; stroke: #c0c0c0; }
 
         .light.blue  { stroke: #d9d9ff; }
         .light.red   { stroke: #ffcccc; }
@@ -51,10 +82,10 @@
         .dark.green { stroke: #67ff67; }
         .dark.gray  { stroke: #676767; }
 
-        .alternate-blue  { stroke: #6767ff; opacity: 0.5; }
-        .alternate-red   { stroke: #ff3333; opacity: 0.5; }
-        .alternate-green { stroke: #67ff67; opacity: 0.5; }
-        .alternate-gray  { stroke: #676767; opacity: 0.5; }
+        .alternate.blue  { stroke: #6767ff; opacity: 0.5; }
+        .alternate.red   { stroke: #ff3333; opacity: 0.5; }
+        .alternate.green { stroke: #67ff67; opacity: 0.5; }
+        .alternate.gray  { stroke: #676767; opacity: 0.5; }
 
         .gray20 { stroke: #333333; }
         .gray40 { stroke: #666666; }
@@ -63,104 +94,104 @@
 </style>
   <defs/>
   <g id="grid">
-    <line x1="0.000" x2="612.000" y1="7.200" y2="7.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="21.600" y2="21.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="36.000" y2="36.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="50.400" y2="50.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="64.800" y2="64.800" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="79.200" y2="79.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="93.600" y2="93.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="108.000" y2="108.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="122.400" y2="122.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="136.800" y2="136.800" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="151.200" y2="151.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="165.600" y2="165.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="180.000" y2="180.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="194.400" y2="194.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="208.800" y2="208.800" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="223.200" y2="223.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="237.600" y2="237.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="252.000" y2="252.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="266.400" y2="266.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="280.800" y2="280.800" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="295.200" y2="295.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="309.600" y2="309.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="324.000" y2="324.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="338.400" y2="338.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="352.800" y2="352.800" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="367.200" y2="367.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="381.600" y2="381.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="396.000" y2="396.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="410.400" y2="410.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="424.800" y2="424.800" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="439.200" y2="439.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="453.600" y2="453.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="468.000" y2="468.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="482.400" y2="482.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="496.800" y2="496.800" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="511.200" y2="511.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="525.600" y2="525.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="540.000" y2="540.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="554.400" y2="554.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="568.800" y2="568.800" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="583.200" y2="583.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="597.600" y2="597.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="612.000" y2="612.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="626.400" y2="626.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="640.800" y2="640.800" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="655.200" y2="655.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="669.600" y2="669.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="684.000" y2="684.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="698.400" y2="698.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="712.800" y2="712.800" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="727.200" y2="727.200" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="741.600" y2="741.600" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="756.000" y2="756.000" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="770.400" y2="770.400" class="stroke-1 black line"/>
-    <line x1="0.000" x2="612.000" y1="784.800" y2="784.800" class="stroke-1 black line"/>
-    <line x1="3.600" x2="3.600" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="18.000" x2="18.000" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="32.400" x2="32.400" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="46.800" x2="46.800" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="61.200" x2="61.200" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="75.600" x2="75.600" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="90.000" x2="90.000" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="104.400" x2="104.400" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="118.800" x2="118.800" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="133.200" x2="133.200" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="147.600" x2="147.600" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="162.000" x2="162.000" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="176.400" x2="176.400" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="190.800" x2="190.800" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="205.200" x2="205.200" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="219.600" x2="219.600" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="234.000" x2="234.000" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="248.400" x2="248.400" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="262.800" x2="262.800" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="277.200" x2="277.200" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="291.600" x2="291.600" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="306.000" x2="306.000" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="320.400" x2="320.400" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="334.800" x2="334.800" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="349.200" x2="349.200" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="363.600" x2="363.600" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="378.000" x2="378.000" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="392.400" x2="392.400" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="406.800" x2="406.800" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="421.200" x2="421.200" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="435.600" x2="435.600" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="450.000" x2="450.000" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="464.400" x2="464.400" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="478.800" x2="478.800" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="493.200" x2="493.200" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="507.600" x2="507.600" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="522.000" x2="522.000" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="536.400" x2="536.400" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="550.800" x2="550.800" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="565.200" x2="565.200" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="579.600" x2="579.600" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="594.000" x2="594.000" y1="0.000" y2="792.000" class="stroke-1 black line"/>
-    <line x1="608.400" x2="608.400" y1="0.000" y2="792.000" class="stroke-1 black line"/>
+    <line x1="0.000" x2="612.000" y1="7.200" y2="7.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="21.600" y2="21.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="36.000" y2="36.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="50.400" y2="50.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="64.800" y2="64.800" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="79.200" y2="79.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="93.600" y2="93.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="108.000" y2="108.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="122.400" y2="122.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="136.800" y2="136.800" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="151.200" y2="151.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="165.600" y2="165.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="180.000" y2="180.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="194.400" y2="194.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="208.800" y2="208.800" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="223.200" y2="223.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="237.600" y2="237.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="252.000" y2="252.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="266.400" y2="266.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="280.800" y2="280.800" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="295.200" y2="295.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="309.600" y2="309.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="324.000" y2="324.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="338.400" y2="338.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="352.800" y2="352.800" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="367.200" y2="367.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="381.600" y2="381.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="396.000" y2="396.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="410.400" y2="410.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="424.800" y2="424.800" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="439.200" y2="439.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="453.600" y2="453.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="468.000" y2="468.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="482.400" y2="482.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="496.800" y2="496.800" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="511.200" y2="511.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="525.600" y2="525.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="540.000" y2="540.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="554.400" y2="554.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="568.800" y2="568.800" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="583.200" y2="583.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="597.600" y2="597.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="612.000" y2="612.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="626.400" y2="626.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="640.800" y2="640.800" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="655.200" y2="655.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="669.600" y2="669.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="684.000" y2="684.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="698.400" y2="698.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="712.800" y2="712.800" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="727.200" y2="727.200" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="741.600" y2="741.600" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="756.000" y2="756.000" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="770.400" y2="770.400" class="stroke-1 thin-black line"/>
+    <line x1="0.000" x2="612.000" y1="784.800" y2="784.800" class="stroke-1 thin-black line"/>
+    <line x1="3.600" x2="3.600" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="18.000" x2="18.000" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="32.400" x2="32.400" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="46.800" x2="46.800" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="61.200" x2="61.200" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="75.600" x2="75.600" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="90.000" x2="90.000" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="104.400" x2="104.400" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="118.800" x2="118.800" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="133.200" x2="133.200" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="147.600" x2="147.600" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="162.000" x2="162.000" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="176.400" x2="176.400" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="190.800" x2="190.800" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="205.200" x2="205.200" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="219.600" x2="219.600" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="234.000" x2="234.000" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="248.400" x2="248.400" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="262.800" x2="262.800" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="277.200" x2="277.200" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="291.600" x2="291.600" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="306.000" x2="306.000" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="320.400" x2="320.400" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="334.800" x2="334.800" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="349.200" x2="349.200" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="363.600" x2="363.600" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="378.000" x2="378.000" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="392.400" x2="392.400" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="406.800" x2="406.800" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="421.200" x2="421.200" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="435.600" x2="435.600" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="450.000" x2="450.000" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="464.400" x2="464.400" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="478.800" x2="478.800" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="493.200" x2="493.200" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="507.600" x2="507.600" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="522.000" x2="522.000" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="536.400" x2="536.400" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="550.800" x2="550.800" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="565.200" x2="565.200" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="579.600" x2="579.600" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="594.000" x2="594.000" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
+    <line x1="608.400" x2="608.400" y1="0.000" y2="792.000" class="stroke-1 thin-black line"/>
   </g>
   <rect x="211.5" y="766" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
   <text x="306" y="774" text-anchor="middle" fill="#808080" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>
