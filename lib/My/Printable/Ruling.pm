@@ -119,36 +119,50 @@ sub getUnit {
 
 ###############################################################################
 
+use constant USE_OLD_CSS_CLASS_CODE => 0;
+
 sub getMarginLineCSSClass {
+    if (USE_OLD_CSS_CLASS_CODE) {
+        goto &getMarginLineCSSClassOld;
+    }
     my ($self) = @_;
     my @classes = ($self->getMarginLineThicknessCSSClassList,
                    $self->getMarginLineColorCSSClassList,
                    $self->getMarginLineTypeCSSClassList);
-    return join(' ', @classes);
+    return join(' ', grep { defined $_ && $_ ne '' } @classes);
 }
 
 sub getDotCSSClass {
+    if (USE_OLD_CSS_CLASS_CODE) {
+        goto &getDotCSSClassOld;
+    }
     my ($self) = @_;
     my @classes = ($self->getDotThicknessCSSClassList,
                    $self->getDotColorCSSClassList,
                    $self->getDotTypeCSSClassList);
-    return join(' ', @classes);
+    return join(' ', grep { defined $_ && $_ ne '' } @classes);
 }
 
 sub getLineCSSClass {
+    if (USE_OLD_CSS_CLASS_CODE) {
+        goto &getLineCSSClassOld;
+    }
     my ($self) = @_;
     my @classes = ($self->getLineThicknessCSSClassList,
                    $self->getLineColorCSSClassList,
                    $self->getLineTypeCSSClassList);
-    return join(' ', @classes);
+    return join(' ', grep { defined $_ && $_ ne '' } @classes);
 }
 
 sub getFeintLineCSSClass {
+    if (USE_OLD_CSS_CLASS_CODE) {
+        goto &getFeintLineCSSClassOld;
+    }
     my ($self) = @_;
     my @classes = ($self->getFeintLineThicknessCSSClassList,
                    $self->getFeintLineColorCSSClassList,
                    $self->getFeintLineTypeCSSClassList);
-    return join(' ', @classes);
+    return join(' ', grep { defined $_ && $_ ne '' } @classes);
 }
 
 ###############################################################################
@@ -175,7 +189,7 @@ sub getMarginLineColorCSSClassList {
 
 sub getMarginLineTypeCSSClassList {
     my ($self) = @_;
-    return ('line');
+    return ('margin', 'line');
 }
 
 sub getDotThicknessCSSClassList {
