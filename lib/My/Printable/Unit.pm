@@ -37,7 +37,7 @@ our $UNITS = {
         type => "imperial"
     },
     "pd" => {                   # pixel dots
-        to_pt => (72 / 300), # 1 pd = 1 dot on a 300dpi laser printer = 1/300 in = 72/300 pt
+        to_pt => (72 / 600), # 1 pd = 1 dot on a 600dpi laser printer = 1/600 in = 72/600 pt
         type => "imperial"
     }
 };
