@@ -528,21 +528,21 @@ sub defaultStyles {
 
         .rectangle { fill: rgb(255, 255, 255); }
 
-        .line.xx-thin    { stroke-width: {{          8/3 / 600 \@ in }}; }
-        .line.x-thin     { stroke-width: {{            4 / 600 \@ in }}; }
-        .line.thin       { stroke-width: {{         16/3 / 600 \@ in }}; }
-        .line.semi-thin  { stroke-width: {{ sqrt(16/3*8) / 600 \@ in }}; }
-        .line            { stroke-width: {{            8 / 600 \@ in }}; }
-        .line.semi-thick { stroke-width: {{   sqrt(8*12) / 600 \@ in }}; }
         .line.thick      { stroke-width: {{           12 / 600 \@ in }}; }
+        .line.semi-thick { stroke-width: {{   sqrt(8*12) / 600 \@ in }}; }
+        .line            { stroke-width: {{            8 / 600 \@ in }}; }
+        .line.semi-thin  { stroke-width: {{ sqrt(16/3*8) / 600 \@ in }}; }
+        .line.thin       { stroke-width: {{         16/3 / 600 \@ in }}; }
+        .line.x-thin     { stroke-width: {{            4 / 600 \@ in }}; }
+        .line.xx-thin    { stroke-width: {{          8/3 / 600 \@ in }}; }
 
-        .dot.xx-thin     { stroke-width: {{          8/3 / 300 \@ in }}; }
-        .dot.x-thin      { stroke-width: {{            4 / 300 \@ in }}; }
-        .dot.thin        { stroke-width: {{         16/3 / 300 \@ in }}; }
-        .dot.semi-thin   { stroke-width: {{ sqrt(16/3*8) / 300 \@ in }}; }
-        .dot             { stroke-width: {{            8 / 300 \@ in }}; }
-        .dot.semi-thick  { stroke-width: {{   sqrt(8*12) / 300 \@ in }}; }
         .dot.thick       { stroke-width: {{           12 / 300 \@ in }}; }
+        .dot.semi-thick  { stroke-width: {{   sqrt(8*12) / 300 \@ in }}; }
+        .dot             { stroke-width: {{            8 / 300 \@ in }}; }
+        .dot.semi-thin   { stroke-width: {{ sqrt(16/3*8) / 300 \@ in }}; }
+        .dot.thin        { stroke-width: {{         16/3 / 300 \@ in }}; }
+        .dot.x-thin      { stroke-width: {{            4 / 300 \@ in }}; }
+        .dot.xx-thin     { stroke-width: {{          8/3 / 300 \@ in }}; }
 
         .stroke-1  { stroke-width: {{  1/600 in }}; stroke-linecap: round; }
         .stroke-2  { stroke-width: {{  2/600 in }}; stroke-linecap: round; }
