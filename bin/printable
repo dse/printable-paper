@@ -25,6 +25,9 @@ our $opt_list_rulings;
 our $opt_id;
 our $opt_filename;
 
+use lib "$ENV{HOME}/git/dse.d/utilities/lib";
+use My::Text::Table;
+
 use Getopt::Long;
 use Data::Dumper;
 use Carp::Always;
@@ -84,18 +87,33 @@ if ($opt_list_ruling_names || $opt_list_rulings) {
         say foreach @{$inst->rulingNameList};
     }
     if ($opt_list_rulings) {
+        my $tt = My::Text::Table->new();
+        $tt->header(
+            'Ruling',
+            'Dots',
+            'Lines',
+            'Feint Lines',
+            'Margin Lines',
+        );
         foreach my $ruling_name (@{$inst->rulingNameList}) {
-            my $object = create_ruling_object($ruling_name);
-            my $dotCSSClass       = eval { $object->getDotCSSClass; };
-            my $lineCSSClass      = eval { $object->getLineCSSClass; };
-            my $feintLineCSSClass = eval { $object->getFeintLineCSSClass; };
-            printf("%-16s  %-20s  %-20s  %-20s\n",
-                   $ruling_name,
-                   $dotCSSClass // '-',
-                   $lineCSSClass // '-',
-                   $feintLineCSSClass // '-',
-                   );
+            $tt->addRow($ruling_name // '');
+            foreach my $colorType ('color', 'grayscale', 'black') {
+                my $object = create_ruling_object($ruling_name);
+                $object->colorType($colorType);
+                my $dotCSSClass       = eval { $object->getDotCSSClass; };
+                my $lineCSSClass      = eval { $object->getLineCSSClass; };
+                my $feintLineCSSClass = eval { $object->getFeintLineCSSClass; };
+                my $marginLineCSSClass = eval { $object->getMarginLineCSSClass; };
+                $tt->addRow(
+                    '    ' . $colorType,
+                    $dotCSSClass // '-',
+                    $lineCSSClass // '-',
+                    $feintLineCSSClass // '-',
+                    $marginLineCSSClass // '-',
+                );
+            }
         }
+        print $tt->as_string;
     }
 }
 
@@ -106,7 +124,7 @@ foreach my $ruling_name (@ARGV) {
 }
 
 sub create_ruling_object {
-    my ($ruling_name) = @_;
+    my ($ruling_name, @args) = @_;
     my $ruling_class_name = My::Printable::Ruling->getRulingClassName($ruling_name);
     eval "use $ruling_class_name";
     if ($@) {
