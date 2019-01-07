@@ -376,7 +376,8 @@ sub drawDotPatternUsingSVGDottedLines {
         return $self->drawDotPatternUsingDots(%args);
     }
 
-    my $cssClass = $args{cssClass} // $self->cssClass;
+    my $cssClass     = $args{cssClass} // $self->cssClass;
+
     my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
     my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
     my $dw2 = $dw / 2;
@@ -563,12 +564,12 @@ sub drawDotPatternUsingDots {
 sub drawDotPattern {
     my ($self, %args) = @_;
     if (USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS) {
-        return $self->drawDotPatternUsingSVGDottedLines();
+        return $self->drawDotPatternUsingSVGDottedLines(%args);
     }
     if (USE_SVG_PATTERNS_FOR_DOT_GRIDS) {
-        return $self->drawDotPatternUsingSVGPatterns();
+        return $self->drawDotPatternUsingSVGPatterns(%args);
     }
-    return $self->drawDotPatternUsingDots();
+    return $self->drawDotPatternUsingDots(%args);
 }
 
 sub drawHorizontalLinePattern {
