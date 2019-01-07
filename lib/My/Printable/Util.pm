@@ -4,18 +4,6 @@ use strict;
 use v5.10.0;
 
 use base "Exporter";
-
-our @EXPORT_OK = qw(exclude
-                    round3
-                    with_temp
-                    linear_interpolate
-                    aroundUnit
-                    aroundUnitX
-                    aroundUnitY
-                    USE_SVG_PATTERNS_FOR_DOT_GRIDS
-                    USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS
-                    USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND);
-
 our %EXPORT_TAGS = (
     const => [qw(USE_SVG_PATTERNS_FOR_DOT_GRIDS
                  USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS
@@ -24,6 +12,15 @@ our %EXPORT_TAGS = (
                   aroundUnitX
                   aroundUnitY)],
 );
+our @EXPORT_OK = (
+    qw(exclude
+       round3
+       with_temp
+       linear_interpolate),
+    @{$EXPORT_TAGS{const}},
+    @{$EXPORT_TAGS{around}},
+);
+our @EXPORT = ();
 
 use constant USE_SVG_PATTERNS_FOR_DOT_GRIDS => 0;
 use constant USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS => 1;
