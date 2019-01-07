@@ -594,26 +594,6 @@ sub defaultStyles {
         .thin-gray.stroke-2       { stroke-width: {{  4/600 in }}; }
         .thin-gray.stroke-half    { stroke-width: {{  1/600 in }}; stroke: rgb(128, 128, 128); }
         .thin-gray.stroke-quarter { stroke-width: {{  1/600 in }}; stroke: rgb(192, 192, 192); }
-
-        .light.blue  { stroke: rgb(217, 217, 255); }
-        .light.red   { stroke: rgb(255, 204, 204); }
-        .light.green { stroke: rgb(217, 255, 217); }
-        .light.gray  { stroke: rgb(217, 217, 217); }
-
-        .dark.blue  { stroke: rgb(103, 103, 255); }
-        .dark.red   { stroke: rgb(255,  51,  51); }
-        .dark.green { stroke: rgb(103, 255, 103); }
-        .dark.gray  { stroke: rgb(103, 103, 103); }
-
-        .alternate.blue  { stroke: rgb(103, 103, 255); opacity: 0.5; }
-        .alternate.red   { stroke: rgb(255,  51,  51); opacity: 0.5; }
-        .alternate.green { stroke: rgb(103, 255, 103); opacity: 0.5; }
-        .alternate.gray  { stroke: rgb(103, 103, 103); opacity: 0.5; }
-
-        .gray20 { stroke: rgb( 51,  51,  51); }
-        .gray40 { stroke: rgb(102, 102, 102); }
-        .gray60 { stroke: rgb(153, 153, 153); }
-        .gray80 { stroke: rgb(204, 204, 204); }
 EOF
 
     $style = $self->doubleCurly($style, '%g');
