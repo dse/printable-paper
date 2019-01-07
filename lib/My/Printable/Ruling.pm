@@ -119,12 +119,7 @@ sub getUnit {
 
 ###############################################################################
 
-use constant USE_OLD_CSS_CLASS_CODE => 0;
-
 sub getMarginLineCSSClass {
-    if (USE_OLD_CSS_CLASS_CODE) {
-        goto &getMarginLineCSSClassOld;
-    }
     my ($self) = @_;
     my @classes = ($self->getMarginLineThicknessCSSClassList,
                    $self->getMarginLineColorCSSClassList,
@@ -133,9 +128,6 @@ sub getMarginLineCSSClass {
 }
 
 sub getDotCSSClass {
-    if (USE_OLD_CSS_CLASS_CODE) {
-        goto &getDotCSSClassOld;
-    }
     my ($self) = @_;
     my @classes = ($self->getDotThicknessCSSClassList,
                    $self->getDotColorCSSClassList,
@@ -144,9 +136,6 @@ sub getDotCSSClass {
 }
 
 sub getLineCSSClass {
-    if (USE_OLD_CSS_CLASS_CODE) {
-        goto &getLineCSSClassOld;
-    }
     my ($self) = @_;
     my @classes = ($self->getLineThicknessCSSClassList,
                    $self->getLineColorCSSClassList,
@@ -155,9 +144,6 @@ sub getLineCSSClass {
 }
 
 sub getFeintLineCSSClass {
-    if (USE_OLD_CSS_CLASS_CODE) {
-        goto &getFeintLineCSSClassOld;
-    }
     my ($self) = @_;
     my @classes = ($self->getFeintLineThicknessCSSClassList,
                    $self->getFeintLineColorCSSClassList,
@@ -342,143 +328,6 @@ sub getFeintLineTypeCSSClassList {
 }
 
 ###############################################################################
-
-sub getMarginLineCSSClassOld {
-    my ($self) = @_;
-
-    if ($self->colorType eq 'grayscale') {
-        return 'gray margin line';
-    } elsif ($self->colorType eq 'color') {
-        return 'red margin line';
-    } else {
-        return 'stroke-3 thin-black line';
-    }
-}
-
-sub getLineCSSClassOld {
-    my ($self) = @_;
-
-    my $thinness =
-        $self->modifiers->has('x-thinner-lines') ? 2 :
-        $self->modifiers->has('thinner-lines') ? 1 :
-        0;                            # 0 to 2
-    $thinness += $self->lineThinness; # 0 to 4
-
-    my $thinness_class_A = [
-        '',                     # regular
-        'thin',
-        'x-thin',
-        'xx-thin',
-        'xx-thin',
-    ]->[$thinness];
-    my $thinness_class_B = [
-        'stroke-3',
-        'stroke-2',
-        'stroke-1',
-        'stroke-half',
-        'stroke-quarter',
-    ]->[$thinness];
-
-    if ($self->colorType eq 'grayscale') {
-        return trim("$thinness_class_A gray line");
-    } elsif ($self->colorType eq 'color') {
-        return trim("$thinness_class_A blue line");
-    } else {
-        return trim("$thinness_class_B thin-black line");
-    }
-
-    # regular for anode
-    # thin/x-thin/xx-thin for line-dot-grid
-    # x-thin for quadrille
-    # regular for seyes
-}
-
-sub getFeintLineCSSClassOld {
-    my ($self) = @_;
-
-    my $thinness;
-    if ($self->hasLineGrid) {
-        $thinness =
-            $self->modifiers->has('x-thinner-grid') ? 2 :
-            $self->modifiers->has('thinner-grid') ? 1 :
-            0;                  # 0 to 2
-        $thinness +=
-            $self->modifiers->has('denser-grid') ? 1 :
-            0;                  # 0 to 3
-        $thinness += $self->lineGridThinness; # 0 to 4
-    } else {
-        $thinness =
-            $self->modifiers->has('x-thinner-lines') ? 2 :
-            $self->modifiers->has('thinner-lines') ? 1 :
-            0;                  # 0 to 2
-        $thinness += $self->lineThinness; # 0 to 5
-    }
-
-    my $thinness_class_A = [
-        'thin',
-        'x-thin',
-        'xx-thin',
-        'xx-thin',
-        'xx-thin',
-        'xx-thin',
-    ]->[$thinness];
-    my $thinness_class_B = [
-        'stroke-1',
-        'stroke-half',
-        'stroke-quarter',
-        'stroke-quarter',
-        'stroke-quarter',
-        'stroke-quarter',
-    ]->[$thinness];
-
-    if ($self->colorType eq 'grayscale') {
-        return trim("$thinness_class_A gray line");
-    } elsif ($self->colorType eq 'color') {
-        return trim("$thinness_class_A blue line");
-    } else {
-        return trim("$thinness_class_B thin-black line");
-    }
-}
-
-sub getDotCSSClassOld {
-    my ($self) = @_;
-
-    my $thinness =
-        $self->modifiers->has('x-thinner-dots') ? 2 :
-        $self->modifiers->has('thinner-dots') ? 1 :
-        0;                           # 0 to 2
-    $thinness += $self->dotThinness; # -1 to 4
-    $thinness += 1;                  # 0 to 5
-
-    my $thinness_class_A = [
-        'semi-thick',
-        '',                     # regular
-        'semi-thin',
-        'thin',
-        'x-thin',
-        'xx-thin',
-    ]->[$thinness];
-    my $thinness_class_B = [
-        'stroke-7',
-        'stroke-5',
-        'stroke-4',
-        'stroke-3',
-        'stroke-2',
-        'stroke-1',
-    ]->[$thinness];
-
-    if ($self->colorType eq 'grayscale') {
-        return trim("$thinness_class_A gray dot");
-    } elsif ($self->colorType eq 'color') {
-        return trim("$thinness_class_A blue dot");
-    } else {
-        return trim("$thinness_class_B thin-black dot");
-    }
-
-    # regular for dot-grid
-    # thin for line-dot-graph
-    # semi-thick/regular/semi-thin for line-dot-grid
-}
 
 sub getRulingClassName {
     my ($self, $name) = @_;
