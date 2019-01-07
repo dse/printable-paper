@@ -526,7 +526,7 @@ sub defaultStyles {
         .line, .dot { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
 
-        .rectangle { fill: #ffffff; }
+        .rectangle { fill: rgb(255, 255, 255); }
 
         .line.xx-thin    { stroke-width: {{          8/3 / 600 \@ in }}; }
         .line.x-thin     { stroke-width: {{            4 / 600 \@ in }}; }
@@ -569,51 +569,51 @@ sub defaultStyles {
         .stroke-23 { stroke-width: {{ 23/600 in }}; stroke-linecap: round; }
         .stroke-24 { stroke-width: {{ 24/600 in }}; stroke-linecap: round; }
 
-        .blue  { stroke: #b3b3ff; }
-        .red   { stroke: #ff9999; }
-        .green { stroke: #b3ffb3; }
-        .gray  { stroke: #b3b3b3; }
+        .blue  { stroke: rgb(179, 179, 255); }
+        .red   { stroke: rgb(255, 153, 153); }
+        .green { stroke: rgb(179, 255, 179); }
+        .gray  { stroke: rgb(179, 179, 179); }
 
-        .thin-black               { stroke-width: {{  1/600 in }}; stroke: #000000; }
+        .thin-black               { stroke-width: {{  1/600 in }}; stroke: rgb(  0,   0,   0); }
         .thin-black.stroke-6      { stroke-width: {{  6/600 in }}; }
         .thin-black.stroke-4      { stroke-width: {{  4/600 in }}; }
         .thin-black.stroke-2      { stroke-width: {{  2/600 in }}; }
-        .thin-black.stroke-half   { stroke-width: {{  1/600 in }}; stroke: #808080; }
-        .thin-black.stroke-quater { stroke-width: {{  1/600 in }}; stroke: #c0c0c0; }
+        .thin-black.stroke-half   { stroke-width: {{  1/600 in }}; stroke: rgb(128, 128, 128); }
+        .thin-black.stroke-quater { stroke-width: {{  1/600 in }}; stroke: rgb(192, 192, 192); }
 
-        .thin-blue                { stroke-width: {{  2/600 in }}; stroke: #8080ff; }
+        .thin-blue                { stroke-width: {{  2/600 in }}; stroke: rgb(128, 128, 255); }
         .thin-blue.stroke-6       { stroke-width: {{ 12/600 in }}; }
         .thin-blue.stroke-4       { stroke-width: {{  8/600 in }}; }
         .thin-blue.stroke-2       { stroke-width: {{  4/600 in }}; }
-        .thin-blue.stroke-half    { stroke-width: {{  1/600 in }}; stroke: #8080ff; }
-        .thin-blue.stroke-quarter { stroke-width: {{  1/600 in }}; stroke: #c0c0ff; }
+        .thin-blue.stroke-half    { stroke-width: {{  1/600 in }}; stroke: rgb(128, 128, 255); }
+        .thin-blue.stroke-quarter { stroke-width: {{  1/600 in }}; stroke: rgb(192, 192, 255); }
 
-        .thin-gray                { stroke-width: {{  2/600 in }}; stroke: #808080; }
+        .thin-gray                { stroke-width: {{  2/600 in }}; stroke: rgb(128, 128, 128); }
         .thin-gray.stroke-6       { stroke-width: {{ 12/600 in }}; }
         .thin-gray.stroke-4       { stroke-width: {{  8/600 in }}; }
         .thin-gray.stroke-2       { stroke-width: {{  4/600 in }}; }
-        .thin-gray.stroke-half    { stroke-width: {{  1/600 in }}; stroke: #808080; }
-        .thin-gray.stroke-quarter { stroke-width: {{  1/600 in }}; stroke: #c0c0c0; }
+        .thin-gray.stroke-half    { stroke-width: {{  1/600 in }}; stroke: rgb(128, 128, 128); }
+        .thin-gray.stroke-quarter { stroke-width: {{  1/600 in }}; stroke: rgb(192, 192, 192); }
 
-        .light.blue  { stroke: #d9d9ff; }
-        .light.red   { stroke: #ffcccc; }
-        .light.green { stroke: #d9ffd9; }
-        .light.gray  { stroke: #d9d9d9; }
+        .light.blue  { stroke: rgb(217, 217, 255); }
+        .light.red   { stroke: rgb(255, 204, 204); }
+        .light.green { stroke: rgb(217, 255, 217); }
+        .light.gray  { stroke: rgb(217, 217, 217); }
 
-        .dark.blue  { stroke: #6767ff; }
-        .dark.red   { stroke: #ff3333; }
-        .dark.green { stroke: #67ff67; }
-        .dark.gray  { stroke: #676767; }
+        .dark.blue  { stroke: rgb(103, 103, 255); }
+        .dark.red   { stroke: rgb(255,  51,  51); }
+        .dark.green { stroke: rgb(103, 255, 103); }
+        .dark.gray  { stroke: rgb(103, 103, 103); }
 
-        .alternate.blue  { stroke: #6767ff; opacity: 0.5; }
-        .alternate.red   { stroke: #ff3333; opacity: 0.5; }
-        .alternate.green { stroke: #67ff67; opacity: 0.5; }
-        .alternate.gray  { stroke: #676767; opacity: 0.5; }
+        .alternate.blue  { stroke: rgb(103, 103, 255); opacity: 0.5; }
+        .alternate.red   { stroke: rgb(255,  51,  51); opacity: 0.5; }
+        .alternate.green { stroke: rgb(103, 255, 103); opacity: 0.5; }
+        .alternate.gray  { stroke: rgb(103, 103, 103); opacity: 0.5; }
 
-        .gray20 { stroke: #333333; }
-        .gray40 { stroke: #666666; }
-        .gray60 { stroke: #999999; }
-        .gray80 { stroke: #cccccc; }
+        .gray20 { stroke: rgb( 51,  51,  51); }
+        .gray40 { stroke: rgb(102, 102, 102); }
+        .gray60 { stroke: rgb(153, 153, 153); }
+        .gray80 { stroke: rgb(204, 204, 204); }
 EOF
 
     $style = $self->doubleCurly($style, '%g');
