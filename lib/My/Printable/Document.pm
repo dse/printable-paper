@@ -522,81 +522,16 @@ sub getSquarePoints {
 sub defaultStyles {
     my ($self) = @_;
 
+
     my $style = <<"EOF";
-        .line, .dot { stroke-linecap: round; }
+        .line, .dot, .feint-line, .margin-line { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
-
         .rectangle { fill: rgb(255, 255, 255); }
-
-        /* same brightness */
         .blue  { stroke: rgb(179, 179, 255); }
         .red   { stroke: rgb(255, 158, 158); }
         .green { stroke: rgb( 90, 255,  90); }
         .gray  { stroke: rgb(187, 187, 187); }
-
-        .thin-black { stroke: rgb(  0,   0,   0); }
-
-        .line.thick      { stroke-width: {{           12 / 600 \@ in }}; }
-        .line.semi-thick { stroke-width: {{   sqrt(8*12) / 600 \@ in }}; }
-        .line            { stroke-width: {{            8 / 600 \@ in }}; }
-        .line.semi-thin  { stroke-width: {{ sqrt(16/3*8) / 600 \@ in }}; }
-        .line.thin       { stroke-width: {{         16/3 / 600 \@ in }}; }
-        .line.x-thin     { stroke-width: {{            4 / 600 \@ in }}; }
-        .line.xx-thin    { stroke-width: {{          8/3 / 600 \@ in }}; }
-
-        .dot.thick       { stroke-width: {{           12 / 300 \@ in }}; }
-        .dot.semi-thick  { stroke-width: {{   sqrt(8*12) / 300 \@ in }}; }
-        .dot             { stroke-width: {{            8 / 300 \@ in }}; }
-        .dot.semi-thin   { stroke-width: {{ sqrt(16/3*8) / 300 \@ in }}; }
-        .dot.thin        { stroke-width: {{         16/3 / 300 \@ in }}; }
-        .dot.x-thin      { stroke-width: {{            4 / 300 \@ in }}; }
-        .dot.xx-thin     { stroke-width: {{          8/3 / 300 \@ in }}; }
-
-        .stroke-1  { stroke-width: {{  1/600 in }}; stroke-linecap: round; }
-        .stroke-2  { stroke-width: {{  2/600 in }}; stroke-linecap: round; }
-        .stroke-3  { stroke-width: {{  3/600 in }}; stroke-linecap: round; }
-        .stroke-4  { stroke-width: {{  4/600 in }}; stroke-linecap: round; }
-        .stroke-5  { stroke-width: {{  5/600 in }}; stroke-linecap: round; }
-        .stroke-6  { stroke-width: {{  6/600 in }}; stroke-linecap: round; }
-        .stroke-7  { stroke-width: {{  7/600 in }}; stroke-linecap: round; }
-        .stroke-8  { stroke-width: {{  8/600 in }}; stroke-linecap: round; }
-        .stroke-9  { stroke-width: {{  9/600 in }}; stroke-linecap: round; }
-        .stroke-10 { stroke-width: {{ 10/600 in }}; stroke-linecap: round; }
-        .stroke-11 { stroke-width: {{ 11/600 in }}; stroke-linecap: round; }
-        .stroke-12 { stroke-width: {{ 12/600 in }}; stroke-linecap: round; }
-        .stroke-13 { stroke-width: {{ 13/600 in }}; stroke-linecap: round; }
-        .stroke-14 { stroke-width: {{ 14/600 in }}; stroke-linecap: round; }
-        .stroke-15 { stroke-width: {{ 15/600 in }}; stroke-linecap: round; }
-        .stroke-16 { stroke-width: {{ 16/600 in }}; stroke-linecap: round; }
-        .stroke-17 { stroke-width: {{ 17/600 in }}; stroke-linecap: round; }
-        .stroke-18 { stroke-width: {{ 18/600 in }}; stroke-linecap: round; }
-        .stroke-19 { stroke-width: {{ 19/600 in }}; stroke-linecap: round; }
-        .stroke-20 { stroke-width: {{ 20/600 in }}; stroke-linecap: round; }
-        .stroke-21 { stroke-width: {{ 21/600 in }}; stroke-linecap: round; }
-        .stroke-22 { stroke-width: {{ 22/600 in }}; stroke-linecap: round; }
-        .stroke-23 { stroke-width: {{ 23/600 in }}; stroke-linecap: round; }
-        .stroke-24 { stroke-width: {{ 24/600 in }}; stroke-linecap: round; }
-
-        .thin-black               { stroke-width: {{  1/600 in }}; }
-        .thin-black.stroke-6      { stroke-width: {{  6/600 in }}; }
-        .thin-black.stroke-4      { stroke-width: {{  4/600 in }}; }
-        .thin-black.stroke-2      { stroke-width: {{  2/600 in }}; }
-        .thin-black.stroke-half   { stroke-width: {{  1/600 in }}; stroke: rgb(128, 128, 128); }
-        .thin-black.stroke-quater { stroke-width: {{  1/600 in }}; stroke: rgb(192, 192, 192); }
-
-        .thin-blue                { stroke-width: {{  2/600 in }}; stroke: rgb(128, 128, 255); }
-        .thin-blue.stroke-6       { stroke-width: {{ 12/600 in }}; }
-        .thin-blue.stroke-4       { stroke-width: {{  8/600 in }}; }
-        .thin-blue.stroke-2       { stroke-width: {{  4/600 in }}; }
-        .thin-blue.stroke-half    { stroke-width: {{  1/600 in }}; stroke: rgb(128, 128, 255); }
-        .thin-blue.stroke-quarter { stroke-width: {{  1/600 in }}; stroke: rgb(192, 192, 255); }
-
-        .thin-gray                { stroke-width: {{  2/600 in }}; stroke: rgb(128, 128, 128); }
-        .thin-gray.stroke-6       { stroke-width: {{ 12/600 in }}; }
-        .thin-gray.stroke-4       { stroke-width: {{  8/600 in }}; }
-        .thin-gray.stroke-2       { stroke-width: {{  4/600 in }}; }
-        .thin-gray.stroke-half    { stroke-width: {{  1/600 in }}; stroke: rgb(128, 128, 128); }
-        .thin-gray.stroke-quarter { stroke-width: {{  1/600 in }}; stroke: rgb(192, 192, 192); }
+        .thin-black { stroke: rgb(0, 0, 0); }
 EOF
 
     $style = $self->doubleCurly($style, '%g');
