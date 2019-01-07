@@ -12,11 +12,17 @@ extends 'My::Printable::Ruling';
 use My::Printable::Element::Grid;
 use My::Printable::Element::Lines;
 use My::Printable::Element::Line;
+use My::Printable::Unit qw(:const);
 
 use constant rulingName => 'anode';
 use constant hasLineGrid => 1;
-use constant lineGridThinness => 2;
 use constant hasMarginLine => 1;
+
+sub baseFeintLineWidth {
+    my ($self) = @_;
+    return 1 * PD if $self->colorType eq 'black';
+    return 4 / sqrt(2) * PD;
+}
 
 sub generate {
     my ($self) = @_;

@@ -11,11 +11,17 @@ extends 'My::Printable::Ruling::Seyes';
 
 use My::Printable::Element::Grid;
 use My::Printable::Element::Line;
+use My::Printable::Unit qw(:const);
 
 use constant rulingName => 'line-dot-graph';
 use constant hasLineGrid => 0;
-use constant dotThinness => 2;
 use constant hasMarginLine => 1;
+
+sub baseDotWidth {
+    my ($self) = @_;
+    return 4 * sqrt(2) * PD if $self->colorType eq 'black';
+    return 8 * sqrt(2) * PD;
+}
 
 sub generate {
     my ($self) = @_;

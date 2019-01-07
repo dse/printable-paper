@@ -11,11 +11,22 @@ extends 'My::Printable::Ruling::Quadrille';
 
 use My::Printable::Element::Grid;
 use My::Printable::Element::Lines;
+use My::Printable::Unit qw(:const);
 
 use constant rulingName => 'line-dot-grid';
 use constant hasLineGrid => 0;
-use constant lineThinness => 1;
-use constant dotThinness => -1;
+
+sub baseLineWidth {
+    my ($self) = @_;
+    return 1 * PD if $self->colorType eq 'black';
+    return 4 * PD;
+}
+
+sub baseDotWidth {
+    my ($self) = @_;
+    return 8 * sqrt(2) * PD if $self->colorType eq 'black';
+    return 16 * sqrt(2) * PD;
+}
 
 sub generate {
     my ($self) = @_;

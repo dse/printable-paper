@@ -6,6 +6,7 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Document;
 use My::Printable::Element::Rectangle;
+use My::Printable::Unit qw(:const);
 
 use Moo;
 
@@ -38,13 +39,35 @@ has 'document' => (
 
 use constant rulingName => 'none';
 use constant hasLineGrid => 0;
-use constant lineGridThinness => 0;
-use constant lineThinness => 0;
-use constant dotThinness => 0;
 use constant hasMarginLine => 0;
 use constant hasPageNumberRectangle => 0;
 
 use Text::Trim qw(trim);
+
+sub thicknessCSS {
+    my ($self) = @_;
+    my $lw  = $self->getLineWidth;
+    my $flw = $self->getFeintLineWidth;
+    my $dw  = $self->getDotWidth;
+    my $mlw = $self->getMarginLineWidth;
+
+    my $lo = 1;
+    my $flo = 1;
+    my $do = 1;
+    my $mlo = 1;
+
+    if ($lw < PD)  { $lo  = $lw / PD;  $lw  = PD; }
+    if ($flw < PD) { $flo = $flw / PD; $flw = PD; }
+    if ($dw < PD)  { $do  = $dw / PD;  $dw  = PD; }
+    if ($mlw < PD) { $mlo = $mlw / PD; $mlw = PD; }
+
+    return <<"EOF";
+        .line        { stroke-width: {{  ${lw} pt }}; opacity: ${lo}; }
+        .feint-line  { stroke-width: {{ ${flw} pt }}; opacity: ${flo}; }
+        .dot         { stroke-width: {{  ${dw} pt }}; opacity: ${do}; }
+        .margin-line { stroke-width: {{ ${mlw} pt }}; opacity: ${mlo}; }
+EOF
+}
 
 sub additionalCSS {
     my ($self) = @_;
@@ -63,9 +86,14 @@ sub generate {
             $self->generateMarginLine()
         );
     }
+
+    my $css = '';
+    $css .= $self->thicknessCSS;
     if (defined $self->additionalCSS) {
-        $self->document->additionalStyles($self->additionalCSS);
+        $css .= $self->additionalCSS;
     }
+    $self->document->additionalStyles($css);
+
     $self->document->generate();
 }
 
@@ -129,32 +157,28 @@ sub getUnit {
 
 sub getMarginLineCSSClass {
     my ($self) = @_;
-    my @classes = ($self->getMarginLineThicknessCSSClassList,
-                   $self->getMarginLineColorCSSClassList,
+    my @classes = ($self->getMarginLineColorCSSClassList,
                    $self->getMarginLineTypeCSSClassList);
     return join(' ', grep { defined $_ && $_ ne '' } @classes);
 }
 
 sub getDotCSSClass {
     my ($self) = @_;
-    my @classes = ($self->getDotThicknessCSSClassList,
-                   $self->getDotColorCSSClassList,
+    my @classes = ($self->getDotColorCSSClassList,
                    $self->getDotTypeCSSClassList);
     return join(' ', grep { defined $_ && $_ ne '' } @classes);
 }
 
 sub getLineCSSClass {
     my ($self) = @_;
-    my @classes = ($self->getLineThicknessCSSClassList,
-                   $self->getLineColorCSSClassList,
+    my @classes = ($self->getLineColorCSSClassList,
                    $self->getLineTypeCSSClassList);
     return join(' ', grep { defined $_ && $_ ne '' } @classes);
 }
 
 sub getFeintLineCSSClass {
     my ($self) = @_;
-    my @classes = ($self->getFeintLineThicknessCSSClassList,
-                   $self->getFeintLineColorCSSClassList,
+    my @classes = ($self->getFeintLineColorCSSClassList,
                    $self->getFeintLineTypeCSSClassList);
     return join(' ', grep { defined $_ && $_ ne '' } @classes);
 }
@@ -183,38 +207,7 @@ sub getMarginLineColorCSSClassList {
 
 sub getMarginLineTypeCSSClassList {
     my ($self) = @_;
-    return ('margin', 'line');
-}
-
-sub getDotThicknessCSSClassList {
-    my ($self) = @_;
-
-    my $thinness =
-        $self->modifiers->has('x-thinner-dots') ? 2 :
-        $self->modifiers->has('thinner-dots') ? 1 :
-        0;                           # 0 to 2
-    $thinness += $self->dotThinness; # -1 to 4
-    $thinness += 1;                  # 0 to 5
-
-    if ($self->colorType eq 'black') {
-        return [
-            'stroke-7',
-            'stroke-5',
-            'stroke-4',
-            'stroke-3',
-            'stroke-2',
-            'stroke-1',
-        ]->[$thinness];
-    } else {
-        return [
-            'semi-thick',
-            '',                 # regular
-            'semi-thin',
-            'thin',
-            'x-thin',
-            'xx-thin',
-        ]->[$thinness];
-    }
+    return ('margin-line');
 }
 
 sub getDotColorCSSClassList {
@@ -233,34 +226,6 @@ sub getDotTypeCSSClassList {
     return ('dot');
 }
 
-sub getLineThicknessCSSClassList {
-    my ($self) = @_;
-
-    my $thinness =
-        $self->modifiers->has('x-thinner-lines') ? 2 :
-        $self->modifiers->has('thinner-lines') ? 1 :
-        0;                            # 0 to 2
-    $thinness += $self->lineThinness; # 0 to 4
-
-    if ($self->colorType eq 'black') {
-        return [
-            'stroke-3',
-            'stroke-2',
-            'stroke-1',
-            'stroke-half',
-            'stroke-quarter',
-        ]->[$thinness];
-    } else {
-        return [
-            '',                 # regular
-            'thin',
-            'x-thin',
-            'xx-thin',
-            'xx-thin',
-        ]->[$thinness];
-    }
-}
-
 sub getLineColorCSSClassList {
     my ($self) = @_;
     if ($self->colorType eq 'grayscale') {
@@ -277,48 +242,6 @@ sub getLineTypeCSSClassList {
     return ('line');
 }
 
-sub getFeintLineThicknessCSSClassList {
-    my ($self) = @_;
-
-    my $thinness;
-    if ($self->hasLineGrid) {
-        $thinness =
-            $self->modifiers->has('x-thinner-grid') ? 2 :
-            $self->modifiers->has('thinner-grid') ? 1 :
-            0;                  # 0 to 2
-        $thinness +=
-            $self->modifiers->has('denser-grid') ? 1 :
-            0;                  # 0 to 3
-        $thinness += $self->lineGridThinness; # 0 to 4
-    } else {
-        $thinness =
-            $self->modifiers->has('x-thinner-lines') ? 2 :
-            $self->modifiers->has('thinner-lines') ? 1 :
-            0;                  # 0 to 2
-        $thinness += $self->lineThinness; # 0 to 5
-    }
-
-    if ($self->colorType eq 'black') {
-        return [
-            'stroke-1',
-            'stroke-half',
-            'stroke-quarter',
-            'stroke-quarter',
-            'stroke-quarter',
-            'stroke-quarter',
-        ]->[$thinness];
-    } else {
-        return [
-            'thin',
-            'x-thin',
-            'xx-thin',
-            'xx-thin',
-            'xx-thin',
-            'xx-thin',
-        ]->[$thinness];
-    }
-}
-
 sub getFeintLineColorCSSClassList {
     my ($self) = @_;
     if ($self->colorType eq 'grayscale') {
@@ -332,7 +255,95 @@ sub getFeintLineColorCSSClassList {
 
 sub getFeintLineTypeCSSClassList {
     my ($self) = @_;
-    return ('line');
+    return ('feint-line');
+}
+
+###############################################################################
+
+# before thinner-lines, thinner-dots, thinner-grid, denser-grid, and
+# other modifiers are applied.
+
+sub baseLineWidth {
+    my ($self) = @_;
+    return 2 * PD if $self->colorType eq 'black';
+    return 8 * PD;
+}
+
+sub baseFeintLineWidth {
+    my ($self) = @_;
+    return 2 / sqrt(2) * PD if $self->colorType eq 'black';
+    return 8 / sqrt(2) * PD;
+}
+
+sub baseDotWidth {
+    my ($self) = @_;
+    return 8 * PD if $self->colorType eq 'black';
+    return 16 * PD;
+}
+
+sub baseMarginLineWidth {
+    my ($self) = @_;
+    return 2 * PD if $self->colorType eq 'black';
+    return 8 * PD;
+}
+
+sub getLineWidth {
+    my ($self) = @_;
+    my $x = $self->baseLineWidth;
+    if ($self->modifiers->has('x-thinner-lines')) {
+        $x /= 2;
+    } elsif ($self->modifiers->has('thinner-lines')) {
+        $x /= sqrt(2);
+    }
+    if ($x < PD) {
+        $x = PD;
+    }
+    return $x;
+}
+
+sub getFeintLineWidth {
+    my ($self) = @_;
+    my $x = $self->baseFeintLineWidth;
+    if ($self->modifiers->has('x-thinner-lines')) {
+        $x /= 2;
+    } elsif ($self->modifiers->has('thinner-lines')) {
+        $x /= sqrt(2);
+    }
+    if ($self->modifiers->has('x-thinner-grid')) {
+        $x /= 2;
+    } elsif ($self->modifiers->has('thinner-grid')) {
+        $x /= sqrt(2);
+    }
+    if ($self->modifiers->has('denser-grid')) {
+        $x /= sqrt(2);
+    }
+    if ($x < PD) {
+        $x = PD;
+    }
+    return $x;
+}
+
+sub getDotWidth {
+    my ($self) = @_;
+    my $x = $self->baseDotWidth;
+    if ($self->modifiers->has('x-thinner-dots')) {
+        $x /= 2;
+    } elsif ($self->modifiers->has('thinner-dots')) {
+        $x /= sqrt(2);
+    }
+    if ($x < PD) {
+        $x = PD;
+    }
+    return $x;
+}
+
+sub getMarginLineWidth {
+    my ($self) = @_;
+    my $x = $self->baseMarginLineWidth;
+    if ($x < PD) {
+        $x = PD;
+    }
+    return $x;
 }
 
 ###############################################################################
