@@ -536,44 +536,6 @@ sub defaultStyles {
 
         .thin-black { stroke: rgb(  0,   0,   0); }
 
-        .pen-00000 { stroke-width: {{ 0.25           / 600 \@ in }}; }
-        .pen-0000  { stroke-width: {{ 0.25 * sqrt(2) / 600 \@ in }}; }
-        .pen-000   { stroke-width: {{  0.5           / 600 \@ in }}; }
-        .pen-00    { stroke-width: {{  0.5 * sqrt(2) / 600 \@ in }}; }
-        .pen-0     { stroke-width: {{    1           / 600 \@ in }}; }
-        .pen-1     { stroke-width: {{    1 * sqrt(2) / 600 \@ in }}; }
-        .pen-2     { stroke-width: {{    2           / 600 \@ in }}; }
-        .pen-3     { stroke-width: {{    2 * sqrt(2) / 600 \@ in }}; }
-        .pen-4     { stroke-width: {{    4           / 600 \@ in }}; }
-        .pen-5     { stroke-width: {{    4 * sqrt(2) / 600 \@ in }}; }
-        .pen-6     { stroke-width: {{    8           / 600 \@ in }}; } /* base lines */
-        .pen-7     { stroke-width: {{    8 * sqrt(2) / 600 \@ in }}; }
-        .pen-8     { stroke-width: {{   16           / 600 \@ in }}; } /* thick lines */
-        .pen-9     { stroke-width: {{   16 * sqrt(2) / 600 \@ in }}; }
-        .pen-10    { stroke-width: {{   32           / 600 \@ in }}; } /* thick dots */
-        .pen-11    { stroke-width: {{   32 * sqrt(2) / 600 \@ in }}; }
-        .pen-12    { stroke-width: {{   64           / 600 \@ in }}; }
-
-        .blue.pen-00          { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(201, 201, 255); }
-        .blue.pen-000         { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(217, 217, 255); }
-        .blue.pen-0000        { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(228, 228, 255); }
-        .blue.pen-00000       { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(236, 236, 255); }
-
-        .green.pen-00         { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(138, 255, 138); }
-        .green.pen-000        { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(173, 255, 173); }
-        .green.pen-0000       { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(197, 255, 197); }
-        .green.pen-00000      { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(214, 255, 214); }
-
-        .red.pen-00           { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(255, 186, 186); }
-        .red.pen-000          { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(255, 207, 207); }
-        .red.pen-0000         { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(255, 221, 231); }
-        .red.pen-00000        { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(255, 231, 231); }
-
-        .thin-black.pen-00    { stroke-width: {{ 1/600 \@ in }}; stroke: rgb( 74,  74,  74); }
-        .thin-black.pen-000   { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(127, 127, 127); }
-        .thin-black.pen-0000  { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(164, 164, 164); }
-        .thin-black.pen-00000 { stroke-width: {{ 1/600 \@ in }}; stroke: rgb(191, 191, 191); }
-
         .line.thick      { stroke-width: {{           12 / 600 \@ in }}; }
         .line.semi-thick { stroke-width: {{   sqrt(8*12) / 600 \@ in }}; }
         .line            { stroke-width: {{            8 / 600 \@ in }}; }
