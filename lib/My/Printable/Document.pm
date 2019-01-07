@@ -528,10 +528,11 @@ sub defaultStyles {
 
         .rectangle { fill: rgb(255, 255, 255); }
 
+        /* same brightness */
         .blue  { stroke: rgb(179, 179, 255); }
-        .red   { stroke: rgb(255, 153, 153); }
-        .green { stroke: rgb(179, 255, 179); }
-        .gray  { stroke: rgb(179, 179, 179); }
+        .red   { stroke: rgb(255, 158, 158); }
+        .green { stroke: rgb( 90, 255,  90); }
+        .gray  { stroke: rgb(187, 187, 187); }
 
         .line.thick      { stroke-width: {{           12 / 600 \@ in }}; }
         .line.semi-thick { stroke-width: {{   sqrt(8*12) / 600 \@ in }}; }
