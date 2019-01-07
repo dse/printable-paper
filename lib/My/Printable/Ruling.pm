@@ -46,6 +46,11 @@ use constant hasPageNumberRectangle => 0;
 
 use Text::Trim qw(trim);
 
+sub additionalCSS {
+    my ($self) = @_;
+    return undef;
+}
+
 sub generate {
     my ($self) = @_;
     if ($self->hasPageNumberRectangle) {
@@ -57,6 +62,9 @@ sub generate {
         $self->document->appendElement(
             $self->generateMarginLine()
         );
+    }
+    if (defined $self->additionalCSS) {
+        $self->document->additionalStyles($self->additionalCSS);
     }
     $self->document->generate();
 }
