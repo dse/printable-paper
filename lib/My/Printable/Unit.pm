@@ -3,6 +3,15 @@ use warnings;
 use strict;
 use v5.10.0;
 
+use base 'Exporter';
+our %EXPORT_TAGS = (
+    const => [qw(PT PC IN CM MM PX PD)],
+);
+our @EXPORT_OK = (
+    @{$EXPORT_TAGS{const}}
+);
+our @EXPORT = ();
+
 use Moo;
 
 has "units" => (is => 'rw');
@@ -11,33 +20,41 @@ has "size" => (is => 'rw');
 
 use Storable qw(dclone);
 
+use constant PT => 1;
+use constant PC => 12;          # 1 pc = 12 pt
+use constant IN => 72;          # 1 in = 72 pt
+use constant CM => 72 / 2.54;   # ...
+use constant MM => 72 / 25.4;
+use constant PX => 72 / 96;
+use constant PD => 72 / 600;    # pixel dots (600dpi laser printer)
+
 our $UNITS = {
     "pt" => {
         to_pt => 1,
         type => "imperial",
     },
     "pc" => {
-        to_pt => 12,            # 1 pc = 12 pt
+        to_pt => PC,
         type => "imperial",
     },
     "in" => {
-        to_pt => 72,            # 1 in = 72 pt
+        to_pt => IN,
         type => "imperial",
     },
     "cm" => {
-        to_pt => (72 / 2.54),   # 1 cm ~= 28.3465 pt
+        to_pt => CM,
         type => "metric",
     },
     "mm" => {
-        to_pt => (72 / 25.4),   # 1 cm ~= 2.83465 pt
+        to_pt => MM,
         type => "metric",
     },
     "px" => {
-        to_pt => (72 / 96),     # 1 px = 0.75 pt
+        to_pt => PX,
         type => "imperial"
     },
-    "pd" => {                   # pixel dots
-        to_pt => (72 / 600), # 1 pd = 1 dot on a 600dpi laser printer = 1/600 in = 72/600 pt
+    "pd" => {
+        to_pt => PD,
         type => "imperial"
     }
 };
