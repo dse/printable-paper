@@ -528,6 +528,11 @@ sub defaultStyles {
 
         .rectangle { fill: rgb(255, 255, 255); }
 
+        .blue  { stroke: rgb(179, 179, 255); }
+        .red   { stroke: rgb(255, 153, 153); }
+        .green { stroke: rgb(179, 255, 179); }
+        .gray  { stroke: rgb(179, 179, 179); }
+
         .line.thick      { stroke-width: {{           12 / 600 \@ in }}; }
         .line.semi-thick { stroke-width: {{   sqrt(8*12) / 600 \@ in }}; }
         .line            { stroke-width: {{            8 / 600 \@ in }}; }
@@ -568,11 +573,6 @@ sub defaultStyles {
         .stroke-22 { stroke-width: {{ 22/600 in }}; stroke-linecap: round; }
         .stroke-23 { stroke-width: {{ 23/600 in }}; stroke-linecap: round; }
         .stroke-24 { stroke-width: {{ 24/600 in }}; stroke-linecap: round; }
-
-        .blue  { stroke: rgb(179, 179, 255); }
-        .red   { stroke: rgb(255, 153, 153); }
-        .green { stroke: rgb(179, 255, 179); }
-        .gray  { stroke: rgb(179, 179, 179); }
 
         .thin-black               { stroke-width: {{  1/600 in }}; stroke: rgb(  0,   0,   0); }
         .thin-black.stroke-6      { stroke-width: {{  6/600 in }}; }
