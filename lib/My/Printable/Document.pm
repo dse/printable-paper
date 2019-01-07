@@ -251,6 +251,9 @@ has 'svgContext' => (
 
 sub addStyleElement {
     my ($self, $cssText) = @_;
+    $cssText =~ s{\R}{\n}g;
+    $cssText = "\n" . $cssText;
+    $cssText =~ s{\s*\z}{\n  };
     my $doc = $self->svgDocument;
     my $root = $self->svgRoot;
     my $style = $doc->createElement('style');
@@ -521,7 +524,6 @@ sub getSquarePoints {
 
 sub defaultStyles {
     my ($self) = @_;
-
 
     my $style = <<"EOF";
         .line, .dot, .feint-line, .margin-line { stroke-linecap: round; }
