@@ -29,6 +29,8 @@ sub paperSizeName {
     $self->unitType($unit_type);
     $self->rawWidth($width);
     $self->rawHeight($height);
+    $self->unitX->size($width);
+    $self->unitY->size($height);
     $self->unitX->setPercentageBasis($width);
     $self->unitY->setPercentageBasis($height);
     $self->originX($width / 2);
@@ -309,6 +311,8 @@ sub BUILD {
     $self->unitY(My::Printable::Unit->new());
     $self->unitX->size($self->width);
     $self->unitY->size($self->height);
+    $self->unitX->setPercentageBasis($self->width);
+    $self->unitY->setPercentageBasis($self->height);
     $self->unitX->axis("x");
     $self->unitY->axis("y");
     $self->setBottomMargin(0);
@@ -431,8 +435,13 @@ sub forEach {
 
 sub print {
     my ($self) = @_;
-    $self->printToHandle(\*STDOUT);
-};
+    my $filename = $self->filename;
+    if (defined $filename) {
+        $self->printToFile($filename);
+    } else {
+        $self->printToHandle(\*STDOUT);
+    }
+}
 
 use File::Basename qw(dirname);
 use File::Path qw(make_path);
