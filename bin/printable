@@ -80,6 +80,10 @@ Getopt::Long::GetOptions(
     'feint-line-width=f'  => \$opt_feint_line_width,
     'dot-width=f'         => \$opt_dot_width,
     'margin-line-width=f' => \$opt_margin_line_width,
+    'line-color=s'        => \$opt_line_color,
+    'feint-line-color=s'  => \$opt_feint_line_color,
+    'dot-color=s'         => \$opt_dot_color,
+    'margin-line-color=s' => \$opt_margin_line_color,
     "help|?" => sub {
         usage();
         exit(0);
@@ -115,7 +119,7 @@ ruling line widths:
     --feint-line-width=<dots>
     --dot-width=<dots>
     --margin-line-width=<dots>
-    --line-color=<color>
+    --line-color=<color>           '#rrggbb[aa]', 'rgb()', 'rgba()' style colors
     --feint-line-color=<color>
     --dot-color=<color>
     --margin-line-color=<color>
