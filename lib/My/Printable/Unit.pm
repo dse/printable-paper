@@ -59,6 +59,8 @@ our $UNITS = {
     }
 };
 
+has 'defaultUnit' => (is => 'rw', default => 'pt');
+
 sub BUILD {
     my ($self) = @_;
     $self->units(dclone($UNITS));
@@ -230,8 +232,19 @@ sub pt {
     }
 
     if (!defined $unit || $unit eq "") {
-        return ($number, "imperial") if wantarray;
+
+        my $defaultUnit = $self->defaultUnit;
+        my $defaultUnitInfo = $self->units->{$defaultUnit};
+        if (!defined $defaultUnitInfo) {
+            die("defaultUnit of $defaultUnit does not exist\n");
+        }
+        my $defaultUnitToPt = $defaultUnitInfo->{to_pt};
+        my $defaultUnitType = $defaultUnitInfo->{type};
+
+        $number *= $defaultUnitToPt;
+        return ($number, $defaultUnitType) if wantarray;
         return $number;
+
     }
 
     my $unit_info = $self->units->{$unit};

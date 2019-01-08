@@ -52,10 +52,10 @@ use Text::Trim qw(trim);
 
 sub thicknessCSS {
     my ($self) = @_;
-    my $lw  = $self->getLineWidth;
-    my $flw = $self->getFeintLineWidth;
-    my $dw  = $self->getDotWidth;
-    my $mlw = $self->getMarginLineWidth;
+    my $lw  = $self->lineWidth;
+    my $flw = $self->feintLineWidth;
+    my $dw  = $self->dotWidth;
+    my $mlw = $self->marginLineWidth;
 
     my $lo = 1;
     my $flo = 1;
@@ -266,6 +266,69 @@ sub getFeintLineTypeCSSClassList {
 
 ###############################################################################
 
+has 'lineWidthUnit' => (
+    is => 'rw',
+    default => sub {
+        my $unit = My::Printable::Unit->new();
+        $unit->defaultUnit('pd');
+        return $unit;
+    }
+);
+
+has 'rawLineWidth'       => (is => 'rw');
+has 'rawFeintLineWidth'  => (is => 'rw');
+has 'rawDotWidth'        => (is => 'rw');
+has 'rawMarginLineWidth' => (is => 'rw');
+
+sub lineWidth {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!defined $self->rawLineWidth) {
+            return $self->computeLineWidth();
+        }
+        return $self->rawLineWidth;
+    }
+    my $value = shift;
+    $value = $self->lineWidthUnit->pt($value);
+    return $self->rawLineWidth($value);
+}
+sub feintLineWidth {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!$self->rawFeintLineWidth) {
+            return $self->computeFeintLineWidth();
+        }
+        return $self->rawFeintLineWidth;
+    }
+    my $value = shift;
+    $value = $self->lineWidthUnit->pt($value);
+    return $self->rawFeintLineWidth($value);
+}
+sub dotWidth {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!$self->rawDotWidth) {
+            return $self->computeDotWidth();
+        }
+        return $self->rawDotWidth;
+    }
+    my $value = shift;
+    $value = $self->lineWidthUnit->pt($value);
+    return $self->rawDotWidth($value);
+}
+sub marginLineWidth {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!$self->rawMarginLineWidth) {
+            return $self->computeMarginLineWidth();
+        }
+        return $self->rawMarginLineWidth;
+    }
+    my $value = shift;
+    $value = $self->lineWidthUnit->pt($value);
+    return $self->rawMarginLineWidth($value);
+}
+
 # before thinner-lines, thinner-dots, thinner-grid, denser-grid, and
 # other modifiers are applied.
 
@@ -293,7 +356,7 @@ sub baseMarginLineWidth {
     return 8 * PD;
 }
 
-sub getLineWidth {
+sub computeLineWidth {
     my ($self) = @_;
     my $x = $self->baseLineWidth;
     if ($self->modifiers->has('xx-thinner-lines')) {
@@ -309,7 +372,7 @@ sub getLineWidth {
     return $x;
 }
 
-sub getFeintLineWidth {
+sub computeFeintLineWidth {
     my ($self) = @_;
     my $x = $self->baseFeintLineWidth;
     if ($self->modifiers->has('xx-thinner-lines')) {
@@ -335,7 +398,7 @@ sub getFeintLineWidth {
     return $x;
 }
 
-sub getDotWidth {
+sub computeDotWidth {
     my ($self) = @_;
     my $x = $self->baseDotWidth;
     if ($self->modifiers->has('xx-thinner-dots')) {
@@ -351,7 +414,7 @@ sub getDotWidth {
     return $x;
 }
 
-sub getMarginLineWidth {
+sub computeMarginLineWidth {
     my ($self) = @_;
     my $x = $self->baseMarginLineWidth;
     if ($x < PD) {
