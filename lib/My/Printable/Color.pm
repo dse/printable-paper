@@ -24,13 +24,13 @@ use constant COLOR_BLUE    => '#b3b3ff';
 use constant COLOR_GREEN   => '#5aff5a';
 use constant COLOR_RED     => '#ff9e9e';
 use constant COLOR_GRAY    => '#bbbbbb';
-
 use constant COLOR_ORANGE  => '#ffab57';
 use constant COLOR_MAGENTA => '#ff8cff';
 use constant COLOR_CYAN    => '#1cffff';
 use constant COLOR_YELLOW  => '#ffff00'; # higher luminance
-
 use constant COLOR_BLACK   => '#000000';
+
+use constant COLOR_NON_REPRO_BLUE => '#95c9d7';
 
 has 'r' => (is => 'rw', default => 1);
 has 'g' => (is => 'rw', default => 1);
@@ -178,6 +178,8 @@ sub parse {
     return $self->parse(COLOR_ORANGE)  if $value eq 'orange';
     return $self->parse(COLOR_MAGENTA) if $value eq 'magenta';
     return $self->parse(COLOR_CYAN)    if $value eq 'cyan';
+    return $self->parse(COLOR_NON_REPRO_BLUE) if $value eq 'non-repro-blue';
+    return $self->parse(COLOR_NON_REPRO_BLUE) if $value eq 'non-photo-blue';
 
     die("invalid color $value\n");
 }
