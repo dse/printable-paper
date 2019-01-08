@@ -6,6 +6,7 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::ModifierList;
 use My::Printable::Util qw(:const);
+use My::Printable::Converter;
 
 use XML::LibXML;
 use Scalar::Util qw(refaddr);
@@ -13,7 +14,21 @@ use Scalar::Util qw(refaddr);
 use Moo;
 
 has 'id' => (is => 'rw');
-has 'filename' => (is => 'rw');
+
+has 'rawFilename' => (is => 'rw');
+
+sub filename {
+    my $self = shift;
+    if (scalar @_) {
+        my $filename = shift;
+        if ($filename !~ m{\.svg\z}i) {
+            $filename .= '.svg';
+        }
+        return $self->rawFilename($filename);
+    }
+    return $self->rawFilename;
+}
+
 has 'rawPaperSizeName' => (
     is => 'rw',
     default => 'letter',
@@ -438,6 +453,7 @@ sub print {
     my $filename = $self->filename;
     if (defined $filename) {
         $self->printToFile($filename);
+        $self->generateFormats();
     } else {
         $self->printToHandle(\*STDOUT);
     }
@@ -459,6 +475,28 @@ sub printToFile {
     rename($temp_filename, $filename) or die("Cannot rename $temp_filename to $filename: $!\n");
     $self->filename($save_filename);
     return;
+}
+
+sub generateFormats {
+    my ($self) = @_;
+    my $filename = $self->filename;
+    my $baseFilename = $filename;
+    $baseFilename =~ s{\.svg\z}{}i;
+
+    my $pdfFilename        = $baseFilename . '.pdf';
+    my $psFilename         = $baseFilename . '.ps';
+    my $twoPagePDFFilename = $baseFilename . '.2page.pdf';
+    my $twoPagePSFilename  = $baseFilename . '.2page.ps';
+    my $twoUpPDFFilename   = $baseFilename . '.2up.pdf';
+    my $twoUpPSFilename    = $baseFilename . '.2up.ps';
+
+    my $converter = My::Printable::Converter->new();
+    $converter->svgToPDF($filename, $pdfFilename);
+    $converter->svgToPS($filename, $psFilename);
+    $converter->pdfToTwoPagePDF($pdfFilename, $twoPagePDFFilename);
+    $converter->psToTwoPagePS($psFilename, $twoPagePSFilename);
+    $converter->pdfToTwoUpPDF($twoPagePDFFilename, $twoUpPDFFilename);
+    $converter->pdfToPS($twoUpPDFFilename, $twoUpPSFilename);
 }
 
 sub printToHandle {
