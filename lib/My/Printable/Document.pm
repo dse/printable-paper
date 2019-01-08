@@ -153,7 +153,6 @@ around 'originY' => sub {
 };
 
 has 'isGenerated' => (is => 'rw', default => 0);
-has 'verbose'     => (is => 'rw', default => 0);
 has 'additionalStyles' => (is => 'rw');
 
 has 'svgDocument' => (
@@ -255,6 +254,9 @@ has 'svgContext' => (
     },
     clearer => 'deleteSVGContext',
 );
+
+has 'dryRun'  => (is => 'rw', default => 0);
+has 'verbose' => (is => 'rw', default => 0);
 
 sub addStyleElement {
     my ($self, @cssText) = @_;
@@ -464,6 +466,10 @@ use File::Path qw(make_path);
 
 sub printToFile {
     my ($self, $filename) = @_;
+    if ($self->dryRun) {
+        print("would write SVG to $filename\n");
+        return;
+    }
     my $fh;
     my $save_filename = $self->filename;
     $self->filename($filename);
@@ -476,6 +482,11 @@ sub printToFile {
     $self->filename($save_filename);
     return;
 }
+
+has 'generatePDF' => (is => 'rw', default => 0);
+has 'generatePS'  => (is => 'rw', default => 0);
+has 'generate2Up' => (is => 'rw', default => 0);
+has 'generate2Page' => (is => 'rw', default => 0);
 
 sub generateFormats {
     my ($self) = @_;
@@ -491,12 +502,63 @@ sub generateFormats {
     my $twoUpPSFilename    = $baseFilename . '.2up.ps';
 
     my $converter = My::Printable::Converter->new();
-    $converter->svgToPDF($filename, $pdfFilename);
-    $converter->svgToPS($filename, $psFilename);
-    $converter->pdfToTwoPagePDF($pdfFilename, $twoPagePDFFilename);
-    $converter->psToTwoPagePS($psFilename, $twoPagePSFilename);
-    $converter->pdfToTwoUpPDF($twoPagePDFFilename, $twoUpPDFFilename);
-    $converter->pdfToPS($twoUpPDFFilename, $twoUpPSFilename);
+    $converter->width($self->width);
+    $converter->height($self->height);
+
+    my $generatePDF;
+    my $generatePS;
+    my $generate2PagePDF;
+    my $generate2PagePS;
+    my $generate2UpPDF;
+    my $generate2UpPS;
+
+    if ($self->generatePDF) {
+        $generatePDF = 1;
+    }
+    if ($self->generatePS) {
+        $generatePS = 1;
+    }
+    if ($self->generate2Page) {
+        if ($self->generatePDF) {
+            $generate2PagePDF = 1;
+        }
+        if ($self->generatePS) {
+            $generate2PagePS = 1;
+        }
+    }
+    if ($self->generate2Up) {
+        if ($self->generatePDF) {
+            $generate2PagePDF = 1; # dependency
+            $generate2UpPDF = 1;
+        }
+        if ($self->generatePS) {
+            $generatePDF = 1;      # dependency
+            $generate2PagePDF = 1; # dependency
+            $generate2UpPDF = 1;   # dependency
+            $generate2UpPS = 1;
+        }
+    }
+
+    $converter->dryRun($self->dryRun);
+
+    if ($generatePDF) {
+        $converter->svgToPDF($filename, $pdfFilename);
+    }
+    if ($generatePS) {
+        $converter->svgToPS($filename, $psFilename);
+    }
+    if ($generate2PagePDF) {
+        $converter->pdfToTwoPagePDF($pdfFilename, $twoPagePDFFilename);
+    }
+    if ($generate2PagePS) {
+        $converter->psToTwoPagePS($psFilename, $twoPagePSFilename);
+    }
+    if ($generate2UpPDF) {
+        $converter->pdfToTwoUpPDF($twoPagePDFFilename, $twoUpPDFFilename);
+    }
+    if ($generate2UpPS) {
+        $converter->pdfToPS($twoUpPDFFilename, $twoUpPSFilename);
+    }
 }
 
 sub printToHandle {
