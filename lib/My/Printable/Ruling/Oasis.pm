@@ -41,12 +41,8 @@ sub generate {
 
     $self->document->setUnit($self->getUnit);
 
-    warn($self->getDotWidth());
-
     my $dotCrosswise  = $self->pt([$self->getDotWidth(), 'pt']) . 'pt';
     my $dotCrosswise2 = $self->pt([2 * $self->getDotWidth(), 'pt']) . 'pt';
-    warn($dotCrosswise);
-    warn($dotCrosswise2);
 
     my $horizontal_lines = My::Printable::Element::Lines->new(
         document => $self->document,
