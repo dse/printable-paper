@@ -32,19 +32,25 @@ has 'inkscapeShell' => (
     },
 );
 
+has 'dryRun' => (is => 'rw', default => 0);
+has 'width'  => (is => 'rw', default => 0);
+has 'height' => (is => 'rw', default => 0);
+
 sub svgToPDF {
     my ($self, $fromFilename, $toFilename) = @_;
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
-            make_path(dirname($tempFilename));
-            unlink($tempFilename);
             # realpath needed for inkscape on darwin (aka macOS)
             my $cmd = sprintf(
-                "%s --export-dpi=600 --export-pdf %s",
+                "%s --export-dpi=600 --export-pdf=%s",
                 shell_quote(realpath($fromFilename)),
                 shell_quote(realpath($tempFilename)),
             );
+            if ($self->dryRun) {
+                print STDERR ("would pass to inkscape shell:\n    $cmd\n");
+                return -1;
+            }
             $self->inkscapeShell->cmd($cmd);
         }
     );
@@ -55,14 +61,16 @@ sub svgToPS {
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
-            make_path(dirname($tempFilename));
-            unlink($tempFilename);
             # realpath needed for inkscape on darwin (aka macOS)
             my $cmd = sprintf(
                 "%s --export-dpi=600 --export-ps=%s",
                 shell_quote(realpath($fromFilename)),
                 shell_quote(realpath($tempFilename)),
             );
+            if ($self->dryRun) {
+                print STDERR ("would pass to inkscape shell:\n    $cmd\n");
+                return -1;
+            }
             $self->inkscapeShell->cmd($cmd);
         }
     );
@@ -73,6 +81,10 @@ sub pdfToTwoPagePDF {
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
+            if ($self->dryRun) {
+                print STDERR ("would convert one-page PDF to two-page PDF:\n    $fromFilename => $tempFilename\n");
+                return -1;
+            }
             my $inputPDF = PDF::API2->open($fromFilename);
             my $outputPDF = PDF::API2->new();
             $outputPDF->import_page($inputPDF, 1, 0);
@@ -96,6 +108,10 @@ sub psToTwoPagePS {
                 shell_quote($fromFilename),
                 shell_quote($tempFilename),
             );
+            if ($self->dryRun) {
+                print STDERR ("would convert one-page PS to two-page PS:\n    $cmd\n");
+                return -1;
+            }
             if (system($cmd)) {
                 unlink($tempFilename);
                 die("psjoin failed; exiting\n");
@@ -106,10 +122,11 @@ sub psToTwoPagePS {
 
 sub pdfToTwoUpPDF {
     my ($self, $fromFilename, $toFilename) = @_;
-    my ($inputWidth, $inputHeight) = $self->getPDFSize($fromFilename);
     if (!which('pdfbook')) {
         die("pdfbook program not found\n");
     }
+    my $inputWidth = $self->width;
+    my $inputHeight = $self->height;
     my $outputWidth = $inputHeight;
     my $outputHeight = 2 * $inputWidth;
     my $papersize = sprintf('{%.3fbp,%.3fbp}', $outputWidth, $outputHeight);
@@ -122,6 +139,10 @@ sub pdfToTwoUpPDF {
                 shell_quote($papersize),
                 shell_quote($fromFilename),
             );
+            if ($self->dryRun) {
+                print STDERR ("would convert two-page PDF to two-page two-up PDF:\n    $cmd\n");
+                return -1;
+            }
             if (system($cmd)) {
                 unlink($tempFilename);
                 die("pdfbook failed; exiting\n");
@@ -140,22 +161,16 @@ sub pdfToPS {
                 shell_quote($fromFilename),
                 shell_quote($tempFilename),
             );
+            if ($self->dryRun) {
+                print STDERR ("would convert PDF to PS:\n    $cmd\n");
+                return -1;
+            }
             if (system($cmd)) {
                 unlink($tempFilename);
                 die("psjoin failed; exiting\n");
             }
         }
     );
-}
-
-sub getPDFSize {
-    my ($self, $filename) = @_;
-    my $pdf = PDF::API2->open($filename);
-    my $page = $pdf->openpage(1);
-    my ($llx, $lly, $urx, $ury) = $page->get_mediabox;
-    my $width = $urx - $llx;
-    my $height = $ury - $lly;
-    return ($width, $height);
 }
 
 1;
