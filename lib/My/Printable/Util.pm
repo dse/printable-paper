@@ -65,21 +65,14 @@ sub with_temp {
         $tempname .= ".tmp";
     }
     make_path(dirname($tempname));
-    my $result;
-    my @result;
-    if (wantarray) {
-        @result = $sub->($tempname);
-    } elsif (defined wantarray) {
-        $result = $sub->($tempname);
-    } else {
-        $sub->($tempname);
+    unlink($tempname);
+    my $result = $sub->($tempname);
+    if (!(defined $result && $result == -1)) {
+        if (!rename($tempname, $filename)) {
+            warn("cannot rename $tempname to $filename: $!\n");
+        }
     }
-    if (!rename($tempname, $filename)) {
-        warn("cannot rename $tempname to $filename: $!\n");
-    }
-    return @result if wantarray;
-    return $result if defined wantarray;
-    return;
+    return $result;
 }
 
 sub aroundUnit {
