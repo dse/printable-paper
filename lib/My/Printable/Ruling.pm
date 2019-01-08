@@ -296,7 +296,9 @@ sub baseMarginLineWidth {
 sub getLineWidth {
     my ($self) = @_;
     my $x = $self->baseLineWidth;
-    if ($self->modifiers->has('x-thinner-lines')) {
+    if ($self->modifiers->has('xx-thinner-lines')) {
+        $x /= (2 * sqrt(2));
+    } elsif ($self->modifiers->has('x-thinner-lines')) {
         $x /= 2;
     } elsif ($self->modifiers->has('thinner-lines')) {
         $x /= sqrt(2);
@@ -310,12 +312,16 @@ sub getLineWidth {
 sub getFeintLineWidth {
     my ($self) = @_;
     my $x = $self->baseFeintLineWidth;
-    if ($self->modifiers->has('x-thinner-lines')) {
+    if ($self->modifiers->has('xx-thinner-lines')) {
+        $x /= (2 * sqrt(2));
+    } elsif ($self->modifiers->has('x-thinner-lines')) {
         $x /= 2;
     } elsif ($self->modifiers->has('thinner-lines')) {
         $x /= sqrt(2);
     }
-    if ($self->modifiers->has('x-thinner-grid')) {
+    if ($self->modifiers->has('xx-thinner-grid')) {
+        $x /= (2 * sqrt(2));
+    } elsif ($self->modifiers->has('x-thinner-grid')) {
         $x /= 2;
     } elsif ($self->modifiers->has('thinner-grid')) {
         $x /= sqrt(2);
@@ -332,7 +338,9 @@ sub getFeintLineWidth {
 sub getDotWidth {
     my ($self) = @_;
     my $x = $self->baseDotWidth;
-    if ($self->modifiers->has('x-thinner-dots')) {
+    if ($self->modifiers->has('xx-thinner-dots')) {
+        $x /= (2 * sqrt(2));
+    } elsif ($self->modifiers->has('x-thinner-dots')) {
         $x /= 2;
     } elsif ($self->modifiers->has('thinner-dots')) {
         $x /= sqrt(2);
