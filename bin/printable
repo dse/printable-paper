@@ -25,6 +25,14 @@ our $opt_list_rulings;
 our $opt_id;
 our $opt_filename;
 
+our $opt_2up;
+our $opt_2page;
+our $opt_pdf;
+our $opt_ps;
+
+our $opt_dry_run;
+our $opt_verbose = 0;
+
 use lib "$ENV{HOME}/git/dse.d/utilities/lib";
 use My::Text::Table;
 
@@ -50,6 +58,12 @@ Getopt::Long::GetOptions(
     'filename=s'                      => \$opt_filename,
     'list-ruling-names'               => \$opt_list_ruling_names,
     'list-rulings'                    => \$opt_list_rulings,
+    'two-up|generate-two-up|generate-2up'           => \$opt_2up,
+    'two-page|generate-two-page|generate-2page'     => \$opt_2page,
+    'ps|postscript|generate-ps|generate-postscript' => \$opt_ps,
+    'pdf|generate-pdf'                              => \$opt_pdf,
+    'n|dry-run' => \$opt_dry_run,
+    'v|verbose+' => \$opt_verbose,
     "help|?" => sub {
         usage();
         exit(0);
@@ -152,6 +166,12 @@ sub create_ruling_object {
     $object->height($opt_height)           if defined $opt_height;
     $object->unitType($opt_unit_type)      if defined $opt_unit_type;
     $object->colorType($opt_color_type)    if defined $opt_color_type;
+    $object->generate2Page($opt_2page)     if defined $opt_2page;
+    $object->generate2Up($opt_2up)         if defined $opt_2up;
+    $object->generatePS($opt_ps)           if defined $opt_ps;
+    $object->generatePDF($opt_pdf)         if defined $opt_pdf;
+    $object->dryRun($opt_dry_run)          if defined $opt_dry_run;
+    $object->verbose($opt_verbose)         if defined $opt_verbose;
     $object->modifiers->set(@opt_modifiers);
     return $object;
 }
