@@ -43,6 +43,7 @@ our $opt_line_color;
 our $opt_feint_line_color;
 our $opt_dot_color;
 our $opt_margin_line_color;
+our $opt_color;
 
 use lib "$ENV{HOME}/git/dse.d/utilities/lib";
 use My::Text::Table;
@@ -84,6 +85,7 @@ Getopt::Long::GetOptions(
     'feint-line-color=s'  => \$opt_feint_line_color,
     'dot-color=s'         => \$opt_dot_color,
     'margin-line-color=s' => \$opt_margin_line_color,
+    'color=s'             => \$opt_color,
     "help|?" => sub {
         usage();
         exit(0);
@@ -123,6 +125,7 @@ ruling line widths:
     --feint-line-color=<color>
     --dot-color=<color>
     --margin-line-color=<color>
+    --color=<color>
 miscellaneous:
     -n, --dry-run
     -v, --verbose
@@ -132,6 +135,19 @@ EOF
 use My::Printable::Document;
 use My::Printable::Ruling;
 use My::Printable::Unit qw(:const);
+
+if (defined $opt_pdf && !defined $opt_filename) {
+    die("--pdf has no effect without --filename\n");
+}
+if (defined $opt_ps && !defined $opt_filename) {
+    die("--ps has no effect without --filename\n");
+}
+if (defined $opt_2up && !defined $opt_filename) {
+    die("--two-up has no effect without --filename\n");
+}
+if (defined $opt_2page && !defined $opt_filename) {
+    die("--two-page has no effect without --filename\n");
+}
 
 if ($opt_list_ruling_names || $opt_list_rulings) {
     use My::Printable::Util::Installed;
@@ -214,10 +230,10 @@ sub create_ruling_object {
     $object->feintLineWidth($opt_feint_line_width)   if defined $opt_feint_line_width;
     $object->dotWidth($opt_dot_width)                if defined $opt_dot_width;
     $object->marginLineWidth($opt_margin_line_width) if defined $opt_margin_line_width;
-    $object->lineColor($opt_line_color)              if defined $opt_line_color;
-    $object->feintLineColor($opt_feint_line_color)   if defined $opt_feint_line_color;
-    $object->dotColor($opt_dot_color)                if defined $opt_dot_color;
-    $object->marginLineColor($opt_margin_line_color) if defined $opt_margin_line_color;
+    $object->lineColor($opt_line_color // $opt_color)              if defined $opt_line_color || defined $opt_color;
+    $object->feintLineColor($opt_feint_line_color // $opt_color)   if defined $opt_feint_line_color || defined $opt_color;
+    $object->dotColor($opt_dot_color // $opt_color)                if defined $opt_dot_color || defined $opt_color;
+    $object->marginLineColor($opt_margin_line_color)               if defined $opt_margin_line_color;
     $object->modifiers->set(@opt_modifiers);
     return $object;
 }
