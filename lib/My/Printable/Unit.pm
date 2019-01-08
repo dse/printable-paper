@@ -3,7 +3,9 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use base 'Exporter';
+use Moo;
+
+use Exporter 'import';
 our %EXPORT_TAGS = (
     const => [qw(PT PC IN CM MM PX PD)],
 );
@@ -11,8 +13,6 @@ our @EXPORT_OK = (
     @{$EXPORT_TAGS{const}}
 );
 our @EXPORT = ();
-
-use Moo;
 
 has "units" => (is => 'rw');
 has "axis" => (is => 'rw');
@@ -70,7 +70,6 @@ sub dpi {
     }
     my $dpi = shift;
     $self->units->{pd}->{to_pt} = $self->units->{pt}->{to_pt} * IN / $dpi;
-    warn $self->units->{pd}->{to_pt};
     return $self->rawDPI($dpi);
 }
 

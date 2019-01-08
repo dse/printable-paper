@@ -5,6 +5,25 @@ use v5.10.0;
 
 use Moo;
 
+use Exporter 'import';
+our %EXPORT_TAGS = (
+    const => [qw(COLOR_RED
+                 COLOR_GREEN
+                 COLOR_BLUE
+                 COLOR_GRAY
+                 COLOR_BLACK)],
+);
+our @EXPORT_OK = (
+    @{$EXPORT_TAGS{const}},
+);
+our @EXPORT = ();
+
+use constant COLOR_BLUE  => '#b3b3ff';
+use constant COLOR_GREEN => '#5aff5a';
+use constant COLOR_RED   => '#ff9e9e';
+use constant COLOR_GRAY  => '#bbbbbb';
+use constant COLOR_BLACK => '#000000';
+
 has 'r' => (is => 'rw', default => 1);
 has 'g' => (is => 'rw', default => 1);
 has 'b' => (is => 'rw', default => 1);
@@ -14,12 +33,11 @@ has '_stringValue' => (is => 'rw');
 around BUILDARGS => sub {
     my ($orig, $class, @args) = @_;
     if (scalar @args == 1) {
-        return {
+        return $class->$orig(
             _stringValue => $args[0],
-        };
+        );
     }
-    my %args = @args;
-    return \%args;
+    return $class->$orig(@args);
 };
 
 sub BUILD {
@@ -28,6 +46,18 @@ sub BUILD {
     if (defined $value) {
         $self->parse($value);
     }
+}
+
+sub rgb {
+    goto &rgba;
+}
+
+sub rgba {
+    my ($self, $r, $g, $b, $a) = @_;
+    $self->r($r);
+    $self->g($g);
+    $self->b($b);
+    $self->a($a // 1);
 }
 
 sub parse {
@@ -130,6 +160,12 @@ sub parse {
         $self->a($a // 1.0);
         return;
     }
+
+    return $self->parse(COLOR_BLACK) if $value eq 'black';
+    return $self->parse(COLOR_RED)   if $value eq 'red';
+    return $self->parse(COLOR_GREEN) if $value eq 'green';
+    return $self->parse(COLOR_BLUE)  if $value eq 'blue';
+    return $self->parse(COLOR_GRAY)  if $value eq 'gray' || $value eq 'grey';
 
     die("invalid color $value\n");
 }

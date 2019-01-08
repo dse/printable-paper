@@ -39,6 +39,11 @@ our $opt_dot_width;
 our $opt_margin_line_width;
 our $opt_dpi;
 
+our $opt_line_color;
+our $opt_feint_line_color;
+our $opt_dot_color;
+our $opt_margin_line_color;
+
 use lib "$ENV{HOME}/git/dse.d/utilities/lib";
 use My::Text::Table;
 

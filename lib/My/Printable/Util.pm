@@ -3,7 +3,9 @@ use warnings;
 use strict;
 use v5.10.0;
 
-use base "Exporter";
+use Moo;
+
+use Exporter 'import';
 our %EXPORT_TAGS = (
     const => [qw(USE_SVG_PATTERNS_FOR_DOT_GRIDS
                  USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS

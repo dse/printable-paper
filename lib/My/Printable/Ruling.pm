@@ -41,6 +41,10 @@ has 'document' => (
         'generatePDF',
         'generate2Page',
         'generate2Up',
+        'lineColor',
+        'feintLineColor',
+        'dotColor',
+        'marginLineColor',
     ],
 );
 
@@ -164,42 +168,25 @@ sub getUnit {
 
 sub getMarginLineCSSClass {
     my ($self) = @_;
-    my @classes = ($self->getMarginLineColorCSSClassList,
-                   $self->getMarginLineTypeCSSClassList);
-    return join(' ', grep { defined $_ && $_ ne '' } @classes);
+    return 'margin-line';
 }
 
 sub getDotCSSClass {
     my ($self) = @_;
-    my @classes = ($self->getDotColorCSSClassList,
-                   $self->getDotTypeCSSClassList);
-    return join(' ', grep { defined $_ && $_ ne '' } @classes);
+    return 'dot';
 }
 
 sub getLineCSSClass {
     my ($self) = @_;
-    my @classes = ($self->getLineColorCSSClassList,
-                   $self->getLineTypeCSSClassList);
-    return join(' ', grep { defined $_ && $_ ne '' } @classes);
+    return 'line';
 }
 
 sub getFeintLineCSSClass {
     my ($self) = @_;
-    my @classes = ($self->getFeintLineColorCSSClassList,
-                   $self->getFeintLineTypeCSSClassList);
-    return join(' ', grep { defined $_ && $_ ne '' } @classes);
+    return 'feint-line';
 }
 
 ###############################################################################
-
-sub getMarginLineThicknessCSSClassList {
-    my ($self) = @_;
-    if ($self->colorType eq 'black') {
-        return ('stroke-3');
-    } else {
-        return ();
-    }
-}
 
 sub getMarginLineColorCSSClassList {
     my ($self) = @_;
@@ -284,11 +271,6 @@ has 'rawFeintLineWidth'  => (is => 'rw');
 has 'rawDotWidth'        => (is => 'rw');
 has 'rawMarginLineWidth' => (is => 'rw');
 
-has 'rawLineColor'       => (is => 'rw');
-has 'rawFeintLineColor'  => (is => 'rw');
-has 'rawDotColor'        => (is => 'rw');
-has 'rawMarginLineColor' => (is => 'rw');
-
 sub lineWidth {
     my $self = shift;
     if (!scalar @_) {
@@ -339,62 +321,6 @@ sub marginLineWidth {
     my $value = shift;
     $value = $self->lineWidthUnit->pt($value);
     return $self->rawMarginLineWidth($value);
-}
-
-sub lineColor {
-    my $self = shift;
-    if (!scalar @_) {
-        if (!defined $self->rawLineColor) {
-            return undef;
-        }
-        return $self->rawLineColor->asHex;
-    }
-    my $value = shift;
-    return $self->rawLineColor(
-        My::Printable::Color->new($value)
-    )->asHex;
-}
-
-sub feintLineColor {
-    my $self = shift;
-    if (!scalar @_) {
-        if (!defined $self->rawFeintLineColor) {
-            return undef;
-        }
-        return $self->rawFeintLineColor->asHex;
-    }
-    my $value = shift;
-    return $self->rawFeintLineColor(
-        My::Printable::Color->new($value)
-    )->asHex;
-}
-
-sub dotColor {
-    my $self = shift;
-    if (!scalar @_) {
-        if (!defined $self->rawDotColor) {
-            return undef;
-        }
-        return $self->rawDotColor->asHex;
-    }
-    my $value = shift;
-    return $self->rawDotColor(
-        My::Printable::Color->new($value)
-    )->asHex;
-}
-
-sub marginLineColor {
-    my $self = shift;
-    if (!scalar @_) {
-        if (!defined $self->rawMarginLineColor) {
-            return undef;
-        }
-        return $self->rawMarginLineColor->asHex;
-    }
-    my $value = shift;
-    return $self->rawMarginLineColor(
-        My::Printable::Color->new($value)
-    )->asHex;
 }
 
 # before thinner-lines, thinner-dots, thinner-grid, denser-grid, and

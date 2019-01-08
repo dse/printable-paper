@@ -7,6 +7,7 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::ModifierList;
 use My::Printable::Util qw(:const);
 use My::Printable::Converter;
+use My::Printable::Color qw(:const);
 
 use XML::LibXML;
 use Scalar::Util qw(refaddr);
@@ -622,18 +623,109 @@ sub getSquarePoints {
     return $width * $height;
 }
 
+has 'rawLineColor'       => (is => 'rw');
+has 'rawFeintLineColor'  => (is => 'rw');
+has 'rawDotColor'        => (is => 'rw');
+has 'rawMarginLineColor' => (is => 'rw');
+
+sub defaultLineColor {
+    my ($self) = @_;
+    return COLOR_BLUE if $self->colorType eq 'color';
+    return COLOR_GRAY if $self->colorType eq 'grayscale';
+    return COLOR_BLACK;
+}
+sub defaultFeintLineColor {
+    my ($self) = @_;
+    return COLOR_BLUE if $self->colorType eq 'color';
+    return COLOR_GRAY if $self->colorType eq 'grayscale';
+    return COLOR_BLACK;
+}
+sub defaultDotColor {
+    my ($self) = @_;
+    return COLOR_BLUE if $self->colorType eq 'color';
+    return COLOR_GRAY if $self->colorType eq 'grayscale';
+    return COLOR_BLACK;
+}
+sub defaultMarginLineColor {
+    my ($self) = @_;
+    return COLOR_RED  if $self->colorType eq 'color';
+    return COLOR_GRAY if $self->colorType eq 'grayscale';
+    return COLOR_BLACK;
+}
+
+sub lineColor {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!defined $self->rawLineColor) {
+            return $self->defaultLineColor;
+        }
+        return $self->rawLineColor->asHex;
+    }
+    my $value = shift;
+    return $self->rawLineColor(
+        My::Printable::Color->new($value)
+    )->asHex;
+}
+
+sub feintLineColor {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!defined $self->rawFeintLineColor) {
+            return $self->defaultFeintLineColor;
+        }
+        return $self->rawFeintLineColor->asHex;
+    }
+    my $value = shift;
+    return $self->rawFeintLineColor(
+        My::Printable::Color->new($value)
+    )->asHex;
+}
+
+sub dotColor {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!defined $self->rawDotColor) {
+            return $self->defaultDotColor;
+        }
+        return $self->rawDotColor->asHex;
+    }
+    my $value = shift;
+    return $self->rawDotColor(
+        My::Printable::Color->new($value)
+    )->asHex;
+}
+
+sub marginLineColor {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!defined $self->rawMarginLineColor) {
+            return $self->defaultMarginLineColor;
+        }
+        return $self->rawMarginLineColor->asHex;
+    }
+    my $value = shift;
+    return $self->rawMarginLineColor(
+        My::Printable::Color->new($value)
+    )->asHex;
+}
+
 sub defaultStyles {
     my ($self) = @_;
+
+    my $lineColor       = $self->lineColor;
+    my $feintLineColor  = $self->feintLineColor;
+    my $dotColor        = $self->dotColor;
+    my $marginLineColor = $self->marginLineColor;
 
     my $style = <<"EOF";
         .line, .dot, .feint-line, .margin-line { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
         .rectangle { fill: #ffffff; }
-        .blue  { stroke: #b3b3ff; }
-        .red   { stroke: #ff9e9e; }
-        .green { stroke: #5aff5a; }
-        .gray  { stroke: #bbbbbb; }
-        .thin-black { stroke: #000000; }
+
+        .line        { stroke: $lineColor; }
+        .feint-line  { stroke: $feintLineColor; }
+        .dot         { stroke: $dotColor; }
+        .margin-line { stroke: $marginLineColor; }
 EOF
 
     $style = $self->doubleCurly($style, '%g');
