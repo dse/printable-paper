@@ -74,21 +74,29 @@ sub usage { print <<"EOF"; }
 usage:
     $0 [<option> ...]
 options:
-    -M, -p, --media, --paper, --paper-size=<paper-size-name>|<custom-paper-size>
-        Specify paper size (run paperconf -a -n -s to list paper sizes)
-    -w, --width=<width>
-    -h, --height=<height>
-    -?, --help
-<width> or <height>:
-    <number> [<unit>]           <unit> defaults to pt
-    <number>/<number> [<unit>]
-<custom-paper-size>:
-    <width> *|x <height>        height <unit> defaults to pt;
-                                width <unit> defaults to same <unit> as height
-examples:
-    --width=8.5in       --paper-size='8.5in x 11in'     --paper-size=letter
-    --width=612         --paper-size='612*792'
-    --height=297mm      --paper-size='210.224x297.302mm'
+    -M, -p, --media, --paper-size=<size>        8.5x11in, letter, etc.
+        -w, --width=<width>                     0.5in, 36, 36pt, etc.
+        -h, --height=<height>
+        -g, --gray, --grayscale
+        -b, --black
+        -c, --color, --colour
+        -m, --metric
+        -i, --imperial
+            --modifier=<modifier>
+            --id=<id>
+            --filename=<filename>    output SVG to file instead of stdout
+to list info instead of generating SVG, etc.:
+            --list-ruling-names
+            --list-rulings
+if --filename is specified:
+            --pdf           generate PDF file(s)
+            --ps            generate PS file(s)
+            --two-page      also generate 2-page file(s) if --pdf and/or --ps
+            --two-up        also generate 2-up file(s) if --pdf and/or --ps
+miscellaneous:
+        -n, --dry-run
+        -v, --verbose
+        -?, --help
 EOF
 
 use My::Printable::Document;
