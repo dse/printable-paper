@@ -34,6 +34,12 @@ has 'document' => (
         'pt',
         'originX',
         'originY',
+        'dryRun',
+        'verbose',
+        'generatePS',
+        'generatePDF',
+        'generate2Page',
+        'generate2Up',
     ],
 );
 
