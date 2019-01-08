@@ -178,7 +178,6 @@ after 'svgRoot' => sub {
 
     $self->svgDefs;
     $self->svgStyle;
-    $self->svgAdditionalStyle;
 
     # Recursion avoidance is complete.
     $in -= 1;
@@ -221,21 +220,12 @@ has 'svgStyle' => (
     is => 'rw',
     lazy => 1, builder => sub {
         my ($self) = @_;
-        return $self->addStyleElement($self->defaultStyles);
+        return $self->addStyleElement(
+            $self->doubleCurly($self->defaultStyles),
+            $self->doubleCurly($self->additionalStyles),
+        );
     },
     clearer => 'deleteSVGStyle',
-);
-
-has 'svgAdditionalStyle' => (
-    is => 'rw',
-    lazy => 1, builder => sub {
-        my ($self) = @_;
-        if (!defined $self->additionalStyles) {
-            return;
-        }
-        return $self->addStyleElement($self->doubleCurly($self->additionalStyles));
-    },
-    clearer => 'deleteSVGAdditionalStyle',
 );
 
 has 'svgContext' => (
@@ -250,7 +240,8 @@ has 'svgContext' => (
 );
 
 sub addStyleElement {
-    my ($self, $cssText) = @_;
+    my ($self, @cssText) = @_;
+    my $cssText = join("\n\n", grep { defined $_ && m{\S} } @cssText);
     $cssText =~ s{\R}{\n}g;
     $cssText = "\n" . $cssText;
     $cssText =~ s{\s*\z}{\n  };
@@ -528,12 +519,12 @@ sub defaultStyles {
     my $style = <<"EOF";
         .line, .dot, .feint-line, .margin-line { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
-        .rectangle { fill: rgb(255, 255, 255); }
-        .blue  { stroke: rgb(179, 179, 255); }
-        .red   { stroke: rgb(255, 158, 158); }
-        .green { stroke: rgb( 90, 255,  90); }
-        .gray  { stroke: rgb(187, 187, 187); }
-        .thin-black { stroke: rgb(0, 0, 0); }
+        .rectangle { fill: #ffffff; }
+        .blue  { stroke: #b3b3ff; }
+        .red   { stroke: #ff9e9e; }
+        .green { stroke: #5aff5a; }
+        .gray  { stroke: #bbbbbb; }
+        .thin-black { stroke: #000000; }
 EOF
 
     $style = $self->doubleCurly($style, '%g');
