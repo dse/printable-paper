@@ -18,11 +18,19 @@ our @EXPORT_OK = (
 );
 our @EXPORT = ();
 
-use constant COLOR_BLUE  => '#b3b3ff';
-use constant COLOR_GREEN => '#5aff5a';
-use constant COLOR_RED   => '#ff9e9e';
-use constant COLOR_GRAY  => '#bbbbbb';
-use constant COLOR_BLACK => '#000000';
+use List::Util qw(min max);
+
+use constant COLOR_BLUE    => '#b3b3ff';
+use constant COLOR_GREEN   => '#5aff5a';
+use constant COLOR_RED     => '#ff9e9e';
+use constant COLOR_GRAY    => '#bbbbbb';
+
+use constant COLOR_ORANGE  => '#ffab57';
+use constant COLOR_MAGENTA => '#ff8cff';
+use constant COLOR_CYAN    => '#1cffff';
+use constant COLOR_YELLOW  => '#ffff00'; # higher luminance
+
+use constant COLOR_BLACK   => '#000000';
 
 has 'r' => (is => 'rw', default => 1);
 has 'g' => (is => 'rw', default => 1);
@@ -161,11 +169,15 @@ sub parse {
         return;
     }
 
-    return $self->parse(COLOR_BLACK) if $value eq 'black';
-    return $self->parse(COLOR_RED)   if $value eq 'red';
-    return $self->parse(COLOR_GREEN) if $value eq 'green';
-    return $self->parse(COLOR_BLUE)  if $value eq 'blue';
-    return $self->parse(COLOR_GRAY)  if $value eq 'gray' || $value eq 'grey';
+    return $self->parse(COLOR_BLACK)   if $value eq 'black';
+    return $self->parse(COLOR_RED)     if $value eq 'red';
+    return $self->parse(COLOR_GREEN)   if $value eq 'green';
+    return $self->parse(COLOR_BLUE)    if $value eq 'blue';
+    return $self->parse(COLOR_GRAY)    if $value eq 'gray' || $value eq 'grey';
+    return $self->parse(COLOR_YELLOW)  if $value eq 'yellow';
+    return $self->parse(COLOR_ORANGE)  if $value eq 'orange';
+    return $self->parse(COLOR_MAGENTA) if $value eq 'magenta';
+    return $self->parse(COLOR_CYAN)    if $value eq 'cyan';
 
     die("invalid color $value\n");
 }
