@@ -19,7 +19,7 @@ use Getopt::Long qw();
 use Data::Dumper qw(Dumper);
 use Storable qw(dclone);
 use PDF::API2 qw();
-use File::Which;
+use File::Which qw(which);
 
 use constant USE_OLD_FILENAMES => 1;
 
