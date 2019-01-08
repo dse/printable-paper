@@ -53,7 +53,7 @@ Getopt::Long::GetOptions(
     "c|color|colour"                  => sub { $opt_color_type = "color";     },
     "m|metric"                        => sub { $opt_unit_type = "metric";     },
     "i|imperial"                      => sub { $opt_unit_type = "imperial";   },
-    "modifier=s"                      => sub { push(@opt_modifiers, $_[1]); },
+    "modifier|modifiers=s"            => sub { push(@opt_modifiers, split(qr{\s+|\s*,\s*}, $_[1])); },
     'id=s'                            => \$opt_id,
     'filename=s'                      => \$opt_filename,
     'list-ruling-names'               => \$opt_list_ruling_names,
