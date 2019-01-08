@@ -79,6 +79,7 @@ EOF
 
 use My::Printable::Document;
 use My::Printable::Ruling;
+use My::Printable::Unit qw(:const);
 
 if ($opt_list_ruling_names || $opt_list_rulings) {
     use My::Printable::Util::Installed;
@@ -90,26 +91,39 @@ if ($opt_list_ruling_names || $opt_list_rulings) {
         my $tt = My::Text::Table->new();
         $tt->header(
             'Ruling',
-            'Dots',
             'Lines',
+            'Width',
             'Feint Lines',
+            'Width',
+            'Dots',
+            'Width',
             'Margin Lines',
+            'Width',
         );
         foreach my $ruling_name (@{$inst->rulingNameList}) {
             $tt->addRow($ruling_name // '');
             foreach my $colorType ('color', 'grayscale', 'black') {
                 my $object = create_ruling_object($ruling_name);
                 $object->colorType($colorType);
-                my $dotCSSClass       = eval { $object->getDotCSSClass; };
-                my $lineCSSClass      = eval { $object->getLineCSSClass; };
-                my $feintLineCSSClass = eval { $object->getFeintLineCSSClass; };
+                my $dotCSSClass        = eval { $object->getDotCSSClass; };
+                my $lineCSSClass       = eval { $object->getLineCSSClass; };
+                my $feintLineCSSClass  = eval { $object->getFeintLineCSSClass; };
                 my $marginLineCSSClass = eval { $object->getMarginLineCSSClass; };
+
+                my $lineWidth          = eval { $object->getLineWidth()       / PD * PT; } // 0;
+                my $feintLineWidth     = eval { $object->getFeintLineWidth()  / PD * PT; } // 0;
+                my $dotWidth           = eval { $object->getDotWidth()        / PD * PT; } // 0;
+                my $marginLineWidth    = eval { $object->getMarginLineWidth() / PD * PT; } // 0;
                 $tt->addRow(
                     '    ' . $colorType,
-                    $dotCSSClass // '-',
                     $lineCSSClass // '-',
+                    sprintf('%.3g', $lineWidth),
                     $feintLineCSSClass // '-',
+                    sprintf('%.3g', $feintLineWidth),
+                    $dotCSSClass // '-',
+                    sprintf('%.3g', $dotWidth),
                     $marginLineCSSClass // '-',
+                    sprintf('%.3g', $marginLineWidth),
                 );
             }
         }
