@@ -94,7 +94,7 @@ Getopt::Long::GetOptions(
 
 sub usage { print <<"EOF"; }
 usage:
-    $0 [<option> ...]
+    $0 [<option> ...] <ruling>
 options:
     -M, -p, --media, --paper-size=<size>        8.5x11in, letter, etc.
         -w, --width=<width>                     0.5in, 36, 36pt, etc.
@@ -107,25 +107,26 @@ options:
             --modifier=<modifier>
             --id=<id>
             --filename=<filename>    output SVG to file instead of stdout
-to list info instead of generating SVG, etc.:
+list of <ruling>s:
     --list-ruling-names
-    --list-rulings
+    --list-rulings                   show some details
 if --filename is specified:
     --pdf           generate PDF file(s)
     --ps            generate PS file(s)
     --two-page      also generate 2-page file(s) if --pdf and/or --ps
     --two-up        also generate 2-up file(s) if --pdf and/or --ps
 ruling line widths:
-    --dpi=<dpi>     printer dots per inch (default 600)
+    --dpi=<dpi>                    printer dots per inch (default 600)
     --line-width=<dots>
     --feint-line-width=<dots>
     --dot-width=<dots>
     --margin-line-width=<dots>
+ruling line colors:
     --line-color=<color>           '#rrggbb[aa]', 'rgb()', 'rgba()' style colors
     --feint-line-color=<color>
     --dot-color=<color>
     --margin-line-color=<color>
-    --color=<color>
+    --color=<color>                specify line, feint line, and dot color
 miscellaneous:
     -n, --dry-run
     -v, --verbose
@@ -159,43 +160,39 @@ if ($opt_list_ruling_names || $opt_list_rulings) {
         my $tt = My::Text::Table->new();
         $tt->header(
             'Ruling',
+            'Color Type',
             'Lines',
-            'Width',
             'Feint Lines',
-            'Width',
             'Dots',
-            'Width',
             'Margin Lines',
-            'Width',
         );
         foreach my $ruling_name (@{$inst->rulingNameList}) {
-            $tt->addRow($ruling_name // '');
+            my $count = 0;
             foreach my $colorType ('color', 'grayscale', 'black') {
+                $count += 1;
                 my $object = create_ruling_object($ruling_name);
                 $object->colorType($colorType);
-                my $dotCSSClass        = eval { $object->getDotCSSClass; };
-                my $lineCSSClass       = eval { $object->getLineCSSClass; };
-                my $feintLineCSSClass  = eval { $object->getFeintLineCSSClass; };
-                my $marginLineCSSClass = eval { $object->getMarginLineCSSClass; };
                 my $lineWidth          = eval { $object->lineWidth       / PD * PT; } // 0;
                 my $feintLineWidth     = eval { $object->feintLineWidth  / PD * PT; } // 0;
                 my $dotWidth           = eval { $object->dotWidth        / PD * PT; } // 0;
                 my $marginLineWidth    = eval { $object->marginLineWidth / PD * PT; } // 0;
                 $tt->addRow(
-                    '    ' . $colorType,
-                    $lineCSSClass // '-',
+                    $count == 1 ? $ruling_name : '',
+                    $colorType,
                     sprintf('%.3g', $lineWidth),
-                    $feintLineCSSClass // '-',
                     sprintf('%.3g', $feintLineWidth),
-                    $dotCSSClass // '-',
                     sprintf('%.3g', $dotWidth),
-                    $marginLineCSSClass // '-',
                     sprintf('%.3g', $marginLineWidth),
                 );
             }
         }
         print $tt->as_string;
     }
+    exit(0);
+}
+
+if (scalar @ARGV != 1) {
+    die("must specify a ruling name\n");
 }
 
 foreach my $ruling_name (@ARGV) {
