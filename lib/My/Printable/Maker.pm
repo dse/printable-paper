@@ -205,6 +205,8 @@ our @COLLECTIONS = (
             { modifiers => [qw(thinner-grid)]            },
             { modifiers => [qw(three-line)]              },
             { modifiers => [qw(three-line thinner-grid)] },
+            { modifiers => [qw(thinner-lines thinner-grid)] },
+            { modifiers => [qw(thinner-lines three-line thinner-grid)] },
         ],
         color_types => ['color', 'black'],
     },
