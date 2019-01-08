@@ -7,6 +7,7 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Document;
 use My::Printable::Element::Rectangle;
 use My::Printable::Unit qw(:const);
+use My::Printable::Color;
 
 use Moo;
 
@@ -272,13 +273,21 @@ has 'lineWidthUnit' => (
         my $unit = My::Printable::Unit->new();
         $unit->defaultUnit('pd');
         return $unit;
-    }
+    },
+    handles => [
+        'dpi',
+    ],
 );
 
 has 'rawLineWidth'       => (is => 'rw');
 has 'rawFeintLineWidth'  => (is => 'rw');
 has 'rawDotWidth'        => (is => 'rw');
 has 'rawMarginLineWidth' => (is => 'rw');
+
+has 'rawLineColor'       => (is => 'rw');
+has 'rawFeintLineColor'  => (is => 'rw');
+has 'rawDotColor'        => (is => 'rw');
+has 'rawMarginLineColor' => (is => 'rw');
 
 sub lineWidth {
     my $self = shift;
@@ -292,6 +301,7 @@ sub lineWidth {
     $value = $self->lineWidthUnit->pt($value);
     return $self->rawLineWidth($value);
 }
+
 sub feintLineWidth {
     my $self = shift;
     if (!scalar @_) {
@@ -304,6 +314,7 @@ sub feintLineWidth {
     $value = $self->lineWidthUnit->pt($value);
     return $self->rawFeintLineWidth($value);
 }
+
 sub dotWidth {
     my $self = shift;
     if (!scalar @_) {
@@ -316,6 +327,7 @@ sub dotWidth {
     $value = $self->lineWidthUnit->pt($value);
     return $self->rawDotWidth($value);
 }
+
 sub marginLineWidth {
     my $self = shift;
     if (!scalar @_) {
@@ -327,6 +339,62 @@ sub marginLineWidth {
     my $value = shift;
     $value = $self->lineWidthUnit->pt($value);
     return $self->rawMarginLineWidth($value);
+}
+
+sub lineColor {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!defined $self->rawLineColor) {
+            return undef;
+        }
+        return $self->rawLineColor->asHex;
+    }
+    my $value = shift;
+    return $self->rawLineColor(
+        My::Printable::Color->new($value)
+    )->asHex;
+}
+
+sub feintLineColor {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!defined $self->rawFeintLineColor) {
+            return undef;
+        }
+        return $self->rawFeintLineColor->asHex;
+    }
+    my $value = shift;
+    return $self->rawFeintLineColor(
+        My::Printable::Color->new($value)
+    )->asHex;
+}
+
+sub dotColor {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!defined $self->rawDotColor) {
+            return undef;
+        }
+        return $self->rawDotColor->asHex;
+    }
+    my $value = shift;
+    return $self->rawDotColor(
+        My::Printable::Color->new($value)
+    )->asHex;
+}
+
+sub marginLineColor {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!defined $self->rawMarginLineColor) {
+            return undef;
+        }
+        return $self->rawMarginLineColor->asHex;
+    }
+    my $value = shift;
+    return $self->rawMarginLineColor(
+        My::Printable::Color->new($value)
+    )->asHex;
 }
 
 # before thinner-lines, thinner-dots, thinner-grid, denser-grid, and

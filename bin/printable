@@ -37,6 +37,7 @@ our $opt_line_width;
 our $opt_feint_line_width;
 our $opt_dot_width;
 our $opt_margin_line_width;
+our $opt_dpi;
 
 use lib "$ENV{HOME}/git/dse.d/utilities/lib";
 use My::Text::Table;
@@ -69,6 +70,7 @@ Getopt::Long::GetOptions(
     'pdf|generate-pdf'                              => \$opt_pdf,
     'n|dry-run'           => \$opt_dry_run,
     'v|verbose+'          => \$opt_verbose,
+    'dpi=f'               => \$opt_dpi,
     'line-width=f'        => \$opt_line_width,
     'feint-line-width=f'  => \$opt_feint_line_width,
     'dot-width=f'         => \$opt_dot_width,
@@ -95,17 +97,27 @@ options:
             --id=<id>
             --filename=<filename>    output SVG to file instead of stdout
 to list info instead of generating SVG, etc.:
-            --list-ruling-names
-            --list-rulings
+    --list-ruling-names
+    --list-rulings
 if --filename is specified:
-            --pdf           generate PDF file(s)
-            --ps            generate PS file(s)
-            --two-page      also generate 2-page file(s) if --pdf and/or --ps
-            --two-up        also generate 2-up file(s) if --pdf and/or --ps
+    --pdf           generate PDF file(s)
+    --ps            generate PS file(s)
+    --two-page      also generate 2-page file(s) if --pdf and/or --ps
+    --two-up        also generate 2-up file(s) if --pdf and/or --ps
+ruling line widths:
+    --dpi=<dpi>     printer dots per inch (default 600)
+    --line-width=<dots>
+    --feint-line-width=<dots>
+    --dot-width=<dots>
+    --margin-line-width=<dots>
+    --line-color=<color>
+    --feint-line-color=<color>
+    --dot-color=<color>
+    --margin-line-color=<color>
 miscellaneous:
-        -n, --dry-run
-        -v, --verbose
-        -?, --help
+    -n, --dry-run
+    -v, --verbose
+    -?, --help
 EOF
 
 use My::Printable::Document;
@@ -188,10 +200,15 @@ sub create_ruling_object {
     $object->generatePDF($opt_pdf)         if defined $opt_pdf;
     $object->dryRun($opt_dry_run)          if defined $opt_dry_run;
     $object->verbose($opt_verbose)         if defined $opt_verbose;
+    $object->dpi($opt_dpi)                           if defined $opt_dpi;
     $object->lineWidth($opt_line_width)              if defined $opt_line_width;
     $object->feintLineWidth($opt_feint_line_width)   if defined $opt_feint_line_width;
     $object->dotWidth($opt_dot_width)                if defined $opt_dot_width;
     $object->marginLineWidth($opt_margin_line_width) if defined $opt_margin_line_width;
+    $object->lineColor($opt_line_color)              if defined $opt_line_color;
+    $object->feintLineColor($opt_feint_line_color)   if defined $opt_feint_line_color;
+    $object->dotColor($opt_dot_color)                if defined $opt_dot_color;
+    $object->marginLineColor($opt_margin_line_color) if defined $opt_margin_line_color;
     $object->modifiers->set(@opt_modifiers);
     return $object;
 }

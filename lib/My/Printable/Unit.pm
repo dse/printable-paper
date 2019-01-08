@@ -20,13 +20,15 @@ has "size" => (is => 'rw');
 
 use Storable qw(dclone);
 
+use constant DEFAULT_DPI => 600; # per inch
+
 use constant PT => 1;
 use constant PC => 12;          # 1 pc = 12 pt
 use constant IN => 72;          # 1 in = 72 pt
 use constant CM => 72 / 2.54;   # ...
 use constant MM => 72 / 25.4;
 use constant PX => 72 / 96;
-use constant PD => 72 / 600;    # pixel dots (600dpi laser printer)
+use constant PD => 72 / DEFAULT_DPI; # printer dots
 
 our $UNITS = {
     "pt" => {
@@ -58,6 +60,19 @@ our $UNITS = {
         type => "imperial"
     }
 };
+
+has 'rawDPI' => (is => 'rw', default => DEFAULT_DPI);
+
+sub dpi {
+    my $self = shift;
+    if (!scalar @_) {
+        return $self->rawDPI;
+    }
+    my $dpi = shift;
+    $self->units->{pd}->{to_pt} = $self->units->{pt}->{to_pt} * IN / $dpi;
+    warn $self->units->{pd}->{to_pt};
+    return $self->rawDPI($dpi);
+}
 
 has 'defaultUnit' => (is => 'rw', default => 'pt');
 
