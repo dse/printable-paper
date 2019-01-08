@@ -3,14 +3,14 @@
   <style>
         .line, .dot, .feint-line, .margin-line { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
-        .rectangle { fill: rgb(255, 255, 255); }
-        .blue  { stroke: rgb(179, 179, 255); }
-        .red   { stroke: rgb(255, 158, 158); }
-        .green { stroke: rgb( 90, 255,  90); }
-        .gray  { stroke: rgb(187, 187, 187); }
-        .thin-black { stroke: rgb(0, 0, 0); }
-  </style>
-  <style>
+        .rectangle { fill: #ffffff; }
+        .blue  { stroke: #b3b3ff; }
+        .red   { stroke: #ff9e9e; }
+        .green { stroke: #5aff5a; }
+        .gray  { stroke: #bbbbbb; }
+        .thin-black { stroke: #000000; }
+
+
         .line        { stroke-width: 0.678822509939086px; opacity: 1; }
         .feint-line  { stroke-width: 0.339411254969543px; opacity: 1; }
         .dot         { stroke-width: 1.92px; opacity: 1; }
