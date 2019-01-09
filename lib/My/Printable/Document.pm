@@ -22,7 +22,7 @@ sub filename {
     my $self = shift;
     if (scalar @_) {
         my $filename = shift;
-        if ($filename !~ m{\.svg\z}i) {
+        if (defined $filename && $filename !~ m{\.svg\z}i) {
             $filename .= '.svg';
         }
         return $self->rawFilename($filename);
@@ -564,7 +564,7 @@ sub generateFormats {
         $converter->convertSVGToPS($filename, $psFilename);
     }
     if ($generate2PagePDF) {
-        $converter->convertPDFTo2PagePDF($pdfFilename, $twoPagePDFFilename);
+        $converter->convertPDFTo2PagePDF($pdfFilename, $twoPagePDFFilename);
     }
     if ($generate2PagePS) {
         $converter->convertPSTo2PagePS($psFilename, $twoPagePSFilename);
