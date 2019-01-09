@@ -543,22 +543,22 @@ sub generateFormats {
     $converter->dryRun($self->dryRun);
 
     if ($generatePDF) {
-        $converter->svgToPDF($filename, $pdfFilename);
+        $converter->convertSVGToPDF($filename, $pdfFilename);
     }
     if ($generatePS) {
-        $converter->svgToPS($filename, $psFilename);
+        $converter->convertSVGToPS($filename, $psFilename);
     }
     if ($generate2PagePDF) {
-        $converter->pdfToTwoPagePDF($pdfFilename, $twoPagePDFFilename);
+        $converter->convertPDFTo2PagePDF($pdfFilename, $twoPagePDFFilename);
     }
     if ($generate2PagePS) {
-        $converter->psToTwoPagePS($psFilename, $twoPagePSFilename);
+        $converter->convertPSTo2PagePS($psFilename, $twoPagePSFilename);
     }
     if ($generate2Page2UpPDF) {
-        $converter->twoPagePDFToTwoPageTwoUpPDF($twoPagePDFFilename, $twoPageTwoUpPDFFilename);
+        $converter->convert2PagePDFTo2Page2UpPDF($twoPagePDFFilename, $twoPageTwoUpPDFFilename);
     }
     if ($generate2Page2UpPS) {
-        $converter->pdfToPS($twoPageTwoUpPDFFilename, $twoPageTwoUpPSFilename);
+        $converter->convertPDFToPS($twoPageTwoUpPDFFilename, $twoPageTwoUpPSFilename);
     }
 }
 

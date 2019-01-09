@@ -36,7 +36,7 @@ has 'dryRun' => (is => 'rw', default => 0);
 has 'width'  => (is => 'rw', default => 0);
 has 'height' => (is => 'rw', default => 0);
 
-sub svgToPDF {
+sub convertSVGToPDF {
     my ($self, $fromFilename, $toFilename) = @_;
     with_temp(
         $toFilename, sub {
@@ -56,7 +56,7 @@ sub svgToPDF {
     );
 }
 
-sub svgToPS {
+sub convertSVGToPS {
     my ($self, $fromFilename, $toFilename) = @_;
     with_temp(
         $toFilename, sub {
@@ -76,7 +76,7 @@ sub svgToPS {
     );
 }
 
-sub pdfToTwoPagePDF {
+sub convertPDFTo2PagePDF {
     my ($self, $fromFilename, $toFilename) = @_;
     with_temp(
         $toFilename, sub {
@@ -94,7 +94,7 @@ sub pdfToTwoPagePDF {
     );
 }
 
-sub psToTwoPagePS {
+sub convertPSTo2PagePS {
     my ($self, $fromFilename, $toFilename) = @_;
     if (!which('psselect')) {
         die("psselect program not found");
@@ -120,7 +120,7 @@ sub psToTwoPagePS {
     );
 }
 
-sub twoPagePDFToTwoPageTwoUpPDF {
+sub convert2PagePDFTo2Page2UpPDF {
     my ($self, $fromFilename, $toFilename) = @_;
     if (!which('pdfbook')) {
         die("pdfbook program not found\n");
@@ -151,7 +151,7 @@ sub twoPagePDFToTwoPageTwoUpPDF {
     );
 }
 
-sub pdfToPS {
+sub convertPDFToPS {
     my ($self, $fromFilename, $toFilename) = @_;
     with_temp(
         $toFilename, sub {
