@@ -52,6 +52,9 @@ sub convertSVGToPDF {
                 print STDERR ("would pass to inkscape shell:\n    $cmd\n");
                 return -1;
             }
+            if ($self->verbose) {
+                print STDERR ("+ passing to Inkscape shell:\n    $cmd\n");
+            }
             $self->inkscapeShell->cmd($cmd);
         }
     );
@@ -71,6 +74,9 @@ sub convertSVGToPS {
             if ($self->dryRun) {
                 print STDERR ("would pass to inkscape shell:\n    $cmd\n");
                 return -1;
+            }
+            if ($self->verbose) {
+                print STDERR ("+ passing to Inkscape shell:\n    $cmd\n");
             }
             $self->inkscapeShell->cmd($cmd);
         }
@@ -102,7 +108,7 @@ sub convertPDFTo2UpPDF {
                 return -1;
             }
             if ($self->verbose) {
-                print STDERR ("+ $cmd\n");
+                print STDERR ("+ converting PDF to two-up PDF:\n    $cmd\n");
             }
             if (system($cmd)) {
                 unlink($tempFilename);
@@ -138,7 +144,7 @@ sub convert2PagePSTo2UpPS {
                 return -1;
             }
             if ($self->verbose) {
-                print STDERR ("+ $cmd\n");
+                print STDERR ("+ converting two-page PS to two-up PS:\n    $cmd\n");
             }
             if (system($cmd)) {
                 unlink($tempFilename);
@@ -154,11 +160,11 @@ sub convertPDFTo2PagePDF {
         $toFilename, sub {
             my ($tempFilename) = @_;
             if ($self->dryRun) {
-                print STDERR ("would convert one-page PDF to two-page PDF:\n    $fromFilename => $tempFilename\n");
+                print STDERR ("would convert 1-page PDF to 2-page PDF via PDF::API2:\n    $fromFilename => $tempFilename\n");
                 return -1;
             }
             if ($self->verbose) {
-                print STDERR ("PDF::API2: $fromFilename => $tempFilename\n");
+                print STDERR ("Converting 1-page PDF to 2-page PDF via PDF::API2:\n    $fromFilename => $tempFilename\n");
             }
             my $inputPDF = PDF::API2->open($fromFilename);
             my $outputPDF = PDF::API2->new();
@@ -187,7 +193,7 @@ sub convertPSTo2PagePS {
                 return -1;
             }
             if ($self->verbose) {
-                print STDERR ("+ $cmd\n");
+                print STDERR ("+ converting one-page PS to two-page PS:\n    $cmd\n");
             }
             if (system($cmd)) {
                 unlink($tempFilename);
@@ -221,7 +227,7 @@ sub convert2PagePDFTo2Page2UpPDF {
                 return -1;
             }
             if ($self->verbose) {
-                print STDERR ("+ $cmd\n");
+                print STDERR ("+ converting two-page PDF to two-page two-up PDF:\n    $cmd\n");
             }
             if (system($cmd)) {
                 unlink($tempFilename);
@@ -246,7 +252,7 @@ sub convertPDFToPS {
                 return -1;
             }
             if ($self->verbose) {
-                print STDERR ("+ $cmd\n");
+                print STDERR ("+ converting PDF to PS:\n    $cmd\n");
             }
             if (system($cmd)) {
                 unlink($tempFilename);
