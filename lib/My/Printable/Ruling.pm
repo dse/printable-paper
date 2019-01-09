@@ -40,7 +40,7 @@ has 'document' => (
         'generatePS',
         'generatePDF',
         'generate2Page',
-        'generate2Up',
+        'generate2Page2Up',
     ],
 );
 

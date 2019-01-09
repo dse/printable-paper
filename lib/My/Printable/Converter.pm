@@ -120,7 +120,7 @@ sub psToTwoPagePS {
     );
 }
 
-sub pdfToTwoUpPDF {
+sub twoPagePDFToTwoPageTwoUpPDF {
     my ($self, $fromFilename, $toFilename) = @_;
     if (!which('pdfbook')) {
         die("pdfbook program not found\n");

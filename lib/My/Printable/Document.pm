@@ -484,10 +484,10 @@ sub printToFile {
     return;
 }
 
-has 'generatePDF' => (is => 'rw', default => 0);
-has 'generatePS'  => (is => 'rw', default => 0);
-has 'generate2Up' => (is => 'rw', default => 0);
-has 'generate2Page' => (is => 'rw', default => 0);
+has 'generatePDF'      => (is => 'rw', default => 0);
+has 'generatePS'       => (is => 'rw', default => 0);
+has 'generate2Page2Up' => (is => 'rw', default => 0);
+has 'generate2Page'    => (is => 'rw', default => 0);
 
 sub generateFormats {
     my ($self) = @_;
@@ -495,12 +495,12 @@ sub generateFormats {
     my $baseFilename = $filename;
     $baseFilename =~ s{\.svg\z}{}i;
 
-    my $pdfFilename        = $baseFilename . '.pdf';
-    my $psFilename         = $baseFilename . '.ps';
-    my $twoPagePDFFilename = $baseFilename . '.2page.pdf';
-    my $twoPagePSFilename  = $baseFilename . '.2page.ps';
-    my $twoUpPDFFilename   = $baseFilename . '.2up.pdf';
-    my $twoUpPSFilename    = $baseFilename . '.2up.ps';
+    my $pdfFilename             = $baseFilename . '.pdf';
+    my $psFilename              = $baseFilename . '.ps';
+    my $twoPagePDFFilename      = $baseFilename . '.2page.pdf';
+    my $twoPagePSFilename       = $baseFilename . '.2page.ps';
+    my $twoPageTwoUpPDFFilename = $baseFilename . '.2page2up.pdf';
+    my $twoPageTwoUpPSFilename  = $baseFilename . '.2page2up.ps';
 
     my $converter = My::Printable::Converter->new();
     $converter->width($self->width);
@@ -510,8 +510,8 @@ sub generateFormats {
     my $generatePS;
     my $generate2PagePDF;
     my $generate2PagePS;
-    my $generate2UpPDF;
-    my $generate2UpPS;
+    my $generate2Page2UpPDF;
+    my $generate2Page2UpPS;
 
     if ($self->generatePDF) {
         $generatePDF = 1;
@@ -527,16 +527,16 @@ sub generateFormats {
             $generate2PagePS = 1;
         }
     }
-    if ($self->generate2Up) {
+    if ($self->generate2Page2Up) {
         if ($self->generatePDF) {
             $generate2PagePDF = 1; # dependency
-            $generate2UpPDF = 1;
+            $generate2Page2UpPDF = 1;
         }
         if ($self->generatePS) {
-            $generatePDF = 1;      # dependency
-            $generate2PagePDF = 1; # dependency
-            $generate2UpPDF = 1;   # dependency
-            $generate2UpPS = 1;
+            $generatePDF = 1;         # dependency
+            $generate2PagePDF = 1;    # dependency
+            $generate2Page2UpPDF = 1; # dependency
+            $generate2Page2UpPS = 1;
         }
     }
 
@@ -554,11 +554,11 @@ sub generateFormats {
     if ($generate2PagePS) {
         $converter->psToTwoPagePS($psFilename, $twoPagePSFilename);
     }
-    if ($generate2UpPDF) {
-        $converter->pdfToTwoUpPDF($twoPagePDFFilename, $twoUpPDFFilename);
+    if ($generate2Page2UpPDF) {
+        $converter->twoPagePDFToTwoPageTwoUpPDF($twoPagePDFFilename, $twoPageTwoUpPDFFilename);
     }
-    if ($generate2UpPS) {
-        $converter->pdfToPS($twoUpPDFFilename, $twoUpPSFilename);
+    if ($generate2Page2UpPS) {
+        $converter->pdfToPS($twoPageTwoUpPDFFilename, $twoPageTwoUpPSFilename);
     }
 }
 

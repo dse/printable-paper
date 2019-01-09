@@ -25,7 +25,7 @@ our $opt_list_rulings;
 our $opt_id;
 our $opt_filename;
 
-our $opt_2up;
+our $opt_2page_2up;
 our $opt_2page;
 our $opt_pdf;
 our $opt_ps;
@@ -69,7 +69,7 @@ Getopt::Long::GetOptions(
     'filename=s'                      => \$opt_filename,
     'list-ruling-names'               => \$opt_list_ruling_names,
     'list-rulings'                    => \$opt_list_rulings,
-    'two-up|generate-two-up|generate-2up'           => \$opt_2up,
+    'two-page-two-up|generate-two-page-two-up|generate-2page-2up'     => \$opt_2page_2up,
     'two-page|generate-two-page|generate-2page'     => \$opt_2page,
     'ps|postscript|generate-ps|generate-postscript' => \$opt_ps,
     'pdf|generate-pdf'                              => \$opt_pdf,
@@ -113,7 +113,7 @@ if --filename is specified:
     --pdf               generate PDF file(s)
     --ps                generate PS file(s)
     --two-page          also generate 2-page file(s) with --pdf and/or --ps
-    --two-up            also generate 2-up   file(s) with --pdf and/or --ps
+    --two-page-two-up   also generate 2-page 2-up file(s) with --pdf and/or --ps
 ruling line widths:
     --dpi=<dpi>                 printer dots per inch (default 600)
     --line-width=<dots>
@@ -142,8 +142,8 @@ if ($opt_pdf && !defined $opt_filename) {
 if ($opt_ps && !defined $opt_filename) {
     die("--ps has no effect without --filename\n");
 }
-if ($opt_2up && !defined $opt_filename) {
-    die("--two-up has no effect without --filename\n");
+if ($opt_2page_2up && !defined $opt_filename) {
+    die("--two-page-two-up has no effect without --filename\n");
 }
 if ($opt_2page && !defined $opt_filename) {
     die("--two-page has no effect without --filename\n");
@@ -153,8 +153,8 @@ if (!$opt_pdf && !$opt_ps) {
     if ($opt_2page) {
         die("--two-page has no effect without --pdf and/or --ps\n");
     }
-    if ($opt_2up) {
-        die("--two-up has no effect without --pdf and/or --ps\n");
+    if ($opt_2page_2up) {
+        die("--two-page-two-up has no effect without --pdf and/or --ps\n");
     }
 }
 
@@ -217,28 +217,28 @@ sub create_ruling_object {
         die $@;
     }
     my $object = $ruling_class_name->new();
-    $object->id($opt_id)                   if defined $opt_id;
-    $object->filename($opt_filename)       if defined $opt_filename;
-    $object->paperSizeName($opt_papersize) if defined $opt_papersize;
-    $object->width($opt_width)             if defined $opt_width;
-    $object->height($opt_height)           if defined $opt_height;
-    $object->unitType($opt_unit_type)      if defined $opt_unit_type;
-    $object->colorType($opt_color_type)    if defined $opt_color_type;
-    $object->generate2Page($opt_2page)     if defined $opt_2page;
-    $object->generate2Up($opt_2up)         if defined $opt_2up;
-    $object->generatePS($opt_ps)           if defined $opt_ps;
-    $object->generatePDF($opt_pdf)         if defined $opt_pdf;
-    $object->dryRun($opt_dry_run)          if defined $opt_dry_run;
-    $object->verbose($opt_verbose)         if defined $opt_verbose;
-    $object->dpi($opt_dpi)                           if defined $opt_dpi;
-    $object->lineWidth($opt_line_width)              if defined $opt_line_width;
-    $object->feintLineWidth($opt_feint_line_width)   if defined $opt_feint_line_width;
-    $object->dotWidth($opt_dot_width)                if defined $opt_dot_width;
-    $object->marginLineWidth($opt_margin_line_width) if defined $opt_margin_line_width;
-    $object->lineColor($opt_line_color // $opt_color)              if defined $opt_line_color || defined $opt_color;
-    $object->feintLineColor($opt_feint_line_color // $opt_color)   if defined $opt_feint_line_color || defined $opt_color;
-    $object->dotColor($opt_dot_color // $opt_color)                if defined $opt_dot_color || defined $opt_color;
-    $object->marginLineColor($opt_margin_line_color)               if defined $opt_margin_line_color;
+    $object->id($opt_id)                                         if defined $opt_id;
+    $object->filename($opt_filename)                             if defined $opt_filename;
+    $object->paperSizeName($opt_papersize)                       if defined $opt_papersize;
+    $object->width($opt_width)                                   if defined $opt_width;
+    $object->height($opt_height)                                 if defined $opt_height;
+    $object->unitType($opt_unit_type)                            if defined $opt_unit_type;
+    $object->colorType($opt_color_type)                          if defined $opt_color_type;
+    $object->generate2Page($opt_2page)                           if defined $opt_2page;
+    $object->generate2Page2Up($opt_2page_2up)                    if defined $opt_2page_2up;
+    $object->generatePS($opt_ps)                                 if defined $opt_ps;
+    $object->generatePDF($opt_pdf)                               if defined $opt_pdf;
+    $object->dryRun($opt_dry_run)                                if defined $opt_dry_run;
+    $object->verbose($opt_verbose)                               if defined $opt_verbose;
+    $object->dpi($opt_dpi)                                       if defined $opt_dpi;
+    $object->lineWidth($opt_line_width)                          if defined $opt_line_width;
+    $object->feintLineWidth($opt_feint_line_width)               if defined $opt_feint_line_width;
+    $object->dotWidth($opt_dot_width)                            if defined $opt_dot_width;
+    $object->marginLineWidth($opt_margin_line_width)             if defined $opt_margin_line_width;
+    $object->lineColor($opt_line_color // $opt_color)            if defined $opt_line_color || defined $opt_color;
+    $object->feintLineColor($opt_feint_line_color // $opt_color) if defined $opt_feint_line_color || defined $opt_color;
+    $object->dotColor($opt_dot_color // $opt_color)              if defined $opt_dot_color || defined $opt_color;
+    $object->marginLineColor($opt_margin_line_color)             if defined $opt_margin_line_color;
     $object->modifiers->set(@opt_modifiers);
     return $object;
 }
