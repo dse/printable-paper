@@ -390,7 +390,7 @@ sub build2PagePS {
     $self->cmd($target, $cmd);
 }
 
-sub build2UpPDF {
+sub build2Page2UpPDF {
     my ($self, %args) = @_;
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
@@ -452,7 +452,7 @@ sub build2UpPDF {
     # pdftk and qpdf do not offer N-up capability.
 }
 
-sub build2UpPS {
+sub build2Page2UpPS {
     my ($self, %args) = @_;
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
     my $p = $dependencies->[0];
@@ -483,13 +483,13 @@ our %BUILD = (
         dependencies => [qw(makebin/makeprintable)],
         code => \&build2PagePS,
     },
-    two_up_pdf => {
+    two_page_two_up_pdf => {
         dependencies => [qw(makebin/makeprintable)],
-        code => \&build2UpPDF,
+        code => \&build2Page2UpPDF,
     },
-    two_up_ps => {
+    two_page_two_up_ps => {
         dependencies => [qw(makebin/makeprintable)],
-        code => \&build2UpPS,
+        code => \&build2Page2UpPS,
     },
 );
 
@@ -705,13 +705,13 @@ sub buildTemplatesArray {
         push(@{$template->{files}}, { type => "pdf", subtype => "2-page", filename => $pdf_2_page, dependencies => $pdf_2_page_dependencies, build => $BUILD{two_page_pdf} });
         push(@{$template->{files}}, { type => "ps",  subtype => "2-page", filename => $ps_2_page,  dependencies => $ps_2_page_dependencies,  build => $BUILD{two_page_ps}  });
 
-        my $two_up_size = eval { $template->{"2up"}->{size} };
-        if ($two_up_size) {
-            my $two_up_base = eval { $template->{'base_2up'} };
-            my $pdf_2_up = "templates/2-up-pdf/${two_up_base}.2up.pdf";
-            my $ps_2_up  = "templates/2-up-ps/${two_up_base}.2up.ps";
-            push(@{$template->{files}}, { type => "pdf", subtype => "2-up", filename => $pdf_2_up, dependencies => [$pdf_2_page], build => $BUILD{"two_up_pdf"} });
-            push(@{$template->{files}}, { type => "ps",  subtype => "2-up", filename => $ps_2_up,  dependencies => [$pdf_2_up],   build => $BUILD{"two_up_ps"} });
+        my $two_page_two_up_size = eval { $template->{"2up"}->{size} };
+        if ($two_page_two_up_size) {
+            my $two_page_two_up_base = eval { $template->{'base_2up'} };
+            my $pdf_2_up = "templates/2-page-2-up-pdf/${two_page_two_up_base}.2page2up.pdf";
+            my $ps_2_up  = "templates/2-page-2-up-ps/${two_page_two_up_base}.2page2up.ps";
+            push(@{$template->{files}}, { type => "pdf", subtype => "2-up", filename => $pdf_2_up, dependencies => [$pdf_2_page], build => $BUILD{"two_page_two_up_pdf"} });
+            push(@{$template->{files}}, { type => "ps",  subtype => "2-up", filename => $ps_2_up,  dependencies => [$pdf_2_up],   build => $BUILD{"two_page_two_up_ps"} });
         }
     }
 
