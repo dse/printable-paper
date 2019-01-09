@@ -137,8 +137,8 @@ has 'elementsById' => (
     default => sub { return {}; },         # via appendElement
 );
 
-has 'originX' => (is => 'rw');
-has 'originY' => (is => 'rw');
+has 'originX' => (is => 'rw', default => DEFAULT_WIDTH / 2);
+has 'originY' => (is => 'rw', default => DEFAULT_HEIGHT / 2);
 
 around 'originX' => sub {
     my $orig = shift;
