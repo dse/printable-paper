@@ -24,6 +24,7 @@ sub cmd {
     $cmd =~ s{\R\z}{};          # safer chomp
     $self->expect->send("$cmd\n");
     $self->expect->expect(60, ">");
+    print "\n";
 }
 
 1;
