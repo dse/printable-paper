@@ -39,6 +39,7 @@ has 'document' => (
         'verbose',
         'generatePS',
         'generatePDF',
+        'generate2Up',
         'generate2Page',
         'generate2Page2Up',
     ],

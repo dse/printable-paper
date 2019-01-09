@@ -27,6 +27,7 @@ our $opt_filename;
 
 our $opt_2page_2up;
 our $opt_2page;
+our $opt_2up;
 our $opt_pdf;
 our $opt_ps;
 
@@ -59,6 +60,10 @@ Getopt::Long::GetOptions(
     "M|p|media|paper|paper-size=s"    => \$opt_papersize,
     "w|width=s"                       => \$opt_width,
     "h|height=s"                      => \$opt_height,
+    'letter'                          => sub { $opt_papersize = 'letter'; },
+    'a4'                              => sub { $opt_papersize = 'a4'; },
+    'halfletter|half-letter'          => sub { $opt_papersize = 'halfletter'; },
+    'a5'                              => sub { $opt_papersize = 'a5'; },
     "g|gray|grey|grayscale|greyscale" => sub { $opt_color_type = "grayscale"; },
     "b|black"                         => sub { $opt_color_type = "black";     },
     "c|color|colour"                  => sub { $opt_color_type = "color";     },
@@ -69,10 +74,11 @@ Getopt::Long::GetOptions(
     'filename=s'                      => \$opt_filename,
     'list-ruling-names'               => \$opt_list_ruling_names,
     'list-rulings'                    => \$opt_list_rulings,
-    'two-page-two-up|generate-two-page-two-up|generate-2page-2up'     => \$opt_2page_2up,
-    'two-page|generate-two-page|generate-2page'     => \$opt_2page,
-    'ps|postscript|generate-ps|generate-postscript' => \$opt_ps,
-    'pdf|generate-pdf'                              => \$opt_pdf,
+    '2page2up|2page-2up|two-page-two-up|generate-two-page-two-up|generate-2page-2up' => \$opt_2page_2up,
+    '2page|two-page|generate-two-page|generate-2page'                                => \$opt_2page,
+    '2up|two-up|genreate-two-up|generate-2up'                                        => \$opt_2up,
+    'ps|postscript|generate-ps|generate-postscript'                                  => \$opt_ps,
+    'pdf|generate-pdf'                                                               => \$opt_pdf,
     'n|dry-run'           => \$opt_dry_run,
     'v|verbose+'          => \$opt_verbose,
     'dpi=f'               => \$opt_dpi,
@@ -94,10 +100,11 @@ Getopt::Long::GetOptions(
 sub usage { print <<"EOF"; }
 usage:
     $0 [<option> ...] <ruling>
-options:
+to specify the paper size of ONE page:
     -M, -p, --media, --paper-size=<size>        8.5x11in, letter, etc.
         -w, --width=<width>                     0.5in, 36, 36pt, etc.
         -h, --height=<height>
+options:
         -g, --gray, --grayscale
         -b, --black
         -c, --color, --colour
@@ -112,8 +119,9 @@ list of <ruling>s:
 if --filename is specified:
     --pdf               generate PDF file(s)
     --ps                generate PS file(s)
-    --two-page          also generate 2-page file(s) with --pdf and/or --ps
-    --two-page-two-up   also generate 2-page 2-up file(s) with --pdf and/or --ps
+    --two-up            also generate 2-up        file(s) with --pdf/--ps
+    --two-page          also generate 2-page      file(s) with --pdf/--ps
+    --two-page-two-up   also generate 2-page 2-up file(s) with --pdf/--ps
 ruling line widths:
     --dpi=<dpi>                 printer dots per inch (default 600)
     --line-width=<dots>
@@ -148,13 +156,19 @@ if ($opt_2page_2up && !defined $opt_filename) {
 if ($opt_2page && !defined $opt_filename) {
     die("--two-page has no effect without --filename\n");
 }
+if ($opt_2up && !defined $opt_filename) {
+    die("--two-up has no effect without --filename\n");
+}
 
 if (!$opt_pdf && !$opt_ps) {
+    if ($opt_2page_2up) {
+        die("--two-page-two-up has no effect without --pdf and/or --ps\n");
+    }
     if ($opt_2page) {
         die("--two-page has no effect without --pdf and/or --ps\n");
     }
-    if ($opt_2page_2up) {
-        die("--two-page-two-up has no effect without --pdf and/or --ps\n");
+    if ($opt_2up) {
+        die("--two-up has no effect without --pdf and/or --ps\n");
     }
 }
 
@@ -224,6 +238,7 @@ sub create_ruling_object {
     $object->height($opt_height)                                 if defined $opt_height;
     $object->unitType($opt_unit_type)                            if defined $opt_unit_type;
     $object->colorType($opt_color_type)                          if defined $opt_color_type;
+    $object->generate2Up($opt_2up)                               if defined $opt_2up;
     $object->generate2Page($opt_2page)                           if defined $opt_2page;
     $object->generate2Page2Up($opt_2page_2up)                    if defined $opt_2page_2up;
     $object->generatePS($opt_ps)                                 if defined $opt_ps;

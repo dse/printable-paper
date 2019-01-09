@@ -488,6 +488,7 @@ has 'generatePDF'      => (is => 'rw', default => 0);
 has 'generatePS'       => (is => 'rw', default => 0);
 has 'generate2Page2Up' => (is => 'rw', default => 0);
 has 'generate2Page'    => (is => 'rw', default => 0);
+has 'generate2Up'      => (is => 'rw', default => 0);
 
 sub generateFormats {
     my ($self) = @_;
@@ -499,6 +500,8 @@ sub generateFormats {
     my $psFilename              = $baseFilename . '.ps';
     my $twoPagePDFFilename      = $baseFilename . '.2page.pdf';
     my $twoPagePSFilename       = $baseFilename . '.2page.ps';
+    my $twoUpPDFFilename        = $baseFilename . '.2up.pdf';
+    my $twoUpPSFilename         = $baseFilename . '.2up.ps';
     my $twoPageTwoUpPDFFilename = $baseFilename . '.2page2up.pdf';
     my $twoPageTwoUpPSFilename  = $baseFilename . '.2page2up.ps';
 
@@ -510,6 +513,8 @@ sub generateFormats {
     my $generatePS;
     my $generate2PagePDF;
     my $generate2PagePS;
+    my $generate2UpPDF;
+    my $generate2UpPS;
     my $generate2Page2UpPDF;
     my $generate2Page2UpPS;
 
@@ -527,6 +532,15 @@ sub generateFormats {
             $generate2PagePS = 1;
         }
     }
+    if ($self->generate2Up) {
+        if ($self->generatePDF) {
+            $generate2UpPDF = 1;
+        }
+        if ($self->generatePS) {
+            $generate2UpPS = 1;
+            $generate2PagePS = 1; # dependency
+        }
+    }
     if ($self->generate2Page2Up) {
         if ($self->generatePDF) {
             $generate2PagePDF = 1; # dependency
@@ -541,6 +555,7 @@ sub generateFormats {
     }
 
     $converter->dryRun($self->dryRun);
+    $converter->verbose($self->verbose);
 
     if ($generatePDF) {
         $converter->convertSVGToPDF($filename, $pdfFilename);
@@ -553,6 +568,12 @@ sub generateFormats {
     }
     if ($generate2PagePS) {
         $converter->convertPSTo2PagePS($psFilename, $twoPagePSFilename);
+    }
+    if ($generate2UpPDF) {
+        $converter->convertPDFTo2UpPDF($pdfFilename, $twoUpPDFFilename);
+    }
+    if ($generate2UpPS) {
+        $converter->convert2PagePSTo2UpPS($twoPagePSFilename, $twoUpPSFilename);
     }
     if ($generate2Page2UpPDF) {
         $converter->convert2PagePDFTo2Page2UpPDF($twoPagePDFFilename, $twoPageTwoUpPDFFilename);

@@ -32,9 +32,10 @@ has 'inkscapeShell' => (
     },
 );
 
-has 'dryRun' => (is => 'rw', default => 0);
-has 'width'  => (is => 'rw', default => 0);
-has 'height' => (is => 'rw', default => 0);
+has 'dryRun'  => (is => 'rw', default => 0);
+has 'verbose' => (is => 'rw', default => 0);
+has 'width'   => (is => 'rw', default => 0);
+has 'height'  => (is => 'rw', default => 0);
 
 sub convertSVGToPDF {
     my ($self, $fromFilename, $toFilename) = @_;
@@ -76,6 +77,77 @@ sub convertSVGToPS {
     );
 }
 
+sub convertPDFTo2UpPDF {
+    my ($self, $fromFilename, $toFilename) = @_;
+    my $pdfnup = $self->pdfnupLocation;
+    if (!$pdfnup) {
+        die("pdfnup program not found\n");
+    }
+    my $inputWidth = $self->width;
+    my $inputHeight = $self->height;
+    my $outputWidth = $inputHeight;
+    my $outputHeight = 2 * $inputWidth;
+    my $papersize = sprintf('{%.3fbp,%.3fbp}', $outputWidth, $outputHeight);
+    with_temp(
+        $toFilename, sub {
+            my ($tempFilename) = @_;
+            my $cmd = sprintf(
+                'pdfnup --no-tidy --outfile %s --papersize %s --nup 2x1 %s 1,1',
+                shell_quote($tempFilename),
+                shell_quote($papersize),
+                shell_quote($fromFilename),
+            );
+            if ($self->dryRun) {
+                print STDERR ("would convert PDF to two-up PDF:\n    $cmd\n");
+                return -1;
+            }
+            if ($self->verbose) {
+                print STDERR ("+ $cmd\n");
+            }
+            if (system($cmd)) {
+                unlink($tempFilename);
+                die("pdfbook failed; exiting\n");
+            }
+        }
+    );
+}
+
+sub convert2PagePSTo2UpPS {
+    my ($self, $fromFilename, $toFilename) = @_;
+    if (!which('pdfbook')) {
+        die("pdfbook program not found\n");
+    }
+    my $inputWidth = $self->width;
+    my $inputHeight = $self->height;
+    my $outputWidth = $inputHeight;
+    my $outputHeight = 2 * $inputWidth;
+    with_temp(
+        $toFilename, sub {
+            my ($tempFilename) = @_;
+            my $cmd = sprintf(
+                'psnup -w%g -h%g -W%g -H%g -m0 -b0 -d0 -s1 -2 %s %s',
+                $outputWidth,
+                $outputHeight,
+                $inputWidth,
+                $inputHeight,
+                $fromFilename,
+                $tempFilename,
+            );
+            if ($self->dryRun) {
+                print STDERR ("would convert two-page PS to two-up PS:\n    $cmd\n");
+                return -1;
+            }
+            if ($self->verbose) {
+                print STDERR ("+ $cmd\n");
+            }
+            if (system($cmd)) {
+                unlink($tempFilename);
+                die("psnup failed; exiting\n");
+            }
+        }
+    );
+}
+
 sub convertPDFTo2PagePDF {
     my ($self, $fromFilename, $toFilename) = @_;
     with_temp(
@@ -84,6 +156,9 @@ sub convertPDFTo2PagePDF {
             if ($self->dryRun) {
                 print STDERR ("would convert one-page PDF to two-page PDF:\n    $fromFilename => $tempFilename\n");
                 return -1;
+            }
+            if ($self->verbose) {
+                print STDERR ("PDF::API2: $fromFilename => $tempFilename\n");
             }
             my $inputPDF = PDF::API2->open($fromFilename);
             my $outputPDF = PDF::API2->new();
@@ -103,8 +178,7 @@ sub convertPSTo2PagePS {
         $toFilename, sub {
             my ($tempFilename) = @_;
             my $cmd = sprintf(
-                "psjoin %s %s >%s",
-                shell_quote($fromFilename),
+                'psselect 1,1 %s %s',
                 shell_quote($fromFilename),
                 shell_quote($tempFilename),
             );
@@ -112,9 +186,12 @@ sub convertPSTo2PagePS {
                 print STDERR ("would convert one-page PS to two-page PS:\n    $cmd\n");
                 return -1;
             }
+            if ($self->verbose) {
+                print STDERR ("+ $cmd\n");
+            }
             if (system($cmd)) {
                 unlink($tempFilename);
-                die("psjoin failed; exiting\n");
+                die("psselect failed; exiting\n");
             }
         }
     );
@@ -143,6 +220,9 @@ sub convert2PagePDFTo2Page2UpPDF {
                 print STDERR ("would convert two-page PDF to two-page two-up PDF:\n    $cmd\n");
                 return -1;
             }
+            if ($self->verbose) {
+                print STDERR ("+ $cmd\n");
+            }
             if (system($cmd)) {
                 unlink($tempFilename);
                 die("pdfbook failed; exiting\n");
@@ -165,12 +245,54 @@ sub convertPDFToPS {
                 print STDERR ("would convert PDF to PS:\n    $cmd\n");
                 return -1;
             }
+            if ($self->verbose) {
+                print STDERR ("+ $cmd\n");
+            }
             if (system($cmd)) {
                 unlink($tempFilename);
                 die("psjoin failed; exiting\n");
             }
         }
     );
+}
+
+# can't just run which('pdfnup') because there's a python library that
+# installs a completely unrelated 'pdfnup' script.  We want the one
+# that comes with pdfjam.
+has 'pdfnupLocation' => (
+    is => 'rw',
+    lazy => 1,
+    default => sub {
+        my ($self) = @_;
+        my @paths = which('pdfnup');
+        push(@paths, grep { -e $_ } (
+            '/usr/local/share/texmf-dist/scripts/pdfjam/pdfnup',
+            '/usr/local/share/texlive/texmf-dist/scripts/pdfjam/pdfnup',
+            '/usr/share/texmf-dist/scripts/pdfjam/pdfnup',
+            '/usr/share/texlive/texmf-dist/scripts/pdfjam/pdfnup',
+        ));
+        foreach my $path (@paths) {
+            my $shebang = $self->getShebangFromFile($path);
+            if ($shebang eq 'bash' || $shebang eq 'sh') {
+                return $path;
+            }
+        }
+        return undef;
+    }
+);
+
+sub getShebangFromFile {
+    my ($self, $path) = @_;
+    local $/ = "\n";
+    my $fh;
+    open($fh, '<', $path) or return;
+    my $shebang = <$fh>;
+    $shebang =~ s{\R\z}{};
+    close($fh);
+    if ($shebang =~ m{^\s*\#\s*\!\s*\S*/([^\/]+)(?:$|\s)}) {
+        return $1;
+    }
+    return;
 }
 
 1;
