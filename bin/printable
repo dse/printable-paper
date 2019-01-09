@@ -71,26 +71,26 @@ Getopt::Long::GetOptions(
     "i|imperial"                      => sub { $opt_unit_type = "imperial";   },
     "modifier|modifiers=s"            => sub { push(@opt_modifiers, split(qr{\s+|\s*,\s*}, $_[1])); },
     'id=s'                            => \$opt_id,
-    'filename=s'                      => \$opt_filename,
+    'o|output|filename=s'             => \$opt_filename,
     'list-ruling-names'               => \$opt_list_ruling_names,
     'list-rulings'                    => \$opt_list_rulings,
-    '2page2up|2page-2up|two-page-two-up|generate-two-page-two-up|generate-2page-2up' => \$opt_2page_2up,
-    '2page|two-page|generate-two-page|generate-2page'                                => \$opt_2page,
-    '2up|two-up|genreate-two-up|generate-2up'                                        => \$opt_2up,
-    'ps|postscript|generate-ps|generate-postscript'                                  => \$opt_ps,
-    'pdf|generate-pdf'                                                               => \$opt_pdf,
-    'n|dry-run'           => \$opt_dry_run,
-    'v|verbose+'          => \$opt_verbose,
-    'dpi=f'               => \$opt_dpi,
-    'line-width=f'        => \$opt_line_width,
-    'feint-line-width=f'  => \$opt_feint_line_width,
-    'dot-width=f'         => \$opt_dot_width,
-    'margin-line-width=f' => \$opt_margin_line_width,
-    'line-color=s'        => \$opt_line_color,
-    'feint-line-color=s'  => \$opt_feint_line_color,
-    'dot-color=s'         => \$opt_dot_color,
-    'margin-line-color=s' => \$opt_margin_line_color,
-    'color=s'             => \$opt_color,
+    '2p2u|2page2up|2page-2up|two-page-two-up|generate-two-page-two-up|generate-2page-2up' => \$opt_2page_2up,
+    '2p|2page|two-page|generate-two-page|generate-2page'                                  => \$opt_2page,
+    '2u|2up|two-up|genreate-two-up|generate-2up'                                          => \$opt_2up,
+    'ps|postscript|generate-ps|generate-postscript'                                       => \$opt_ps,
+    'pdf|generate-pdf'                                                                    => \$opt_pdf,
+    'n|dry-run'              => \$opt_dry_run,
+    'v|verbose+'             => \$opt_verbose,
+    'dpi=f'                  => \$opt_dpi,
+    'lw|line-width=f'        => \$opt_line_width,
+    'fw|feint-line-width=f'  => \$opt_feint_line_width,
+    'dw|dot-width=f'         => \$opt_dot_width,
+    'mw|margin-line-width=f' => \$opt_margin_line_width,
+    'lc|line-color=s'        => \$opt_line_color,
+    'fc|feint-line-color=s'  => \$opt_feint_line_color,
+    'dc|dot-color=s'         => \$opt_dot_color,
+    'mc|margin-line-color=s' => \$opt_margin_line_color,
+    'C|color=s'              => \$opt_color,
     "help|?" => sub {
         usage();
         exit(0);
@@ -112,28 +112,28 @@ options:
         -i, --imperial
             --modifier=<modifier>
             --id=<id>
-            --filename=<filename>   output SVG to file instead of stdout
+        -o, --output, --filename=<filename>     output SVG to a file, not stdout
 list of <ruling>s:
     --list-ruling-names
     --list-rulings              show some details
 if --filename is specified:
-    --pdf               generate PDF file(s)
-    --ps                generate PS file(s)
-    --two-up            also generate 2-up        file(s) with --pdf/--ps
-    --two-page          also generate 2-page      file(s) with --pdf/--ps
-    --two-page-two-up   also generate 2-page 2-up file(s) with --pdf/--ps
+    --pdf                       also generate PDF file(s)
+    --ps                        also generate PostScript file(s)
+    --2u,   --two-up            also generate 2-up        file(s) w/ --pdf/--ps
+    --2p,   --two-page          "    "        2-page      file(s) "
+    --2p2u, --two-page-two-up   "    "        2-page 2-up file(s) "
 ruling line widths:
-    --dpi=<dpi>                 printer dots per inch (default 600)
-    --line-width=<dots>
-    --feint-line-width=<dots>
-    --dot-width=<dots>
-    --margin-line-width=<dots>
+          --dpi=<dpi>           printer dots per inch (default 600)
+    --lw, --line-width=<dots>
+    --fw, --feint-line-width=<dots>
+    --dw, --dot-width=<dots>
+    --mw, --margin-line-width=<dots>
 ruling line colors:             '#rrggbb[aa]', 'rgb()', 'rgba()' style colors
-    --line-color=<color>
-    --feint-line-color=<color>
-    --dot-color=<color>
-    --margin-line-color=<color>
-    --color=<color>             specify line, feint line, and dot color
+    --lc, --line-color=<color>
+    --fc, --feint-line-color=<color>
+    --dc, --dot-color=<color>
+    --mc, --margin-line-color=<color>
+      -C, --color=<color>       specify line, feint line, and dot color
 miscellaneous:
     -n, --dry-run
     -v, --verbose
