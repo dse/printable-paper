@@ -20,41 +20,53 @@ our @EXPORT = ();
 
 use List::Util qw(min max);
 
-use constant COLOR_BLUE    => '#b3b3ff';
-use constant COLOR_GREEN   => '#5aff5a';
-use constant COLOR_RED     => '#ff9e9e';
-use constant COLOR_GRAY    => '#bbbbbb';
-use constant COLOR_ORANGE  => '#ffab57';
-use constant COLOR_MAGENTA => '#ff8cff';
-use constant COLOR_CYAN    => '#1cffff';
-use constant COLOR_YELLOW  => '#ffff00'; # higher luminance
-use constant COLOR_BLACK   => '#000000';
-
+use constant COLOR_BLUE           => '#b3b3ff';
+use constant COLOR_GREEN          => '#5aff5a';
+use constant COLOR_RED            => '#ff9e9e';
+use constant COLOR_GRAY           => '#bbbbbb';
+use constant COLOR_ORANGE         => '#ffab57';
+use constant COLOR_MAGENTA        => '#ff8cff';
+use constant COLOR_CYAN           => '#1cffff';
+use constant COLOR_YELLOW         => '#ffff00'; # higher luminance
+use constant COLOR_BLACK          => '#000000';
 use constant COLOR_NON_REPRO_BLUE => '#95c9d7';
+
+our %COLORS;
+BEGIN {
+    %COLORS = (
+        'blue'           => COLOR_BLUE,
+        'green'          => COLOR_GREEN,
+        'red'            => COLOR_RED,
+        'gray'           => COLOR_GRAY,
+        'grey'           => COLOR_GRAY,
+        'orange'         => COLOR_ORANGE,
+        'magenta'        => COLOR_MAGENTA,
+        'cyan'           => COLOR_CYAN,
+        'yellow'         => COLOR_YELLOW,
+        'black'          => COLOR_BLACK,
+        'non-repro-blue' => COLOR_NON_REPRO_BLUE,
+        'non-photo-blue' => COLOR_NON_REPRO_BLUE,
+    );
+}
 
 has 'r' => (is => 'rw', default => 1);
 has 'g' => (is => 'rw', default => 1);
 has 'b' => (is => 'rw', default => 1);
 has 'a' => (is => 'rw', default => 1);
-has '_stringValue' => (is => 'rw');
 
 around BUILDARGS => sub {
     my ($orig, $class, @args) = @_;
     if (scalar @args == 1) {
+        my ($r, $g, $b, $a) = $class->parse($args[0]);
         return $class->$orig(
-            _stringValue => $args[0],
+            r => $r,
+            g => $g,
+            b => $b,
+            a => $a,
         );
     }
     return $class->$orig(@args);
 };
-
-sub BUILD {
-    my ($self, $args) = @_;
-    my $value = delete $args->{_stringValue};
-    if (defined $value) {
-        $self->parse($value);
-    }
-}
 
 sub rgb {
     goto &rgba;
@@ -68,53 +80,17 @@ sub rgba {
     $self->a($a // 1);
 }
 
+sub set {
+    my ($self, $value) = @_;
+    my ($r, $g, $b, $a) = $self->parse($value);
+    $self->r($r) if defined $r;
+    $self->g($g) if defined $g;
+    $self->b($b) if defined $b;
+    $self->a($a) if defined $a;
+}
+
 sub parse {
     my ($self, $value) = @_;
-
-    # 3 or 4 hex digits
-    if ($value =~ m{\A\#
-                    ([[:xdigit:]])
-                    ([[:xdigit:]])
-                    ([[:xdigit:]])
-                    ([[:xdigit:]])?
-                    \z}xi) {
-        my ($r, $g, $b, $a) = ($1, $2, $3, $4);
-        $self->r(hex($r) / 15);
-        $self->g(hex($g) / 15);
-        $self->b(hex($b) / 15);
-        $self->a(hex($a // 'f') / 15);
-        return;
-    }
-
-    # 6 or 8 hex digits
-    if ($value =~ m{\A\#
-                    ([[:xdigit:]]{2})
-                    ([[:xdigit:]]{2})
-                    ([[:xdigit:]]{2})
-                    ([[:xdigit:]]{2})?
-                    \z}xi) {
-        my ($r, $g, $b, $a) = ($1, $2, $3, $4);
-        $self->r(hex($r) / 255);
-        $self->g(hex($g) / 255);
-        $self->b(hex($b) / 255);
-        $self->a(hex($a // 'ff') / 255);
-        return;
-    }
-
-    # 12 or 16 hex digits
-    if ($value =~ m{\A\#
-                    ([[:xdigit:]]{4})
-                    ([[:xdigit:]]{4})
-                    ([[:xdigit:]]{4})
-                    ([[:xdigit:]]{4})?
-                    \z}xi) {
-        my ($r, $g, $b, $a) = ($1, $2, $3, $4);
-        $self->r(hex($r) / 65535);
-        $self->g(hex($g) / 65535);
-        $self->b(hex($b) / 65535);
-        $self->a(hex($a // 'ffff') / 65535);
-        return;
-    }
 
     my $rx_int_or_pct = qr{(?:
                                \d+(?:\.\d*)?
@@ -122,23 +98,61 @@ sub parse {
                                \.\d+
                            )%?}xi;
 
-    if ($value =~ m{\A
-                    rgba?
-                    \(
-                    \s*
-                    ($rx_int_or_pct)
-                    (?:\s+|\s*,\s*)
-                    ($rx_int_or_pct)
-                    (?:\s+|\s*,\s*)
-                    ($rx_int_or_pct)
-                    (?:
-                        (?:\s+|\s*,\s*)
-                        ($rx_int_or_pct)
-                    )?
-                    \s*
-                    \)
+    if (defined $COLORS{$value}) {
+        $value = $COLORS{$value};
+    }
+
+    my ($r, $g, $b, $a);
+    if ($value =~ m{\A\#
+                    ([[:xdigit:]])
+                    ([[:xdigit:]])
+                    ([[:xdigit:]])
+                    ([[:xdigit:]])?
                     \z}xi) {
-        my ($r, $g, $b, $a) = ($1, $2, $3, $4);
+        ($r, $g, $b, $a) = ($1, $2, $3, $4);
+        $r = hex($r) / 15;
+        $g = hex($g) / 15;
+        $b = hex($b) / 15;
+        $a = hex($a // 'f') / 15;
+    } elsif ($value =~ m{\A\#
+                         ([[:xdigit:]]{2})
+                         ([[:xdigit:]]{2})
+                         ([[:xdigit:]]{2})
+                         ([[:xdigit:]]{2})?
+                         \z}xi) {
+        ($r, $g, $b, $a) = ($1, $2, $3, $4);
+        $r = hex($r) / 255;
+        $g = hex($g) / 255;
+        $b = hex($b) / 255;
+        $a = hex($a // 'ff') / 255;
+    } elsif ($value =~ m{\A\#
+                         ([[:xdigit:]]{4})
+                         ([[:xdigit:]]{4})
+                         ([[:xdigit:]]{4})
+                         ([[:xdigit:]]{4})?
+                         \z}xi) {
+        ($r, $g, $b, $a) = ($1, $2, $3, $4);
+        $r = hex($r) / 65535;
+        $g = hex($g) / 65535;
+        $b = hex($b) / 65535;
+        $a = hex($a // 'ffff') / 65535;
+    } elsif ($value =~ m{\A
+                         rgba?
+                         \(
+                         \s*
+                         ($rx_int_or_pct)
+                         (?:\s+|\s*,\s*)
+                         ($rx_int_or_pct)
+                         (?:\s+|\s*,\s*)
+                         ($rx_int_or_pct)
+                         (?:
+                             (?:\s+|\s*,\s*)
+                             ($rx_int_or_pct)
+                         )?
+                         \s*
+                         \)
+                         \z}xi) {
+        ($r, $g, $b, $a) = ($1, $2, $3, $4);
         foreach ($r, $g, $b) {
             if (defined $_) {
                 if (s{\%\z}{}) {
@@ -162,26 +176,11 @@ sub parse {
                 }
             }
         }
-        $self->r($r);
-        $self->g($g);
-        $self->b($b);
-        $self->a($a // 1.0);
-        return;
+        $a //= 1.0;
+    } else {
+        die("invalid color $value\n");
     }
-
-    return $self->parse(COLOR_BLACK)   if $value eq 'black';
-    return $self->parse(COLOR_RED)     if $value eq 'red';
-    return $self->parse(COLOR_GREEN)   if $value eq 'green';
-    return $self->parse(COLOR_BLUE)    if $value eq 'blue';
-    return $self->parse(COLOR_GRAY)    if $value eq 'gray' || $value eq 'grey';
-    return $self->parse(COLOR_YELLOW)  if $value eq 'yellow';
-    return $self->parse(COLOR_ORANGE)  if $value eq 'orange';
-    return $self->parse(COLOR_MAGENTA) if $value eq 'magenta';
-    return $self->parse(COLOR_CYAN)    if $value eq 'cyan';
-    return $self->parse(COLOR_NON_REPRO_BLUE) if $value eq 'non-repro-blue';
-    return $self->parse(COLOR_NON_REPRO_BLUE) if $value eq 'non-photo-blue';
-
-    die("invalid color $value\n");
+    return ($r, $g, $b, $a) if wantarray;
 }
 
 use POSIX qw(round);
