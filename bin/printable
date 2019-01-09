@@ -50,7 +50,6 @@ use My::Text::Table;
 
 use Getopt::Long;
 use Data::Dumper;
-use Carp::Always;
 
 use FindBin;
 use lib "${FindBin::Bin}/../lib";
