@@ -69,7 +69,7 @@ Getopt::Long::GetOptions(
     "c|color|colour"                  => sub { $opt_color_type = "color";     },
     "m|metric"                        => sub { $opt_unit_type = "metric";     },
     "i|imperial"                      => sub { $opt_unit_type = "imperial";   },
-    "modifier|modifiers=s"            => sub { push(@opt_modifiers, split(qr{\s+|\s*,\s*}, $_[1])); },
+    "D|define|modifier|modifiers=s"   => sub { push(@opt_modifiers, split(qr{\s+|\s*,\s*}, $_[1])); },
     'id=s'                            => \$opt_id,
     'o|output|filename=s'             => \$opt_filename,
     'list-ruling-names'               => \$opt_list_ruling_names,
@@ -110,7 +110,7 @@ options:
         -c, --color, --colour
         -m, --metric
         -i, --imperial
-            --modifier=<modifier>
+        -D, --define, --modifier=<modifier>
             --id=<id>
         -o, --output, --filename=<filename>     output SVG to a file, not stdout
 list of <ruling>s:
