@@ -105,27 +105,27 @@ options:
         -i, --imperial
             --modifier=<modifier>
             --id=<id>
-            --filename=<filename>    output SVG to file instead of stdout
+            --filename=<filename>   output SVG to file instead of stdout
 list of <ruling>s:
     --list-ruling-names
-    --list-rulings                   show some details
+    --list-rulings              show some details
 if --filename is specified:
-    --pdf           generate PDF file(s)
-    --ps            generate PS file(s)
-    --two-page      also generate 2-page file(s) if --pdf and/or --ps
-    --two-up        also generate 2-up file(s) if --pdf and/or --ps
+    --pdf               generate PDF file(s)
+    --ps                generate PS file(s)
+    --two-page          also generate 2-page file(s) with --pdf and/or --ps
+    --two-up            also generate 2-up   file(s) with --pdf and/or --ps
 ruling line widths:
-    --dpi=<dpi>                    printer dots per inch (default 600)
+    --dpi=<dpi>                 printer dots per inch (default 600)
     --line-width=<dots>
     --feint-line-width=<dots>
     --dot-width=<dots>
     --margin-line-width=<dots>
-ruling line colors:
-    --line-color=<color>           '#rrggbb[aa]', 'rgb()', 'rgba()' style colors
+ruling line colors:             '#rrggbb[aa]', 'rgb()', 'rgba()' style colors
+    --line-color=<color>
     --feint-line-color=<color>
     --dot-color=<color>
     --margin-line-color=<color>
-    --color=<color>                specify line, feint line, and dot color
+    --color=<color>             specify line, feint line, and dot color
 miscellaneous:
     -n, --dry-run
     -v, --verbose
@@ -136,17 +136,26 @@ use My::Printable::Document;
 use My::Printable::Ruling;
 use My::Printable::Unit qw(:const);
 
-if (defined $opt_pdf && !defined $opt_filename) {
+if ($opt_pdf && !defined $opt_filename) {
     die("--pdf has no effect without --filename\n");
 }
-if (defined $opt_ps && !defined $opt_filename) {
+if ($opt_ps && !defined $opt_filename) {
     die("--ps has no effect without --filename\n");
 }
-if (defined $opt_2up && !defined $opt_filename) {
+if ($opt_2up && !defined $opt_filename) {
     die("--two-up has no effect without --filename\n");
 }
-if (defined $opt_2page && !defined $opt_filename) {
+if ($opt_2page && !defined $opt_filename) {
     die("--two-page has no effect without --filename\n");
+}
+
+if (!$opt_pdf && !$opt_ps) {
+    if ($opt_2page) {
+        die("--two-page has no effect without --pdf and/or --ps\n");
+    }
+    if ($opt_2up) {
+        die("--two-up has no effect without --pdf and/or --ps\n");
+    }
 }
 
 if ($opt_list_ruling_names || $opt_list_rulings) {
