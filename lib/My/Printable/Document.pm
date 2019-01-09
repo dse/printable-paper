@@ -18,6 +18,12 @@ has 'id' => (is => 'rw');
 
 has 'rawFilename' => (is => 'rw');
 
+use constant DEFAULT_PAPER_SIZE_NAME => 'letter';
+use constant DEFAULT_WIDTH           => 612;
+use constant DEFAULT_HEIGHT          => 792;
+use constant DEFAULT_UNIT_TYPE       => 'imperial';
+use constant DEFAULT_COLOR_TYPE      => 'color';
+
 sub filename {
     my $self = shift;
     if (scalar @_) {
@@ -32,7 +38,7 @@ sub filename {
 
 has 'rawPaperSizeName' => (
     is => 'rw',
-    default => 'letter',
+    default => DEFAULT_PAPER_SIZE_NAME,
 );
 
 sub paperSizeName {
@@ -60,7 +66,7 @@ sub paperSizeName {
 
 has 'rawWidth' => (
     is => 'rw',
-    default => 612,
+    default => DEFAULT_WIDTH,
 );
 sub width {
     my $self = shift;
@@ -80,7 +86,7 @@ sub width {
 
 has 'rawHeight' => (
     is => 'rw',
-    default => 792,
+    default => DEFAULT_HEIGHT,
 );
 sub height {
     my $self = shift;
@@ -100,10 +106,10 @@ sub height {
 };
 
 # 'imperial', 'metric';
-has 'unitType' => (is => 'rw', default => 'imperial');
+has 'unitType' => (is => 'rw', default => DEFAULT_UNIT_TYPE);
 
 # 'color', 'grayscale', 'black'
-has 'colorType' => (is => 'rw', default => 'color');
+has 'colorType' => (is => 'rw', default => DEFAULT_COLOR_TYPE);
 
 # 'seyes', etc.
 has 'rulingName' => (is => 'rw');
