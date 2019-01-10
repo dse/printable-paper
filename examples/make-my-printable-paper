@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o pipefail
+set -o nounset
+set -o xtrace
+
+printable="${HOME}/git/dse.d/printable-paper/bin/printable"
+
+printable () {
+    command perl -MCarp::Always "${printable}" --verbose "$@"
+}
+
+mkdir -p my-printable-paper
+cd my-printable-paper
+
+#         ruling                     filename
+#         ----------                 -----------
+printable seyes                   -o seyes       --pdf --2p2u --dpi 600 --lw 2 --fw 1
+printable quadrille               -o quadrille   --pdf --2p2u --dpi 600 --lw 2 --fw 1
+printable quadrille -Dunit=1/5in  -o quadrille5  --pdf --2p2u --dpi 600 --lw 2 --fw 1
+printable quadrille -Dunit=1/8in  -o quadrille8  --pdf --2p2u --dpi 600 --lw 2 --fw 1
+printable quadrille -Dunit=1/10in -o quadrille10 --pdf --2p2u --dpi 600 --lw 2 --fw 1
