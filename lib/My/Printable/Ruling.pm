@@ -246,17 +246,17 @@ sub generateMarginLine {
 sub getUnit {
     my ($self) = @_;
 
-    my $has_denser_grid = grep { $self->modifiers->has($_) }
+    my $hasDenserGrid = grep { $self->modifiers->has($_) }
         qw(5-per-inch denser-grid 1/5in 5mm);
 
     if ($self->unitType eq 'imperial') {
-        if ($has_denser_grid) {
+        if ($hasDenserGrid) {
             return '1/5in';
         } else {
             return '1/4in';
         }
     } else {
-        if ($has_denser_grid) {
+        if ($hasDenserGrid) {
             return '5mm';
         } else {
             return '6mm';
