@@ -257,7 +257,7 @@ sub buildSVG {
                 $ruling->id($id);
                 $ruling->paperSizeName($template->{size});
                 $ruling->colorType($template->{color_type});
-                $ruling->modifiers->set(@modifiers);
+                $ruling->modifiers->setModifiers(@modifiers);
                 $ruling->generate();
                 $ruling->printToFile($tempname);
             }

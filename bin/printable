@@ -254,6 +254,6 @@ sub create_ruling_object {
     $object->feintLineColor($opt_feint_line_color // $opt_color) if defined $opt_feint_line_color || defined $opt_color;
     $object->dotColor($opt_dot_color // $opt_color)              if defined $opt_dot_color || defined $opt_color;
     $object->marginLineColor($opt_margin_line_color)             if defined $opt_margin_line_color;
-    $object->modifiers->set(@opt_modifiers);
+    $object->modifiers->setModifiers(@opt_modifiers);
     return $object;
 }
