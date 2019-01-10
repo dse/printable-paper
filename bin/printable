@@ -55,7 +55,7 @@ use Data::Dumper;
 use FindBin;
 use lib "${FindBin::Bin}/../lib";
 
-Getopt::Long::Configure(qw(bundling gnu_compat no_ignore_case));
+Getopt::Long::Configure(qw(gnu_compat no_getopt_compat no_ignore_case));
 Getopt::Long::GetOptions(
     "M|p|media|paper|paper-size=s"    => \$opt_papersize,
     "w|width=s"                       => \$opt_width,
