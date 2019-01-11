@@ -15,6 +15,8 @@ has 'origin' => (is => 'rw');
 has 'min' => (is => 'rw');
 has 'max' => (is => 'rw');
 
+has 'shiftPoints' => (is => 'rw', default => 0);
+
 around 'startPoint' => \&aroundUnit;
 around 'endPoint'   => \&aroundUnit;
 around 'spacing'    => \&aroundUnit;
@@ -23,32 +25,74 @@ around 'min'        => \&aroundUnit;
 around 'max'        => \&aroundUnit;
 
 our $FUDGE = 0.0001;
+# >= x - $FUDGE
+# <= x + $FUDGE
+# >  x + $FUDGE
+# <  x - $FUDGE
 
 use Data::Dumper qw(Dumper);
 
 sub BUILD {
     my $self = shift;
 
+    # if constructor called with, e.g., spacing => '1unit', convert it.
     foreach my $method (qw(startPoint endPoint spacing origin min max)) {
         $self->$method($self->$method) if defined $self->$method;
     }
 
-    if (defined $self->origin && defined $self->spacing) {
-        if (defined $self->min && !defined $self->startPoint) {
-            my $start = $self->origin;
-            while ((my $new_start = $start - $self->spacing) >= ($self->min - $FUDGE)) {
-                $start = $new_start;
-            }
-            $self->startPoint($start);
-        }
-        if (defined $self->max && !defined $self->endPoint) {
-            my $end = $self->origin;
-            while ((my $new_end = $end + $self->spacing) <= ($self->max + $FUDGE)) {
-                $end = $new_end;
-            }
-            $self->endPoint($end);
+    if (!defined $self->origin) {
+        $self->origin(($self->min + $self->max) / 2);
+    }
+
+    if (!defined $self->spacing) {
+        $self->spacing('1unit');
+    }
+
+    $self->setPoints();
+    my $shiftPoints = $self->shiftPoints;
+    if ($shiftPoints) {
+        my $leftSpace = $self->startPoint - $self->min;
+        my $rightSpace = $self->max - $self->endPoint;
+        my $leftSpaceHalf = $leftSpace - $self->spacing / 2;
+        my $rightSpaceHalf = $rightSpace - $self->spacing / 2;
+        if ($leftSpaceHalf >= -$FUDGE && $rightSpaceHalf >= -$FUDGE) {
+            $self->origin($self->origin - $self->spacing / 2);
+            $self->startPoint(undef);
+            $self->endPoint(undef);
+            $self->setPoints();
         }
     }
+}
+
+sub setPoints {
+    my ($self) = @_;
+
+    if (defined $self->min && !defined $self->startPoint) {
+        printf STDERR ("SPACING %g", $self->spacing) if $self->shiftPoints;
+        my $start = $self->origin;
+        printf STDERR (" START %g", $start) if $self->shiftPoints;
+        while ((my $new_start = $start - $self->spacing) >= ($self->min - $FUDGE)) {
+            $start = $new_start;
+            printf STDERR (" %g", $start) if $self->shiftPoints;
+        }
+        $self->startPoint($start);
+        print STDERR "\n" if $self->shiftPoints;
+    }
+
+    if (defined $self->max && !defined $self->endPoint) {
+        printf STDERR ("SPACING %g ", $self->spacing) if $self->shiftPoints;
+        my $end = $self->origin;
+        printf STDERR ("  END %g", $end) if $self->shiftPoints;
+        while ((my $new_end = $end + $self->spacing) <= ($self->max + $FUDGE)) {
+            $end = $new_end;
+            printf STDERR (" %g", $end) if $self->shiftPoints;
+        }
+        $self->endPoint($end);
+        print STDERR "\n" if $self->shiftPoints;
+    }
+
+    # FIXME: there are other conditions to test as well.  None of them
+    # are true right now, and above conditions are always true.
 }
 
 use POSIX qw(trunc);
