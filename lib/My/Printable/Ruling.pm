@@ -54,35 +54,47 @@ use Text::Trim qw(trim);
 
 sub thicknessCSS {
     my ($self) = @_;
+
     my $lw  = $self->lineWidth;
-    my $flw = $self->feintLineWidth;
+    my $mjw = $self->majorLineWidth;
+    my $fw  = $self->feintLineWidth;
     my $dw  = $self->dotWidth;
-    my $mlw = $self->marginLineWidth;
+    my $mw  = $self->marginLineWidth;
 
-    my $lo = 1;
-    my $flo = 1;
-    my $do = 1;
-    my $mlo = 1;
+    my $lo  = 1;
+    my $mjo = 1;
+    my $fo  = 1;
+    my $do  = 1;
+    my $mo  = 1;
 
-    if ($lw < PD)  { $lo  = $lw / PD;  $lw  = PD; }
-    if ($flw < PD) { $flo = $flw / PD; $flw = PD; }
-    if ($dw < PD)  { $do  = $dw / PD;  $dw  = PD; }
-    if ($mlw < PD) { $mlo = $mlw / PD; $mlw = PD; }
+    if ($lw  < PD) { $lo  = $lw  / PD; $lw  = PD; }
+    if ($mjw < PD) { $mjo = $mjw / PD; $mjw = PD; }
+    if ($fw  < PD) { $fo  = $fw  / PD; $fw  = PD; }
+    if ($dw  < PD) { $do  = $dw  / PD; $dw  = PD; }
+    if ($mw  < PD) { $mo  = $mw  / PD; $mw  = PD; }
 
     return <<"EOF";
-        .line        { stroke-width: {{  ${lw} pt }}; opacity: ${lo}; }
-        .feint-line  { stroke-width: {{ ${flw} pt }}; opacity: ${flo}; }
-        .dot         { stroke-width: {{  ${dw} pt }}; opacity: ${do}; }
-        .margin-line { stroke-width: {{ ${mlw} pt }}; opacity: ${mlo}; }
+        .line        { stroke-width: {{  ${lw} pt }}; opacity:  ${lo}; }
+        .major-line  { stroke-width: {{ ${mjw} pt }}; opacity: ${mjo}; }
+        .feint-line  { stroke-width: {{  ${fw} pt }}; opacity:  ${fo}; }
+        .dot         { stroke-width: {{  ${dw} pt }}; opacity:  ${do}; }
+        .margin-line { stroke-width: {{  ${mw} pt }}; opacity:  ${mo}; }
 EOF
 }
 
 has 'rawLineColor'       => (is => 'rw');
+has 'rawMajorLineColor'  => (is => 'rw');
 has 'rawFeintLineColor'  => (is => 'rw');
 has 'rawDotColor'        => (is => 'rw');
 has 'rawMarginLineColor' => (is => 'rw');
 
 sub defaultLineColor {
+    my ($self) = @_;
+    return COLOR_BLUE if $self->colorType eq 'color';
+    return COLOR_GRAY if $self->colorType eq 'grayscale';
+    return COLOR_BLACK;
+}
+sub defaultMajorLineColor {
     my ($self) = @_;
     return COLOR_BLUE if $self->colorType eq 'color';
     return COLOR_GRAY if $self->colorType eq 'grayscale';
@@ -117,6 +129,20 @@ sub lineColor {
     }
     my $value = shift;
     return $self->rawLineColor(
+        My::Printable::Color->new($value)
+    )->asHex;
+}
+
+sub majorLineColor {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!defined $self->rawMajorLineColor) {
+            return $self->defaultMajorLineColor;
+        }
+        return $self->rawMajorLineColor->asHex;
+    }
+    my $value = shift;
+    return $self->rawMajorLineColor(
         My::Printable::Color->new($value)
     )->asHex;
 }
@@ -167,12 +193,14 @@ sub colorCSS {
     my ($self) = @_;
 
     my $lineColor       = $self->lineColor;
+    my $majorLineColor  = $self->majorLineColor;
     my $feintLineColor  = $self->feintLineColor;
     my $dotColor        = $self->dotColor;
     my $marginLineColor = $self->marginLineColor;
 
     return <<"EOF";
         .line        { stroke: $lineColor; }
+        .major-line  { stroke: $majorLineColor; }
         .feint-line  { stroke: $feintLineColor; }
         .dot         { stroke: $dotColor; }
         .margin-line { stroke: $marginLineColor; }
@@ -300,6 +328,11 @@ sub getFeintLineCSSClass {
     return 'feint-line';
 }
 
+sub getMajorLineCSSClass {
+    my ($self) = @_;
+    return 'major-line';
+}
+
 ###############################################################################
 
 has 'lineWidthUnit' => (
@@ -315,6 +348,7 @@ has 'lineWidthUnit' => (
 );
 
 has 'rawLineWidth'       => (is => 'rw');
+has 'rawMajorLineWidth'  => (is => 'rw');
 has 'rawFeintLineWidth'  => (is => 'rw');
 has 'rawDotWidth'        => (is => 'rw');
 has 'rawMarginLineWidth' => (is => 'rw');
@@ -330,6 +364,19 @@ sub lineWidth {
     my $value = shift;
     $value = $self->lineWidthUnit->pt($value);
     return $self->rawLineWidth($value);
+}
+
+sub majorLineWidth {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!$self->rawMajorLineWidth) {
+            return $self->computeMajorLineWidth();
+        }
+        return $self->rawMajorLineWidth;
+    }
+    my $value = shift;
+    $value = $self->lineWidthUnit->pt($value);
+    return $self->rawMajorLineWidth($value);
 }
 
 sub feintLineWidth {
@@ -380,6 +427,12 @@ sub baseLineWidth {
     return 8 * PD;
 }
 
+sub baseMajorLineWidth {
+    my ($self) = @_;
+    return  4 / sqrt(2) * PD if $self->colorType eq 'black';
+    return 16 / sqrt(2) * PD;
+}
+
 sub baseFeintLineWidth {
     my ($self) = @_;
     return 2 / sqrt(2) * PD if $self->colorType eq 'black';
@@ -406,6 +459,32 @@ sub computeLineWidth {
     } elsif ($self->modifiers->has('x-thinner-lines')) {
         $x /= 2;
     } elsif ($self->modifiers->has('thinner-lines')) {
+        $x /= sqrt(2);
+    }
+    if ($x < PD) {
+        $x = PD;
+    }
+    return $x;
+}
+
+sub computeMajorLineWidth {
+    my ($self) = @_;
+    my $x = $self->baseMajorLineWidth;
+    if ($self->modifiers->has('xx-thinner-lines')) {
+        $x /= (2 * sqrt(2));
+    } elsif ($self->modifiers->has('x-thinner-lines')) {
+        $x /= 2;
+    } elsif ($self->modifiers->has('thinner-lines')) {
+        $x /= sqrt(2);
+    }
+    if ($self->modifiers->has('xx-thicker-major-lines')) {
+        $x *= (2 * sqrt(2));
+    } elsif ($self->modifiers->has('x-thicker-major-lines')) {
+        $x *= 2;
+    } elsif ($self->modifiers->has('thicker-major-lines')) {
+        $x *= sqrt(2);
+    }
+    if ($self->modifiers->has('denser-grid')) {
         $x /= sqrt(2);
     }
     if ($x < PD) {

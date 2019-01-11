@@ -2,23 +2,21 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-set -o xtrace
 
 printable="${HOME}/git/dse.d/printable-paper/bin/printable"
 
 printable () {
-    command "${printable}" --verbose "$@"
+    command "${printable}" "$@"
 }
 
-mkdir -p my-printable-paper
-cd my-printable-paper
+mkdir -p examples
+cd examples
 
-#         Paper Size    Ruling       Filename base      Options
+#         Paper Size*   Ruling       Filename base      Options
 #         ------------- ---------    ------------------ --------------------------------------------------------------------
 printable               seyes     -o seyes              --pdf        --dpi 600 --lw 2 --fw 1
-printable               quadrille -o quadrille          --pdf        --dpi 600 --lw 2 --fw 1
-printable               quadrille -o quadrille5         --pdf        --dpi 600 --lw 2 --fw 1 -Dunit=1/5in
-printable               quadrille -o quadrille8         --pdf        --dpi 600 --lw 2 --fw 1 -Dunit=1/8in
-printable               quadrille -o quadrille10        --pdf        --dpi 600 --lw 2 --fw 1 -Dunit=1/10in
-printable --half-letter seyes     -o seyes-half-letter  --pdf --2p2u --dpi 600 --lw 4 --fw 2
 printable --half-letter seyes     -o seyes3-half-letter --pdf --2p2u --dpi 600 --lw 4 --fw 2 -Dunit=1/4in -Ddividing-lines=3
+printable               quadrille -o quadrille          --pdf        --dpi 600 --lw 2 --fw 1
+printable               quadrille -o quadrille10        --pdf        --dpi 600 --lw 2 --fw 1 -Dunit=1/10in
+
+# * size of a SINGLE page.

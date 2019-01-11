@@ -658,7 +658,7 @@ sub getSquarePoints {
 sub defaultStyles {
     my ($self) = @_;
     return <<"EOF";
-        .line, .dot, .feint-line, .margin-line { stroke-linecap: round; }
+        .line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
         .rectangle { fill: #ffffff; }
 EOF
