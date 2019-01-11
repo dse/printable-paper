@@ -26,7 +26,7 @@ sub generate {
     $self->document->originX($self->getOriginX);
     $self->document->originY($self->getOriginY);
 
-    my $dividingLines = $self->modifiers->get('dividing-lines');
+    my $dividingLines = $self->modifiers->get('dividing-lines') || $self->modifiers->get('feint-lines');
 
     $dividingLines = round($dividingLines);
     $dividingLines = undef if $dividingLines < 2;
