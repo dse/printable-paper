@@ -11,6 +11,8 @@ extends 'My::Printable::Ruling';
 
 use My::Printable::Element::Grid;
 
+use POSIX qw(round);
+
 use constant rulingName => 'quadrille';
 use constant hasLineGrid => 1;
 
@@ -18,14 +20,68 @@ sub generate {
     my ($self) = @_;
     $self->document->setUnit($self->getUnit);
 
-    my $grid = My::Printable::Element::Grid->new(
-        document => $self->document,
-        id => 'grid',
-        cssClass => $self->getFeintLineCSSClass,
-    );
-    $grid->setSpacing('1unit');
+    my $majorGrid;
+    my $grid;
+    my $feintGrid;
 
+    my $majorLines = $self->modifiers->get('major-lines');
+    my $feintLines = $self->modifiers->get('feint-lines');
+
+    if (defined $majorLines) {
+        $majorLines = round($majorLines);
+        $majorLines = undef if $majorLines < 2;
+    }
+
+    if (defined $feintLines) {
+        $feintLines = round($feintLines);
+        $feintLines = undef if $feintLines < 2;
+    }
+
+    if (defined $majorLines) {
+        $majorGrid = My::Printable::Element::Grid->new(
+            document    => $self->document,
+            id          => 'major-grid',
+            cssClass    => $self->getMajorLineCSSClass,
+            shiftPoints => 1,
+        );
+        $majorGrid->setSpacing($majorLines . 'unit');
+
+        $grid = My::Printable::Element::Grid->new(
+            document    => $self->document,
+            id          => 'grid',
+            cssClass    => $self->getLineCSSClass,
+            originX     => $majorGrid->originX,
+            originY     => $majorGrid->originY,
+        );
+        $grid->setSpacing('1unit');
+    } else {
+        $grid = My::Printable::Element::Grid->new(
+            document    => $self->document,
+            id          => 'grid',
+            cssClass    => $self->getLineCSSClass,
+            shiftPoints => 1,
+        );
+        $grid->setSpacing('1unit');
+    }
+
+    if (defined $feintLines) {
+        $feintGrid = My::Printable::Element::Grid->new(
+            document => $self->document,
+            id       => 'feint-grid',
+            cssClass => $self->getFeintLineCSSClass,
+            originX  => $grid->originX,
+            originY  => $grid->originY,
+        );
+        $feintGrid->setSpacing('1/' . $feintLines . 'unit');
+    }
+
+    if (defined $majorGrid) {
+        $self->document->appendElement($majorGrid);
+    }
     $self->document->appendElement($grid);
+    if (defined $feintGrid) {
+        $self->document->appendElement($feintGrid);
+    }
 
     $self->My::Printable::Ruling::generate();
 }
