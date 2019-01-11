@@ -248,7 +248,16 @@ sub getUnit {
 
     if ($self->modifiers->has('unit')) {
         my $unit = $self->modifiers->get('unit');
-        return $unit;
+        if (defined $unit) {
+            return $unit;
+        }
+    }
+
+    if ($self->can('getRulingSpecificUnit')) {
+        my $unit = $self->getRulingSpecificUnit();
+        if (defined $unit) {
+            return $unit;
+        }
     }
 
     my $hasDenserGrid = grep { $self->modifiers->has($_) }

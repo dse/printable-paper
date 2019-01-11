@@ -103,7 +103,7 @@ sub generate {
     $self->My::Printable::Ruling::generate();
 }
 
-sub getUnit {
+sub getRulingSpecificUnit {
     my ($self) = @_;
     if ($self->unitType eq 'imperial') {
         if ($self->modifiers->has('denser-grid')) {

@@ -43,10 +43,13 @@ sub convertSVGToPDF {
         $toFilename, sub {
             my ($tempFilename) = @_;
             # realpath needed for inkscape on darwin (aka macOS)
+            my ($from, $temp) = ($fromFilename, $tempFilename);
+            if ($^O =~ m{^darwin}) {
+                $from = realpath($from);
+                $temp = realpath($temp);
+            }
             my $cmd = sprintf(
-                "%s --export-dpi=600 --export-pdf=%s",
-                shell_quote(realpath($fromFilename)),
-                shell_quote(realpath($tempFilename)),
+                "%s --export-dpi=600 --export-pdf=%s", $from, $temp
             );
             if ($self->dryRun) {
                 print STDERR ("would pass to inkscape shell:\n    $cmd\n");

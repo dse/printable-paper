@@ -13,6 +13,8 @@ use My::Printable::Element::Grid;
 use My::Printable::Element::Lines;
 use My::Printable::Element::Line;
 
+use POSIX qw(round);
+
 use constant rulingName => 'seyes';
 use constant hasLineGrid => 1;
 use constant hasMarginLine => 1;
@@ -24,6 +26,8 @@ sub generate {
     $self->document->originX($self->getOriginX);
     $self->document->originY($self->getOriginY);
 
+    my $dividingLines = $self->modifiers->get('dividing-lines');
+
     my $grid = My::Printable::Element::Grid->new(
         document => $self->document,
         id => 'grid',
@@ -33,14 +37,20 @@ sub generate {
     $grid->setY1($self->getTopLineY);
     $grid->setY2($self->getBottomLineY);
     $grid->setSpacingX('1unit');
-    if ($self->modifiers->has('three-line')) {
+    if (defined $dividingLines) {
+        my $spacingY = sprintf('1/%g unit', $dividingLines);
+        $grid->setSpacingY($spacingY);
+    } elsif ($self->modifiers->has('three-line')) {
         $grid->setSpacingY('1/3unit');
     } else {
         $grid->setSpacingY('1/4unit');
     }
     $grid->extendVerticalGridLines(1);
     $grid->extendHorizontalGridLines(1);
-    if ($self->modifiers->has('three-line')) {
+    if (defined $dividingLines) {
+        $grid->extendTop(round($dividingLines - 1));
+        $grid->extendBottom(round($dividingLines - 2));
+    } elsif ($self->modifiers->has('three-line')) {
         $grid->extendTop(2);
         $grid->extendBottom(1);
     } else {
@@ -80,7 +90,7 @@ sub getOriginX {
     }
 }
 
-sub getUnit {
+sub getRulingSpecificUnit {
     my ($self) = @_;
     if ($self->unitType eq 'imperial') {
         if ($self->modifiers->has('10mm')) {
