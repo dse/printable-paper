@@ -28,6 +28,9 @@ sub generate {
 
     my $dividingLines = $self->modifiers->get('dividing-lines');
 
+    $dividingLines = round($dividingLines);
+    $dividingLines = undef if $dividingLines < 2;
+
     my $grid = My::Printable::Element::Grid->new(
         document => $self->document,
         id => 'grid',
@@ -48,8 +51,12 @@ sub generate {
     $grid->extendVerticalGridLines(1);
     $grid->extendHorizontalGridLines(1);
     if (defined $dividingLines) {
-        $grid->extendTop(round($dividingLines - 1));
-        $grid->extendBottom(round($dividingLines - 2));
+        if ($dividingLines > 1) {
+            $grid->extendTop($dividingLines - 1);
+        }
+        if ($dividingLines > 2) {
+            $grid->extendBottom($dividingLines - 2);
+        }
     } elsif ($self->modifiers->has('three-line')) {
         $grid->extendTop(2);
         $grid->extendBottom(1);
