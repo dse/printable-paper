@@ -9,6 +9,7 @@ printable () {
     command "${printable}" "$@"
 }
 
+rm -frv examples || true
 mkdir -p examples
 cd examples
 
