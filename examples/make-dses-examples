@@ -9,6 +9,7 @@ printable () {
     command "${printable}" --verbose "$@"
 }
 
+rm -frv dses-examples || true
 mkdir -p dses-examples
 cd dses-examples
 
