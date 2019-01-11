@@ -408,11 +408,16 @@ sub leaveAMark {
     my $x = $self->ptX('50%');
     my $y = $self->ptY('1/4in from bottom');
     my $text_data = 'https://github.com/dse/printable-paper';
-    my $text_style = 'font-family: "Courier", "Courier New", monospace; font-size: 6pt;';
+    my $text_style;
+    if ($^O =~ m{^darwin}) {
+        $text_style = 'font-family: "Courier", "Courier New", monospace; font-size: 6pt;';
+    } else {
+        $text_style = 'font-family: "Courier New", "Courier", monospace; font-size: 6pt;';
+    }
     my $text_color =
-        $self->colorType eq 'color'     ? '#b3b3ff' :
-        $self->colorType eq 'grayscale' ? '#b3b3b3' :
-        '#808080';
+        $self->colorType eq 'color'     ? COLOR_BLUE :
+        $self->colorType eq 'grayscale' ? COLOR_GRAY :
+        COLOR_BLACK;
     my $add_rectangle_stroke = 0;
     {
         my $rect_width = $self->ptX('2.625in');
