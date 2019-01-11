@@ -29,6 +29,10 @@ has 'yPointSeries' => (is => 'rw');
 has 'origXPointSeries' => (is => 'rw');
 has 'origYPointSeries' => (is => 'rw');
 
+has 'shiftPointsX' => (is => 'rw', default => 0);
+has 'shiftPointsY' => (is => 'rw', default => 0);
+has 'shiftPoints'  => (is => 'rw', default => 0);
+
 has 'spacing' => (is => 'rw');
 has 'spacingX' => (is => 'rw');
 has 'spacingY' => (is => 'rw');
@@ -257,18 +261,24 @@ sub computeX {
     my $spacingX = $self->spacingX // $self->spacing // $self->ptX("1unit");
     my $originX = $self->originX // $self->document->originX;
 
+    my $shiftPoints = $self->shiftPointsX || $self->shiftPoints;
+
     $self->xPointSeries(My::Printable::PointSeries->new(
-        spacing => $spacingX,
-        min     => scalar($self->x1 // $self->document->leftMarginX),
-        max     => scalar($self->x2 // $self->document->rightMarginX),
-        origin  => $originX,
+        spacing     => $spacingX,
+        min         => scalar($self->x1 // $self->document->leftMarginX),
+        max         => scalar($self->x2 // $self->document->rightMarginX),
+        origin      => $originX,
+        shiftPoints => $shiftPoints,
     ));
     $self->origXPointSeries(My::Printable::PointSeries->new(
-        spacing => $spacingX,
-        min     => scalar($self->document->leftMarginX),
-        max     => scalar($self->document->rightMarginX),
-        origin  => $originX,
+        spacing     => $spacingX,
+        min         => scalar($self->document->leftMarginX),
+        max         => scalar($self->document->rightMarginX),
+        origin      => $originX,
+        shiftPoints => $shiftPoints,
     ));
+
+    $self->originX($self->xPointSeries->origin);
 }
 
 sub computeY {
@@ -277,18 +287,24 @@ sub computeY {
     my $spacingY = $self->spacingY // $self->spacing // $self->ptY("1unit");
     my $originY = $self->originY // $self->document->originY;
 
+    my $shiftPoints = $self->shiftPointsY || $self->shiftPoints;
+
     $self->yPointSeries(My::Printable::PointSeries->new(
-        spacing => $spacingY,
-        min     => scalar($self->y1 // $self->document->topMarginY),
-        max     => scalar($self->y2 // $self->document->bottomMarginY),
-        origin  => $originY,
+        spacing     => $spacingY,
+        min         => scalar($self->y1 // $self->document->topMarginY),
+        max         => scalar($self->y2 // $self->document->bottomMarginY),
+        origin      => $originY,
+        shiftPoints => $shiftPoints,
     ));
     $self->origYPointSeries(My::Printable::PointSeries->new(
-        spacing => $spacingY,
-        min     => scalar($self->document->topMarginY),
-        max     => scalar($self->document->bottomMarginY),
-        origin  => $originY,
+        spacing     => $spacingY,
+        min         => scalar($self->document->topMarginY),
+        max         => scalar($self->document->bottomMarginY),
+        origin      => $originY,
+        shiftPoints => $shiftPoints,
     ));
+
+    $self->originY($self->yPointSeries->origin);
 }
 
 sub snap {
