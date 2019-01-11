@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o pipefail
+set -o nounset
+
+printable="${HOME}/git/dse.d/printable-paper/bin/printable"
+
+printable () {
+    command "${printable}" --verbose "$@"
+}
+
+mkdir -p dses-examples
+cd dses-examples
+
+#         Paper Size    Ruling       Filename base            Options
+#         ------------- ---------    ------------------       ----------------------------------------------------------------------------
+printable --half-letter seyes     -o seyes3-half-letter       --pdf --2p2u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3
+printable --letter      quadrille -o quadrille4-feint3-letter --pdf        --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3
+printable --letter      quadrille -o quadrille4-major4-letter --pdf        --dpi 600 --mjw 4 --lw 2        -Dunit=1/4in -Dmajor-lines=4
+printable --letter      quadrille -o quadrille10-letter       --pdf        --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/2in -Dmajor-lines=2 -Dfeint-lines=5
