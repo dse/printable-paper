@@ -68,27 +68,19 @@ sub setPoints {
     my ($self) = @_;
 
     if (defined $self->min && !defined $self->startPoint) {
-        printf STDERR ("SPACING %g", $self->spacing) if $self->shiftPoints;
         my $start = $self->origin;
-        printf STDERR (" START %g", $start) if $self->shiftPoints;
         while ((my $new_start = $start - $self->spacing) >= ($self->min - $FUDGE)) {
             $start = $new_start;
-            printf STDERR (" %g", $start) if $self->shiftPoints;
         }
         $self->startPoint($start);
-        print STDERR "\n" if $self->shiftPoints;
     }
 
     if (defined $self->max && !defined $self->endPoint) {
-        printf STDERR ("SPACING %g ", $self->spacing) if $self->shiftPoints;
         my $end = $self->origin;
-        printf STDERR ("  END %g", $end) if $self->shiftPoints;
         while ((my $new_end = $end + $self->spacing) <= ($self->max + $FUDGE)) {
             $end = $new_end;
-            printf STDERR (" %g", $end) if $self->shiftPoints;
         }
         $self->endPoint($end);
-        print STDERR "\n" if $self->shiftPoints;
     }
 
     # FIXME: there are other conditions to test as well.  None of them
