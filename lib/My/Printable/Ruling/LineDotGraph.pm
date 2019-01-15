@@ -7,7 +7,7 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 
 use Moo;
 
-extends 'My::Printable::Ruling::Seyes';
+extends 'My::Printable::Ruling::SeyesClass';
 
 use My::Printable::Element::Grid;
 use My::Printable::Element::Line;
@@ -23,12 +23,8 @@ sub baseDotWidth {
     return 8 * sqrt(2) * PD;
 }
 
-sub generate {
-    my ($self) = @_;
-
-    $self->document->setUnit($self->getUnit);
-    $self->document->originX($self->getOriginX);
-    $self->document->originY($self->getOriginY);
+around generateRuling => sub {
+    my ($orig, $self) = @_;
 
     my $grid = My::Printable::Element::Grid->new(
         document => $self->document,
@@ -51,7 +47,7 @@ sub generate {
 
     $self->document->appendElement($grid);
 
-    $self->My::Printable::Ruling::generate();
-}
+    $self->$orig();
+};
 
 1;

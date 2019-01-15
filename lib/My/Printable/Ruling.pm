@@ -8,6 +8,7 @@ use My::Printable::Document;
 use My::Printable::Element::Rectangle;
 use My::Printable::Unit qw(:const);
 use My::Printable::Color qw(:const);
+use My::Printable::Element::Line;
 
 use Moo;
 
@@ -47,10 +48,15 @@ has 'document' => (
 
 use constant rulingName => 'none';
 use constant hasLineGrid => 0;
-use constant hasMarginLine => 0;
 use constant hasPageNumberRectangle => 0;
 
 use Text::Trim qw(trim);
+use Data::Dumper;
+
+sub hasMarginLine {
+    my ($self) = @_;
+    return $self->modifiers->has('margin-line');
+}
 
 sub thicknessCSS {
     my ($self) = @_;
@@ -214,6 +220,22 @@ sub additionalCSS {
 
 sub generate {
     my ($self) = @_;
+
+    if ($self->can('getUnit')) {
+        my $unit = $self->getUnit();
+        $self->document->setUnit($unit) if defined $unit;
+    }
+    if ($self->can('getOriginX')) {
+        my $originX = $self->getOriginX();
+        $self->document->originX($originX) if defined $originX;
+    }
+    if ($self->can('getOriginY')) {
+        my $originY = $self->getOriginY();
+        $self->document->originY($originY) if defined $originY;
+    }
+
+    $self->generateRuling();
+
     if ($self->hasPageNumberRectangle) {
         $self->document->appendElement(
             $self->generatePageNumberRectangle()
@@ -234,6 +256,10 @@ sub generate {
     $self->document->additionalStyles($css);
 
     $self->document->generate();
+}
+
+sub generateRuling {
+    my ($self) = @_;
 }
 
 sub generatePageNumberRectangle {
@@ -557,6 +583,19 @@ sub getRulingClassName {
 }
 
 sub getOriginX {
+    my ($self) = @_;
+    if ($self->modifiers->has('margin-line')) {
+        my $value = $self->modifiers->get('margin-line');
+        if ($value eq 'yes') {
+            return $self->getDefaultOriginX();
+        }
+        return $value;
+    }
+    return;
+    # return $self->getDefaultOriginX();
+}
+
+sub getDefaultOriginX {
     my ($self) = @_;
     if ($self->unitType eq 'imperial') {
         if ($self->isA5SizeClass()) {

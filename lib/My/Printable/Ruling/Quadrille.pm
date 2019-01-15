@@ -12,13 +12,13 @@ extends 'My::Printable::Ruling';
 use My::Printable::Element::Grid;
 
 use POSIX qw(round);
+use Data::Dumper;
 
 use constant rulingName => 'quadrille';
 use constant hasLineGrid => 1;
 
-sub generate {
-    my ($self) = @_;
-    $self->document->setUnit($self->getUnit);
+around generateRuling => sub {
+    my ($orig, $self) = @_;
 
     my $majorGrid;
     my $grid;
@@ -83,7 +83,7 @@ sub generate {
         $self->document->appendElement($feintGrid);
     }
 
-    $self->My::Printable::Ruling::generate();
-}
+    $self->$orig();
+};
 
 1;

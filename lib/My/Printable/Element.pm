@@ -259,7 +259,7 @@ sub computeX {
     my ($self) = @_;
 
     my $spacingX = $self->spacingX // $self->spacing // $self->ptX("1unit");
-    my $originX = $self->originX // $self->document->originX;
+    my $originX  = $self->originX // $self->document->originX;
 
     my $shiftPoints = $self->shiftPointsX || $self->shiftPoints;
 

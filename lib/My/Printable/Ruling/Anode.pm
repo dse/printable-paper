@@ -24,10 +24,8 @@ sub baseFeintLineWidth {
     return 4 / sqrt(2) * PD;
 }
 
-sub generate {
-    my ($self) = @_;
-    $self->document->setUnit($self->getUnit);
-    $self->document->originX($self->getOriginX);
+around generateRuling => sub {
+    my ($orig, $self) = @_;
 
     my $grid = My::Printable::Element::Grid->new(
         document => $self->document,
@@ -56,8 +54,8 @@ sub generate {
     $self->document->appendElement($grid);
     $self->document->appendElement($lines);
 
-    $self->My::Printable::Ruling::generate();
-}
+    $self->$orig();
+};
 
 sub getRulingSpecificUnit {
     my ($self) = @_;

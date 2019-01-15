@@ -36,10 +36,8 @@ sub additionalCSS {
 END
 }
 
-sub generate {
-    my ($self) = @_;
-
-    $self->document->setUnit($self->getUnit);
+around generateRuling => sub {
+    my ($orig, $self) = @_;
 
     my $dotCrosswise  = $self->pt([$self->dotWidth(), 'pt']) . 'pt';
     my $dotCrosswise2 = $self->pt([2 * $self->dotWidth(), 'pt']) . 'pt';
@@ -100,8 +98,8 @@ sub generate {
     $self->document->appendElement($horizontal_dotted_lines_2);
     $self->document->appendElement($grid_4);
 
-    $self->My::Printable::Ruling::generate();
-}
+    $self->$orig();
+};
 
 sub getRulingSpecificUnit {
     my ($self) = @_;

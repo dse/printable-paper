@@ -161,6 +161,54 @@ sub rx_number {
               (?:e[\-\+]?\d+)?}ix;
 }
 
+# $unit->qualifyValue('5.3mm',           'right') => ('5.3mm from right');
+# $unit->qualifyValue('5.3mm from left', 'right') => ('5.3mm from right');
+# $unit->qualifyValue('5.3mm from left', undef)   => ('5.3mm');
+sub qualifyValue {
+    my ($self, $value, $qualifier) = @_;
+
+    ($value, my $oldQualifier) = $self->splitValueQualifier($value);
+
+    return $value if !defined $qualifier;
+    return $value . ' from ' . $qualifier;
+}
+
+sub qualifyValueByDefault {
+    my ($self, $value, $qualifier) = @_;
+
+    my $oldQualifier;
+    ($value, $oldQualifier) = $self->splitValueQualifier($value);
+
+    return $self->qualifyValue($value, $oldQualifier // $qualifier);
+}
+
+# $unit->splitValueQualifier('5.3mm from right') => ('5.3mm', 'right');
+sub splitValueQualifier {
+    my ($self, $value) = @_;
+
+    my $qualifier;
+
+    # ___ from {left,right,top,bottom,...}
+    if ($value =~ s{\s+(?:from\s+)?
+                    (left|right|top|bottom
+                    |start|begin|beginning
+                    |finish|end|ending)
+                    \s*$}{}xi) {
+        $qualifier = lc($1);
+    }
+
+    # {left,right,top,bottom,...} ___
+    if ($value =~ s{^\s*
+                    (left|right|top|bottom
+                    |start|begin|beginning
+                    |finish|end|ending)
+                    \s+}{}xi) {
+        $qualifier = lc($1);
+    }
+
+    return ($value, $qualifier);
+}
+
 sub pt {
     my ($self, $value) = @_;
     $self = $self->REQUIRE_OBJECT();
@@ -180,24 +228,15 @@ sub pt {
 
     my $is_from_end = 0;
 
-    if ($value =~ s{\s+from\s+(left|right|top|bottom)\s*$}{}xi) {
-        my $side = lc($1);
-        if ($side eq "right" || $side eq "bottom") {
+    ($value, my $side) = $self->splitValueQualifier($value);
+    if (defined $side) {
+        if (grep { $_ eq $side } qw(right bottom finish end ending)) {
             $is_from_end = 1;
-        } else {
-            $is_from_end = 0;
         }
     }
-    if ($value =~ s{^\s*(left|right|top|bottom)\s+}{}xi) {
-        my $side = lc($1);
-        if ($side eq "right" || $side eq "bottom") {
-            $is_from_end = 1;
-        } else {
-            $is_from_end = 0;
-        }
-    }
+
     if ($is_from_end && !defined $self->size) {
-        die("Invalid use of 'right' or 'bottom' prefix or 'from right' or 'from bottom' suffix.\n");
+        die("Invalid use of 'right/bottom/finish/end/ending' prefix or 'from right/bottom/finish/end/ending' suffix.\n");
     }
 
     if (defined $unit && $unit ne "") {
