@@ -498,8 +498,10 @@ sub printToFile {
 has 'generatePDF'      => (is => 'rw', default => 0);
 has 'generatePS'       => (is => 'rw', default => 0);
 has 'generate2Page2Up' => (is => 'rw', default => 0);
+has 'generate2Page4Up' => (is => 'rw', default => 0);
 has 'generate2Page'    => (is => 'rw', default => 0);
 has 'generate2Up'      => (is => 'rw', default => 0);
+has 'generate4Up'      => (is => 'rw', default => 0);
 
 sub generateFormats {
     my ($self) = @_;
@@ -507,14 +509,18 @@ sub generateFormats {
     my $baseFilename = $filename;
     $baseFilename =~ s{\.svg\z}{}i;
 
-    my $pdfFilename             = $baseFilename . '.pdf';
-    my $psFilename              = $baseFilename . '.ps';
-    my $twoPagePDFFilename      = $baseFilename . '.2page.pdf';
-    my $twoPagePSFilename       = $baseFilename . '.2page.ps';
-    my $twoUpPDFFilename        = $baseFilename . '.2up.pdf';
-    my $twoUpPSFilename         = $baseFilename . '.2up.ps';
-    my $twoPageTwoUpPDFFilename = $baseFilename . '.2page2up.pdf';
-    my $twoPageTwoUpPSFilename  = $baseFilename . '.2page2up.ps';
+    my $pdfFilename              = $baseFilename . '.pdf';
+    my $psFilename               = $baseFilename . '.ps';
+    my $twoPagePDFFilename       = $baseFilename . '.2page.pdf';
+    my $twoPagePSFilename        = $baseFilename . '.2page.ps';
+    my $twoUpPDFFilename         = $baseFilename . '.2up.pdf';
+    my $twoUpPSFilename          = $baseFilename . '.2up.ps';
+    my $fourUpPDFFilename        = $baseFilename . '.4up.pdf';
+    my $fourUpPSFilename         = $baseFilename . '.4up.ps';
+    my $twoPageTwoUpPDFFilename  = $baseFilename . '.2page2up.pdf';
+    my $twoPageTwoUpPSFilename   = $baseFilename . '.2page2up.ps';
+    my $twoPageFourUpPDFFilename = $baseFilename . '.2page4up.pdf';
+    my $twoPageFourUpPSFilename  = $baseFilename . '.2page4up.ps';
 
     my $converter = My::Printable::Converter->new();
     $converter->width($self->width);
@@ -526,8 +532,12 @@ sub generateFormats {
     my $generate2PagePS;
     my $generate2UpPDF;
     my $generate2UpPS;
+    my $generate4UpPDF;
+    my $generate4UpPS;
     my $generate2Page2UpPDF;
     my $generate2Page2UpPS;
+    my $generate2Page4UpPDF;
+    my $generate2Page4UpPS;
 
     if ($self->generatePDF) {
         $generatePDF = 1;
@@ -565,6 +575,23 @@ sub generateFormats {
         }
     }
 
+    if ($self->generate4Up) {
+        if ($self->generatePDF) {
+            $generate4UpPDF = 1;
+        }
+        if ($self->generatePS) {
+            $generate4UpPS = 1;
+        }
+    }
+    if ($self->generate2Page4Up) {
+        if ($self->generatePDF) {
+            $generate2Page2UpPDF = 1;
+        }
+        if ($self->generatePS) {
+            $generate2Page2UpPS = 1;
+        }
+    }
+
     $converter->dryRun($self->dryRun);
     $converter->verbose($self->verbose);
 
@@ -580,6 +607,7 @@ sub generateFormats {
     if ($generate2PagePS) {
         $converter->convertPSTo2PagePS($psFilename, $twoPagePSFilename);
     }
+
     if ($generate2UpPDF) {
         $converter->convertPDFTo2UpPDF($pdfFilename, $twoUpPDFFilename);
     }
@@ -591,6 +619,19 @@ sub generateFormats {
     }
     if ($generate2Page2UpPS) {
         $converter->convertPDFToPS($twoPageTwoUpPDFFilename, $twoPageTwoUpPSFilename);
+    }
+
+    if ($generate4UpPDF) {
+        $converter->convertPDFToNUpPDF($pdfFilename, $fourUpPDFFilename, 4);
+    }
+    if ($generate4UpPS) {
+        $converter->convertPSToNUpPS($psFilename, $fourUpPSFilename, 4);
+    }
+    if ($generate2Page4UpPDF) {
+        $converter->convertPDFTo2PageNUpPDF($pdfFilename, $twoPageFourUpPDFFilename, 4);
+    }
+    if ($generate2Page4UpPS) {
+        $converter->convertPSTo2PageNUpPS($psFilename, $twoPageFourUpPSFilename, 4);
     }
 }
 

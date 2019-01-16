@@ -42,8 +42,10 @@ has 'document' => (
         'generatePS',
         'generatePDF',
         'generate2Up',
+        'generate4Up',
         'generate2Page',
         'generate2Page2Up',
+        'generate2Page4Up',
     ],
 );
 

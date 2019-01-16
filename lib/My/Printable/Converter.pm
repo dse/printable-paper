@@ -121,6 +121,11 @@ sub convertPDFTo2UpPDF {
     );
 }
 
+sub convertPDFToNUpPDF {
+    # stub
+    # for 2-up or 4-up
+}
+
 sub convert2PagePSTo2UpPS {
     my ($self, $fromFilename, $toFilename) = @_;
     if (!which('pdfbook')) {
@@ -155,6 +160,12 @@ sub convert2PagePSTo2UpPS {
             }
         }
     );
+}
+
+sub convertPSToNUpPS {
+    # stub
+    # for 2-up or 4-up.
+    # need to use IPC::Run or something.
 }
 
 sub convertPDFTo2PagePDF {
@@ -238,6 +249,18 @@ sub convert2PagePDFTo2Page2UpPDF {
             }
         }
     );
+}
+
+sub convertPDFTo2PageNUpPDF {
+    # stub
+    # for 2-up or 4-up.
+    # need to use IPC::Run or something.
+}
+
+sub convertPSTo2PageNUpPS {
+    # stub
+    # for 2-up or 4-up.
+    # need to use IPC::Run or something.
 }
 
 sub convertPDFToPS {
