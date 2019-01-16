@@ -18,6 +18,7 @@ use Data::Dumper qw(Dumper);
 use Storable qw(dclone);
 use PDF::API2 qw();
 use File::Which qw(which);
+use IPC::Run qw(run);
 
 use Moo;
 
@@ -42,6 +43,10 @@ sub convertSVGToPDF {
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
+            if ($self->dryRun) {
+                $tempFilename = $toFilename;
+            }
+
             # realpath needed for inkscape on darwin (aka macOS)
             my ($from, $temp) = ($fromFilename, $tempFilename);
             if ($^O =~ m{^darwin}) {
@@ -49,7 +54,9 @@ sub convertSVGToPDF {
                 $temp = realpath($temp);
             }
             my $cmd = sprintf(
-                "%s --export-dpi=600 --export-pdf=%s", $from, $temp
+                "%s --export-dpi=600 --export-pdf=%s",
+                shell_quote($from),
+                shell_quote($temp),
             );
             if ($self->dryRun) {
                 print STDERR ("would pass to inkscape shell:\n    $cmd\n");
@@ -68,11 +75,20 @@ sub convertSVGToPS {
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
+            if ($self->dryRun) {
+                $tempFilename = $toFilename;
+            }
+
             # realpath needed for inkscape on darwin (aka macOS)
+            my ($from, $temp) = ($fromFilename, $tempFilename);
+            if ($^O =~ m{^darwin}) {
+                $from = realpath($from);
+                $temp = realpath($temp);
+            }
             my $cmd = sprintf(
                 "%s --export-dpi=600 --export-ps=%s",
-                shell_quote(realpath($fromFilename)),
-                shell_quote(realpath($tempFilename)),
+                shell_quote($from),
+                shell_quote($temp),
             );
             if ($self->dryRun) {
                 print STDERR ("would pass to inkscape shell:\n    $cmd\n");
@@ -88,48 +104,75 @@ sub convertSVGToPS {
 
 sub convertPDFTo2UpPDF {
     my ($self, $fromFilename, $toFilename) = @_;
+    $self->convertPDFToNPageNUpPDF($fromFilename, $toFilename, 1, 2);
+}
+
+sub convertPDFToNPageNUpPDF {
+    my ($self, $fromFilename, $toFilename, $nPages, $nUp) = @_;
     my $pdfnup = $self->pdfnupLocation;
     if (!$pdfnup) {
         die("pdfnup program not found\n");
     }
     my $inputWidth = $self->width;
     my $inputHeight = $self->height;
-    my $outputWidth = $inputHeight;
-    my $outputHeight = 2 * $inputWidth;
+    my $outputWidth;
+    my $outputHeight;
+    if ($nUp == 2) {
+        $outputWidth  = $inputHeight;
+        $outputHeight = 2 * $inputWidth;
+    } elsif ($nUp == 4) {
+        $outputWidth  = 2 * $inputWidth;
+        $outputHeight = 2 * $inputHeight;
+    } else {
+        die("Only 2-up and 4-up supported.\n");
+    }
     my $papersize = sprintf('{%.3fbp,%.3fbp}', $outputWidth, $outputHeight);
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
-            my $cmd = sprintf(
-                'pdfnup --no-tidy --outfile %s --papersize %s --nup 2x1 %s 1,1',
-                shell_quote($tempFilename),
-                shell_quote($papersize),
-                shell_quote($fromFilename),
-            );
             if ($self->dryRun) {
-                print STDERR ("would convert PDF to two-up PDF:\n    $cmd\n");
+                $tempFilename = $toFilename;
+            }
+
+            my $cmd;
+            if ($nUp == 2) {
+                my $pages = join(',', ('1,1') x $nPages);
+                $cmd = sprintf(
+                    'pdfnup --no-tidy --outfile %s --papersize %s --nup 2x1 %s %s',
+                    shell_quote($tempFilename),
+                    shell_quote($papersize),
+                    shell_quote($fromFilename),
+                    shell_quote($pages),
+                );
+            } elsif ($nUp == 4) {
+                my $pages = join(',', ('1,1,1,1') x $nPages);
+                $cmd = sprintf(
+                    'pdfnup --no-landscape --no-tidy --outfile %s --papersize %s --nup 2x2 %s %s',
+                    shell_quote($tempFilename),
+                    shell_quote($papersize),
+                    shell_quote($fromFilename),
+                    shell_quote($pages),
+                );
+            }
+            if ($self->dryRun) {
+                print STDERR ("would convert PDF to $nPages-page $nUp-up PDF:\n    $cmd\n");
                 return -1;
             }
             if ($self->verbose) {
-                print STDERR ("+ converting PDF to two-up PDF:\n    $cmd\n");
+                print STDERR ("+ converting PDF to $nPages-page $nUp-up PDF:\n    $cmd\n");
             }
             if (system($cmd)) {
                 unlink($tempFilename);
-                die("pdfbook failed; exiting\n");
+                die("pdfnup failed; exiting\n");
             }
         }
     );
 }
 
-sub convertPDFToNUpPDF {
-    # stub
-    # for 2-up or 4-up
-}
-
 sub convert2PagePSTo2UpPS {
     my ($self, $fromFilename, $toFilename) = @_;
-    if (!which('pdfbook')) {
-        die("pdfbook program not found\n");
+    if (!which('psnup')) {
+        die("psnup program not found\n");
     }
     my $inputWidth = $self->width;
     my $inputHeight = $self->height;
@@ -138,14 +181,18 @@ sub convert2PagePSTo2UpPS {
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
+            if ($self->dryRun) {
+                $tempFilename = $toFilename;
+            }
+
             my $cmd = sprintf(
                 'psnup -w%g -h%g -W%g -H%g -m0 -b0 -d0 -s1 -2 %s %s',
-                $outputWidth,
-                $outputHeight,
-                $inputWidth,
-                $inputHeight,
-                $fromFilename,
-                $tempFilename,
+                shell_quote($outputWidth),
+                shell_quote($outputHeight),
+                shell_quote($inputWidth),
+                shell_quote($inputHeight),
+                shell_quote($fromFilename),
+                shell_quote($tempFilename),
             );
             if ($self->dryRun) {
                 print STDERR ("would convert two-page PS to two-up PS:\n    $cmd\n");
@@ -162,10 +209,93 @@ sub convert2PagePSTo2UpPS {
     );
 }
 
-sub convertPSToNUpPS {
-    # stub
-    # for 2-up or 4-up.
-    # need to use IPC::Run or something.
+sub convertPSToNPageNUpPS {
+    my ($self, $fromFilename, $toFilename, $nPages, $nUp) = @_;
+    if (!which('psselect')) {
+        die("psselect program not found");
+    }
+    if (!which('psnup')) {
+        die("psnup program not found\n");
+    }
+    my $inputWidth = $self->width;
+    my $inputHeight = $self->height;
+    my $outputWidth;
+    my $outputHeight;
+    if ($nUp == 2) {
+        $outputWidth  = $inputHeight;
+        $outputHeight = 2 * $inputWidth;
+    } elsif ($nUp == 4) {
+        $outputWidth  = 2 * $inputWidth;
+        $outputHeight = 2 * $inputHeight;
+    } else {
+        die("Only 2-up and 4-up supported.\n");
+    }
+    with_temp(
+        $toFilename, sub {
+            my ($tempFilename) = @_;
+            if ($self->dryRun) {
+                $tempFilename = $toFilename;
+            }
+
+            my $psselectCmdArray;
+            my $psnupCmdArray;
+            my $psselectCmd;
+            my $psnupCmd;
+            if ($nUp == 2) {
+                my $pages = join(',', ('1,1') x $nPages);
+                $psselectCmdArray = [
+                    'psselect',
+                    $pages,
+                    $fromFilename,
+                ],
+                $psnupCmdArray = [
+                    'psnup',
+                    sprintf('-w%g', $outputWidth),
+                    sprintf('-h%g', $outputHeight),
+                    sprintf('-W%g', $inputWidth),
+                    sprintf('-H%g', $inputHeight),
+                    '-m0',
+                    '-b0',
+                    '-d0',
+                    '-s1',
+                    '-2',
+                ];
+            } elsif ($nUp == 4) {
+                my $pages = join(',', ('1,1,1,1') x $nPages);
+                $psselectCmdArray = [
+                    'psselect',
+                    $pages,
+                    $fromFilename,
+                ];
+                $psnupCmdArray = [
+                    'psnup',
+                    sprintf('-w%g', $outputWidth),
+                    sprintf('-h%g', $outputHeight),
+                    sprintf('-W%g', $inputWidth),
+                    sprintf('-H%g', $inputHeight),
+                    '-m0',
+                    '-b0',
+                    '-d0',
+                    '-s1',
+                    '-4',
+                ];
+            }
+            $psselectCmd = join(' ', map { shell_quote($_) } @$psselectCmdArray);
+            $psnupCmd    = join(' ', map { shell_quote($_) } @$psnupCmdArray);
+            if ($self->dryRun) {
+                print STDERR ("would convert PS to $nPages-page $nUp-up PS:\n    $psselectCmd\n    $psnupCmd\n");
+                return -1;
+            }
+            if ($self->verbose) {
+                print STDERR ("+ converting PS to $nPages-page $nUp-up PS:\n    $psselectCmd\n    $psnupCmd\n");
+            }
+            my $status = run $psselectCmdArray, '|', $psnupCmdArray, '>', $tempFilename;
+            if (!$status) {
+                unlink($tempFilename);
+                die("psselect/psnup failed: [$status] $!; exiting\n");
+            }
+        }
+    );
 }
 
 sub convertPDFTo2PagePDF {
@@ -173,6 +303,10 @@ sub convertPDFTo2PagePDF {
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
+            if ($self->dryRun) {
+                $tempFilename = $toFilename;
+            }
+
             if ($self->dryRun) {
                 print STDERR ("would convert 1-page PDF to 2-page PDF via PDF::API2:\n    $fromFilename => $tempFilename\n");
                 return -1;
@@ -197,6 +331,10 @@ sub convertPSTo2PagePS {
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
+            if ($self->dryRun) {
+                $tempFilename = $toFilename;
+            }
+
             my $cmd = sprintf(
                 'psselect 1,1 %s %s',
                 shell_quote($fromFilename),
@@ -219,48 +357,17 @@ sub convertPSTo2PagePS {
 
 sub convert2PagePDFTo2Page2UpPDF {
     my ($self, $fromFilename, $toFilename) = @_;
-    if (!which('pdfbook')) {
-        die("pdfbook program not found\n");
-    }
-    my $inputWidth = $self->width;
-    my $inputHeight = $self->height;
-    my $outputWidth = $inputHeight;
-    my $outputHeight = 2 * $inputWidth;
-    my $papersize = sprintf('{%.3fbp,%.3fbp}', $outputWidth, $outputHeight);
-    with_temp(
-        $toFilename, sub {
-            my ($tempFilename) = @_;
-            my $cmd = sprintf(
-                "pdfbook --no-tidy --outfile %s --papersize %s --nup 2x1 --twoside %s 1,2,1,2",
-                shell_quote($tempFilename),
-                shell_quote($papersize),
-                shell_quote($fromFilename),
-            );
-            if ($self->dryRun) {
-                print STDERR ("would convert two-page PDF to two-page two-up PDF:\n    $cmd\n");
-                return -1;
-            }
-            if ($self->verbose) {
-                print STDERR ("+ converting two-page PDF to two-page two-up PDF:\n    $cmd\n");
-            }
-            if (system($cmd)) {
-                unlink($tempFilename);
-                die("pdfbook failed; exiting\n");
-            }
-        }
-    );
+    $self->convertPDFToNPageNUpPDF($fromFilename, $toFilename, 2, 2);
 }
 
 sub convertPDFTo2PageNUpPDF {
-    # stub
-    # for 2-up or 4-up.
-    # need to use IPC::Run or something.
+    my ($self, $fromFilename, $toFilename, $nUp) = @_;
+    $self->convertPDFToNPageNUpPDF($fromFilename, $toFilename, 2, $nUp);
 }
 
 sub convertPSTo2PageNUpPS {
-    # stub
-    # for 2-up or 4-up.
-    # need to use IPC::Run or something.
+    my ($self, $fromFilename, $toFilename, $nUp) = @_;
+    $self->convertPSToNPageNUpPS($fromFilename, $toFilename, 2, $nUp);
 }
 
 sub convertPDFToPS {
@@ -268,6 +375,10 @@ sub convertPDFToPS {
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
+            if ($self->dryRun) {
+                $tempFilename = $toFilename;
+            }
+
             my $cmd = sprintf(
                 "pdftops %s %s",
                 shell_quote($fromFilename),
