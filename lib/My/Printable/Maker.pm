@@ -22,11 +22,6 @@ use PDF::API2 qw();
 use File::Which qw(which);
 
 use constant USE_OLD_FILENAMES => 1;
-
-# doesn't work well except with A series paper sizes.
-# and doesn't resize. (i.e., a5 -> a4, halfletter -> letter)
-use constant USE_PYTHON_PDFNUP => 0;
-
 use constant USE_EXTERNAL_BIN_PRINTABLE => 0;
 use constant USE_INKSCAPE_SHELL => 1;
 use constant USE_PDF_API2 => 1;
@@ -396,23 +391,6 @@ sub build2Page2UpPDF {
     my $input_papersizename  = $template->{size};
     my $output_papersizename = $template->{"2up"}->{size};
     my $iops = "${input_papersizename},${output_papersizename}";
-
-    if (USE_PYTHON_PDFNUP && (my $pdfnup = $self->findPdfnup(type => 'python'))) {
-        # pip install pdfnup --install-option="--install-scripts=/usr/local/bin"
-        # otherwise, overwrites a pdfjam /usr/bin/pdfnup executable.
-        my @cmd = (
-            $pdfnup
-        );
-        if (!-x $pdfnup) {
-            unshift(@cmd, 'python');
-        }
-        push(@cmd, (
-            '-n', '2',
-            '-o', '{FILENAME}',
-            $dependencies->[0]
-        ));
-        return $self->cmd($target, \@cmd);
-    }
 
     if (which('pdfbook')) {
         # pdfbook is slow.  It is based on pdfjam.
