@@ -13,9 +13,13 @@ rm -frv dses-examples || true
 mkdir -p dses-examples
 cd dses-examples
 
-#         Paper Size    Ruling       Filename base            Options
-#         ------------- ---------    ------------------       ----------------------------------------------------------------------------
-printable --half-letter seyes     -o seyes3-half-letter       --pdf --2p2u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3
-printable --letter      quadrille -o quadrille4-feint3-letter --pdf        --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3
-printable --letter      quadrille -o quadrille4-major4-letter --pdf        --dpi 600 --mjw 4 --lw 2        -Dunit=1/4in -Dmajor-lines=4
-printable --letter      quadrille -o quadrille10-letter       --pdf        --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/2in -Dmajor-lines=2 -Dfeint-lines=5
+#         Paper Size    Ruling       Filename base                 Options
+#         ------------- ---------    ------------------            ----------------------------------------------------------------------------
+printable --letter      seyes     -o seyes3-letter                 --pdf        --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3
+printable --half-letter seyes     -o seyes3-half-letter            --pdf --2p2u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3
+printable --letter      quadrille -o quadrille4-feint3-letter      --pdf        --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3 -Dmargin-line=yes
+printable --half-letter quadrille -o quadrille4-feint3-half-letter --pdf --2p2u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3 -Dmargin-line=yes
+
+printable --letter      quadrille -o quadrille4-major4-letter      --pdf        --dpi 600 --mjw 4 --lw 2        -Dunit=1/4in -Dmajor-lines=4
+
+printable --letter      quadrille -o quadrille10-letter            --pdf        --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/2in -Dmajor-lines=2 -Dfeint-lines=5
