@@ -23,9 +23,6 @@ use File::Which qw(which);
 
 use constant USE_OLD_FILENAMES => 1;
 
-# sometimes yields an extra blank first page.
-use constant USE_PDFXUP => 0;
-
 # doesn't work well except with A series paper sizes.
 # and doesn't resize. (i.e., a5 -> a4, halfletter -> letter)
 use constant USE_PYTHON_PDFNUP => 0;
@@ -399,10 +396,6 @@ sub build2Page2UpPDF {
     my $input_papersizename  = $template->{size};
     my $output_papersizename = $template->{"2up"}->{size};
     my $iops = "${input_papersizename},${output_papersizename}";
-    my $can_use_pdfxup = 0;
-    if ($iops eq 'halfletter,letter' || $iops eq 'a5,a4') {
-        $can_use_pdfxup = 1;
-    }
 
     if (USE_PYTHON_PDFNUP && (my $pdfnup = $self->findPdfnup(type => 'python'))) {
         # pip install pdfnup --install-option="--install-scripts=/usr/local/bin"
@@ -419,19 +412,6 @@ sub build2Page2UpPDF {
             $dependencies->[0]
         ));
         return $self->cmd($target, \@cmd);
-    }
-
-    if (USE_PDFXUP && $can_use_pdfxup && which('pdfxup')) {
-        # pdfxup is faster but may not support all papersizes.
-        local $ENV{dfpdfxupPAP} = $output_papersizename;
-        my ($output_width_pt, $output_height_pt) = split(/\s+/, `paperconf -s $output_papersizename`);
-        my $output_width_tex_pt  = $output_width_pt  / 72 * 72.27;
-        my $output_height_tex_pt = $output_height_pt / 72 * 72.27;
-        my $cmd = sprintf('pdfxup -b le -s 0 0 %.3f %.3f -im 0 -m 0 -is 0 -fw 0 -o {FILENAME} %s',
-                          $output_width_pt,
-                          $output_height_pt,
-                          shell_quote($dependencies->[0]));
-        return $self->cmd($target, $cmd);
     }
 
     if (which('pdfbook')) {
