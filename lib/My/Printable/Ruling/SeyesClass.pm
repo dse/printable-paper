@@ -12,13 +12,17 @@ extends 'My::Printable::Ruling';
 sub getOriginX {
     my ($self) = @_;
     if ($self->unitType eq 'imperial') {
-        if ($self->isA5SizeClass()) {
+        if ($self->isA6SizeClass()) {
+            return '0.5in from left';
+        } elsif ($self->isA5SizeClass()) {
             return '0.75in from left';
         } else {
             return '1.25in from left';
         }
     } else {
-        if ($self->isA5SizeClass()) {
+        if ($self->isA6SizeClass()) {
+            return '12mm from left';
+        } elsif ($self->isA5SizeClass()) {
             return '16mm from left';
         } else {
             return '41mm from left';
@@ -50,13 +54,17 @@ sub getRulingSpecificUnit {
 sub getTopLineY {
     my ($self) = @_;
     if ($self->unitType eq 'imperial') {
-        if ($self->isA5SizeClass()) {
+        if ($self->isA6SizeClass()) {
+            return '0.75in from top';
+        } elsif ($self->isA5SizeClass()) {
             return '1in from top';
         } else {
             return '1.5in from top';
         }
     } else {
-        if ($self->isA5SizeClass()) {
+        if ($self->isA6SizeClass()) {
+            return '18mm from top';
+        } elsif ($self->isA5SizeClass()) {
             return '24mm from top';
         } else {
             return '37mm from top';
@@ -67,13 +75,17 @@ sub getTopLineY {
 sub getBottomLineY {
     my ($self) = @_;
     if ($self->unitType eq 'imperial') {
-        if ($self->isA5SizeClass()) {
+        if ($self->isA6SizeClass()) {
+            return '0.5in from bottom';
+        } elsif ($self->isA5SizeClass()) {
             return '0.75in from bottom';
         } else {
             return '1in from bottom';
         }
     } else {
-        if ($self->isA5SizeClass()) {
+        if ($self->isA6SizeClass()) {
+            return '14mm from bottom';
+        } elsif ($self->isA5SizeClass()) {
             return '19mm from bottom';
         } else {
             return '28mm from bottom';

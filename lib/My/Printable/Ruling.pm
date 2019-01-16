@@ -31,6 +31,7 @@ has 'document' => (
         'printToFile',
         'isA4SizeClass',
         'isA5SizeClass',
+        'isA6SizeClass',
         'ptX',
         'ptY',
         'pt',
@@ -598,13 +599,17 @@ sub getOriginX {
 sub getDefaultOriginX {
     my ($self) = @_;
     if ($self->unitType eq 'imperial') {
-        if ($self->isA5SizeClass()) {
+        if ($self->isA6SizeClass()) {
+            return '0.5in from left';
+        } elsif ($self->isA5SizeClass()) {
             return '0.75in from left';
         } else {
             return '1.25in from left';
         }
     } else {
-        if ($self->isA5SizeClass()) {
+        if ($self->isA6SizeClass()) {
+            return '12mm from left';
+        } elsif ($self->isA5SizeClass()) {
             return '18mm from left';
         } else {
             return '32mm from left';

@@ -66,6 +66,8 @@ Getopt::Long::GetOptions(
     'a4'                              => sub { $opt_papersize = 'a4'; },
     'halfletter|half-letter'          => sub { $opt_papersize = 'halfletter'; },
     'a5'                              => sub { $opt_papersize = 'a5'; },
+    'quarterletter|quarter-letter'    => sub { $opt_papersize = 'quarterletter'; },
+    'a6'                              => sub { $opt_papersize = 'a6'; },
     "g|gray|grey|grayscale|greyscale" => sub { $opt_color_type = "grayscale"; },
     "b|black"                         => sub { $opt_color_type = "black";     },
     "c|color|colour"                  => sub { $opt_color_type = "color";     },

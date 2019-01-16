@@ -646,6 +646,11 @@ sub isA5SizeClass {
     return $self->isPaperSizeClass('halfletter') || $self->isPaperSizeClass('a5');
 }
 
+sub isA6SizeClass {
+    my ($self) = @_;
+    return $self->isPaperSizeClass('quarterletter') || $self->isPaperSizeClass('a6');
+}
+
 sub getSquarePoints {
     my ($self) = @_;
     my $width = $self->width;

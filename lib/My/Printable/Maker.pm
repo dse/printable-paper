@@ -155,8 +155,10 @@ sub run {
 our @SIZES = (
     { size => 'letter' },
     { size => 'a4' },
-    { size => 'halfletter', '2up' => 'letter' },
-    { size => 'a5',         '2up' => 'a4'     },
+    { size => 'halfletter',    '2up' => 'letter' },
+    { size => 'a5',            '2up' => 'a4'     },
+    { size => 'quarterletter', '2up' => 'halfletter', '4up' => 'letter' },
+    { size => 'a6',            '2up' => 'a5',         '4up' => 'a4' },
 );
 
 our @COLLECTIONS = (

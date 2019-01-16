@@ -33,6 +33,16 @@ INIT {                          # cannot use BEGIN here.
             height => scalar(My::Printable::Unit->pt([250 / sqrt(sqrt(2)), "mm"])),
             type   => "metric",
         },
+        quarterletter => {
+            width  => scalar(My::Printable::Unit->pt([4.25, "in"])),
+            height => scalar(My::Printable::Unit->pt([5.5, "in"])),
+            type   => "imperial",
+        },
+        a6 => {
+            width  => scalar(My::Printable::Unit->pt([125 / sqrt(sqrt(2)), "mm"])),
+            height => scalar(My::Printable::Unit->pt([125 * sqrt(sqrt(2)), "mm"])),
+            type   => "metric",
+        },
     };
 }
 
@@ -57,7 +67,7 @@ sub parse_builtin_papersize {
     my ($self, $spec) = @_;
     $spec = lc $spec;
 
-    my $info = $SIZES->{spec};
+    my $info = $SIZES->{$spec};
     return if !$info;
 
     $info = { %$info };     # shallow copy

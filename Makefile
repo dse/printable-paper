@@ -31,10 +31,14 @@ a4:
 	makebin/makeprintable a4
 a5:
 	makebin/makeprintable a5
+a6:
+	makebin/makeprintable a6
 letter:
 	makebin/makeprintable letter
 halfletter:
 	makebin/makeprintable half-letter
+quarterletter:
+	makebin/makeprintable quarter-letter
 
 # rulings
 dot-grid:
@@ -70,4 +74,4 @@ perftest:
 	perl -d:NYTProf makebin/makeprintable oasis letter svg
 	/usr/local/Cellar/perl/5.28.0/bin/nytprofhtml --open
 
-.PHONY: ps pdf svg 2-up a4 a5 letter halfletter dot-grid line-dot-grid line-dot-graph seyes clean list clean-svg list-svg perftest
+.PHONY: ps pdf svg 2-up a4 a5 a6 letter halfletter quarterletter dot-grid line-dot-grid line-dot-graph seyes clean list clean-svg list-svg perftest
