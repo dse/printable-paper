@@ -559,18 +559,13 @@ sub generateFormats {
         }
         if ($self->generatePS) {
             $generate2UpPS = 1;
-            $generate2PagePS = 1; # dependency
         }
     }
     if ($self->generate2Page2Up) {
         if ($self->generatePDF) {
-            $generate2PagePDF = 1; # dependency
             $generate2Page2UpPDF = 1;
         }
         if ($self->generatePS) {
-            $generatePDF = 1;         # dependency
-            $generate2PagePDF = 1;    # dependency
-            $generate2Page2UpPDF = 1; # dependency
             $generate2Page2UpPS = 1;
         }
     }
@@ -585,10 +580,10 @@ sub generateFormats {
     }
     if ($self->generate2Page4Up) {
         if ($self->generatePDF) {
-            $generate2Page2UpPDF = 1;
+            $generate2Page4UpPDF = 1;
         }
         if ($self->generatePS) {
-            $generate2Page2UpPS = 1;
+            $generate2Page4UpPS = 1;
         }
     }
 
@@ -601,37 +596,38 @@ sub generateFormats {
     if ($generatePS) {
         $converter->convertSVGToPS($filename, $psFilename);
     }
+
     if ($generate2PagePDF) {
-        $converter->convertPDFTo2PagePDF($pdfFilename, $twoPagePDFFilename);
+        $converter->convertPDFTo2PagePDF($pdfFilename, $twoPagePDFFilename);
     }
     if ($generate2PagePS) {
         $converter->convertPSTo2PagePS($psFilename, $twoPagePSFilename);
     }
 
     if ($generate2UpPDF) {
-        $converter->convertPDFTo2UpPDF($pdfFilename, $twoUpPDFFilename);
+        $converter->convertPDFToNPageNUpPDF($pdfFilename, $twoUpPDFFilename, 1, 2);
     }
     if ($generate2UpPS) {
-        $converter->convert2PagePSTo2UpPS($twoPagePSFilename, $twoUpPSFilename);
+        $converter->convertPSToNPageNUpPS($twoPagePSFilename, $twoUpPSFilename, 1, 2);
     }
     if ($generate2Page2UpPDF) {
-        $converter->convert2PagePDFTo2Page2UpPDF($twoPagePDFFilename, $twoPageTwoUpPDFFilename);
+        $converter->convertPDFToNPageNUpPDF($pdfFilename, $twoPageTwoUpPDFFilename, 2, 2);
     }
     if ($generate2Page2UpPS) {
-        $converter->convertPDFToPS($twoPageTwoUpPDFFilename, $twoPageTwoUpPSFilename);
+        $converter->convertPDFToNPageNUpPDF($pdfFilename, $twoPageTwoUpPSFilename, 2, 2);
     }
 
     if ($generate4UpPDF) {
-        $converter->convertPDFToNUpPDF($pdfFilename, $fourUpPDFFilename, 4);
+        $converter->convertPDFToNPageNUpPDF($pdfFilename, $fourUpPDFFilename, 1, 4);
     }
     if ($generate4UpPS) {
-        $converter->convertPSToNUpPS($psFilename, $fourUpPSFilename, 4);
+        $converter->convertPSToNPageNUpPS($twoPagePSFilename, $fourUpPSFilename, 1, 4);
     }
     if ($generate2Page4UpPDF) {
-        $converter->convertPDFTo2PageNUpPDF($pdfFilename, $twoPageFourUpPDFFilename, 4);
+        $converter->convertPDFToNPageNUpPDF($pdfFilename, $twoPageFourUpPDFFilename, 2, 4);
     }
     if ($generate2Page4UpPS) {
-        $converter->convertPSTo2PageNUpPS($psFilename, $twoPageFourUpPSFilename, 4);
+        $converter->convertPDFToNPageNUpPDF($pdfFilename, $twoPageFourUpPSFilename, 2, 4);
     }
 }
 
