@@ -8,6 +8,7 @@ use My::Printable::Document;
 use My::Printable::Ruling;
 use My::Printable::Util::InkscapeShell;
 use My::Printable::Util qw(with_temp);
+use My::Printable::Converter;
 
 use String::ShellQuote qw(shell_quote);
 use Cwd qw(realpath getcwd);
@@ -264,160 +265,115 @@ has 'inkscapeShell' => (is => 'rw');
 sub buildPDFFromSVG {
     my ($self, %args) = @_;
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
-    if (!which('inkscape')) {
-        die("inkscape program not found\n");
-    }
-    if (USE_INKSCAPE_SHELL) {
-        if (!defined $self->inkscapeShell) {
-            $self->inkscapeShell(My::Printable::Util::InkscapeShell->new());
-        }
-        with_temp(
-            $target,
-            sub {
-                my ($tempname) = @_;
-                make_path(dirname($tempname));
-                unlink($tempname);
-                $self->inkscapeShell->cmd(sprintf("%s --export-dpi=600 --export-pdf %s",
-                                                  shell_quote($self->getPathForInkscape($dependencies->[0])),
-                                                  shell_quote($self->getPathForInkscape($tempname))));
-            }
-        );
-    } else {
-        # svg2pdf will not work
-        # rsvg-convert does not work, output looks like shit
-        # imagenagick works but is not fast and rasterizes
-        my $cmd = sprintf("inkscape --without-gui %s --export-dpi=600 --export-pdf {FILENAME}",
-                          shell_quote($self->getPathForInkscape($dependencies->[0])));
-        $self->cmd($target, $cmd);
-    }
+
+    my $size = $template->{size};
+    my ($width, $height) = My::Printable::PaperSizes->parse($size);
+
+    my $converter = My::Printable::Converter->new(
+        dryRun => $self->dryRun,
+        verbose => $self->verbose,
+        width => $width,
+        height => $height,
+    );
+    $converter->convertSVGToPDF(
+        $dependencies->[0],
+        $target,
+    );
 }
 
 sub buildPSFromSVG {
     my ($self, %args) = @_;
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
-    if (!which('inkscape')) {
-        die("inkscape program not found\n");
-    }
-    if (USE_INKSCAPE_SHELL) {
-        if (!defined $self->inkscapeShell) {
-            $self->inkscapeShell(My::Printable::Util::InkscapeShell->new());
-        }
-        with_temp(
-            $target,
-            sub {
-                my ($tempname) = @_;
-                make_path(dirname($tempname));
-                unlink($tempname);
-                $self->inkscapeShell->cmd(sprintf("%s --export-background=transparent --export-ps=%s",
-                                                  shell_quote($self->getPathForInkscape($dependencies->[0])),
-                                                  shell_quote($self->getPathForInkscape($tempname))));
-            }
-        );
-    } else {
-        my $cmd = sprintf("inkscape --without-gui --export-dpi=300 --export-ps {FILENAME} %s",
-                          shell_quote($self->getPathForInkscape($dependencies->[0])));
-        $self->cmd($target, $cmd);
-    }
+
+    my $size = $template->{size};
+    my ($width, $height) = My::Printable::PaperSizes->parse($size);
+
+    my $converter = My::Printable::Converter->new(
+        dryRun => $self->dryRun,
+        verbose => $self->verbose,
+        width => $width,
+        height => $height,
+    );
+    $converter->convertSVGToPS(
+        $dependencies->[0],
+        $target,
+    );
 }
 
 sub build2PagePDF {
     my ($self, %args) = @_;
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
-    if (USE_PDF_API2) {
-        my @source_pdf = map { PDF::API2->open($_) } @$dependencies;
-        if (scalar @$dependencies == 1) {
-            my $pdf = PDF::API2->new();
-            $pdf->import_page($source_pdf[0], 1, 0);
-            $pdf->import_page($source_pdf[0], 1, 0);
-            $pdf->saveas($target);
-        } else {
-            my $pdf = PDF::API2->new();
-            $pdf->import_page($source_pdf[0], 1, 0);
-            $pdf->import_page($source_pdf[1], 1, 0);
-            $pdf->saveas($target);
-        }
-    } else {
-        # pdfunite is part of poppler
-        if (!which('pdfunite')) {
-            die("pdfunite program, part of poppler, not found\n");
-        }
-        my $cmd;
-        if (scalar @$dependencies == 1) {
-            # has no special even page
-            $cmd = sprintf("pdfunite %s %s {FILENAME}",
-                           shell_quote($dependencies->[0]),
-                           shell_quote($dependencies->[0]));
-        } else {
-            # has a special even page
-            $cmd = sprintf("pdfunite %s %s {FILENAME}",
-                           shell_quote($dependencies->[0]),
-                           shell_quote($dependencies->[1]));
-        }
-        $self->cmd($target, $cmd);
-    }
+
+    my $size = $template->{size};
+    my ($width, $height) = My::Printable::PaperSizes->parse($size);
+
+    my $converter = My::Printable::Converter->new(
+        dryRun => $self->dryRun,
+        verbose => $self->verbose,
+        width => $width,
+        height => $height,
+    );
+    $converter->convertPDFTo2PagePDF(
+        $dependencies->[0],
+        $target,
+    );
 }
 
 sub build2PagePS {
     my ($self, %args) = @_;
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
-    # consider using GSAPI
+    my $size = $template->{size};
+    my ($width, $height) = My::Printable::PaperSizes->parse($size);
 
-    my $cmd;
-    if (scalar @$dependencies == 1) {
-        if (!which('psselect')) {
-            die("psselect program not found\n");
-        }
-        # has no special even page
-        $cmd = sprintf("psselect 1,1 %s >{FILENAME}",
-                       shell_quote($dependencies->[0]));
-    } else {
-        if (!which('psjoin')) {
-            die("psjoin program not found\n");
-        }
-        # has a special even page
-        $cmd = sprintf("psjoin %s %s >{FILENAME}",
-                       shell_quote($dependencies->[0]),
-                       shell_quote($dependencies->[1]));
-    }
-
-    $self->cmd($target, $cmd);
+    my $converter = My::Printable::Converter->new(
+        dryRun => $self->dryRun,
+        verbose => $self->verbose,
+        width => $width,
+        height => $height,
+    );
+    $converter->convertPSTo2PagePS(
+        $dependencies->[0],
+        $target,
+    );
 }
 
 sub build2Page2UpPDF {
     my ($self, %args) = @_;
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
-    my $input_papersizename  = $template->{size};
-    my $output_papersizename = $template->{"2up"}->{size};
-    my $iops = "${input_papersizename},${output_papersizename}";
+    my $size = $template->{size};
+    my ($width, $height) = My::Printable::PaperSizes->parse($size);
 
-    if (which('pdfbook')) {
-        # pdfbook is slow.  It is based on pdfjam.
-        my ($input_width_pt,  $input_height_pt)  = split(/\s+/, `paperconf -s $input_papersizename`);
-        my ($output_width_pt, $output_height_pt) = split(/\s+/, `paperconf -s $output_papersizename`);
-        my $output_papersize = sprintf('{%.3fbp,%.3fbp}', $output_width_pt, $output_height_pt);
-        my $cmd = sprintf("pdfbook --no-tidy --outfile {FILENAME} --papersize %s --nup 2x1 --twoside %s 1,2,1,2",
-                          shell_quote($output_papersize),
-                          shell_quote($dependencies->[0]));
-        return $self->cmd($target, $cmd);
-    }
-
-    die("No pdf N-up utility found.  :-(\n");
-
-    # NOTES: There's a Python script called pdfnup, and
-    # something that comes with TeXlive called pdfnup, which
-    # is based on pdfjam.
-
-    # pdftk and qpdf do not offer N-up capability.
+    my $converter = My::Printable::Converter->new(
+        dryRun => $self->dryRun,
+        verbose => $self->verbose,
+        width => $width,
+        height => $height,
+    );
+    $converter->convert2PagePDFTo2Page2UpPDF(
+        $dependencies->[0],
+        $target,
+    );
 }
 
 sub build2Page2UpPS {
     my ($self, %args) = @_;
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
-    my $p = $dependencies->[0];
-    my $cmd = sprintf("pdftops %s {FILENAME}", shell_quote($p));
-    $self->cmd($target, $cmd);
+
+    my $size = $template->{size};
+    my ($width, $height) = My::Printable::PaperSizes->parse($size);
+
+    my $converter = My::Printable::Converter->new(
+        dryRun => $self->dryRun,
+        verbose => $self->verbose,
+        width => $width,
+        height => $height,
+    );
+    $converter->convertPDFToPS(
+        $dependencies->[0],
+        $target,
+    );
 }
 
 our %BUILD = (
