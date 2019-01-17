@@ -214,8 +214,8 @@ sub convertPSToNPageNUpPS {
     if (!which('psselect')) {
         die("psselect program not found");
     }
-    if (!which('psnup')) {
-        die("psnup program not found\n");
+    if (!which('pstops')) {
+        die("pstops program not found\n");
     }
     my $inputWidth = $self->width;
     my $inputHeight = $self->height;
@@ -238,9 +238,9 @@ sub convertPSToNPageNUpPS {
             }
 
             my $psselectCmdArray;
-            my $psnupCmdArray;
             my $psselectCmd;
-            my $psnupCmd;
+            my $pstopsCmdArray;
+            my $pstopsCmd;
             if ($nUp == 2) {
                 my $pages = join(',', ('1,1') x $nPages);
                 $psselectCmdArray = [
@@ -248,17 +248,16 @@ sub convertPSToNPageNUpPS {
                     $pages,
                     $fromFilename,
                 ],
-                $psnupCmdArray = [
-                    'psnup',
+                my $pstopsSpec = sprintf(
+                    '2:0L(%gpt,%gpt)+1L(%gpt,%gpt)',
+                    $inputHeight, 0,
+                    $inputHeight, $inputWidth,
+                );
+                $pstopsCmdArray = [
+                    'pstops',
                     sprintf('-w%g', $outputWidth),
                     sprintf('-h%g', $outputHeight),
-                    sprintf('-W%g', $inputWidth),
-                    sprintf('-H%g', $inputHeight),
-                    '-m0',
-                    '-b0',
-                    '-d0',
-                    '-s1',
-                    '-2',
+                    $pstopsSpec,
                 ];
             } elsif ($nUp == 4) {
                 my $pages = join(',', ('1,1,1,1') x $nPages);
@@ -267,32 +266,34 @@ sub convertPSToNPageNUpPS {
                     $pages,
                     $fromFilename,
                 ];
-                $psnupCmdArray = [
-                    'psnup',
+                my $pstopsSpec = sprintf(
+                    '4:0(%gpt,%gpt)+1(%gpt,%gpt)+2(%gpt,%gpt)+3(%gpt,%gpt)',
+                    0,           0,
+                    $inputWidth, 0,
+                    0,           $inputHeight,
+                    $inputWidth, $inputHeight,
+                );
+                $pstopsCmdArray = [
+                    'pstops',
                     sprintf('-w%g', $outputWidth),
                     sprintf('-h%g', $outputHeight),
-                    sprintf('-W%g', $inputWidth),
-                    sprintf('-H%g', $inputHeight),
-                    '-m0',
-                    '-b0',
-                    '-d0',
-                    '-s1',
-                    '-4',
+                    $pstopsSpec,
                 ];
             }
             $psselectCmd = join(' ', map { shell_quote($_) } @$psselectCmdArray);
-            $psnupCmd    = join(' ', map { shell_quote($_) } @$psnupCmdArray);
+            $pstopsCmd   = join(' ', map { shell_quote($_) } @$pstopsCmdArray);
+
             if ($self->dryRun) {
-                print STDERR ("would convert PS to $nPages-page $nUp-up PS:\n    $psselectCmd\n    $psnupCmd\n");
+                print STDERR ("would convert PS to $nPages-page $nUp-up PS:\n    $psselectCmd\n    $pstopsCmd\n");
                 return -1;
             }
             if ($self->verbose) {
-                print STDERR ("+ converting PS to $nPages-page $nUp-up PS:\n    $psselectCmd\n    $psnupCmd\n");
+                print STDERR ("+ converting PS to $nPages-page $nUp-up PS:\n    $psselectCmd\n    $pstopsCmd\n");
             }
-            my $status = run $psselectCmdArray, '|', $psnupCmdArray, '>', $tempFilename;
+            my $status = run $psselectCmdArray, '|', $pstopsCmdArray, '>', $tempFilename;
             if (!$status) {
                 unlink($tempFilename);
-                die("psselect/psnup failed: [$status] $!; exiting\n");
+                die("psselect/pstops failed: [$status] $!; exiting\n");
             }
         }
     );
