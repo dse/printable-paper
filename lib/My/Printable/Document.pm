@@ -608,26 +608,26 @@ sub generateFormats {
         $converter->convertPDFToNPageNUpPDF($pdfFilename, $twoUpPDFFilename, 1, 2);
     }
     if ($generate2UpPS) {
-        $converter->convertPSToNPageNUpPS($twoPagePSFilename, $twoUpPSFilename, 1, 2);
+        $converter->convertPSToNPageNUpPS($psFilename, $twoUpPSFilename, 1, 2);
     }
     if ($generate2Page2UpPDF) {
         $converter->convertPDFToNPageNUpPDF($pdfFilename, $twoPageTwoUpPDFFilename, 2, 2);
     }
     if ($generate2Page2UpPS) {
-        $converter->convertPDFToNPageNUpPDF($pdfFilename, $twoPageTwoUpPSFilename, 2, 2);
+        $converter->convertPSToNPageNUpPS($psFilename, $twoPageTwoUpPSFilename, 2, 2);
     }
 
     if ($generate4UpPDF) {
         $converter->convertPDFToNPageNUpPDF($pdfFilename, $fourUpPDFFilename, 1, 4);
     }
     if ($generate4UpPS) {
-        $converter->convertPSToNPageNUpPS($twoPagePSFilename, $fourUpPSFilename, 1, 4);
+        $converter->convertPSToNPageNUpPS($psFilename, $fourUpPSFilename, 1, 4);
     }
     if ($generate2Page4UpPDF) {
         $converter->convertPDFToNPageNUpPDF($pdfFilename, $twoPageFourUpPDFFilename, 2, 4);
     }
     if ($generate2Page4UpPS) {
-        $converter->convertPDFToNPageNUpPDF($pdfFilename, $twoPageFourUpPSFilename, 2, 4);
+        $converter->convertPSToNPageNUpPS($psFilename, $twoPageFourUpPSFilename, 2, 4);
     }
 }
 
