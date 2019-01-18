@@ -408,6 +408,12 @@ has 'pdfnupLocation' => (
     lazy => 1,
     default => sub {
         my ($self) = @_;
+
+        state $pdfnupLocationDetermined;
+        state $pdfnupLocation;
+
+        return $pdfnupLocation if $pdfnupLocationDetermined;
+
         my @paths = which('pdfnup');
         push(@paths, grep { -e $_ } (
             '/usr/local/share/texmf-dist/scripts/pdfjam/pdfnup',
@@ -418,10 +424,12 @@ has 'pdfnupLocation' => (
         foreach my $path (@paths) {
             my $shebang = $self->getShebangFromFile($path);
             if ($shebang eq 'bash' || $shebang eq 'sh') {
-                return $path;
+                $pdfnupLocationDetermined = 1;
+                return $pdfnupLocation = $path;
             }
         }
-        return undef;
+        $pdfnupLocationDetermined = 1;
+        return $pdfnupLocation = undef;
     }
 );
 
