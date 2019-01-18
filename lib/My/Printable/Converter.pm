@@ -107,26 +107,12 @@ sub convertPDFTo2UpPDF {
     $self->convertPDFToNPageNUpPDF($fromFilename, $toFilename, 1, 2);
 }
 
-sub convertPDFToNPageNUpPDF {
-    my ($self, $fromFilename, $toFilename, $nPages, $nUp) = @_;
-    my $pdfnup = $self->pdfnupLocation;
-    if (!$pdfnup) {
-        die("pdfnup program not found\n");
-    }
+sub convertPDFToNPage4UpPDF {
+    my ($self, $fromFilename, $toFilename, $nPages) = @_;
     my $inputWidth = $self->width;
     my $inputHeight = $self->height;
-    my $outputWidth;
-    my $outputHeight;
-    if ($nUp == 2) {
-        $outputWidth  = $inputHeight;
-        $outputHeight = 2 * $inputWidth;
-    } elsif ($nUp == 4) {
-        $outputWidth  = 2 * $inputWidth;
-        $outputHeight = 2 * $inputHeight;
-    } else {
-        die("Only 2-up and 4-up supported.\n");
-    }
-    my $papersize = sprintf('{%.3fbp,%.3fbp}', $outputWidth, $outputHeight);
+    my $outputWidth  = 2 * $inputWidth;
+    my $outputHeight = 2 * $inputHeight;
     with_temp(
         $toFilename, sub {
             my ($tempFilename) = @_;
@@ -134,39 +120,88 @@ sub convertPDFToNPageNUpPDF {
                 $tempFilename = $toFilename;
             }
 
-            my $cmd;
-            if ($nUp == 2) {
-                my $pages = join(',', ('1,1') x $nPages);
-                $cmd = sprintf(
-                    'pdfnup --no-tidy --outfile %s --papersize %s --nup 2x1 %s %s',
-                    shell_quote($tempFilename),
-                    shell_quote($papersize),
-                    shell_quote($fromFilename),
-                    shell_quote($pages),
-                );
-            } elsif ($nUp == 4) {
-                my $pages = join(',', ('1,1,1,1') x $nPages);
-                $cmd = sprintf(
-                    'pdfnup --no-landscape --no-tidy --outfile %s --papersize %s --nup 2x2 %s %s',
-                    shell_quote($tempFilename),
-                    shell_quote($papersize),
-                    shell_quote($fromFilename),
-                    shell_quote($pages),
-                );
-            }
             if ($self->dryRun) {
-                print STDERR ("would convert PDF to $nPages-page $nUp-up PDF:\n    $cmd\n");
+                print STDERR ("would convert 1-page PDF to $nPages-page 4-up PDF via PDF::API2:\n    $fromFilename => $tempFilename\n");
                 return -1;
             }
             if ($self->verbose) {
-                print STDERR ("+ converting PDF to $nPages-page $nUp-up PDF:\n    $cmd\n");
+                print STDERR ("Converting 1-page PDF to $nPages-page 4-up PDF via PDF::API2:\n    $fromFilename => $tempFilename\n");
             }
-            if (system($cmd)) {
-                unlink($tempFilename);
-                die("pdfnup failed; exiting\n");
+
+            my $inputPDF = PDF::API2->open($fromFilename);
+            my $outputPDF = PDF::API2->new();
+            for (my $page = 0; $page < $nPages; $page += 1) {
+                my $outputPage = $outputPDF->page();
+                my $xo = $outputPDF->importPageIntoForm($inputPDF, 1);
+
+                # for printing with long edge binding
+                my $gfx = $outputPage->gfx();
+                $gfx->formimage($xo, 0, $inputHeight, 1);
+                $gfx->formimage($xo, $inputWidth, $inputHeight, 1);
+                $gfx->rotate(180);
+                $gfx->formimage($xo, -$inputWidth, -$inputHeight, 1);
+                $gfx->formimage($xo, -2 * $inputWidth, -$inputHeight, 1);
             }
+            $outputPDF->saveas($tempFilename);
         }
     );
+}
+
+sub convertPDFToNPage2UpPDF {
+    my ($self, $fromFilename, $toFilename, $nPages) = @_;
+    my $inputWidth = $self->width;
+    my $inputHeight = $self->height;
+    my $outputWidth  = $inputHeight;
+    my $outputHeight = 2 * $inputWidth;
+    with_temp(
+        $toFilename, sub {
+            my ($tempFilename) = @_;
+            if ($self->dryRun) {
+                $tempFilename = $toFilename;
+            }
+
+            if ($self->dryRun) {
+                print STDERR ("would convert 1-page PDF to $nPages-page 2-up PDF via PDF::API2:\n    $fromFilename => $tempFilename\n");
+                return -1;
+            }
+            if ($self->verbose) {
+                print STDERR ("Converting 1-page PDF to $nPages-page 2-up PDF via PDF::API2:\n    $fromFilename => $tempFilename\n");
+            }
+
+            my $inputPDF = PDF::API2->open($fromFilename);
+            my $outputPDF = PDF::API2->new();
+            for (my $page = 0; $page < $nPages; $page += 1) {
+                my $outputPage = $outputPDF->page();
+                my $xo = $outputPDF->importPageIntoForm($inputPDF, 1);
+
+                # for printing with long edge binding
+                my $gfx = $outputPage->gfx();
+                if ($page % 2) {
+                    # even page
+                    $gfx->rotate(90);
+                    $gfx->formimage($xo, $inputWidth, -$inputHeight, 1);
+                    $gfx->formimage($xo, 0, -$inputHeight, 1);
+                } else {
+                    # odd page
+                    $gfx->rotate(270);
+                    $gfx->formimage($xo, -$inputWidth, 0, 1);
+                    $gfx->formimage($xo, -2 * $inputWidth, 0, 1);
+                }
+            }
+            $outputPDF->saveas($tempFilename);
+        }
+    );
+}
+
+sub convertPDFToNPageNUpPDF {
+    my ($self, $fromFilename, $toFilename, $nPages, $nUp) = @_;
+    if ($nUp == 4) {
+        return $self->convertPDFToNPage4UpPDF($fromFilename, $toFilename, $nPages);
+    }
+    if ($nUp == 2) {
+        return $self->convertPDFToNPage2UpPDF($fromFilename, $toFilename, $nPages);
+    }
+    die("Only 2-up and 4-up supported.\n");
 }
 
 sub convert2PagePSTo2UpPS {
@@ -253,6 +288,15 @@ sub convertPSToNPageNUpPS {
                     $inputHeight, 0,
                     $inputHeight, $inputWidth,
                 );
+                if ($nPages >= 2) {
+                    $pstopsSpec = sprintf(
+                        '4:0L(%gpt,%gpt)+1L(%gpt,%gpt),2R(%gpt,%gpt)+3R(%gpt,%gpt)',
+                        $inputHeight, 0,
+                        $inputHeight, $inputWidth,
+                        0, $inputWidth,
+                        0, $inputWidth * 2,
+                    );
+                }
                 $pstopsCmdArray = [
                     'pstops',
                     sprintf('-w%g', $outputWidth),
@@ -267,11 +311,11 @@ sub convertPSToNPageNUpPS {
                     $fromFilename,
                 ];
                 my $pstopsSpec = sprintf(
-                    '4:0(%gpt,%gpt)+1(%gpt,%gpt)+2(%gpt,%gpt)+3(%gpt,%gpt)',
-                    0,           0,
-                    $inputWidth, 0,
-                    0,           $inputHeight,
+                    '4:0(%gpt,%gpt)+1(%gpt,%gpt)+2U(%gpt,%gpt)+3U(%gpt,%gpt)',
+                    0, $inputHeight,
                     $inputWidth, $inputHeight,
+                    $inputWidth, $inputHeight,
+                    2 * $inputWidth, $inputHeight,
                 );
                 $pstopsCmdArray = [
                     'pstops',
