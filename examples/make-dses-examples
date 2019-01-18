@@ -13,13 +13,26 @@ rm -frv dses-examples || true
 mkdir -p dses-examples
 cd dses-examples
 
-#         Paper Size    Ruling       Filename base                 Options
-#         ------------- ---------    ------------------            ----------------------------------------------------------------------------
-printable --letter      seyes     -o seyes3-letter                 --pdf        --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3
-printable --half-letter seyes     -o seyes3-half-letter            --pdf --2p2u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3
-printable --letter      quadrille -o quadrille4-feint3-letter      --pdf        --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3 -Dmargin-line=yes
-printable --half-letter quadrille -o quadrille4-feint3-half-letter --pdf --2p2u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3 -Dmargin-line=yes
+#                 Paper Size       Ruling       Filename base                    Options
+#                 ---------------- ---------    -------------------------------- ---------------------------------------------------------------------------------------------
+1  () { printable --letter         seyes     -o seyes3-letter                    --pdf        --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3                      ; }
+2  () { printable --half-letter    seyes     -o seyes3-half-letter               --pdf --2p2u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3                      ; }
+3  () { printable --letter         quadrille -o quadrille4-feint3-letter         --pdf --2p   --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3 -Dmargin-line=yes    ; }
+4  () { printable --half-letter    quadrille -o quadrille4-feint3-half-letter    --pdf --2p2u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3 -Dmargin-line=yes    ; }
+5  () { printable --quarter-letter quadrille -o quadrille4-feint3-quarter-letter --pdf --2p4u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3 -Dmargin-line=0.5in  ; }
+6  () { printable --letter         quadrille -o quadrille4-major4-letter         --pdf        --dpi 600 --mjw 4 --lw 2        -Dunit=1/4in -Dmajor-lines=4                      ; }
+7  () { printable --letter         quadrille -o quadrille10-letter               --pdf        --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/2in -Dmajor-lines=2 -Dfeint-lines=5      ; }
 
-printable --letter      quadrille -o quadrille4-major4-letter      --pdf        --dpi 600 --mjw 4 --lw 2        -Dunit=1/4in -Dmajor-lines=4
+all () { 1; 2; 3; 4; 5; 6; 7; }
 
-printable --letter      quadrille -o quadrille10-letter            --pdf        --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/2in -Dmajor-lines=2 -Dfeint-lines=5
+if (( $# )) ; then
+    for i ; do
+	"$i"
+    done
+else
+    all
+fi
+
+# Local Variables
+# indent-tabs-mode: nil
+# End
