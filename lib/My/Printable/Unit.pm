@@ -165,28 +165,28 @@ sub rx_number {
 # $unit->qualifyValue('5.3mm from left', 'right') => ('5.3mm from right');
 # $unit->qualifyValue('5.3mm from left', undef)   => ('5.3mm');
 sub qualifyValue {
-    my ($self, $value, $qualifier) = @_;
+    my ($self, $value, $side) = @_;
 
-    ($value, my $oldQualifier) = $self->splitValueQualifier($value);
+    ($value, my $oldSide) = $self->splitValueSide($value);
 
-    return $value if !defined $qualifier;
-    return $value . ' from ' . $qualifier;
+    return $value if !defined $side;
+    return $value . ' from ' . $side;
 }
 
 sub qualifyValueByDefault {
-    my ($self, $value, $qualifier) = @_;
+    my ($self, $value, $side) = @_;
 
-    my $oldQualifier;
-    ($value, $oldQualifier) = $self->splitValueQualifier($value);
+    my $oldSide;
+    ($value, $oldSide) = $self->splitValueSide($value);
 
-    return $self->qualifyValue($value, $oldQualifier // $qualifier);
+    return $self->qualifyValue($value, $oldSide // $side);
 }
 
-# $unit->splitValueQualifier('5.3mm from right') => ('5.3mm', 'right');
-sub splitValueQualifier {
+# $unit->splitValueSide('5.3mm from right') => ('5.3mm', 'right');
+sub splitValueSide {
     my ($self, $value) = @_;
 
-    my $qualifier;
+    my $side;
 
     # ___ from {left,right,top,bottom,...}
     if ($value =~ s{\s+(?:from\s+)?
@@ -194,7 +194,7 @@ sub splitValueQualifier {
                     |start|begin|beginning
                     |finish|end|ending)
                     \s*$}{}xi) {
-        $qualifier = lc($1);
+        $side = lc($1);
     }
 
     # {left,right,top,bottom,...} ___
@@ -203,10 +203,10 @@ sub splitValueQualifier {
                     |start|begin|beginning
                     |finish|end|ending)
                     \s+}{}xi) {
-        $qualifier = lc($1);
+        $side = lc($1);
     }
 
-    return ($value, $qualifier);
+    return ($value, $side);
 }
 
 sub pt {
@@ -228,7 +228,7 @@ sub pt {
 
     my $is_from_end = 0;
 
-    ($value, my $side) = $self->splitValueQualifier($value);
+    ($value, my $side) = $self->splitValueSide($value);
     if (defined $side) {
         if (grep { $_ eq $side } qw(right bottom finish end ending)) {
             $is_from_end = 1;
