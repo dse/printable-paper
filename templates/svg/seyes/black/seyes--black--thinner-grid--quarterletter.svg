@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="306.000pt" height="396.000pt" viewBox="0.000 0.000 306.000 396.000">
+  <style>
+        .line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; }
+        .stroke-linecap-butt { stroke-linecap: butt; }
+        .rectangle { fill: #ffffff; }
+
+
+        .line        { stroke-width: 0.24px; opacity:  1; }
+        .major-line  { stroke-width: 0.339411254969543px; opacity: 1; }
+        .feint-line  { stroke-width: 0.12px; opacity:  1; }
+        .dot         { stroke-width: 0.96px; opacity:  1; }
+        .margin-line { stroke-width: 0.24px; opacity:  1; }
+        .line        { stroke: #000000; }
+        .major-line  { stroke: #000000; }
+        .feint-line  { stroke: #000000; }
+        .dot         { stroke: #000000; }
+        .margin-line { stroke: #000000; }
+  </style>
+  <defs/>
+  <g id="grid">
+    <line x1="0.000" x2="306.000" y1="37.125" y2="37.125" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="42.750" y2="42.750" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="48.375" y2="48.375" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="54.000" y2="54.000" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="59.625" y2="59.625" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="65.250" y2="65.250" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="70.875" y2="70.875" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="76.500" y2="76.500" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="82.125" y2="82.125" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="87.750" y2="87.750" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="93.375" y2="93.375" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="99.000" y2="99.000" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="104.625" y2="104.625" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="110.250" y2="110.250" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="115.875" y2="115.875" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="121.500" y2="121.500" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="127.125" y2="127.125" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="132.750" y2="132.750" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="138.375" y2="138.375" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="144.000" y2="144.000" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="149.625" y2="149.625" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="155.250" y2="155.250" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="160.875" y2="160.875" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="166.500" y2="166.500" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="172.125" y2="172.125" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="177.750" y2="177.750" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="183.375" y2="183.375" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="189.000" y2="189.000" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="194.625" y2="194.625" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="200.250" y2="200.250" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="205.875" y2="205.875" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="211.500" y2="211.500" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="217.125" y2="217.125" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="222.750" y2="222.750" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="228.375" y2="228.375" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="234.000" y2="234.000" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="239.625" y2="239.625" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="245.250" y2="245.250" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="250.875" y2="250.875" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="256.500" y2="256.500" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="262.125" y2="262.125" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="267.750" y2="267.750" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="273.375" y2="273.375" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="279.000" y2="279.000" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="284.625" y2="284.625" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="290.250" y2="290.250" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="295.875" y2="295.875" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="301.500" y2="301.500" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="307.125" y2="307.125" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="312.750" y2="312.750" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="318.375" y2="318.375" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="324.000" y2="324.000" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="329.625" y2="329.625" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="335.250" y2="335.250" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="340.875" y2="340.875" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="346.500" y2="346.500" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="352.125" y2="352.125" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="357.750" y2="357.750" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="363.375" y2="363.375" class="feint-line"/>
+    <line x1="0.000" x2="306.000" y1="369.000" y2="369.000" class="feint-line"/>
+    <line x1="36.000" x2="36.000" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="58.500" x2="58.500" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="81.000" x2="81.000" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="103.500" x2="103.500" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="126.000" x2="126.000" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="148.500" x2="148.500" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="171.000" x2="171.000" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="193.500" x2="193.500" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="216.000" x2="216.000" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="238.500" x2="238.500" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="261.000" x2="261.000" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="283.500" x2="283.500" y1="0.000" y2="396.000" class="feint-line"/>
+    <line x1="306.000" x2="306.000" y1="0.000" y2="396.000" class="feint-line"/>
+  </g>
+  <g id="lines">
+    <line x1="0.000" x2="306.000" y1="54.000" y2="54.000" class="line"/>
+    <line x1="0.000" x2="306.000" y1="76.500" y2="76.500" class="line"/>
+    <line x1="0.000" x2="306.000" y1="99.000" y2="99.000" class="line"/>
+    <line x1="0.000" x2="306.000" y1="121.500" y2="121.500" class="line"/>
+    <line x1="0.000" x2="306.000" y1="144.000" y2="144.000" class="line"/>
+    <line x1="0.000" x2="306.000" y1="166.500" y2="166.500" class="line"/>
+    <line x1="0.000" x2="306.000" y1="189.000" y2="189.000" class="line"/>
+    <line x1="0.000" x2="306.000" y1="211.500" y2="211.500" class="line"/>
+    <line x1="0.000" x2="306.000" y1="234.000" y2="234.000" class="line"/>
+    <line x1="0.000" x2="306.000" y1="256.500" y2="256.500" class="line"/>
+    <line x1="0.000" x2="306.000" y1="279.000" y2="279.000" class="line"/>
+    <line x1="0.000" x2="306.000" y1="301.500" y2="301.500" class="line"/>
+    <line x1="0.000" x2="306.000" y1="324.000" y2="324.000" class="line"/>
+    <line x1="0.000" x2="306.000" y1="346.500" y2="346.500" class="line"/>
+  </g>
+  <g id="margin-line">
+    <line x1="36.000" x2="36.000" y1="0.000" y2="396.000" class="margin-line"/>
+  </g>
+  <rect x="58.5" y="370" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
+  <text x="153" y="378" text-anchor="middle" fill="#000000" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>
+</svg>
