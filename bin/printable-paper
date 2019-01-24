@@ -130,8 +130,8 @@ options:
         -m, --metric
         -i, --imperial
         -D, --define, --modifier=<modifier>
-            --id=<id>
         -o, --output, --filename=<filename>     output SVG to a file, not stdout
+            --id=<id>
 list of <ruling>s:
     --list-ruling-names
     --list-rulings              show some details
