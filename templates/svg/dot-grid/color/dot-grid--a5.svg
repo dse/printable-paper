@@ -1,48 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="419.528pt" height="595.276pt" viewBox="0.000 0.000 419.528 595.276">
+<svg xmlns="http://www.w3.org/2000/svg" width="421.373pt" height="595.911pt" viewBox="0.000 0.000 421.373 595.911">
   <style>
-        .line, .dot, .feint-line, .margin-line { stroke-linecap: round; }
+        .line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; }
         .stroke-linecap-butt { stroke-linecap: butt; }
         .rectangle { fill: #ffffff; }
 
 
-        .line        { stroke-width: 0.96px; opacity: 1; }
-        .feint-line  { stroke-width: 0.678822509939086px; opacity: 1; }
-        .dot         { stroke-width: 1.92px; opacity: 1; }
-        .margin-line { stroke-width: 0.96px; opacity: 1; }
+        .line        { stroke-width: 0.96px; opacity:  1; }
+        .major-line  { stroke-width: 1.35764501987817px; opacity: 1; }
+        .feint-line  { stroke-width: 0.678822509939086px; opacity:  1; }
+        .dot         { stroke-width: 1.92px; opacity:  1; }
+        .margin-line { stroke-width: 0.96px; opacity:  1; }
         .line        { stroke: #b3b3ff; }
+        .major-line  { stroke: #b3b3ff; }
         .feint-line  { stroke: #b3b3ff; }
         .dot         { stroke: #b3b3ff; }
         .margin-line { stroke: #ff9e9e; }
   </style>
   <defs/>
   <g id="grid">
-    <line x1="5.670" x2="5.670" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="22.677" x2="22.677" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="39.685" x2="39.685" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="56.693" x2="56.693" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="73.701" x2="73.701" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="90.709" x2="90.709" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="107.717" x2="107.717" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="124.725" x2="124.725" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="141.733" x2="141.733" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="158.740" x2="158.740" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="175.748" x2="175.748" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="192.756" x2="192.756" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="209.764" x2="209.764" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="226.772" x2="226.772" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="243.780" x2="243.780" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="260.788" x2="260.788" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="277.795" x2="277.795" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="294.803" x2="294.803" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="311.811" x2="311.811" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="328.819" x2="328.819" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="345.827" x2="345.827" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="362.835" x2="362.835" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="379.843" x2="379.843" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="396.851" x2="396.851" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
-    <line x1="413.858" x2="413.858" y1="8.504" y2="586.772" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="6.592" x2="6.592" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="23.600" x2="23.600" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="40.608" x2="40.608" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="57.615" x2="57.615" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="74.623" x2="74.623" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="91.631" x2="91.631" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="108.639" x2="108.639" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="125.647" x2="125.647" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="142.655" x2="142.655" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="159.663" x2="159.663" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="176.671" x2="176.671" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="193.678" x2="193.678" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="210.686" x2="210.686" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="227.694" x2="227.694" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="244.702" x2="244.702" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="261.710" x2="261.710" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="278.718" x2="278.718" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="295.726" x2="295.726" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="312.734" x2="312.734" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="329.741" x2="329.741" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="346.749" x2="346.749" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="363.757" x2="363.757" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="380.765" x2="380.765" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="397.773" x2="397.773" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
+    <line x1="414.781" x2="414.781" y1="8.822" y2="587.089" class="dot" stroke-dasharray="0.010 16.998" stroke-dashoffset="0.005"/>
   </g>
-  <rect x="115.264" y="569.276" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
-  <text x="209.764" y="577.276" text-anchor="middle" fill="#b3b3ff" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>
+  <rect x="116.186299902057" y="569.910845455389" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
+  <text x="210.686299902057" y="577.910845455389" text-anchor="middle" fill="#b3b3ff" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>
 </svg>
