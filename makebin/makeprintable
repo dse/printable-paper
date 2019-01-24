@@ -4,7 +4,7 @@ use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Maker;
+use My::Printable::Paper::Maker;
 
 our $opt_verbose = 0;
 our $opt_dry_run = 0;
@@ -34,7 +34,7 @@ options:
   -f, --force
 END
 
-my $maker = My::Printable::Maker->new();
+my $maker = My::Printable::Paper::Maker->new();
 $maker->verbose($opt_verbose);
 $maker->dryRun($opt_dry_run);
 $maker->force($opt_force);
