@@ -1,4 +1,4 @@
-package My::Printable::Ruling::Oasis;
+package My::Printable::Paper::Ruling::Oasis;
 use warnings;
 use strict;
 use v5.10.0;
@@ -7,11 +7,11 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 
 use Moo;
 
-extends 'My::Printable::Ruling';
+extends 'My::Printable::Paper::Ruling';
 
-use My::Printable::Element::Grid;
-use My::Printable::Element::Lines;
-use My::Printable::Unit qw(:const);
+use My::Printable::Paper::Element::Grid;
+use My::Printable::Paper::Element::Lines;
+use My::Printable::Paper::Unit qw(:const);
 
 use constant rulingName => 'oasis';
 
@@ -42,7 +42,7 @@ around generateRuling => sub {
     my $dotCrosswise  = $self->pt([$self->dotWidth(), 'pt']) . 'pt';
     my $dotCrosswise2 = $self->pt([2 * $self->dotWidth(), 'pt']) . 'pt';
 
-    my $horizontal_lines = My::Printable::Element::Lines->new(
+    my $horizontal_lines = My::Printable::Paper::Element::Lines->new(
         document => $self->document,
         id => 'lines',
         direction => 'horizontal',
@@ -50,7 +50,7 @@ around generateRuling => sub {
         cssClass => $self->getLineCSSClass(),
     );
 
-    my $vertical_dotted_lines = My::Printable::Element::Grid->new(
+    my $vertical_dotted_lines = My::Printable::Paper::Element::Grid->new(
         document => $self->document,
         id => 'grid-1',
         isDotGrid => 1,
@@ -60,7 +60,7 @@ around generateRuling => sub {
         cssClass => $self->getDotCSSClass(),
     );
 
-    my $horizontal_dotted_lines_1 = My::Printable::Element::Grid->new(
+    my $horizontal_dotted_lines_1 = My::Printable::Paper::Element::Grid->new(
         document => $self->document,
         id => 'grid-2',
         isDotGrid => 1,
@@ -71,7 +71,7 @@ around generateRuling => sub {
         cssClass => $self->getDotCSSClass(),
     );
 
-    my $horizontal_dotted_lines_2 = My::Printable::Element::Grid->new(
+    my $horizontal_dotted_lines_2 = My::Printable::Paper::Element::Grid->new(
         document => $self->document,
         id => 'grid-3',
         isDotGrid => 1,
@@ -82,7 +82,7 @@ around generateRuling => sub {
         cssClass => $self->getDotCSSClass(),
     );
 
-    my $grid_4 = My::Printable::Element::Grid->new(
+    my $grid_4 = My::Printable::Paper::Element::Grid->new(
         document => $self->document,
         id => 'grid-4',
         isDotGrid => 1,

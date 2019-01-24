@@ -1,4 +1,4 @@
-package My::Printable::Element::Grid;
+package My::Printable::Paper::Element::Grid;
 use warnings;
 use strict;
 use v5.10.0;
@@ -26,11 +26,11 @@ has "origDottedLineXPointSeries" => (is => 'rw');
 has "origDottedLineYPointSeries" => (is => 'rw');
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::PointSeries;
+use My::Printable::Paper::PointSeries;
 
 use Moo;
 
-extends qw(My::Printable::Element);
+extends qw(My::Printable::Paper::Element);
 
 use List::Util qw(min max);
 use Storable qw(dclone);
@@ -44,13 +44,13 @@ sub computeX {
         $spacingX /= $self->horizontalDots;
         my $originX = $self->originX // $self->document->originX;
 
-        $self->dottedLineXPointSeries(My::Printable::PointSeries->new(
+        $self->dottedLineXPointSeries(My::Printable::Paper::PointSeries->new(
             spacing => $spacingX,
             min     => scalar($self->x1 // $self->document->leftMarginX),
             max     => scalar($self->x2 // $self->document->rightMarginX),
             origin  => $originX,
         ));
-        $self->origDottedLineXPointSeries(My::Printable::PointSeries->new(
+        $self->origDottedLineXPointSeries(My::Printable::Paper::PointSeries->new(
             spacing => $spacingX,
             min     => scalar($self->document->leftMarginX),
             max     => scalar($self->document->rightMarginX),
@@ -68,13 +68,13 @@ sub computeY {
         $spacingY /= $self->verticalDots;
         my $originY = $self->originY // $self->document->originY;
 
-        $self->dottedLineYPointSeries(My::Printable::PointSeries->new(
+        $self->dottedLineYPointSeries(My::Printable::Paper::PointSeries->new(
             spacing => $spacingY,
             min     => scalar($self->y1 // $self->document->topMarginY),
             max     => scalar($self->y2 // $self->document->bottomMarginY),
             origin  => $originY,
         ));
-        $self->origDottedLineYPointSeries(My::Printable::PointSeries->new(
+        $self->origDottedLineYPointSeries(My::Printable::Paper::PointSeries->new(
             spacing => $spacingY,
             min     => scalar($self->document->topMarginY),
             max     => scalar($self->document->bottomMarginY),

@@ -1,10 +1,10 @@
-package My::Printable::PaperSizes;
+package My::Printable::Paper::Sizes;
 use warnings;
 use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Unit;
+use My::Printable::Paper::Unit;
 
 use Moo;
 
@@ -14,33 +14,33 @@ our $SIZES;
 INIT {                          # cannot use BEGIN here.
     $SIZES = {
         letter => {
-            width  => scalar(My::Printable::Unit->pt([8.5, "in"])),
-            height => scalar(My::Printable::Unit->pt([11, "in"])),
+            width  => scalar(My::Printable::Paper::Unit->pt([8.5, "in"])),
+            height => scalar(My::Printable::Paper::Unit->pt([11, "in"])),
             type   => "imperial",
         },
         a4 => {
-            width  => scalar(My::Printable::Unit->pt([250 / sqrt(sqrt(2)), "mm"])),
-            height => scalar(My::Printable::Unit->pt([250 * sqrt(sqrt(2)), "mm"])),
+            width  => scalar(My::Printable::Paper::Unit->pt([250 / sqrt(sqrt(2)), "mm"])),
+            height => scalar(My::Printable::Paper::Unit->pt([250 * sqrt(sqrt(2)), "mm"])),
             type   => "metric",
         },
         halfletter => {
-            width  => scalar(My::Printable::Unit->pt([5.5, "in"])),
-            height => scalar(My::Printable::Unit->pt([8.5, "in"])),
+            width  => scalar(My::Printable::Paper::Unit->pt([5.5, "in"])),
+            height => scalar(My::Printable::Paper::Unit->pt([8.5, "in"])),
             type   => "imperial",
         },
         a5 => {
-            width  => scalar(My::Printable::Unit->pt([125 * sqrt(sqrt(2)), "mm"])),
-            height => scalar(My::Printable::Unit->pt([250 / sqrt(sqrt(2)), "mm"])),
+            width  => scalar(My::Printable::Paper::Unit->pt([125 * sqrt(sqrt(2)), "mm"])),
+            height => scalar(My::Printable::Paper::Unit->pt([250 / sqrt(sqrt(2)), "mm"])),
             type   => "metric",
         },
         quarterletter => {
-            width  => scalar(My::Printable::Unit->pt([4.25, "in"])),
-            height => scalar(My::Printable::Unit->pt([5.5, "in"])),
+            width  => scalar(My::Printable::Paper::Unit->pt([4.25, "in"])),
+            height => scalar(My::Printable::Paper::Unit->pt([5.5, "in"])),
             type   => "imperial",
         },
         a6 => {
-            width  => scalar(My::Printable::Unit->pt([125 / sqrt(sqrt(2)), "mm"])),
-            height => scalar(My::Printable::Unit->pt([125 * sqrt(sqrt(2)), "mm"])),
+            width  => scalar(My::Printable::Paper::Unit->pt([125 / sqrt(sqrt(2)), "mm"])),
+            height => scalar(My::Printable::Paper::Unit->pt([125 * sqrt(sqrt(2)), "mm"])),
             type   => "metric",
         },
     };
@@ -119,8 +119,8 @@ sub parse_custom_papersize {
     my ($self, $spec) = @_;
     $spec = lc $spec;
 
-    my $rx_number = My::Printable::Unit->rx_number;
-    my $rx_units  = My::Printable::Unit->rx_units;
+    my $rx_number = My::Printable::Paper::Unit->rx_number;
+    my $rx_units  = My::Printable::Paper::Unit->rx_units;
 
     if ($spec =~ m{\A
                    \s*
@@ -162,8 +162,8 @@ sub parse_custom_papersize {
 
         my $x_type;
         my $y_type;
-        ($width,  $x_type) = My::Printable::Unit->pt([$width,  $x_unit]);
-        ($height, $y_type) = My::Printable::Unit->pt([$height, $y_unit]);
+        ($width,  $x_type) = My::Printable::Paper::Unit->pt([$width,  $x_unit]);
+        ($height, $y_type) = My::Printable::Paper::Unit->pt([$height, $y_unit]);
 
         my $unit_type = $x_type // $y_type;
         if (wantarray) {
@@ -185,7 +185,7 @@ sub get_square_points {
     if (exists $SQUARE_POINTS{$size}) {
         return $SQUARE_POINTS{$size};
     }
-    my $hash = My::Printable::PaperSizes->parse($size);
+    my $hash = My::Printable::Paper::Sizes->parse($size);
     if (!$hash) {
         return $SQUARE_POINTS{$size} = undef;
     }

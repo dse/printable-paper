@@ -1,4 +1,4 @@
-package My::Printable::Util::InkscapeShell;
+package My::Printable::Paper::Util::InkscapeShell;
 use warnings;
 use strict;
 use v5.10.0;

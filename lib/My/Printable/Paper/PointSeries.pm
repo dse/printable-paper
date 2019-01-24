@@ -1,10 +1,10 @@
-package My::Printable::PointSeries;
+package My::Printable::Paper::PointSeries;
 use warnings;
 use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(:around);
+use My::Printable::Paper::Util qw(:around);
 
 use Moo;
 

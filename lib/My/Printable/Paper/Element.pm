@@ -1,10 +1,10 @@
-package My::Printable::Element;
+package My::Printable::Paper::Element;
 use warnings;
 use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(:const :around);
+use My::Printable::Paper::Util qw(:const :around);
 
 use List::Util qw(min max);
 use Storable qw(dclone);
@@ -59,7 +59,7 @@ has "document" => (
         "svgRoot",
         'svgDefs',
     ],
-);                              # My::Printable::Document
+);                              # My::Printable::Paper::Document
 
 has "extendLeft" => (is => 'rw');
 has "extendRight" => (is => 'rw');
@@ -263,14 +263,14 @@ sub computeX {
 
     my $shiftPoints = $self->shiftPointsX || $self->shiftPoints;
 
-    $self->xPointSeries(My::Printable::PointSeries->new(
+    $self->xPointSeries(My::Printable::Paper::PointSeries->new(
         spacing     => $spacingX,
         min         => scalar($self->x1 // $self->document->leftMarginX),
         max         => scalar($self->x2 // $self->document->rightMarginX),
         origin      => $originX,
         shiftPoints => $shiftPoints,
     ));
-    $self->origXPointSeries(My::Printable::PointSeries->new(
+    $self->origXPointSeries(My::Printable::Paper::PointSeries->new(
         spacing     => $spacingX,
         min         => scalar($self->document->leftMarginX),
         max         => scalar($self->document->rightMarginX),
@@ -289,14 +289,14 @@ sub computeY {
 
     my $shiftPoints = $self->shiftPointsY || $self->shiftPoints;
 
-    $self->yPointSeries(My::Printable::PointSeries->new(
+    $self->yPointSeries(My::Printable::Paper::PointSeries->new(
         spacing     => $spacingY,
         min         => scalar($self->y1 // $self->document->topMarginY),
         max         => scalar($self->y2 // $self->document->bottomMarginY),
         origin      => $originY,
         shiftPoints => $shiftPoints,
     ));
-    $self->origYPointSeries(My::Printable::PointSeries->new(
+    $self->origYPointSeries(My::Printable::Paper::PointSeries->new(
         spacing     => $spacingY,
         min         => scalar($self->document->topMarginY),
         max         => scalar($self->document->bottomMarginY),

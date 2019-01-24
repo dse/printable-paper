@@ -1,4 +1,4 @@
-package My::Printable::Color;
+package My::Printable::Paper::Color;
 use warnings;
 use strict;
 use v5.10.0;

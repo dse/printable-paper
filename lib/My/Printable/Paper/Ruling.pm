@@ -1,21 +1,21 @@
-package My::Printable::Ruling;
+package My::Printable::Paper::Ruling;
 use warnings;
 use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Document;
-use My::Printable::Element::Rectangle;
-use My::Printable::Unit qw(:const);
-use My::Printable::Color qw(:const);
-use My::Printable::Element::Line;
+use My::Printable::Paper::Document;
+use My::Printable::Paper::Element::Rectangle;
+use My::Printable::Paper::Unit qw(:const);
+use My::Printable::Paper::Color qw(:const);
+use My::Printable::Paper::Element::Line;
 
 use Moo;
 
 has 'document' => (
     is => 'rw',
     default => sub {
-        return My::Printable::Document->new();
+        return My::Printable::Paper::Document->new();
     },
     clearer => 'deleteDocument',
     handles => [
@@ -138,7 +138,7 @@ sub lineColor {
     }
     my $value = shift;
     return $self->rawLineColor(
-        My::Printable::Color->new($value)
+        My::Printable::Paper::Color->new($value)
     )->asHex;
 }
 
@@ -152,7 +152,7 @@ sub majorLineColor {
     }
     my $value = shift;
     return $self->rawMajorLineColor(
-        My::Printable::Color->new($value)
+        My::Printable::Paper::Color->new($value)
     )->asHex;
 }
 
@@ -166,7 +166,7 @@ sub feintLineColor {
     }
     my $value = shift;
     return $self->rawFeintLineColor(
-        My::Printable::Color->new($value)
+        My::Printable::Paper::Color->new($value)
     )->asHex;
 }
 
@@ -180,7 +180,7 @@ sub dotColor {
     }
     my $value = shift;
     return $self->rawDotColor(
-        My::Printable::Color->new($value)
+        My::Printable::Paper::Color->new($value)
     )->asHex;
 }
 
@@ -194,7 +194,7 @@ sub marginLineColor {
     }
     my $value = shift;
     return $self->rawMarginLineColor(
-        My::Printable::Color->new($value)
+        My::Printable::Paper::Color->new($value)
     )->asHex;
 }
 
@@ -268,7 +268,7 @@ sub generateRuling {
 sub generatePageNumberRectangle {
     my ($self) = @_;
     my $cssClass = sprintf('%s rectangle', $self->getLineCSSClass());
-    my $rect = My::Printable::Element::Rectangle->new(
+    my $rect = My::Printable::Paper::Element::Rectangle->new(
         document => $self->document,
         id => 'page-number-rect',
         cssClass => $cssClass,
@@ -291,7 +291,7 @@ sub generatePageNumberRectangle {
 
 sub generateMarginLine {
     my ($self) = @_;
-    my $margin_line = My::Printable::Element::Line->new(
+    my $margin_line = My::Printable::Paper::Element::Line->new(
         document => $self->document,
         id => 'margin-line',
         cssClass => $self->getMarginLineCSSClass,
@@ -367,7 +367,7 @@ sub getMajorLineCSSClass {
 has 'lineWidthUnit' => (
     is => 'rw',
     default => sub {
-        my $unit = My::Printable::Unit->new();
+        my $unit = My::Printable::Paper::Unit->new();
         $unit->defaultUnit('pd');
         return $unit;
     },
@@ -581,7 +581,7 @@ sub getRulingClassName {
     $class_suffix =~ s{(^|[-_]+)
                        ([[:alpha:]])}
                       {uc $2}gex;
-    my $ruling_class_name = "My::Printable::Ruling::" . $class_suffix;
+    my $ruling_class_name = "My::Printable::Paper::Ruling::" . $class_suffix;
     return $ruling_class_name;
 }
 

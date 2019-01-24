@@ -1,4 +1,4 @@
-package My::Printable::Util;
+package My::Printable::Paper::Util;
 use warnings;
 use strict;
 use v5.10.0;
@@ -87,7 +87,7 @@ sub aroundUnit {
     if ($self->can('pt')) {
         $value = $self->pt($value);
     } else {
-        $value = My::Printable::Unit->pt($value);
+        $value = My::Printable::Paper::Unit->pt($value);
     }
     $self->$orig($value, @_);
 }

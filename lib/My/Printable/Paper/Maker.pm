@@ -1,14 +1,14 @@
-package My::Printable::Maker;
+package My::Printable::Paper::Maker;
 use warnings;
 use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Document;
-use My::Printable::Ruling;
-use My::Printable::Util::InkscapeShell;
-use My::Printable::Util qw(with_temp);
-use My::Printable::Converter;
+use My::Printable::Paper::Document;
+use My::Printable::Paper::Ruling;
+use My::Printable::Paper::Util::InkscapeShell;
+use My::Printable::Paper::Util qw(with_temp);
+use My::Printable::Paper::Converter;
 
 use String::ShellQuote qw(shell_quote);
 use Cwd qw(realpath getcwd);
@@ -243,7 +243,7 @@ sub buildSVG {
         with_temp(
             $target, sub {
                 my ($tempname) = @_;
-                my $ruling_class_name = My::Printable::Ruling->getRulingClassName($template->{ruling});
+                my $ruling_class_name = My::Printable::Paper::Ruling->getRulingClassName($template->{ruling});
                 eval "use $ruling_class_name";
                 if ($@) {
                     die $@;
@@ -267,9 +267,9 @@ sub buildPDFFromSVG {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::PaperSizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
 
-    my $converter = My::Printable::Converter->new(
+    my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
         verbose => $self->verbose,
         width => $width,
@@ -286,9 +286,9 @@ sub buildPSFromSVG {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::PaperSizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
 
-    my $converter = My::Printable::Converter->new(
+    my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
         verbose => $self->verbose,
         width => $width,
@@ -305,9 +305,9 @@ sub build2PagePDF {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::PaperSizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
 
-    my $converter = My::Printable::Converter->new(
+    my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
         verbose => $self->verbose,
         width => $width,
@@ -324,9 +324,9 @@ sub build2PagePS {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::PaperSizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
 
-    my $converter = My::Printable::Converter->new(
+    my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
         verbose => $self->verbose,
         width => $width,
@@ -343,9 +343,9 @@ sub build2Page2UpPDF {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::PaperSizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
 
-    my $converter = My::Printable::Converter->new(
+    my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
         verbose => $self->verbose,
         width => $width,
@@ -362,9 +362,9 @@ sub build2Page2UpPS {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::PaperSizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
 
-    my $converter = My::Printable::Converter->new(
+    my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
         verbose => $self->verbose,
         width => $width,

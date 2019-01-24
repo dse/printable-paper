@@ -1,4 +1,4 @@
-package My::Printable::Element::Line;
+package My::Printable::Paper::Element::Line;
 use warnings;
 use strict;
 use v5.10.0;
@@ -7,7 +7,7 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 
 use Moo;
 
-extends qw(My::Printable::Element);
+extends qw(My::Printable::Paper::Element);
 
 sub draw {
     my ($self) = @_;

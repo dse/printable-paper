@@ -1,4 +1,4 @@
-package My::Printable::ModifierList;
+package My::Printable::Paper::ModifierList;
 use warnings;
 use strict;
 use v5.10.0;

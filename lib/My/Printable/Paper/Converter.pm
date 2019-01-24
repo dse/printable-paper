@@ -1,11 +1,11 @@
-package My::Printable::Converter;
+package My::Printable::Paper::Converter;
 use warnings;
 use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util::InkscapeShell;
-use My::Printable::Util qw(with_temp);
+use My::Printable::Paper::Util::InkscapeShell;
+use My::Printable::Paper::Util qw(with_temp);
 
 use String::ShellQuote qw(shell_quote);
 use Cwd qw(realpath getcwd);
@@ -29,7 +29,7 @@ has 'inkscapeShell' => (
         if (!which('inkscape')) {
             die("inkscape progran not found\n");
         }
-        return My::Printable::Util::InkscapeShell->new();
+        return My::Printable::Paper::Util::InkscapeShell->new();
     },
 );
 

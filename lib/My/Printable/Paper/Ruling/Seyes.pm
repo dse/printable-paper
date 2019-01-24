@@ -1,4 +1,4 @@
-package My::Printable::Ruling::Seyes;
+package My::Printable::Paper::Ruling::Seyes;
 use warnings;
 use strict;
 use v5.10.0;
@@ -7,11 +7,11 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 
 use Moo;
 
-extends 'My::Printable::Ruling::SeyesClass';
+extends 'My::Printable::Paper::Ruling::SeyesClass';
 
-use My::Printable::Element::Grid;
-use My::Printable::Element::Lines;
-use My::Printable::Element::Line;
+use My::Printable::Paper::Element::Grid;
+use My::Printable::Paper::Element::Lines;
+use My::Printable::Paper::Element::Line;
 
 use POSIX qw(round);
 
@@ -29,7 +29,7 @@ around generateRuling => sub {
         $dividingLines = undef if $dividingLines < 2;
     }
 
-    my $grid = My::Printable::Element::Grid->new(
+    my $grid = My::Printable::Paper::Element::Grid->new(
         document => $self->document,
         id => 'grid',
         cssClass => $self->getFeintLineCSSClass,
@@ -63,7 +63,7 @@ around generateRuling => sub {
         $grid->extendBottom(2);
     }
 
-    my $lines = My::Printable::Element::Lines->new(
+    my $lines = My::Printable::Paper::Element::Lines->new(
         document => $self->document,
         id => 'lines',
         cssClass => $self->getLineCSSClass,

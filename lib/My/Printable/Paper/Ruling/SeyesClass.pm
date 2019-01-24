@@ -1,4 +1,4 @@
-package My::Printable::Ruling::SeyesClass;
+package My::Printable::Paper::Ruling::SeyesClass;
 use warnings;
 use strict;
 use v5.10.0;
@@ -7,7 +7,7 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 
 use Moo;
 
-extends 'My::Printable::Ruling';
+extends 'My::Printable::Paper::Ruling';
 
 sub getOriginX {
     my ($self) = @_;
@@ -100,7 +100,7 @@ sub getOriginY {
 
 sub generateHeadLine {
     my ($self) = @_;
-    my $line = My::Printable::Element::Line->new(
+    my $line = My::Printable::Paper::Element::Line->new(
         document => $self->document,
         id => 'head-line',
         cssClass => $self->getLineCSSClass,
@@ -117,7 +117,7 @@ sub getHeadLineY {
 
 sub generatePageNumberLine {
     my ($self, %args) = @_;
-    my $line = My::Printable::Element::Line->new(
+    my $line = My::Printable::Paper::Element::Line->new(
         document => $self->document,
         id => 'page-number-line',
         cssClass => $self->getLineCSSClass,

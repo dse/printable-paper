@@ -1,4 +1,4 @@
-package My::Printable::Element::Lines;
+package My::Printable::Paper::Element::Lines;
 use warnings;
 use strict;
 use v5.10.0;
@@ -12,11 +12,11 @@ has 'direction' => (
 );
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::PointSeries;
+use My::Printable::Paper::PointSeries;
 
 use Moo;
 
-extends qw(My::Printable::Element);
+extends qw(My::Printable::Paper::Element);
 
 sub draw {
     my ($self) = @_;

@@ -1,13 +1,13 @@
-package My::Printable::Document;
+package My::Printable::Paper::Document;
 use warnings;
 use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::ModifierList;
-use My::Printable::Util qw(:const);
-use My::Printable::Converter;
-use My::Printable::Color qw(:const);
+use My::Printable::Paper::ModifierList;
+use My::Printable::Paper::Util qw(:const);
+use My::Printable::Paper::Converter;
+use My::Printable::Paper::Color qw(:const);
 
 use XML::LibXML;
 use Scalar::Util qw(refaddr);
@@ -47,7 +47,7 @@ sub paperSizeName {
         return $self->rawPaperSizeName;
     }
     my $spec = shift;
-    my ($name, $width, $height, $unit_type) = My::Printable::PaperSizes->parse($spec);
+    my ($name, $width, $height, $unit_type) = My::Printable::Paper::Sizes->parse($spec);
     $self->unitType($unit_type);
     $self->rawWidth($width);
     $self->rawHeight($height);
@@ -119,14 +119,14 @@ has 'rightMarginX' => (is => 'rw');             # in pt, left = 0
 has 'topMarginY' => (is => 'rw');               # in pt, top = 0
 has 'bottomMarginY' => (is => 'rw');            # in pt, top = 0
 
-# My::Printable::Unit
+# My::Printable::Paper::Unit
 has 'unit' => (is => 'rw');
 has 'unitX' => (is => 'rw');
 has 'unitY' => (is => 'rw');
 
 has 'modifiers' => (
     is => 'rw',
-    default => sub { return My::Printable::ModifierList->new(); },
+    default => sub { return My::Printable::Paper::ModifierList->new(); },
 );
 has 'elements' => (
     is => 'rw',
@@ -292,9 +292,9 @@ sub findStyleNodeInsertionPoint {
 }
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(round3);
-use My::Printable::Unit;
-use My::Printable::PaperSizes;
+use My::Printable::Paper::Util qw(round3);
+use My::Printable::Paper::Unit;
+use My::Printable::Paper::Sizes;
 
 sub deleteSVG {
     my ($self) = @_;
@@ -330,9 +330,9 @@ sub pt {
 
 sub BUILD {
     my ($self) = @_;
-    $self->unit(My::Printable::Unit->new());
-    $self->unitX(My::Printable::Unit->new());
-    $self->unitY(My::Printable::Unit->new());
+    $self->unit(My::Printable::Paper::Unit->new());
+    $self->unitX(My::Printable::Paper::Unit->new());
+    $self->unitY(My::Printable::Paper::Unit->new());
     $self->unitX->size($self->width);
     $self->unitY->size($self->height);
     $self->unitX->setPercentageBasis($self->width);
@@ -522,7 +522,7 @@ sub generateFormats {
     my $twoPageFourUpPDFFilename = $baseFilename . '.2page4up.pdf';
     my $twoPageFourUpPSFilename  = $baseFilename . '.2page4up.ps';
 
-    my $converter = My::Printable::Converter->new();
+    my $converter = My::Printable::Paper::Converter->new();
     $converter->width($self->width);
     $converter->height($self->height);
 
@@ -666,7 +666,7 @@ sub appendToSVGDefs {
 
 sub isPaperSizeClass {
     my ($self, $size) = @_;
-    my $sqpt_size = My::Printable::PaperSizes->get_square_points($size);
+    my $sqpt_size = My::Printable::Paper::Sizes->get_square_points($size);
     my $sqpt      = $self->getSquarePoints();
     return 0 if !$sqpt_size || !$sqpt;
     my $ratio = $sqpt / $sqpt_size;

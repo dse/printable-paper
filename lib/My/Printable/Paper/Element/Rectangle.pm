@@ -1,14 +1,14 @@
-package My::Printable::Element::Rectangle;
+package My::Printable::Paper::Element::Rectangle;
 use warnings;
 use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Util qw(:around);
+use My::Printable::Paper::Util qw(:around);
 
 use Moo;
 
-extends qw(My::Printable::Element);
+extends qw(My::Printable::Paper::Element);
 
 has 'width' => (is => 'rw');
 has 'height' => (is => 'rw');

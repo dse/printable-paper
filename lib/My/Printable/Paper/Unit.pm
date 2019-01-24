@@ -1,4 +1,4 @@
-package My::Printable::Unit;
+package My::Printable::Paper::Unit;
 use warnings;
 use strict;
 use v5.10.0;

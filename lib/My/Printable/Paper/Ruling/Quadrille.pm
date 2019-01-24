@@ -1,4 +1,4 @@
-package My::Printable::Ruling::Quadrille;
+package My::Printable::Paper::Ruling::Quadrille;
 use warnings;
 use strict;
 use v5.10.0;
@@ -7,9 +7,9 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 
 use Moo;
 
-extends 'My::Printable::Ruling';
+extends 'My::Printable::Paper::Ruling';
 
-use My::Printable::Element::Grid;
+use My::Printable::Paper::Element::Grid;
 
 use POSIX qw(round);
 use Data::Dumper;
@@ -38,7 +38,7 @@ around generateRuling => sub {
     }
 
     if (defined $majorLines) {
-        $majorGrid = My::Printable::Element::Grid->new(
+        $majorGrid = My::Printable::Paper::Element::Grid->new(
             document    => $self->document,
             id          => 'major-grid',
             cssClass    => $self->getMajorLineCSSClass,
@@ -46,7 +46,7 @@ around generateRuling => sub {
         );
         $majorGrid->setSpacing($majorLines . 'unit');
 
-        $grid = My::Printable::Element::Grid->new(
+        $grid = My::Printable::Paper::Element::Grid->new(
             document    => $self->document,
             id          => 'grid',
             cssClass    => $self->getLineCSSClass,
@@ -55,7 +55,7 @@ around generateRuling => sub {
         );
         $grid->setSpacing('1unit');
     } else {
-        $grid = My::Printable::Element::Grid->new(
+        $grid = My::Printable::Paper::Element::Grid->new(
             document    => $self->document,
             id          => 'grid',
             cssClass    => $self->getLineCSSClass,
@@ -65,7 +65,7 @@ around generateRuling => sub {
     }
 
     if (defined $feintLines) {
-        $feintGrid = My::Printable::Element::Grid->new(
+        $feintGrid = My::Printable::Paper::Element::Grid->new(
             document => $self->document,
             id       => 'feint-grid',
             cssClass => $self->getFeintLineCSSClass,

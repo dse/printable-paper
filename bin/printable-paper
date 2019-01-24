@@ -163,9 +163,9 @@ miscellaneous:
     -?, --help
 EOF
 
-use My::Printable::Document;
-use My::Printable::Ruling;
-use My::Printable::Unit qw(:const);
+use My::Printable::Paper::Document;
+use My::Printable::Paper::Ruling;
+use My::Printable::Paper::Unit qw(:const);
 
 if ($opt_pdf && !defined $opt_filename) {
     die("--pdf has no effect without --filename\n");
@@ -208,8 +208,8 @@ if (!$opt_pdf && !$opt_ps) {
 }
 
 if ($opt_list_ruling_names || $opt_list_rulings) {
-    use My::Printable::Util::Installed;
-    my $inst = My::Printable::Util::Installed->new();
+    use My::Printable::Paper::Util::Installed;
+    my $inst = My::Printable::Paper::Util::Installed->new();
     if ($opt_list_ruling_names) {
         say foreach @{$inst->rulingNameList};
     }
@@ -263,7 +263,7 @@ foreach my $ruling_name (@ARGV) {
 
 sub create_ruling_object {
     my ($ruling_name, @args) = @_;
-    my $ruling_class_name = My::Printable::Ruling->getRulingClassName($ruling_name);
+    my $ruling_class_name = My::Printable::Paper::Ruling->getRulingClassName($ruling_name);
     eval "use $ruling_class_name";
     if ($@) {
         die $@;

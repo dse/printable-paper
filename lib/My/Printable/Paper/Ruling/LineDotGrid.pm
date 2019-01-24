@@ -1,4 +1,4 @@
-package My::Printable::Ruling::LineDotGrid;
+package My::Printable::Paper::Ruling::LineDotGrid;
 use warnings;
 use strict;
 use v5.10.0;
@@ -7,11 +7,11 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 
 use Moo;
 
-extends 'My::Printable::Ruling';
+extends 'My::Printable::Paper::Ruling';
 
-use My::Printable::Element::Grid;
-use My::Printable::Element::Lines;
-use My::Printable::Unit qw(:const);
+use My::Printable::Paper::Element::Grid;
+use My::Printable::Paper::Element::Lines;
+use My::Printable::Paper::Unit qw(:const);
 
 use constant rulingName => 'line-dot-grid';
 use constant hasLineGrid => 0;
@@ -31,7 +31,7 @@ sub baseDotWidth {
 around generateRuling => sub {
     my ($orig, $self) = @_;
 
-    my $grid = My::Printable::Element::Grid->new(
+    my $grid = My::Printable::Paper::Element::Grid->new(
         document => $self->document,
         id => 'grid',
         cssClass => $self->getDotCSSClass,
@@ -39,7 +39,7 @@ around generateRuling => sub {
     $grid->isDotGrid(1);
     $grid->setSpacing('1unit');
 
-    my $lines = My::Printable::Element::Lines->new(
+    my $lines = My::Printable::Paper::Element::Lines->new(
         document => $self->document,
         id => 'lines',
         cssClass => $self->getLineCSSClass,

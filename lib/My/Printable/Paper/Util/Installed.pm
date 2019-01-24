@@ -1,4 +1,4 @@
-package My::Printable::Util::Installed;
+package My::Printable::Paper::Util::Installed;
 use warnings;
 use strict;
 use v5.10.0;
@@ -31,7 +31,7 @@ sub moduleHash {
 
 sub getListOfRulingModules {
     my ($self) = @_;
-    my @modules = grep { m{^My::Printable::Ruling::} } @{$self->moduleList};
+    my @modules = grep { m{^My::Printable::Paper::Ruling::} } @{$self->moduleList};
     return @modules;
 }
 
@@ -58,7 +58,7 @@ sub rulingNameList {
 
 sub setRulingModuleList {
     my ($self) = @_;
-    my @modules = grep { m{^My::Printable::Ruling::} } @{$self->moduleList};
+    my @modules = grep { m{^My::Printable::Paper::Ruling::} } @{$self->moduleList};
     $self->rawRulingModuleList(\@modules);
 }
 sub setRulingNameList {

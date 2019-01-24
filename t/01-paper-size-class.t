@@ -15,31 +15,31 @@ BEGIN {
 }
 use lib $lib;
 
-use My::Printable::Document;
+use My::Printable::Paper::Document;
 use Data::Dumper;
 
-my $d1 = My::Printable::Document->new;
+my $d1 = My::Printable::Paper::Document->new;
 $d1->paperSizeName('a3');
 
-my $d2 = My::Printable::Document->new;
+my $d2 = My::Printable::Paper::Document->new;
 $d2->paperSizeName('a4');
 
-my $d3 = My::Printable::Document->new;
+my $d3 = My::Printable::Paper::Document->new;
 $d3->paperSizeName('a5');
 
-my $d4 = My::Printable::Document->new;
+my $d4 = My::Printable::Paper::Document->new;
 $d4->paperSizeName('a6');
 
-my $d5 = My::Printable::Document->new;
+my $d5 = My::Printable::Paper::Document->new;
 $d5->paperSizeName('11in * 17in');
 
-my $d6 = My::Printable::Document->new;
+my $d6 = My::Printable::Paper::Document->new;
 $d6->paperSizeName('letter');
 
-my $d7 = My::Printable::Document->new;
+my $d7 = My::Printable::Paper::Document->new;
 $d7->paperSizeName('halfletter');
 
-my $d8 = My::Printable::Document->new;
+my $d8 = My::Printable::Paper::Document->new;
 $d8->paperSizeName('4.25in * 5.5in');
 
 ok(!$d1->isA4SizeClass);
