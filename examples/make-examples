@@ -3,7 +3,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-printable="${HOME}/git/dse.d/printable-paper/bin/printable"
+printable="${HOME}/git/dse.d/printable-paper/bin/printable-paper"
 
 printable () {
     command "${printable}" "$@"

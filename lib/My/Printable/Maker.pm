@@ -229,7 +229,7 @@ sub buildSVG {
                      eval { @{$file->{modifiers}} });
 
     if (USE_EXTERNAL_BIN_PRINTABLE) {
-        my $cmd = sprintf("bin/printable -M %s", shell_quote($template->{size}));
+        my $cmd = sprintf("bin/printable-paper -M %s", shell_quote($template->{size}));
         $cmd .= ' --black'     if $template->{color_type} eq 'black';
         $cmd .= ' --grayscale' if $template->{color_type} eq 'grayscale';
         $cmd .= sprintf(' --id=%s', shell_quote($id));
@@ -378,7 +378,7 @@ sub build2Page2UpPS {
 
 our %BUILD = (
     svg => {
-        dependencies => [qw(bin/printable makebin/makeprintable)],
+        dependencies => [qw(bin/printable-paper makebin/makeprintable)],
         dependOnPerlModules => 1,
         forceIfApplicable => 1,
         code => \&buildSVG,

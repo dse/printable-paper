@@ -62,11 +62,11 @@ list:
 list-svg:
 	makebin/makeprintable LIST svg
 
-%.pdf: makebin/makeprintable bin/printable Makefile
+%.pdf: makebin/makeprintable bin/printable-paper Makefile
 	makebin/makeprintable "$@"
-%.svg: makebin/makeprintable bin/printable Makefile
+%.svg: makebin/makeprintable bin/printable-paper Makefile
 	makebin/makeprintable "$@"
-%.ps: makebin/makeprintable bin/printable Makefile
+%.ps: makebin/makeprintable bin/printable-paper Makefile
 	makebin/makeprintable "$@"
 
 perftest:
