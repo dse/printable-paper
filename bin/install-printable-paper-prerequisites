@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o pipefail
+set -o nounset
+
+main () {
+    if [[ "${OSTYPE}" = "darwin"* ]] ; then
+        brew update
+        brew install perl
+        cpan Expect
+        cpan File::Which
+        cpan IPC::Run
+        cpan List::Util
+        cpan Moo
+        cpan PDF::API2
+        cpan String::ShellQuote
+        cpan Text::Trim
+        cpan XML::LibXML
+        brew install psutils
+        brew tap homebrew/cask
+        brew cask install inkscape
+        if ! command -v pdfjam >/dev/null 2>/dev/null; then pdfjam_message; exit 1; fi
+        ready_message
+    else
+        >&2 echo "OSTYPE=${OSTYPE} not supported yet for automatic prerequisite install."
+        exit 1
+    fi
+}
+
+pdfjam_message () { cat <<EOF; }
+
+- Visit http://www.tug.org/mactex/ to download MacTeX, a distribution
+  of TeX and LaTex for macOS systems.  It includes pdfjam.
+
+- Alternatively, you may choose to use TeX Live or any other TeX
+  distribution, as long as it includes pdfjam.
+
+- At this point you *should* have everything else you need.
+
+EOF
+
+ready_message () { cat <<EOF; }
+
+- You *should* have everything you need.  Enjoy creating
+  printable-paper!
+
+EOF
+
+#------------------------------------------------------------------------------
+main "$@"
