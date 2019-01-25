@@ -66,3 +66,7 @@ double-sided printing, flip on long edge:
 -   [peregraph.com archive](https://web.archive.org/web/20120401233424/http://www.peregraph.com/)
 
 -   [Inks and Pens](https://www.inksandpens.com/post/ruled-paper-templates/)
+
+-   [Printable Notebook Filler and Handwriting Paper](http://donnayoung.org/penmanship/paper.htm)
+    from Donna Young's homeschooling resource site.  Rulings for teaching handwriting and
+    for notebook filler paper.
