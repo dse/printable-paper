@@ -70,3 +70,5 @@ double-sided printing, flip on long edge:
 -   [Printable Notebook Filler and Handwriting Paper](http://donnayoung.org/penmanship/paper.htm)
     from Donna Young's homeschooling resource site.  Rulings for teaching handwriting and
     for notebook filler paper.
+
+-   [Print Free Graph Paper](http://www.printfreegraphpaper.com/)
