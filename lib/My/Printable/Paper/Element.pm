@@ -9,6 +9,7 @@ use My::Printable::Paper::Util qw(:const :around);
 use List::Util qw(min max);
 use Storable qw(dclone);
 use Data::Dumper qw(Dumper);
+use Text::Trim qw(trim);
 
 use Moo;
 
@@ -611,6 +612,7 @@ sub drawLinePattern {
     my $y2 = $args{y2} // $yPointSeries->endPoint;
     my $spacing;
     if ($direction eq "horizontal") {
+        $cssClass = trim(($cssClass // '') . ' horizontal');
         my @y = $yPointSeries->getPoints();
         foreach my $y (@y) {
             my $line = $self->createSVGLine(
@@ -620,6 +622,7 @@ sub drawLinePattern {
             $self->svgLayer->appendChild($line);
         }
     } elsif ($direction eq "vertical") {
+        $cssClass = trim(($cssClass // '') . ' vertical');
         my @x = $xPointSeries->getPoints();
         foreach my $x (@x) {
             my $line = $self->createSVGLine(

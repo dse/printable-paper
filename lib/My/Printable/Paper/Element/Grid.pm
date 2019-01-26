@@ -34,6 +34,7 @@ extends qw(My::Printable::Paper::Element);
 
 use List::Util qw(min max);
 use Storable qw(dclone);
+use Text::Util qw(grid);
 
 sub computeX {
     my ($self) = @_;
@@ -129,6 +130,7 @@ sub draw {
             my $xLinePointSeries = ($self->extendHorizontalGridLines || $self->extendGridLines) ? $self->origDottedLineXPointSeries : $self->dottedLineXPointSeries;
             my @x = $xLinePointSeries->getPoints();
             my $cssClass = $self->cssClassHorizontal // $self->cssClass // "blue dot";
+            $cssClass = trim(($cssClass // '') . ' horizontal');
             $self->drawDotPattern(
                 cssClass => $cssClass,
                 xPointSeries => $xLinePointSeries,
@@ -157,6 +159,7 @@ sub draw {
             my $yLinePointSeries = ($self->extendVerticalGridLines || $self->extendGridLines) ? $self->origDottedLineYPointSeries : $self->dottedLineYPointSeries;
             my @y = $yLinePointSeries->getPoints();
             my $cssClass = $self->cssClassVertical // $self->cssClass // "blue dot";
+            $cssClass = trim(($cssClass // '') . ' vertical');
             $self->drawDotPattern(
                 cssClass => $cssClass,
                 xPointSeries => $self->xPointSeries,

@@ -291,10 +291,11 @@ sub generatePageNumberRectangle {
 
 sub generateMarginLine {
     my ($self) = @_;
+    my $cssClass = trim(($self->getMarginLineCSSClass // '') . ' vertical');
     my $margin_line = My::Printable::Paper::Element::Line->new(
         document => $self->document,
         id => 'margin-line',
-        cssClass => $self->getMarginLineCSSClass,
+        cssClass => $cssClass,
     );
     $margin_line->setX($self->getOriginX);
     return $margin_line;
