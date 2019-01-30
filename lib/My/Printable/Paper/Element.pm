@@ -71,6 +71,11 @@ has "extendBottom" => (is => 'rw');
 has 'dotDashWidth'  => (is => 'rw', default => 0);
 has 'dotDashHeight' => (is => 'rw', default => 0);
 
+has 'dotDashStartAtBottom' => (is => 'rw', default => 0);
+has 'dotDashStartAtTop'    => (is => 'rw', default => 0);
+has 'dotDashStartAtLeft'   => (is => 'rw', default => 0);
+has 'dotDashStartAtRight'  => (is => 'rw', default => 0);
+
 around 'dotDashWidth'  => \&aroundUnitX;
 around 'dotDashHeight' => \&aroundUnitY;
 
@@ -409,6 +414,14 @@ sub drawDotPatternUsingSVGDottedLines {
         my $dashoffset = sprintf('%.3f', DOTTED_LINE_FUDGE_FACTOR / 2);
         my $x1 = $xPointSeries->startPoint - $dw / 2;
         my $x2 = $xPointSeries->endPoint   + $dw / 2;
+        if ($self->dotDashStartAtLeft) {
+            $x1 += $dw / 2;
+            $x2 += $dw / 2;
+        }
+        if ($self->dotDashStartAtRight) {
+            $x1 -= $dw / 2;
+            $x2 -= $dw / 2;
+        }
         foreach my $y ($yPointSeries->getPoints()) {
             my %a = (
                 x1 => $x1,
@@ -431,6 +444,14 @@ sub drawDotPatternUsingSVGDottedLines {
         my $dashoffset = sprintf('%.3f', DOTTED_LINE_FUDGE_FACTOR / 2);
         my $y1 = $yPointSeries->startPoint - $dh / 2;
         my $y2 = $yPointSeries->endPoint   + $dh / 2;
+        if ($self->dotDashStartAtTop) {
+            $y1 += $dh / 2;
+            $y2 += $dh / 2;
+        }
+        if ($self->dotDashStartAtBottom) {
+            $y1 -= $dh / 2;
+            $y2 -= $dh / 2;
+        }
         foreach my $x ($xPointSeries->getPoints()) {
             my %a = (
                 y1 => $y1,
@@ -540,9 +561,15 @@ sub drawDotPatternUsingDots {
     foreach my $x (@x) {
         foreach my $y (@y) {
             if ($dw2 && $dh2) {
+                my $cx = $x;
+                my $cy = $y;
+                $cx += $dw2 if $self->dotDashStartAtLeft;
+                $cx -= $dw2 if $self->dotDashStartAtRight;
+                $cy += $dh2 if $self->dotDashStartAtTop;
+                $cy -= $dh2 if $self->dotDashStartAtBottom;
                 my $ellipse = $self->document->svgDocument->createElement('circle');
-                $ellipse->setAttribute('cx', sprintf('%.3f', $x));
-                $ellipse->setAttribute('cy', sprintf('%.3f', $y));
+                $ellipse->setAttribute('cx', sprintf('%.3f', $cx));
+                $ellipse->setAttribute('cy', sprintf('%.3f', $cy));
                 $ellipse->setAttribute('rx', sprintf('%.3f', $dw2));
                 $ellipse->setAttribute('ry', sprintf('%.3f', $dh2));
                 $ellipse->setAttribute('class', $cssClass) if defined $cssClass && $cssClass ne '';
@@ -553,6 +580,14 @@ sub drawDotPatternUsingDots {
                 if ($dw2) {
                     my $x1 = $x - $dw2;
                     my $x2 = $x + $dw2;
+                    if ($self->dotDashStartAtLeft) {
+                        $x1 += $dw2;
+                        $x2 += $dw2;
+                    }
+                    if ($self->dotDashStartAtRight) {
+                        $x1 -= $dw2;
+                        $x2 -= $dw2;
+                    }
                     $a{x1} = $x1;
                     $a{x2} = $x2;
                     $a{y} = $y;
@@ -561,6 +596,14 @@ sub drawDotPatternUsingDots {
                 } elsif ($dh2) {
                     my $y1 = $y - $dh2;
                     my $y2 = $y + $dh2;
+                    if ($self->dotDashStartAtTop) {
+                        $y1 += $dh2;
+                        $y2 += $dh2;
+                    }
+                    if ($self->dotDashStartAtBottom) {
+                        $y1 -= $dh2;
+                        $y2 -= $dh2;
+                    }
                     $a{y1} = $y1;
                     $a{y2} = $y2;
                     $a{x} = $x;
