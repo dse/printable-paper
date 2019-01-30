@@ -68,11 +68,11 @@ has "extendTop" => (is => 'rw');
 has "extendBottom" => (is => 'rw');
 
 # mainly for grids
-has 'dotWidth'  => (is => 'rw', default => 0);
-has 'dotHeight' => (is => 'rw', default => 0);
+has 'dotDashWidth'  => (is => 'rw', default => 0);
+has 'dotDashHeight' => (is => 'rw', default => 0);
 
-around 'dotWidth'  => \&aroundUnitX;
-around 'dotHeight' => \&aroundUnitY;
+around 'dotDashWidth'  => \&aroundUnitX;
+around 'dotDashHeight' => \&aroundUnitY;
 
 has "svgLayer" => (
     is => 'rw',
@@ -96,7 +96,7 @@ sub BUILD {
     my ($self) = @_;
     foreach my $method (qw(x1 x2 y1 y2
                            spacing spacingX spacingY
-                           originX originY dotWidth dotHeight)) {
+                           originX originY dotDashWidth dotDashHeight)) {
         $self->$method($self->$method) if defined $self->$method;
     }
 }
@@ -386,8 +386,8 @@ use constant DOTTED_LINE_FUDGE_FACTOR => 0.01;
 sub drawDotPatternUsingSVGDottedLines {
     my ($self, %args) = @_;
 
-    my $dw = $self->dotWidth;
-    my $dh = $self->dotHeight;
+    my $dw = $self->dotDashWidth;
+    my $dh = $self->dotDashHeight;
     if ($dw && $dh) {
         # dotted lines won't achieve what we want.
         return $self->drawDotPatternUsingDots(%args);
@@ -455,8 +455,8 @@ sub drawDotPatternUsingSVGPatterns {
     my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
     my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
 
-    my $dw2 = $self->dotWidth / 2;
-    my $dh2 = $self->dotHeight / 2;
+    my $dw2 = $self->dotDashWidth / 2;
+    my $dh2 = $self->dotDashHeight / 2;
 
     my $layer = $self->svgLayer;
 
@@ -532,8 +532,8 @@ sub drawDotPatternUsingDots {
     my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
     my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
 
-    my $dw2 = $self->dotWidth / 2;
-    my $dh2 = $self->dotHeight / 2;
+    my $dw2 = $self->dotDashWidth / 2;
+    my $dh2 = $self->dotDashHeight / 2;
     my @x = $xPointSeries->getPoints();
     my @y = $yPointSeries->getPoints();
     my $layer = $self->svgLayer;

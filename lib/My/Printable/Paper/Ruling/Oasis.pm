@@ -39,8 +39,8 @@ END
 around generateRuling => sub {
     my ($orig, $self) = @_;
 
-    my $dotCrosswise  = $self->pt([$self->dotWidth(), 'pt']) . 'pt';
-    my $dotCrosswise2 = $self->pt([2 * $self->dotWidth(), 'pt']) . 'pt';
+    my $dotCrosswise  = $self->pt([$self->dotDashWidth(), 'pt']) . 'pt';
+    my $dotCrosswise2 = $self->pt([2 * $self->dotDashWidth(), 'pt']) . 'pt';
 
     my $horizontal_lines = My::Printable::Paper::Element::Lines->new(
         document => $self->document,
@@ -56,7 +56,7 @@ around generateRuling => sub {
         isDotGrid => 1,
         spacingX => '1unit',
         spacingY => '1/6unit',
-        dotHeight => $dotCrosswise,
+        dotDashHeight => $dotCrosswise,
         cssClass => $self->getDotCSSClass(),
     );
 
@@ -67,7 +67,7 @@ around generateRuling => sub {
         spacingX => '1/7unit',
         spacingY => '1unit',
         originY => $self->originY + $self->ptY('1/3unit'),
-        dotWidth => $dotCrosswise,
+        dotDashWidth => $dotCrosswise,
         cssClass => $self->getDotCSSClass(),
     );
 
@@ -78,7 +78,7 @@ around generateRuling => sub {
         spacingX => '1/7unit',
         spacingY => '1unit',
         originY => $self->originY - $self->ptY('1/3unit'),
-        dotWidth => $dotCrosswise,
+        dotDashWidth => $dotCrosswise,
         cssClass => $self->getDotCSSClass(),
     );
 
@@ -88,7 +88,7 @@ around generateRuling => sub {
         isDotGrid => 1,
         spacingX => '1unit',
         spacingY => '1unit',
-        dotHeight => $dotCrosswise2,
+        dotDashHeight => $dotCrosswise2,
         cssClass => $self->getDotCSSClass(),
     );
 
