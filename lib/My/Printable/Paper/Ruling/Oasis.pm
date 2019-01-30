@@ -39,8 +39,8 @@ END
 around generateRuling => sub {
     my ($orig, $self) = @_;
 
-    my $dotCrosswise  = $self->pt([$self->dotDashWidth(), 'pt']) . 'pt';
-    my $dotCrosswise2 = $self->pt([2 * $self->dotDashWidth(), 'pt']) . 'pt';
+    my $dotCrosswise  = $self->pt([$self->dotWidth(), 'pt']) . 'pt';
+    my $dotCrosswise2 = $self->pt([2 * $self->dotWidth(), 'pt']) . 'pt';
 
     my $horizontal_lines = My::Printable::Paper::Element::Lines->new(
         document => $self->document,
