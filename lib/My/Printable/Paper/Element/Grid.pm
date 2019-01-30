@@ -34,7 +34,7 @@ extends qw(My::Printable::Paper::Element);
 
 use List::Util qw(min max);
 use Storable qw(dclone);
-use Text::Util qw(grid);
+use Text::Trim qw(trim);
 
 sub computeX {
     my ($self) = @_;
