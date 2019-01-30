@@ -43,6 +43,7 @@ around 'spacingX' => \&aroundUnitX;
 around 'spacingY' => \&aroundUnitY;
 
 has "cssClass" => (is => 'rw');
+has 'lineCap' => (is => 'rw', default => 'round'); # butt, round, or square
 
 has 'originX' => (is => 'rw');
 has 'originY' => (is => 'rw');
