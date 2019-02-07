@@ -1,25 +1,23 @@
 # Web Interface for Printable Paper
 
-    Ruling: [french/quadrille/dot-grid/line-dot-grid]
+    <ruling>                Ruling: [   v]                          /seyes
+    --paper-size=<size>     Paper Size (1 sheet): [   v]            /letter
+    --grayscale             [ ] Grayscale                           /gray
+    --pdf; --ps             (x) PDF   ( ) SVG   ( ) PS              .pdf/...
+    --2up; --4up            (x) 1-up  ( ) 2-up  ( ) 4-up            /2up
+    --2p*                   (x) 1-page          ( ) 2-page          /2page
     
-    Size of ONE SHEET: [letter - 8.5in x 11in]
-    
-    Format: [SVG]
-    
-    (x) 1 page
-    (x) 2 pages (for double-sided printing)
-    
-    (x) 1-up
-    (x) 2-up (sheet will be twice as large)
-    (x) 4-up (sheet will be four times as large)
+    [x] Custom (_reset_)
 
-    Major line width:   _6_ (dots at 600 dpi)
-    Line width:         _4_
-    Feint line width:   _2_
-    
-    Lines every:        _1/4_ [in]              (unit=...)
-    Major lines every:  ___ lines               (major-lines=...)
-    Feint lines:        ___ for every line      (feint-lines=...)
+    -Dunit=<x>              Lines ever          ___ ___             /unit=...
+    -Dmajor-lines=<x>       Major lines every   ___ lines           /ml=...
+    -Dfeint-lines=<x>       Feint Lines         ___ for each line   /fl=...
 
-    [x] Margin line?
-        Custom offset:  ___ [in/mm/pt]          (margin-line=yes/...)
+    --mjw=<x>               Major Line Width    ___/600 in          /mjw=6
+    --lw=<x>                Line Width          ___                 /lw=4
+    --fw=<x>                Feint Line Width    ___                 /fw=2
+    --dw=<x>                Dot Width           ___/600 in          /dw=8
+
+    -Dmargin-lines=yes      Margin Line?        (x) No   (x) Yes    /ml
+    -Dmargin-lines=<ofs>        Custom offset:  ___ ___             /ml=0.75in
+    
