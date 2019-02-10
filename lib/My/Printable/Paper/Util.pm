@@ -9,7 +9,8 @@ use Exporter 'import';
 our %EXPORT_TAGS = (
     const => [qw(USE_SVG_PATTERNS_FOR_DOT_GRIDS
                  USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS
-                 USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND)],
+                 USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND
+                 FUDGE_FACTOR)],
     around => [qw(aroundUnit
                   aroundUnitX
                   aroundUnitY)],
@@ -27,6 +28,7 @@ our @EXPORT = ();
 use constant USE_SVG_PATTERNS_FOR_DOT_GRIDS => 0;
 use constant USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS => 1;
 use constant USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND => 0;
+use constant FUDGE_FACTOR => 0.0001;
 
 use Data::Dumper;
 use File::Basename qw(basename dirname);
