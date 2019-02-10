@@ -10,7 +10,8 @@ our %EXPORT_TAGS = (
     const => [qw(USE_SVG_PATTERNS_FOR_DOT_GRIDS
                  USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS
                  USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND
-                 FUDGE_FACTOR)],
+                 FUDGE_FACTOR
+                 SVG_DOTTED_LINE_FUDGE_FACTOR)],
     around => [qw(aroundUnit
                   aroundUnitX
                   aroundUnitY)],
@@ -29,6 +30,9 @@ use constant USE_SVG_PATTERNS_FOR_DOT_GRIDS => 0;
 use constant USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS => 1;
 use constant USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND => 0;
 use constant FUDGE_FACTOR => 0.0001;
+
+# to work around an Inkscape PDF rendering bug.
+use constant SVG_DOTTED_LINE_FUDGE_FACTOR => 0.01;
 
 use Data::Dumper;
 use File::Basename qw(basename dirname);
