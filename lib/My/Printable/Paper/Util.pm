@@ -21,7 +21,8 @@ our @EXPORT_OK = (
        round3
        with_temp
        linear_interpolate
-       numcmp),
+       numcmp
+       numsnap),
     @{$EXPORT_TAGS{const}},
     @{$EXPORT_TAGS{around}},
 );
@@ -124,8 +125,15 @@ sub aroundUnitY {
 sub numcmp {
     my ($a, $b, $fudge) = @_;
     $fudge //= FUDGE_FACTOR;
-    return 0 if (abs($a - $b) < FUDGE_FACTOR);
+    return 0 if (abs($a - $b) < $fudge);
     return $a - $b;
+}
+
+sub numsnap {
+    my ($a, $fudge) = @_;
+    $fudge //= FUDGE_FACTOR;
+    return 0 if abs($a) < $fudge;
+    return $a;
 }
 
 1;
