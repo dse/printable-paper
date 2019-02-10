@@ -24,12 +24,17 @@ around generateRuling => sub {
     my $grid;
     my $feintGrid;
 
-    my $majorLines = $self->modifiers->get('major-lines');
-    my $feintLines = $self->modifiers->get('feint-lines');
+    my $majorLinesX = $self->modifiers->get('major-lines-x') // $self->modifiers->get('major-lines');
+    my $majorLinesY = $self->modifiers->get('major-lines-y') // $self->modifiers->get('major-lines');
+    my $feintLines  = $self->modifiers->get('feint-lines');
 
-    if (defined $majorLines) {
-        $majorLines = round($majorLines);
-        $majorLines = undef if $majorLines < 2;
+    if (defined $majorLinesX) {
+        $majorLinesX = round($majorLinesX);
+        $majorLinesX = undef if $majorLinesX < 2;
+    }
+    if (defined $majorLinesY) {
+        $majorLinesY = round($majorLinesY);
+        $majorLinesY = undef if $majorLinesY < 2;
     }
 
     if (defined $feintLines) {
@@ -37,14 +42,15 @@ around generateRuling => sub {
         $feintLines = undef if $feintLines < 2;
     }
 
-    if (defined $majorLines) {
+    if (defined $majorLinesX && defined $majorLinesY) {
         $majorGrid = My::Printable::Paper::Element::Grid->new(
             document    => $self->document,
             id          => 'major-grid',
             cssClass    => $self->getMajorLineCSSClass,
             shiftPoints => 1,
         );
-        $majorGrid->setSpacing($majorLines . 'unit');
+        $majorGrid->setSpacingX($majorLinesX . 'unit');
+        $majorGrid->setSpacingY($majorLinesY . 'unit');
 
         $grid = My::Printable::Paper::Element::Grid->new(
             document    => $self->document,
