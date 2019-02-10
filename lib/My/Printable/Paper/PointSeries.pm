@@ -4,31 +4,33 @@ use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Paper::Util qw(:around);
+use My::Printable::Paper::Util qw(:around :const);
 
 use Moo;
 
-has 'startPoint' => (is => 'rw');
-has 'endPoint' => (is => 'rw');
-has 'spacing' => (is => 'rw');
-has 'origin' => (is => 'rw');
-has 'min' => (is => 'rw');
-has 'max' => (is => 'rw');
+has 'startPoint'     => (is => 'rw');
+has 'endPoint'       => (is => 'rw');
+has 'spacing'        => (is => 'rw');
+has 'origin'         => (is => 'rw');
+has 'min'            => (is => 'rw');
+has 'max'            => (is => 'rw');
+has 'edgeMargin'     => (is => 'rw', default => 18); # 0.25in
+has 'paperDimension' => (is => 'rw'); # width or height of document
 
+# 'x' or 'y'
+has 'axis' => (is => 'rw');
+
+# boolean
 has 'shiftPoints' => (is => 'rw', default => 0);
 
-around 'startPoint' => \&aroundUnit;
-around 'endPoint'   => \&aroundUnit;
-around 'spacing'    => \&aroundUnit;
-around 'origin'     => \&aroundUnit;
-around 'min'        => \&aroundUnit;
-around 'max'        => \&aroundUnit;
-
-our $FUDGE = 0.0001;
-# >= x - $FUDGE
-# <= x + $FUDGE
-# >  x + $FUDGE
-# <  x - $FUDGE
+around 'startPoint'     => \&aroundUnit;
+around 'endPoint'       => \&aroundUnit;
+around 'spacing'        => \&aroundUnit;
+around 'origin'         => \&aroundUnit;
+around 'min'            => \&aroundUnit;
+around 'max'            => \&aroundUnit;
+around 'edgeMargin'     => \&aroundUnit;
+around 'paperDimension' => \&aroundUnit;
 
 use Data::Dumper qw(Dumper);
 
@@ -48,14 +50,22 @@ sub BUILD {
         $self->spacing('1unit');
     }
 
+    # what to base shiftpoints on
+    my $min = $self->min;
+    my $max = $self->max;
+    if (defined $self->edgeMargin && defined $self->paperDimension) {
+        $min = $self->edgeMargin;
+        $max = $self->paperDimension - $self->edgeMargin;
+    }
+
     $self->setPoints();
-    my $shiftPoints = $self->shiftPoints;
-    if ($shiftPoints) {
-        my $leftSpace = $self->startPoint - $self->min;
-        my $rightSpace = $self->max - $self->endPoint;
+
+    if ($self->shiftPoints) {
+        my $leftSpace = $self->startPoint - $min;
+        my $rightSpace = $max - $self->endPoint;
         my $leftSpaceHalf = $leftSpace - $self->spacing / 2;
         my $rightSpaceHalf = $rightSpace - $self->spacing / 2;
-        if ($leftSpaceHalf >= -$FUDGE && $rightSpaceHalf >= -$FUDGE) {
+        if ($leftSpaceHalf >= -FUDGE_FACTOR && $rightSpaceHalf >= -FUDGE_FACTOR) {
             $self->origin($self->origin - $self->spacing / 2);
             $self->startPoint(undef);
             $self->endPoint(undef);
@@ -69,7 +79,7 @@ sub setPoints {
 
     if (defined $self->min && !defined $self->startPoint) {
         my $start = $self->origin;
-        while ((my $new_start = $start - $self->spacing) >= ($self->min - $FUDGE)) {
+        while ((my $new_start = $start - $self->spacing) >= ($self->min - FUDGE_FACTOR)) {
             $start = $new_start;
         }
         $self->startPoint($start);
@@ -77,7 +87,7 @@ sub setPoints {
 
     if (defined $self->max && !defined $self->endPoint) {
         my $end = $self->origin;
-        while ((my $new_end = $end + $self->spacing) <= ($self->max + $FUDGE)) {
+        while ((my $new_end = $end + $self->spacing) <= ($self->max + FUDGE_FACTOR)) {
             $end = $new_end;
         }
         $self->endPoint($end);
@@ -119,10 +129,10 @@ sub extendBehind {
 sub chopBehind {
     my ($self, $min) = @_;
     return unless defined $min;
-    while ($self->min < ($min - $FUDGE)) {
+    while ($self->min < ($min - FUDGE_FACTOR)) {
         $self->min($self->min + $self->spacing);
     }
-    while ($self->startPoint < ($min - $FUDGE)) {
+    while ($self->startPoint < ($min - FUDGE_FACTOR)) {
         $self->startPoint($self->startPoint + $self->spacing);
     }
 }
@@ -130,10 +140,10 @@ sub chopBehind {
 sub chopAhead {
     my ($self, $max) = @_;
     return unless defined $max;
-    while ($self->max > ($max + $FUDGE)) {
+    while ($self->max > ($max + FUDGE_FACTOR)) {
         $self->max($self->max - $self->spacing);
     }
-    while ($self->endPoint > ($max + $FUDGE)) {
+    while ($self->endPoint > ($max + FUDGE_FACTOR)) {
         $self->endPoint($self->endPoint - $self->spacing);
     }
 }
@@ -141,7 +151,7 @@ sub chopAhead {
 sub getPoints {
     my ($self) = @_;
     my @points;
-    for (my $point = $self->startPoint; $point <= ($self->endPoint + $FUDGE); $point += $self->spacing) {
+    for (my $point = $self->startPoint; $point <= ($self->endPoint + FUDGE_FACTOR); $point += $self->spacing) {
         push(@points, $point);
     }
     return @points;
