@@ -20,7 +20,8 @@ our @EXPORT_OK = (
     qw(exclude
        round3
        with_temp
-       linear_interpolate),
+       linear_interpolate
+       numcmp),
     @{$EXPORT_TAGS{const}},
     @{$EXPORT_TAGS{around}},
 );
@@ -118,6 +119,13 @@ sub aroundUnitY {
     my $value = shift;
     $value = $self->ptY($value);
     $self->$orig($value, @_);
+}
+
+sub numcmp {
+    my ($a, $b, $fudge) = @_;
+    $fudge //= FUDGE_FACTOR;
+    return 0 if (abs($a - $b) < FUDGE_FACTOR);
+    return $a - $b;
 }
 
 1;
