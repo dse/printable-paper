@@ -21,8 +21,9 @@ our @EXPORT_OK = (
        round3
        with_temp
        linear_interpolate
-       numcmp
-       numsnap),
+       snapcmp
+       snapnum
+       side_direction),
     @{$EXPORT_TAGS{const}},
     @{$EXPORT_TAGS{around}},
 );
@@ -122,18 +123,27 @@ sub aroundUnitY {
     $self->$orig($value, @_);
 }
 
-sub numcmp {
+sub snapcmp {
     my ($a, $b, $fudge) = @_;
     $fudge //= FUDGE_FACTOR;
     return 0 if (abs($a - $b) < $fudge);
     return $a - $b;
 }
 
-sub numsnap {
+sub snapnum {
     my ($a, $fudge) = @_;
     $fudge //= FUDGE_FACTOR;
     return 0 if abs($a) < $fudge;
     return $a;
+}
+
+sub side_direction {
+    my ($side) = @_;
+    return 'horizontal' if $side eq 'top';
+    return 'horizontal' if $side eq 'bottom';
+    return 'vertical'   if $side eq 'left';
+    return 'vertical'   if $side eq 'right';
+    return;
 }
 
 1;
