@@ -2,7 +2,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="306.000pt" height="396.000pt" viewBox="0.000 0.000 306.000 396.000">
   <style>
         .line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; }
-        .stroke-linecap-butt { stroke-linecap: butt; }
+        .stroke-linecap-butt   { stroke-linecap: butt; }
+        .stroke-linecap-round  { stroke-linecap: round; }
+        .stroke-linecap-square { stroke-linecap: square; }
         .rectangle { fill: #ffffff; }
 
 
