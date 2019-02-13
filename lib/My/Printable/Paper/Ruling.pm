@@ -56,11 +56,6 @@ use constant hasPageNumberRectangle => 0;
 use Text::Trim qw(trim);
 use Data::Dumper;
 
-sub hasMarginLine {
-    my ($self) = @_;
-    return $self->modifiers->has('margin-line');
-}
-
 sub thicknessCSS {
     my ($self) = @_;
 
@@ -287,18 +282,6 @@ sub generatePageNumberRectangle {
         $rect->height('9mm');
     }
     return $rect;
-}
-
-sub generateMarginLine {
-    my ($self) = @_;
-    my $cssClass = trim(($self->getMarginLineCSSClass // '') . ' vertical');
-    my $margin_line = My::Printable::Paper::Element::Line->new(
-        document => $self->document,
-        id => 'margin-line',
-        cssClass => $cssClass,
-    );
-    $margin_line->setX($self->getOriginX);
-    return $margin_line;
 }
 
 sub getUnit {
@@ -619,5 +602,27 @@ sub getDefaultOriginX {
         }
     }
 }
+
+###############################################################################
+
+sub hasMarginLine {
+    my ($self, $side) = @_;
+
+    return $self->modifiers->has('margin-line');
+}
+
+sub generateMarginLine {
+    my ($self) = @_;
+    my $cssClass = trim(($self->getMarginLineCSSClass // '') . ' vertical');
+    my $margin_line = My::Printable::Paper::Element::Line->new(
+        document => $self->document,
+        id => 'margin-line',
+        cssClass => $cssClass,
+    );
+    $margin_line->setX($self->getOriginX);
+    return $margin_line;
+}
+
+###############################################################################
 
 1;
