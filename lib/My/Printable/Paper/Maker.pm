@@ -60,7 +60,7 @@ sub run {
                 if ($build) {
                     push(@buildsToPerform, $build);
                 } else {
-                    warn("Don't know how to make $arg.\n");
+                    print STDERR ("Don't know how to make $arg.\n");
                 }
             } else {
                 my $arg = $arg;
@@ -93,7 +93,7 @@ sub run {
 
     if (!scalar @buildsToPerform) {
         if (!$canDoAllBuilds) {
-            warn("Nothing to do.  Exiting.\n");
+            print STDERR ("Nothing to do.  Exiting.\n");
             exit(0);
         }
         @buildsToPerform = @{$self->buildsArray};
@@ -114,21 +114,21 @@ sub run {
     } elsif ($operation eq 'MAKE') {
         if (!scalar @buildsToPerform) {
             if ($self->verbose) {
-                warn("Nothing to build.\n");
+                print STDERR ("Nothing to build.\n");
             }
             exit(1);
         }
         if ($self->verbose) {
-            warn("Will build:\n");
+            print STDERR ("Will build:\n");
             foreach my $build (@buildsToPerform) {
                 my $filename = $build->{file}->{filename};
-                warn("- $filename\n");
+                print STDERR ("- $filename\n");
             }
         }
         foreach my $build (@buildsToPerform) {
             my $filename = $build->{file}->{filename};
             if ($self->verbose) {
-                warn("Building $filename...\n");
+                print STDERR ("Building $filename...\n");
             }
             $self->build($filename);
         }
@@ -136,9 +136,9 @@ sub run {
         foreach my $build (@buildsToPerform) {
             my $filename = $build->{file}->{filename};
             if (-e $filename) {
-                warn(sprintf("+ rm %s\n", shell_quote($filename)));
+                print STDERR (sprintf("+ rm %s\n", shell_quote($filename)));
                 if (!unlink($filename)) {
-                    warn("Cannot unlink $filename: $!\n");
+                    print STDERR ("Cannot unlink $filename: $!\n");
                 }
             }
         }
@@ -441,9 +441,9 @@ sub buildFile {
     }
 
     if ($self->verbose) {
-        warn("$target requires:\n");
-        warn("    dependencies       @dependencies\n") if scalar @dependencies;
-        warn("    build dependencies @build_dependencies\n") if scalar @build_dependencies;
+        print STDERR ("$target requires:\n");
+        print STDERR ("    dependencies       @dependencies\n") if scalar @dependencies;
+        print STDERR ("    build dependencies @build_dependencies\n") if scalar @build_dependencies;
     }
 
     my $target_exists = -e $target;
@@ -475,7 +475,7 @@ sub buildFile {
 
     if ($make) {
         if ($self->verbose >= 0) {
-            warn("makeprintable: Building $target ...\n");
+            print STDERR ("makeprintable: Building $target ...\n");
         }
         my $code = $build->{code};
         $self->$code(target => $target,
@@ -485,7 +485,7 @@ sub buildFile {
                      build => $build);
     } else {
         if ($self->verbose >= 0) {
-            warn("makeprintable: $target is up to date.\n");
+            print STDERR ("makeprintable: $target is up to date.\n");
         }
     }
 }
@@ -667,7 +667,7 @@ sub cmd {
             my ($tempname) = @_;
             $cmd =~ s{\{FILENAME\}}{shell_quote($tempname)}ge;
             if ($self->verbose) {
-                warn("+ $cmd\n");
+                print STDERR ("+ $cmd\n");
             }
             if (system($cmd)) {
                 unlink($tempname);

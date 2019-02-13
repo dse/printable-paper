@@ -101,8 +101,8 @@ around generateRuling => sub {
     $self->$orig();
 };
 
-sub getRulingSpecificUnit {
-    my ($self) = @_;
+around 'getUnit' => sub {
+    my ($orig, $self) = @_;
     if ($self->unitType eq 'imperial') {
         if ($self->modifiers->has('denser-grid')) {
             return '1/4in';
@@ -116,6 +116,6 @@ sub getRulingSpecificUnit {
             return '23/3mm';    # actual measured line height
         }
     }
-}
+};
 
 1;

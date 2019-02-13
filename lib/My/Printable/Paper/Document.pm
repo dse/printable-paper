@@ -5,7 +5,7 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::ModifierList;
-use My::Printable::Paper::Util qw(:const);
+use My::Printable::Paper::Util qw(:const snapcmp);
 use My::Printable::Paper::Converter;
 use My::Printable::Paper::Color qw(:const);
 
@@ -21,6 +21,7 @@ has 'rawFilename' => (is => 'rw');
 use constant DEFAULT_PAPER_SIZE_NAME => 'letter';
 use constant DEFAULT_WIDTH           => 612;
 use constant DEFAULT_HEIGHT          => 792;
+use constant DEFAULT_ORIENTATION     => 'portrait';
 use constant DEFAULT_UNIT_TYPE       => 'imperial';
 use constant DEFAULT_COLOR_TYPE      => 'color';
 
@@ -51,6 +52,7 @@ sub paperSizeName {
     $self->unitType($unit_type);
     $self->rawWidth($width);
     $self->rawHeight($height);
+    $self->setOrientationFromDimensions();
     $self->unitX->size($width);
     $self->unitY->size($height);
     $self->unitX->setPercentageBasis($width);
@@ -82,6 +84,7 @@ sub width {
     $self->setLeftMargin(0);
     $self->setRightMargin(0);
     $self->rawWidth($pt);
+    $self->setOrientationFromDimensions();
 };
 
 has 'rawHeight' => (
@@ -96,13 +99,13 @@ sub height {
     my $value = shift;
     my ($pt, $unit_type) = $self->pt($value);
     $self->unitType($unit_type);
-    $self->rawHeight($pt);
     $self->rawPaperSizeName(undef);
     $self->unitY->setPercentageBasis($pt);
     $self->originY($pt / 2);
     $self->setBottomMargin(0);
     $self->setTopMargin(0);
     $self->rawHeight($pt);
+    $self->setOrientationFromDimensions();
 };
 
 # 'imperial', 'metric';
@@ -264,6 +267,61 @@ has 'svgContext' => (
 
 has 'dryRun'  => (is => 'rw', default => 0);
 has 'verbose' => (is => 'rw', default => 0);
+
+has 'edgeMargin' => (is => 'rw', default => 18); # 0.25in
+
+has 'rawOrientation' => (is => 'rw', default => DEFAULT_ORIENTATION);
+sub orientation {
+    my $self = shift;
+    if (!scalar @_) {
+        return $self->rawOrientation;
+    }
+    my $orientation = shift;
+
+    my $width = $self->width;
+    my $height = $self->height;
+
+    my $swap = 0;
+    if ($orientation eq 'portrait') {
+        if (snapcmp($width, $height) > 0) {
+            $swap = 1;
+        }
+    } elsif ($orientation eq 'landscape') {
+        if (snapcmp($height, $width) > 0) {
+            $swap = 1;
+        }
+    } else {
+        die("When setting orientation, you must use 'landscape' or 'portrait'.");
+    }
+
+    if ($swap) {
+        $self->rawPaperSizeName(undef);
+        my $unitX = $self->unitX;
+        my $unitY = $self->unitY;
+        my $originX = $self->originX;
+        my $originY = $self->originY;
+        $self->rawWidth($height);
+        $self->rawHeight($width);
+        $self->unitY($unitX);
+        $self->unitX($unitY);
+        $self->originY($originX);
+        $self->originX($originY);
+    }
+}
+
+sub setOrientationFromDimensions {
+    my ($self) = @_;
+    my $width = $self->width;
+    my $height = $self->height;
+    my $cmp = snapcmp($width, $height);
+    if ($cmp == 0) {
+        $self->rawOrientation('square');
+    } elsif ($cmp < 0) {
+        $self->rawOrientation('portrait');
+    } else {
+        $self->rawOrientation('landscape');
+    }
+}
 
 sub addStyleElement {
     my ($self, @cssText) = @_;

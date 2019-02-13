@@ -4,7 +4,7 @@ use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Paper::Util qw(:around :const);
+use My::Printable::Paper::Util qw(:around :const snapcmp snapnum);
 
 use Moo;
 
@@ -65,7 +65,7 @@ sub BUILD {
         my $rightSpace = $max - $self->endPoint;
         my $leftSpaceHalf = $leftSpace - $self->spacing / 2;
         my $rightSpaceHalf = $rightSpace - $self->spacing / 2;
-        if ($leftSpaceHalf >= -FUDGE_FACTOR && $rightSpaceHalf >= -FUDGE_FACTOR) {
+        if (snapnum($leftSpaceHalf) > 0 && snapnum($rightSpaceHalf) > 0) {
             $self->origin($self->origin - $self->spacing / 2);
             $self->startPoint(undef);
             $self->endPoint(undef);
@@ -129,10 +129,10 @@ sub extendBehind {
 sub chopBehind {
     my ($self, $min) = @_;
     return unless defined $min;
-    while ($self->min < ($min - FUDGE_FACTOR)) {
+    while (snapcmp($self->min, $min) < 0) {
         $self->min($self->min + $self->spacing);
     }
-    while ($self->startPoint < ($min - FUDGE_FACTOR)) {
+    while (snapcmp($self->startPoint, $min) < 0) {
         $self->startPoint($self->startPoint + $self->spacing);
     }
 }
@@ -140,10 +140,10 @@ sub chopBehind {
 sub chopAhead {
     my ($self, $max) = @_;
     return unless defined $max;
-    while ($self->max > ($max + FUDGE_FACTOR)) {
+    while (snapcmp($self->max, $max) > 0) {
         $self->max($self->max - $self->spacing);
     }
-    while ($self->endPoint > ($max + FUDGE_FACTOR)) {
+    while (snapcmp($self->endPoint, $max) > 0) {
         $self->endPoint($self->endPoint - $self->spacing);
     }
 }
@@ -151,7 +151,9 @@ sub chopAhead {
 sub getPoints {
     my ($self) = @_;
     my @points;
-    for (my $point = $self->startPoint; $point <= ($self->endPoint + FUDGE_FACTOR); $point += $self->spacing) {
+    for (my $point = $self->startPoint;
+         snapcmp($point, $self->endPoint) <= 0;
+         $point += $self->spacing) {
         push(@points, $point);
     }
     return @points;

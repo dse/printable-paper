@@ -269,20 +269,27 @@ sub computeX {
     my $originX  = $self->originX // $self->document->originX;
 
     my $shiftPoints = $self->shiftPointsX || $self->shiftPoints;
+    my $edgeMargin  = $self->document->edgeMargin // 0;
 
     $self->xPointSeries(My::Printable::Paper::PointSeries->new(
-        spacing     => $spacingX,
-        min         => scalar($self->x1 // $self->document->leftMarginX),
-        max         => scalar($self->x2 // $self->document->rightMarginX),
-        origin      => $originX,
-        shiftPoints => $shiftPoints,
+        axis           => 'x',
+        paperDimension => $self->document->width,
+        spacing        => $spacingX,
+        min            => scalar($self->x1 // $self->document->leftMarginX),
+        max            => scalar($self->x2 // $self->document->rightMarginX),
+        origin         => $originX,
+        shiftPoints    => $shiftPoints,
+        edgeMargin     => $edgeMargin,
     ));
     $self->origXPointSeries(My::Printable::Paper::PointSeries->new(
-        spacing     => $spacingX,
-        min         => scalar($self->document->leftMarginX),
-        max         => scalar($self->document->rightMarginX),
-        origin      => $originX,
-        shiftPoints => $shiftPoints,
+        axis           => 'x',
+        paperDimension => $self->document->width,
+        spacing        => $spacingX,
+        min            => scalar($self->document->leftMarginX),
+        max            => scalar($self->document->rightMarginX),
+        origin         => $originX,
+        shiftPoints    => $shiftPoints,
+        edgeMargin     => $edgeMargin,
     ));
 
     $self->originX($self->xPointSeries->origin);
@@ -295,20 +302,27 @@ sub computeY {
     my $originY = $self->originY // $self->document->originY;
 
     my $shiftPoints = $self->shiftPointsY || $self->shiftPoints;
+    my $edgeMargin  = $self->document->edgeMargin // 0;
 
     $self->yPointSeries(My::Printable::Paper::PointSeries->new(
-        spacing     => $spacingY,
-        min         => scalar($self->y1 // $self->document->topMarginY),
-        max         => scalar($self->y2 // $self->document->bottomMarginY),
-        origin      => $originY,
-        shiftPoints => $shiftPoints,
+        axis           => 'y',
+        paperDimension => $self->document->height,
+        spacing        => $spacingY,
+        min            => scalar($self->y1 // $self->document->topMarginY),
+        max            => scalar($self->y2 // $self->document->bottomMarginY),
+        origin         => $originY,
+        shiftPoints    => $shiftPoints,
+        edgeMargin     => $edgeMargin,
     ));
     $self->origYPointSeries(My::Printable::Paper::PointSeries->new(
-        spacing     => $spacingY,
-        min         => scalar($self->document->topMarginY),
-        max         => scalar($self->document->bottomMarginY),
-        origin      => $originY,
-        shiftPoints => $shiftPoints,
+        axis           => 'y',
+        paperDimension => $self->document->height,
+        spacing        => $spacingY,
+        min            => scalar($self->document->topMarginY),
+        max            => scalar($self->document->bottomMarginY),
+        origin         => $originY,
+        shiftPoints    => $shiftPoints,
+        edgeMargin     => $edgeMargin,
     ));
 
     $self->originY($self->yPointSeries->origin);
@@ -387,7 +401,6 @@ sub chopY {
 }
 
 # another netscape pdf rendering bug workaround
-use constant DOTTED_LINE_FUDGE_FACTOR => 0.01;
 
 sub drawDotPatternUsingSVGDottedLines {
     my ($self, %args) = @_;
@@ -410,9 +423,9 @@ sub drawDotPatternUsingSVGDottedLines {
     if ($dw) {
         # series of horizontal dotted lines
         my $dasharray = sprintf('%.3f %.3f',
-                                DOTTED_LINE_FUDGE_FACTOR + $dw,
-                                $xPointSeries->spacing - $dw - DOTTED_LINE_FUDGE_FACTOR);
-        my $dashoffset = sprintf('%.3f', DOTTED_LINE_FUDGE_FACTOR / 2);
+                                SVG_DOTTED_LINE_FUDGE_FACTOR + $dw,
+                                $xPointSeries->spacing - $dw - SVG_DOTTED_LINE_FUDGE_FACTOR);
+        my $dashoffset = sprintf('%.3f', SVG_DOTTED_LINE_FUDGE_FACTOR / 2);
         my $x1 = $xPointSeries->startPoint - $dw / 2;
         my $x2 = $xPointSeries->endPoint   + $dw / 2;
         if ($self->dotDashStartAtLeft) {
@@ -440,9 +453,9 @@ sub drawDotPatternUsingSVGDottedLines {
     } else {
         # series of vertical dotted lines
         my $dasharray = sprintf('%.3f %.3f',
-                                DOTTED_LINE_FUDGE_FACTOR + $dh,
-                                $yPointSeries->spacing - $dh - DOTTED_LINE_FUDGE_FACTOR);
-        my $dashoffset = sprintf('%.3f', DOTTED_LINE_FUDGE_FACTOR / 2);
+                                SVG_DOTTED_LINE_FUDGE_FACTOR + $dh,
+                                $yPointSeries->spacing - $dh - SVG_DOTTED_LINE_FUDGE_FACTOR);
+        my $dashoffset = sprintf('%.3f', SVG_DOTTED_LINE_FUDGE_FACTOR / 2);
         my $y1 = $yPointSeries->startPoint - $dh / 2;
         my $y2 = $yPointSeries->endPoint   + $dh / 2;
         if ($self->dotDashStartAtTop) {

@@ -8,6 +8,7 @@ use My::Printable::Paper::Document;
 use My::Printable::Paper::Element::Rectangle;
 use My::Printable::Paper::Unit qw(:const);
 use My::Printable::Paper::Color qw(:const);
+use My::Printable::Paper::Util qw(side_direction snapcmp);
 use My::Printable::Paper::Element::Line;
 
 use Moo;
@@ -219,18 +220,14 @@ sub additionalCSS {
 sub generate {
     my ($self) = @_;
 
-    if ($self->can('getUnit')) {
-        my $unit = $self->getUnit();
-        $self->document->setUnit($unit) if defined $unit;
-    }
-    if ($self->can('getOriginX')) {
-        my $originX = $self->getOriginX();
-        $self->document->originX($originX) if defined $originX;
-    }
-    if ($self->can('getOriginY')) {
-        my $originY = $self->getOriginY();
-        $self->document->originY($originY) if defined $originY;
-    }
+    my $unit = $self->getUnit();
+    $self->document->setUnit($unit) if defined $unit;
+
+    my $originX = $self->getOriginX();
+    $self->document->originX($originX) if defined $originX;
+
+    my $originY = $self->getOriginY();
+    $self->document->originY($originY) if defined $originY;
 
     $self->generateRuling();
 
@@ -256,6 +253,7 @@ sub generate {
     $self->document->generate();
 }
 
+# *around* which to define subclass methods
 sub generateRuling {
     my ($self) = @_;
 }
@@ -289,13 +287,6 @@ sub getUnit {
 
     if ($self->modifiers->has('unit')) {
         my $unit = $self->modifiers->get('unit');
-        if (defined $unit) {
-            return $unit;
-        }
-    }
-
-    if ($self->can('getRulingSpecificUnit')) {
-        my $unit = $self->getRulingSpecificUnit();
         if (defined $unit) {
             return $unit;
         }
@@ -570,35 +561,63 @@ sub getRulingClassName {
 }
 
 sub getOriginX {
-    my ($self) = @_;
-    if ($self->modifiers->has('margin-line')) {
-        my $value = $self->modifiers->get('margin-line');
-        if ($value eq 'yes') {
-            return $self->getDefaultOriginX();
-        }
-        return $value;
+    my ($self, $side) = @_;
+    $side //= 'left';
+    my $value;
+    if ($self->modifiers->has('left-margin-line') || $self->modifiers->has('margin-line')) {
+        $value = $self->modifiers->get('left-margin-line') // $self->modifiers->get('margin-line');
+    } elsif ($self->modifiers->has('right-margin-line')) {
+        $value = $self->modifiers->get('right-margin-line');
     }
-    return;
-    # return $self->getDefaultOriginX();
+    if (defined $value && $value eq 'yes') {
+        $value = $self->getDefaultMarginLineX($side);
+    }
+    return $value;
 }
 
-sub getDefaultOriginX {
-    my ($self) = @_;
+sub getOriginY {
+    my ($self, $side) = @_;
+    $side //= 'top';
+    my $value;
+    if ($self->modifiers->has('top-margin-line')) {
+        $value = $self->modifiers->get('top-margin-line');
+    } elsif ($self->modifiers->has('bottom-margin-line')) {
+        $value = $self->modifiers->get('bottom-margin-line');
+    }
+    if (defined $value && $value eq 'yes') {
+        $value = $self->getDefaultMarginLineY($side);
+    }
+    return;
+}
+
+sub getDefaultMarginLineY {
+    my ($self, $side) = @_;
+    $side //= 'top';
+    if ($self->unitType eq 'imperial') {
+        return '0.5in from ' . $side;
+    } else {
+        return '12mm from ' . $side;
+    }
+}
+
+sub getDefaultMarginLineX {
+    my ($self, $side) = @_;
+    $side //= 'left';
     if ($self->unitType eq 'imperial') {
         if ($self->isA6SizeClass()) {
-            return '0.5in from left';
+            return '0.5in from ' . $side;
         } elsif ($self->isA5SizeClass()) {
-            return '0.75in from left';
+            return '0.75in from ' . $side;
         } else {
-            return '1.25in from left';
+            return '1.25in from ' . $side;
         }
     } else {
         if ($self->isA6SizeClass()) {
-            return '12mm from left';
+            return '12mm from ' . $side;
         } elsif ($self->isA5SizeClass()) {
-            return '18mm from left';
+            return '18mm from ' . $side;
         } else {
-            return '32mm from left';
+            return '32mm from ' . $side;
         }
     }
 }
@@ -607,20 +626,107 @@ sub getDefaultOriginX {
 
 sub hasMarginLine {
     my ($self, $side) = @_;
+    $side //= 'left';
+    my $direction = side_direction($side);
+    die("margin line side must be left, right, top, or bottom\n") unless defined $direction;
 
-    return $self->modifiers->has('margin-line');
+    return $self->modifiers->has('left-margin-line') || $self->modifiers->has('margin-line') if $side eq 'left';
+    return $self->modifiers->has('right-margin-line')                                        if $side eq 'right';
+    return $self->modifiers->has('top-margin-line')                                          if $side eq 'top';
+    return $self->modifiers->has('bottom-margin-line')                                       if $side eq 'bottom';
+    return;
+}
+
+sub getMarginLinePosition {
+    my ($self, $side) = @_;
+    $side //= 'left';
+    my $direction = side_direction($side);
+    die("margin line side must be left, right, top, or bottom\n") unless defined $direction;
+
+    my $marginLinePosition;
+    if ($direction eq 'vertical') {
+        if ($side eq 'left') {
+            $marginLinePosition = $self->modifiers->get('left-margin-line') // $self->modifiers->get('margin-line');
+        } else {
+            $marginLinePosition = $self->modifiers->get('right-margin-line');
+        }
+        if (!defined $marginLinePosition) {
+            my $originX = $self->ptX($self->getOriginX($side));
+            my $halfX   = $self->ptX('50%');
+            my $originXIsLeftOrCenter = snapcmp($originX, $halfX) <= 0;
+            my $isOppositeSide = 0;
+            if ($side eq 'left') {
+                if ($originXIsLeftOrCenter) {
+                    $marginLinePosition = $originX;
+                } else {
+                    $marginLinePosition = $self->width - $originX;
+                    $isOppositeSide = 1;
+                }
+            } else {
+                if ($originXIsLeftOrCenter) {
+                    $marginLinePosition = $self->width - $originX;
+                } else {
+                    $marginLinePosition = $originX;
+                    $isOppositeSide = 1;
+                }
+            }
+            if ($isOppositeSide) {
+                # eh?
+            }
+        }
+    } else {
+        if ($side eq 'top') {
+            $marginLinePosition = $self->modifiers->get('top-margin-line');
+        } else {
+            $marginLinePosition = $self->modifiers->get('bottom-margin-line');
+        }
+        if (!defined $marginLinePosition) {
+            my $originY = $self->ptY($self->getOriginY($side));
+            my $halfY   = $self->ptY('50%');
+            my $originYIsTopOrCenter = snapcmp($originY, $halfY) <= 0;
+            my $isOppositeSide = 0;
+            if ($side eq 'top') {
+                if ($originYIsTopOrCenter) {
+                    $marginLinePosition = $originY;
+                } else {
+                    $marginLinePosition = $self->height - $originY;
+                    $isOppositeSide = 1;
+                }
+            } else {
+                if ($originYIsTopOrCenter) {
+                    $marginLinePosition = $self->height - $originY;
+                    $isOppositeSide = 1;
+                } else {
+                    $marginLinePosition = $originY;
+                }
+            }
+            if ($isOppositeSide) {
+                # eh?
+            }
+        }
+    }
+    return $marginLinePosition;
 }
 
 sub generateMarginLine {
-    my ($self) = @_;
-    my $cssClass = trim(($self->getMarginLineCSSClass // '') . ' vertical');
+    my ($self, $side) = @_;
+    $side //= 'left';
+    my $direction = side_direction($side);
+    die("margin line side must be left, right, top, or bottom\n") unless defined $direction;
+
+    my $cssClass = trim(($self->getMarginLineCSSClass // '') . ' ' . $direction);
     my $margin_line = My::Printable::Paper::Element::Line->new(
         document => $self->document,
         id => 'margin-line',
         cssClass => $cssClass,
     );
-    $margin_line->setX($self->getOriginX);
-    return $margin_line;
+    if ($direction eq 'vertical') {
+        $margin_line->setX($self->getMarginLinePosition($side));
+        return $margin_line;
+    } else {                    # horizontal
+        $margin_line->setY($self->getMarginLinePosition($side));
+        return $margin_line;
+    }
 }
 
 ###############################################################################

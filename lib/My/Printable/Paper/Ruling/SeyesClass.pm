@@ -30,8 +30,8 @@ sub getOriginX {
     }
 }
 
-sub getRulingSpecificUnit {
-    my ($self) = @_;
+around 'getUnit' => sub {
+    my ($orig, $self) = @_;
     if ($self->unitType eq 'imperial') {
         if ($self->modifiers->has('10mm')) {
             return '3/8in';
@@ -49,7 +49,7 @@ sub getRulingSpecificUnit {
             return '8mm';
         }
     }
-}
+};
 
 sub getTopLineY {
     my ($self) = @_;
