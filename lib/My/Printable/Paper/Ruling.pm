@@ -550,6 +550,8 @@ sub computeMarginLineWidth {
 
 ###############################################################################
 
+# 'quadrille'     => 'My::Printable::Paper::Ruling::Quadrille'
+# 'line-dot-grid' => 'My::Printable::Paper::Ruling::LineDotGrid'
 sub getRulingClassName {
     my ($self, $name) = @_;
     my $class_suffix = $name;
