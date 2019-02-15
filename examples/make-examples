@@ -11,13 +11,12 @@ printable () {
 
 rm -frv examples || true
 mkdir -p examples
-cd examples
 
-#         Paper Size*   Ruling       Filename base      Options
-#         ------------- ---------    ------------------ --------------------------------------------------------------------
-printable               seyes     -o seyes              --pdf        --dpi 600 --lw 2 --fw 1
-printable --half-letter seyes     -o seyes3-half-letter --pdf --2p2u --dpi 600 --lw 4 --fw 2 -Dunit=1/4in -Ddividing-lines=3
-printable               quadrille -o quadrille          --pdf        --dpi 600 --lw 2 --fw 1
-printable               quadrille -o quadrille10        --pdf        --dpi 600 --lw 2 --fw 1 -Dunit=1/10in
+#         Paper Size*   Ruling       Filename base               Options
+#         ------------- ---------    --------------------------- --------------------------------------------------------------------
+printable               seyes     -o examples/seyes              --pdf        --dpi 600 --lw 2 --fw 1
+printable --half-letter seyes     -o examples/seyes3-half-letter --pdf --2p2u --dpi 600 --lw 4 --fw 2 -Dunit=1/4in -Ddividing-lines=3
+printable               quadrille -o examples/quadrille          --pdf        --dpi 600 --lw 2 --fw 1
+printable               quadrille -o examples/quadrille10        --pdf        --dpi 600 --lw 2 --fw 1 -Dunit=1/10in
 
 # * size of a SINGLE page.
