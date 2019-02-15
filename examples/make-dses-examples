@@ -25,13 +25,18 @@ p6  () { printable  --letter          quadrille  -o  "${dir}"/quadrille4-major4-
 p7  () { printable  --letter          quadrille  -o  "${dir}"/quadrille10-letter                --pdf        --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/2in    -Dmajor-lines=2 -Dfeint-lines=5                                      ; }
 p8  () { printable  --letter          quadrille  -o  "${dir}"/quadrille1064-letter              --pdf        --dpi 600 --mjw 6 --lw 2        -Dunit=10/192in -Dmajor-lines=3 -Dmajor-lines-y=8                                    ; }
 
-p9  () {
-    printable \
-        --letter \
-        quadrille \
-        -o "${dir}"/quadrille-24pt-feint6pt-letter \
+p9 () {
+    printable --letter quadrille \
+        -o "${dir}"/quadrille-third-inch-4-feints-letter \
         --pdf \
         --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/3in -Dfeint-lines=4 -Dmajor-lines=4
+}
+
+p10 () {
+    printable --letter quadrille \
+        -o "${dir}"/quadrille-quarter-inch-4-feints-letter \
+        --pdf \
+        --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=4 -Dmajor-lines=4
 }
 
 all () { p1; p2; p3; p4; p5; p6; p7; p8; p9; }
