@@ -16,18 +16,18 @@ mkdir -p "${dir}"
 
 #                   Paper Size        Ruling        Filename base                                             Options
 #                   ----------------  ---------     --------------------------------------------------------  ---------------------------------------------------------
-p1  () { printable  --letter          seyes      -o "${dir}"/seyes--quarter-inch-3-feints--letter             --pdf        --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3                                                  ; }
+p1  () { printable  --letter          seyes      -o "${dir}"/seyes--quarter-inch-3-feints--letter             --pdf --2p   --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3                                                  ; }
 p2  () { printable  --half-letter     seyes      -o "${dir}"/seyes--quarter-inch-3-feints--half-letter        --pdf --2p2u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3                                                  ; }
 
 p3  () { printable  --letter          quadrille  -o "${dir}"/quadrille--quarter-inch-3-feints--letter         --pdf --2p   --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3 -Dleft-margin-line=yes                           ; }
 p4  () { printable  --half-letter     quadrille  -o "${dir}"/quadrille--quarter-inch-3-feints--half-letter    --pdf --2p2u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3 -Dleft-margin-line=3/4in -Dtop-margin-line=3/4in ; }
 p5  () { printable  --quarter-letter  quadrille  -o "${dir}"/quadrille--quarter-inch-3-feints--quarter-letter --pdf --2p4u --dpi 600         --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=3 -Dleft-margin-line=1/2in                         ; }
 
-p6  () { printable  --letter          quadrille  -o "${dir}"/quadrille--quarter-inch--letter                  --pdf        --dpi 600 --mjw 4 --lw 2        -Dunit=1/4in -Dmajor-lines=4                                                  ; }
+p6  () { printable  --letter          quadrille  -o "${dir}"/quadrille--quarter-inch--letter                  --pdf --2p   --dpi 600 --mjw 4 --lw 2        -Dunit=1/4in -Dmajor-lines=4                                                  ; }
 
-p7  () { printable  --letter          quadrille  -o "${dir}"/quadrille--half-inch-5-feints--letter            --pdf        --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/2in -Dmajor-lines=2 -Dfeint-lines=5                                  ; }
-p8  () { printable  --letter          quadrille  -o "${dir}"/quadrille--third-inch-4-feints--letter           --pdf        --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/3in -Dfeint-lines=4 -Dmajor-lines=4                                  ; }
-p9  () { printable  --letter          quadrille  -o "${dir}"/quadrille--quarter-inch-4-feints--letter         --pdf        --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=4 -Dmajor-lines=4                                  ; }
+p7  () { printable  --letter          quadrille  -o "${dir}"/quadrille--half-inch-5-feints--letter            --pdf --2p   --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/2in -Dmajor-lines=2 -Dfeint-lines=5                                  ; }
+p8  () { printable  --letter          quadrille  -o "${dir}"/quadrille--third-inch-4-feints--letter           --pdf --2p   --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/3in -Dfeint-lines=4 -Dmajor-lines=4                                  ; }
+p9  () { printable  --letter          quadrille  -o "${dir}"/quadrille--quarter-inch-4-feints--letter         --pdf --2p   --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=4 -Dmajor-lines=4                                  ; }
 
 all () { p1; p2; p3; p4; p5; p6; p7; p8; p9; }
 
