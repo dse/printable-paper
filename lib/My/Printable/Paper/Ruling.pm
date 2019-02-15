@@ -236,11 +236,11 @@ sub generate {
             $self->generatePageNumberRectangle()
         );
     }
-    if ($self->hasMarginLine) {
-        $self->document->appendElement(
-            $self->generateMarginLine()
-        );
-    }
+
+    if ($self->hasMarginLine('left'))   { $self->document->appendElement($self->generateMarginLine('left'));   }
+    if ($self->hasMarginLine('right'))  { $self->document->appendElement($self->generateMarginLine('right'));  }
+    if ($self->hasMarginLine('top'))    { $self->document->appendElement($self->generateMarginLine('top'));    }
+    if ($self->hasMarginLine('bottom')) { $self->document->appendElement($self->generateMarginLine('bottom')); }
 
     my $css = '';
     $css .= $self->thicknessCSS;
@@ -587,7 +587,7 @@ sub getOriginY {
     if (defined $value && $value eq 'yes') {
         $value = $self->getDefaultMarginLineY($side);
     }
-    return;
+    return $value;
 }
 
 sub getDefaultMarginLineY {
