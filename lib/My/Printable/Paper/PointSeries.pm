@@ -3,6 +3,8 @@ use warnings;
 use strict;
 use v5.10.0;
 
+use POSIX qw(trunc round);
+
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::Util qw(:around :const snapcmp snapnum);
 
@@ -42,7 +44,7 @@ sub BUILD {
         $self->$method($self->$method) if defined $self->$method;
     }
 
-    if (!defined $self->origin) {
+    if (!defined $self->origin && defined $self->min && defined $self->max) {
         $self->origin(($self->min + $self->max) / 2);
     }
 
@@ -54,18 +56,22 @@ sub BUILD {
     my $min = $self->min;
     my $max = $self->max;
     if (defined $self->edgeMargin && defined $self->paperDimension) {
-        $min = $self->edgeMargin;
-        $max = $self->paperDimension - $self->edgeMargin;
+        my $leftEdge  = $self->edgeMargin;
+        my $rightEdge = $self->paperDimension - $self->edgeMargin;
+        if ($min < $leftEdge) {
+            $min = $leftEdge;
+        }
+        if ($max > $rightEdge) {
+            $max = $rightEdge;
+        }
     }
 
     $self->setPoints();
 
     if ($self->shiftPoints) {
-        my $leftSpace = $self->startPoint - $min;
-        my $rightSpace = $max - $self->endPoint;
-        my $leftSpaceHalf = $leftSpace - $self->spacing / 2;
-        my $rightSpaceHalf = $rightSpace - $self->spacing / 2;
-        if (snapnum($leftSpaceHalf) > 0 && snapnum($rightSpaceHalf) > 0) {
+        my $pointCount  = $self->getPointCount;
+        my $pointCount2 = $self->getPointCount($self->spacing / 2);
+        if ($pointCount2 > $pointCount) {
             $self->origin($self->origin - $self->spacing / 2);
             $self->startPoint(undef);
             $self->endPoint(undef);
@@ -74,30 +80,82 @@ sub BUILD {
     }
 }
 
+sub getPointCount {
+    my ($self, $diff) = @_;
+    $diff //= 0;
+
+    my $startPoint = $self->startPoint + $diff;
+    my $endPoint   = $self->endPoint   + $diff;
+    my $spacing    = $self->spacing;
+
+    my $min = $self->min;
+    my $max = $self->max;
+    my $edgeMargin = $self->edgeMargin;
+    my $paperDimension = $self->paperDimension;
+    if (defined $edgeMargin && defined $paperDimension) {
+        my $startEdge = $edgeMargin;
+        my $endEdge   = $paperDimension - $edgeMargin;
+        if ($min < $startEdge) { $min = $startEdge; }
+        if ($max > $endEdge)   { $max = $endEdge;   }
+    }
+
+    while (snapcmp($startPoint, $min) > 0) { $startPoint -= $spacing; }
+    while (snapcmp($startPoint, $min) < 0) { $startPoint += $spacing; }
+    while (snapcmp($endPoint,   $max) < 0) { $endPoint   += $spacing; }
+    while (snapcmp($endPoint,   $max) > 0) { $endPoint   -= $spacing; }
+
+    return round(($endPoint - $startPoint) / $spacing);
+}
+
 sub setPoints {
     my ($self) = @_;
 
-    if (defined $self->min && !defined $self->startPoint) {
-        my $start = $self->origin;
-        while ((my $new_start = $start - $self->spacing) >= ($self->min - FUDGE_FACTOR)) {
-            $start = $new_start;
+    my $min = $self->min;
+    my $max = $self->max;
+    # if (defined $self->edgeMargin && defined $self->paperDimension) {
+    #     my $leftEdge  = $self->edgeMargin;
+    #     my $rightEdge = $self->paperDimension - $self->edgeMargin;
+    #     if ($min < $leftEdge) {
+    #         $min = $leftEdge;
+    #     }
+    #     if ($max > $rightEdge) {
+    #         $max = $rightEdge;
+    #     }
+    # }
+
+    my $startPoint = $self->startPoint;
+    my $endPoint   = $self->endPoint;
+    my $origin     = $self->origin;
+    my $spacing    = $self->spacing;
+
+    if (defined $min && !defined $startPoint) {
+        $startPoint = $origin;
+        while (1) {
+            my $next = $startPoint - $spacing;
+            if (snapcmp($next, $min) < 0) {
+                last;
+            }
+            $startPoint = $next;
         }
-        $self->startPoint($start);
+        $self->startPoint($startPoint);
     }
 
-    if (defined $self->max && !defined $self->endPoint) {
-        my $end = $self->origin;
-        while ((my $new_end = $end + $self->spacing) <= ($self->max + FUDGE_FACTOR)) {
-            $end = $new_end;
+    if (defined $max && !defined $endPoint) {
+        $endPoint = $origin;
+        while (1) {
+            my $next = $endPoint + $spacing;
+            if (snapcmp($next, $max) > 0) {
+                last;
+            }
+            $endPoint = $next;
         }
-        $self->endPoint($end);
+        $self->endPoint($endPoint);
     }
 
-    # FIXME: there are other conditions to test as well.  None of them
-    # are true right now, and above conditions are always true.
+    # FIXME: there are other conditions to test as well, based on what
+    # is passed to the constructor at object creation time.  None of
+    # them are true right now, and above conditions are always true.
 }
-
-use POSIX qw(trunc);
 
 sub nearest {
     my ($self, $point) = @_;
