@@ -112,16 +112,6 @@ sub setPoints {
 
     my $min = $self->min;
     my $max = $self->max;
-    # if (defined $self->edgeMargin && defined $self->paperDimension) {
-    #     my $leftEdge  = $self->edgeMargin;
-    #     my $rightEdge = $self->paperDimension - $self->edgeMargin;
-    #     if ($min < $leftEdge) {
-    #         $min = $leftEdge;
-    #     }
-    #     if ($max > $rightEdge) {
-    #         $max = $rightEdge;
-    #     }
-    # }
 
     my $startPoint = $self->startPoint;
     my $endPoint   = $self->endPoint;
