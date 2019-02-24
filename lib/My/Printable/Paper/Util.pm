@@ -20,10 +20,15 @@ our @EXPORT_OK = (
     qw(exclude
        round3
        with_temp
+       withTemp
        linear_interpolate
+       linearInterpolate
        snapcmp
        snapnum
-       side_direction),
+       side_direction
+       sideDirection
+       strokeDashArray
+       strokeDashOffset),
     @{$EXPORT_TAGS{const}},
     @{$EXPORT_TAGS{around}},
 );
@@ -41,6 +46,7 @@ use Data::Dumper;
 use File::Basename qw(basename dirname);
 use File::Path qw(make_path);
 use Text::Trim;
+use Scalar::Util qw(blessed);
 
 sub exclude(\@@) {
     my ($a, @b) = @_;
@@ -63,11 +69,17 @@ sub round3 {
 }
 
 sub linear_interpolate {
+    goto &linearInterpolate;
+}
+sub linearInterpolate {
     my ($v0, $v1, $t) = @_;
     return $v0 + $t * ($v1 - $v0);
 }
 
 sub with_temp {
+    goto &withTemp;
+}
+sub withTemp {
     my ($filename, $sub) = @_;
     my $tempname = $filename;
     if ($filename =~ m{(?![^\.\\\/])(\.[^\.\/\\]+)$}x) {
@@ -138,12 +150,49 @@ sub snapnum {
 }
 
 sub side_direction {
+    goto &sideDirection;
+}
+sub sideDirection {
     my ($side) = @_;
     return 'horizontal' if $side eq 'top';
     return 'horizontal' if $side eq 'bottom';
     return 'vertical'   if $side eq 'left';
     return 'vertical'   if $side eq 'right';
     return;
+}
+
+sub stroke_dash_array {
+    goto &strokeDashArray;
+}
+sub strokeDashArray {
+    my (%args) = @_;
+    my $length  = $args{length} // 0;
+    my $spacing = $args{spacing};
+    if ($length < SVG_DOTTED_LINE_FUDGE_FACTOR) {
+        $length = SVG_DOTTED_LINE_FUDGE_FACTOR;
+    }
+    return sprintf('%.3f %.3f', $length, $spacing - $length);
+}
+
+sub stroke_dash_offset {
+    goto &strokeDashOffset;
+}
+sub strokeDashOffset {
+    my (%args) = @_;
+    my $min          = $args{min};
+    my $max          = $args{max};
+    my $length       = $args{length} // 0;
+    my $center       = $args{center} // (($min + $max) / 2);
+    my $spacing      = $args{spacing};
+    my $centerOffset = $args{centerOffset} // 0;
+    if ($length < SVG_DOTTED_LINE_FUDGE_FACTOR) {
+        $length = SVG_DOTTED_LINE_FUDGE_FACTOR;
+    }
+    my $offset = $min - $center + $length / 2 - ($centerOffset * $spacing);
+    while (snapnum($offset) < 0) {
+        $offset += $spacing;
+    }
+    return sprintf('%.3f', $offset);
 }
 
 1;
