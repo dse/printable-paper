@@ -237,10 +237,18 @@ sub generate {
         );
     }
 
-    if ($self->hasMarginLine('left'))   { $self->document->appendElement($self->generateMarginLine('left'));   }
-    if ($self->hasMarginLine('right'))  { $self->document->appendElement($self->generateMarginLine('right'));  }
-    if ($self->hasMarginLine('top'))    { $self->document->appendElement($self->generateMarginLine('top'));    }
-    if ($self->hasMarginLine('bottom')) { $self->document->appendElement($self->generateMarginLine('bottom')); }
+    if ($self->hasMarginLine('left')) {
+        $self->document->appendElement($self->generateMarginLine('left'));
+    }
+    if ($self->hasMarginLine('right')) {
+        $self->document->appendElement($self->generateMarginLine('right'));
+    }
+    if ($self->hasMarginLine('top')) {
+        $self->document->appendElement($self->generateMarginLine('top'));
+    }
+    if ($self->hasMarginLine('bottom')) {
+        $self->document->appendElement($self->generateMarginLine('bottom'));
+    }
 
     my $css = '';
     $css .= $self->thicknessCSS;
@@ -630,13 +638,30 @@ sub hasMarginLine {
     my ($self, $side) = @_;
     $side //= 'left';
     my $direction = side_direction($side);
-    die("margin line side must be left, right, top, or bottom\n") unless defined $direction;
+    if (!defined $direction) {
+        die("margin line side must be left, right, top, or bottom\n");
+    }
 
-    return $self->modifiers->has('left-margin-line') || $self->modifiers->has('margin-line') if $side eq 'left';
-    return $self->modifiers->has('right-margin-line')                                        if $side eq 'right';
-    return $self->modifiers->has('top-margin-line')                                          if $side eq 'top';
-    return $self->modifiers->has('bottom-margin-line')                                       if $side eq 'bottom';
-    return;
+    my $method2;
+    my $result;
+    if ($side eq 'left') {
+        $method2 = 'hasLeftMarginLine';
+        $result = $self->modifiers->has('left-margin-line') || $self->modifiers->has('margin-line');
+    }
+    if ($side eq 'right') {
+        $method2 = 'hasRightMarginLine';
+        $result = $self->modifiers->has('right-margin-line');
+    }
+    if ($side eq 'top') {
+        $method2 = 'hasTopMarginLine';
+        $result = $self->modifiers->has('top-margin-line');
+    }
+    if ($side eq 'bottom') {
+        $method2 = 'hasBottomMarginLine';
+        $result = $self->modifiers->has('bottom-margin-line');
+    }
+    $result ||= ($self->can($method2) && $self->$method2());
+    return $result;
 }
 
 sub getMarginLinePosition {
@@ -656,7 +681,10 @@ sub getMarginLinePosition {
         }
         if (!defined $marginLinePosition) {
             my $originX = $self->ptX($self->getOriginX($side));
-            my $halfX   = $self->ptX('50%');
+            if (!defined $originX) {
+                return undef;
+            }
+            my $halfX = $self->ptX('50%');
             my $originXIsLeftOrCenter = snapcmp($originX, $halfX) <= 0;
             my $isOppositeSide = 0;
             if ($side eq 'left') {
@@ -686,7 +714,10 @@ sub getMarginLinePosition {
         }
         if (!defined $marginLinePosition) {
             my $originY = $self->ptY($self->getOriginY($side));
-            my $halfY   = $self->ptY('50%');
+            if (!defined $originY) {
+                return undef;
+            }
+            my $halfY = $self->ptY('50%');
             my $originYIsTopOrCenter = snapcmp($originY, $halfY) <= 0;
             my $isOppositeSide = 0;
             if ($side eq 'top') {
@@ -719,6 +750,9 @@ sub generateMarginLine {
     if (!defined $direction) {
         die("margin line side must be left, right, top, or bottom\n");
     }
+    if (!$self->hasMarginLine($side)) {
+        return;
+    }
 
     my $cssClass = trim(($self->getMarginLineCSSClass // '') . ' ' . $direction);
     my $margin_line = My::Printable::Paper::Element::Line->new(
@@ -727,10 +761,18 @@ sub generateMarginLine {
         cssClass => $cssClass,
     );
     if ($direction eq 'vertical') {
-        $margin_line->setX($self->getMarginLinePosition($side));
+        my $x = $self->getMarginLinePosition($side);
+        if (!defined $x) {
+            return undef;
+        }
+        $margin_line->setX($x);
         return $margin_line;
     } else {                    # horizontal
-        $margin_line->setY($self->getMarginLinePosition($side));
+        my $y = $self->getMarginLinePosition($side);
+        if (!defined $y) {
+            return undef;
+        }
+        $margin_line->setY($y);
         return $margin_line;
     }
 }
