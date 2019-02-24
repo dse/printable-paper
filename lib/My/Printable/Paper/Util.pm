@@ -165,6 +165,7 @@ sub stroke_dash_array {
     goto &strokeDashArray;
 }
 sub strokeDashArray {
+    shift if scalar @_ > 0 && defined blessed $_[0];
     my (%args) = @_;
     my $length  = $args{length} // 0;
     my $spacing = $args{spacing};
@@ -178,6 +179,7 @@ sub stroke_dash_offset {
     goto &strokeDashOffset;
 }
 sub strokeDashOffset {
+    shift if scalar @_ > 0 && defined blessed $_[0];
     my (%args) = @_;
     my $min          = $args{min};
     my $max          = $args{max};
