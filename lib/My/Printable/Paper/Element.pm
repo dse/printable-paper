@@ -4,7 +4,9 @@ use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Paper::Util qw(:const :around);
+use My::Printable::Paper::Util qw(:const :around
+                                  strokeDashArray
+                                  strokeDashOffset);
 
 use List::Util qw(min max);
 use Storable qw(dclone);
@@ -421,21 +423,20 @@ sub drawDotPatternUsingSVGDottedLines {
     my $layer = $self->svgLayer;
 
     if ($dw) {
+        my $x1 = $xPointSeries->startPoint;
+        my $x2 = $xPointSeries->endPoint;
+        $x1 -= $dw / 2;
+        $x2 += $dw / 2;
         # series of horizontal dotted lines
-        my $dasharray = sprintf('%.3f %.3f',
-                                SVG_DOTTED_LINE_FUDGE_FACTOR + $dw,
-                                $xPointSeries->spacing - $dw - SVG_DOTTED_LINE_FUDGE_FACTOR);
-        my $dashoffset = sprintf('%.3f', SVG_DOTTED_LINE_FUDGE_FACTOR / 2);
-        my $x1 = $xPointSeries->startPoint - $dw / 2;
-        my $x2 = $xPointSeries->endPoint   + $dw / 2;
-        if ($self->dotDashStartAtLeft) {
-            $x1 += $dw / 2;
-            $x2 += $dw / 2;
-        }
-        if ($self->dotDashStartAtRight) {
-            $x1 -= $dw / 2;
-            $x2 -= $dw / 2;
-        }
+        my %dash = (
+            min => $x1,
+            max => $x2,
+            center => $xPointSeries->startPoint,
+            length => $dw,
+            spacing => $xPointSeries->spacing,
+        );
+        my $dasharray = strokeDashArray(%dash);
+        my $dashoffset = strokeDashOffset(%dash);
         foreach my $y ($yPointSeries->getPoints()) {
             my %a = (
                 x1 => $x1,
@@ -451,21 +452,20 @@ sub drawDotPatternUsingSVGDottedLines {
             $layer->appendChild($line);
         }
     } else {
+        my $y1 = $yPointSeries->startPoint;
+        my $y2 = $yPointSeries->endPoint;
+        $y1 -= $dh / 2;
+        $y2 += $dh / 2;
         # series of vertical dotted lines
-        my $dasharray = sprintf('%.3f %.3f',
-                                SVG_DOTTED_LINE_FUDGE_FACTOR + $dh,
-                                $yPointSeries->spacing - $dh - SVG_DOTTED_LINE_FUDGE_FACTOR);
-        my $dashoffset = sprintf('%.3f', SVG_DOTTED_LINE_FUDGE_FACTOR / 2);
-        my $y1 = $yPointSeries->startPoint - $dh / 2;
-        my $y2 = $yPointSeries->endPoint   + $dh / 2;
-        if ($self->dotDashStartAtTop) {
-            $y1 += $dh / 2;
-            $y2 += $dh / 2;
-        }
-        if ($self->dotDashStartAtBottom) {
-            $y1 -= $dh / 2;
-            $y2 -= $dh / 2;
-        }
+        my %dash = (
+            min => $y1,
+            max => $y2,
+            center => $yPointSeries->startPoint,
+            length => $dh,
+            spacing => $yPointSeries->spacing,
+        );
+        my $dasharray = strokeDashArray(%dash);
+        my $dashoffset = strokeDashOffset(%dash);
         foreach my $x ($xPointSeries->getPoints()) {
             my %a = (
                 y1 => $y1,
