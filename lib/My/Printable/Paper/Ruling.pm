@@ -716,7 +716,9 @@ sub generateMarginLine {
     my ($self, $side) = @_;
     $side //= 'left';
     my $direction = side_direction($side);
-    die("margin line side must be left, right, top, or bottom\n") unless defined $direction;
+    if (!defined $direction) {
+        die("margin line side must be left, right, top, or bottom\n");
+    }
 
     my $cssClass = trim(($self->getMarginLineCSSClass // '') . ' ' . $direction);
     my $margin_line = My::Printable::Paper::Element::Line->new(
