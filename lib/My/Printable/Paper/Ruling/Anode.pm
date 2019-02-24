@@ -16,7 +16,7 @@ use My::Printable::Paper::Unit qw(:const);
 
 use constant rulingName => 'anode';
 use constant hasLineGrid => 1;
-use constant hasMarginLine => 1;
+use constant hasLeftMarginLine => 1;
 
 sub baseFeintLineWidth {
     my ($self) = @_;

@@ -17,7 +17,7 @@ use POSIX qw(round);
 
 use constant rulingName => 'seyes';
 use constant hasLineGrid => 1;
-use constant hasMarginLine => 1;
+use constant hasLeftMarginLine => 1;
 
 around generateRuling => sub {
     my ($orig, $self) = @_;

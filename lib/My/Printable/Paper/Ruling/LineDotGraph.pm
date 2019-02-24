@@ -15,7 +15,7 @@ use My::Printable::Paper::Unit qw(:const);
 
 use constant rulingName => 'line-dot-graph';
 use constant hasLineGrid => 0;
-use constant hasMarginLine => 1;
+use constant hasLeftMarginLine => 1;
 
 sub baseDotWidth {
     my ($self) = @_;
