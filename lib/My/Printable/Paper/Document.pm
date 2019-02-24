@@ -699,6 +699,9 @@ sub printToHandle {
 
 sub appendElement {
     my ($self, $element) = @_;
+    if (!defined $element) {
+        return;
+    }
     if (grep { $_ eq $element } @{$self->elements}) {
         return;
     }
