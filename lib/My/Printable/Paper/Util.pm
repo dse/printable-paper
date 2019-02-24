@@ -190,7 +190,8 @@ sub strokeDashOffset {
     if ($length < SVG_DOTTED_LINE_FUDGE_FACTOR) {
         $length = SVG_DOTTED_LINE_FUDGE_FACTOR;
     }
-    my $offset = $min - $center + $length / 2 - ($centerOffset * $spacing);
+    my $dashStartAt = $center - $length / 2 + ($centerOffset * $spacing);
+    my $offset = $min - $dashStartAt;
     while (snapnum($offset) < 0) {
         $offset += $spacing;
     }
