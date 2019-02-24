@@ -643,7 +643,9 @@ sub getMarginLinePosition {
     my ($self, $side) = @_;
     $side //= 'left';
     my $direction = side_direction($side);
-    die("margin line side must be left, right, top, or bottom\n") unless defined $direction;
+    if (!defined $direction) {
+        die("margin line side must be left, right, top, or bottom\n");
+    }
 
     my $marginLinePosition;
     if ($direction eq 'vertical') {
