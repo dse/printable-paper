@@ -5,9 +5,23 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 
+use My::Printable::Paper::Util qw(strokeDashArray strokeDashOffset);
+
 use Moo;
 
 extends qw(My::Printable::Paper::Element);
+
+has 'isDotted'   => (is => 'rw', default => 0);
+has 'dotCenter'  => (is => 'rw', default => 0);
+has 'dotSpacing' => (is => 'rw', default => 0);
+
+has 'isDashed'    => (is => 'rw', default => 0);
+has 'dashCenter'  => (is => 'rw', default => 0);
+has 'dashLength'  => (is => 'rw', default => 0);
+has 'dashSpacing' => (is => 'rw', default => 0);
+
+# stroke-dasharray
+# stroke-dashoffset
 
 sub draw {
     my ($self) = @_;
@@ -16,10 +30,45 @@ sub draw {
     my $y1 = $self->y1 // $self->document->topMarginY;
     my $y2 = $self->y2 // $self->document->bottomMarginY;
     my $cssClass = $self->cssClass // "blue line";
-    my $line = $self->createSVGLine(
+
+    my $strokeDashArray;
+    my $strokeDashOffset;
+
+    my $dist = sqrt(($x2 - $x1) ** 2 + ($y2 - $y1) ** 2);
+    if ($self->isDashed) {
+        my %args = (
+            min => 0,
+            max => $dist,
+            length => $self->dashLength,
+            spacing => $self->dashSpacing,
+            center => $self->dashCenter,
+        );
+        $strokeDashArray = strokeDashArray(%args);
+        $strokeDashOffset = strokeDashOffset(%args);
+    } elsif ($self->isDotted) {
+        my %args = (
+            min => 0,
+            max => $dist,
+            length => 0,
+            spacing => $self->dotSpacing,
+            center => $self->dotCenter,
+        );
+        $strokeDashArray = strokeDashArray(%args);
+        $strokeDashOffset = strokeDashOffset(%args);
+    }
+
+    my %line = (
         x1 => $x1, y1 => $y1, x2 => $x2, y2 => $y2,
         cssClass => $cssClass,
     );
+    if ($self->isDashed || $self->isDotted) {
+        $line{attr} = {
+            'stroke-dasharray' => $strokeDashArray,
+            'stroke-dashoffset' => $strokeDashOffset,
+        };
+    }
+
+    my $line = $self->createSVGLine(%line);
     $self->svgLayer->appendChild($line);
 }
 
