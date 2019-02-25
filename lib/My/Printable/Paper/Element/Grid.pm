@@ -34,6 +34,9 @@ has 'isDashedX' => (is => 'rw', default => 0);
 has 'isDashedY' => (is => 'rw', default => 0);
 has 'dashesX'   => (is => 'rw', default => 1);
 has 'dashesY'   => (is => 'rw', default => 1);
+has 'dashSize'  => (is => 'rw');
+has 'dashSizeX' => (is => 'rw');
+has 'dashSizeY' => (is => 'rw');
 
 has 'isDotted'  => (is => 'rw', default => 0);
 has 'isDottedX' => (is => 'rw', default => 0);
@@ -45,6 +48,7 @@ has 'dotsY'     => (is => 'rw', default => 1);
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::PointSeries;
+use My::Printable::Paper::Util qw(strokeDashArray strokeDashOffset);
 
 use Moo;
 
@@ -187,7 +191,7 @@ sub drawHorizontal {
 
     my %dash;
     if ($isDashed) {
-        my $dashLength = $spacing / 2;
+        my $dashLength = $spacing * ($self->dashSize || $self->dashSizeX || 0.5);
         %dash = (
             min => $x1,
             max => $x2,
@@ -257,7 +261,7 @@ sub drawVertical {
 
     my %dash;
     if ($isDashed) {
-        my $dashLength = $spacing / 2;
+        my $dashLength = $spacing * ($self->dashSize || $self->dashSizeY || 0.5);
         %dash = (
             min => $y1,
             max => $y2,
