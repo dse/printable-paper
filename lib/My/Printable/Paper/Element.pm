@@ -672,20 +672,24 @@ sub drawLinePattern {
         $cssClass = trim(($cssClass // '') . ' horizontal');
         my @y = $yPointSeries->getPoints();
         foreach my $y (@y) {
-            my $line = $self->createSVGLine(
+            my %line = (
                 x1 => $x1, x2 => $x2, y => $y,
                 cssClass => $cssClass,
             );
+            $line{attr} = $args{attr} if defined $args{attr};
+            my $line = $self->createSVGLine(%line);
             $self->svgLayer->appendChild($line);
         }
     } elsif ($direction eq "vertical") {
         $cssClass = trim(($cssClass // '') . ' vertical');
         my @x = $xPointSeries->getPoints();
         foreach my $x (@x) {
-            my $line = $self->createSVGLine(
+            my %line = (
                 y1 => $y1, y2 => $y2, x => $x,
                 cssClass => $cssClass,
             );
+            $line{attr} = $args{attr} if defined $args{attr};
+            my $line = $self->createSVGLine(%line);
             $self->svgLayer->appendChild($line);
         }
     }
