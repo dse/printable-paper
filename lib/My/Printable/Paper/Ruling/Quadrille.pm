@@ -28,6 +28,22 @@ around generateRuling => sub {
     my $majorLinesY = $self->modifiers->get('major-lines-y') // $self->modifiers->get('major-lines');
     my $feintLines  = $self->modifiers->get('feint-lines');
 
+    my $dashedX      = $self->modifiers->get('dashed')       // $self->modifiers->get('dashed-x');
+    my $dashedY      = $self->modifiers->get('dashed')       // $self->modifiers->get('dashed-y');
+    my $feintDashedX = $self->modifiers->get('feint-dashed') // $self->modifiers->get('feint-dashed-x');
+    my $feintDashedY = $self->modifiers->get('feint-dashed') // $self->modifiers->get('feint-dashed-y');
+
+    foreach my $dashed ($dashedX, $dashedY, $feintDashedX, $feintDashedY) {
+        if (defined $dashed && $dashed && $dashed eq 'yes') {
+            $dashed = 1;
+        }
+    }
+
+    say STDERR $dashedX;
+    say STDERR $dashedY;
+    say STDERR $feintDashedX;
+    say STDERR $feintDashedY;
+
     if (defined $majorLinesX) {
         $majorLinesX = round($majorLinesX);
         $majorLinesX = undef if $majorLinesX < 2;
@@ -58,6 +74,10 @@ around generateRuling => sub {
             cssClass    => $self->getLineCSSClass,
             originX     => $majorGrid->originX,
             originY     => $majorGrid->originY,
+            isDashedX   => $dashedX,
+            isDashedY   => $dashedY,
+            dashesX     => $dashedX,
+            dashesY     => $dashedY,
         );
         $grid->setSpacing('1unit');
     } else {
@@ -66,17 +86,25 @@ around generateRuling => sub {
             id          => 'grid',
             cssClass    => $self->getLineCSSClass,
             shiftPoints => 1,
+            isDashedX   => $dashedX,
+            isDashedY   => $dashedY,
+            dashesX     => $dashedX,
+            dashesY     => $dashedY,
         );
         $grid->setSpacing('1unit');
     }
 
     if (defined $feintLines) {
         $feintGrid = My::Printable::Paper::Element::Grid->new(
-            document => $self->document,
-            id       => 'feint-grid',
-            cssClass => $self->getFeintLineCSSClass,
-            originX  => $grid->originX,
-            originY  => $grid->originY,
+            document  => $self->document,
+            id        => 'feint-grid',
+            cssClass  => $self->getFeintLineCSSClass,
+            originX   => $grid->originX,
+            originY   => $grid->originY,
+            isDashedX => $feintDashedX,
+            isDashedY => $feintDashedY,
+            dashesX   => $feintDashedX,
+            dashesY   => $feintDashedY,
         );
         $feintGrid->setSpacing('1/' . $feintLines . 'unit');
     }
