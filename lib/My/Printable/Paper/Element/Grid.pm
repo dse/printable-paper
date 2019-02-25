@@ -8,22 +8,40 @@ use Moo;
 has "cssClassHorizontal" => (is => 'rw');
 has "cssClassVertical" => (is => 'rw');
 
-has "isDotGrid" => (is => 'rw', default => 0);
-has "hasDottedGridLines" => (is => 'rw', default => 0);
+###############################################################################
+
+has "isDotGrid"                    => (is => 'rw', default => 0);
+has "hasDottedGridLines"           => (is => 'rw', default => 0);
 has "hasDottedHorizontalGridLines" => (is => 'rw', default => 0);
-has "hasDottedVerticalGridLines" => (is => 'rw', default => 0);
-has "extendGridLines" => (is => 'rw', default => 0);
-has "extendHorizontalGridLines" => (is => 'rw', default => 0);
-has "extendVerticalGridLines" => (is => 'rw', default => 0);
+has "hasDottedVerticalGridLines"   => (is => 'rw', default => 0);
+has "extendGridLines"              => (is => 'rw', default => 0); # keep
+has "extendHorizontalGridLines"    => (is => 'rw', default => 0); # keep
+has "extendVerticalGridLines"      => (is => 'rw', default => 0); # keep
 
 # for dotted line grids
-has "horizontalDots" => (is => 'rw', default => 2);
-has "verticalDots" => (is => 'rw', default => 2);
+has "horizontalDots"               => (is => 'rw', default => 2);
+has "verticalDots"                 => (is => 'rw', default => 2);
 
-has "dottedLineXPointSeries" => (is => 'rw');
-has "dottedLineYPointSeries" => (is => 'rw');
-has "origDottedLineXPointSeries" => (is => 'rw');
-has "origDottedLineYPointSeries" => (is => 'rw');
+has "dottedLineXPointSeries"       => (is => 'rw');
+has "dottedLineYPointSeries"       => (is => 'rw');
+has "origDottedLineXPointSeries"   => (is => 'rw');
+has "origDottedLineYPointSeries"   => (is => 'rw');
+
+###############################################################################
+
+has 'isDashed'  => (is => 'rw', default => 0);
+has 'isDashedX' => (is => 'rw', default => 0);
+has 'isDashedY' => (is => 'rw', default => 0);
+has 'dashesX'   => (is => 'rw', default => 1);
+has 'dashesY'   => (is => 'rw', default => 1);
+
+has 'isDotted'  => (is => 'rw', default => 0);
+has 'isDottedX' => (is => 'rw', default => 0);
+has 'isDottedY' => (is => 'rw', default => 0);
+has 'dotsX'     => (is => 'rw', default => 1);
+has 'dotsY'     => (is => 'rw', default => 1);
+
+###############################################################################
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::PointSeries;
@@ -105,6 +123,178 @@ sub chopY {
 }
 
 sub draw {
+    my ($self) = @_;
+
+    goto &drawOld if $self->isDotGrid;
+    goto &drawOld if $self->hasDottedGridLines;
+    goto &drawOld if $self->hasDottedHorizontalGridLines;
+    goto &drawOld if $self->hasDottedVerticalGridLines;
+
+    my $x1 = $self->x1 // $self->document->leftMarginX;
+    my $x2 = $self->x2 // $self->document->rightMarginX;
+    my $y1 = $self->y1 // $self->document->topMarginY;
+    my $y2 = $self->y2 // $self->document->bottomMarginY;
+
+    # dotted grid
+    if ($self->isDotted) {
+        my $cssClass = $self->cssClass // "blue dot";
+        $self->drawDotPattern(
+            cssClass => $cssClass,
+            xPointSeries => $self->xPointSeries,
+            yPointSeries => $self->yPointSeries,
+            x1 => $x1,
+            x2 => $x2,
+            y1 => $y1,
+            y2 => $y2,
+        );
+        return;
+    }
+
+    $self->drawHorizontal();
+    $self->drawVertical();
+}
+
+# draw horizontal dashes, dots, or lines
+sub drawHorizontal {
+    my ($self) = @_;
+    my $x1 = my $gridX1 = $self->x1 // $self->document->leftMarginX;
+    my $x2 = my $gridX2 = $self->x2 // $self->document->rightMarginX;
+    my $y1 = my $gridY1 = $self->y1 // $self->document->topMarginY;
+    my $y2 = my $gridY2 = $self->y2 // $self->document->bottomMarginY;
+
+    my $isDashed = $self->isDashed || $self->isDashedX;
+    my $isDotted = $self->isDotted || $self->isDottedX;
+
+    my $cssClass = $self->cssClassHorizontal // $self->cssClass // (
+        $isDotted ? 'blue dot' : 'blue line'
+    ) . ' horizontal';
+
+    my $strokeDashArray;
+    my $strokeDashOffset;
+
+    if ($self->extendHorizontalGridLines || $self->extendGridLines) {
+        $x1 = $self->document->leftMarginX;
+        $x2 = $self->document->rightMarginX;
+    }
+
+    # spacing between dashes or dots
+    my $spacing = $self->spacingX // $self->spacing // $self->ptX('1unit');
+    if ($isDashed) {
+        $spacing /= $self->dashesX;
+    } elsif ($isDotted) {
+        $spacing /= $self->dotsX;
+    }
+
+    my %dash;
+    if ($isDashed) {
+        my $dashLength = $spacing / 2;
+        %dash = (
+            min => $x1,
+            max => $x2,
+            length => $dashLength,
+            spacing => $spacing,
+            center => $gridX1,
+        );
+    } elsif ($isDotted) {
+        %dash = (
+            min => $x1,
+            max => $x2,
+            length => 0,
+            spacing => $spacing,
+            center => $gridX1,
+        );
+    }
+    if ($isDashed || $isDotted) {
+        $strokeDashArray = strokeDashArray(%dash);
+        $strokeDashOffset = strokeDashOffset(%dash);
+    }
+
+    my %line = (
+        cssClass => $cssClass,
+        yPointSeries => $self->yPointSeries,
+        x1 => $x1,
+        x2 => $x2,
+    );
+    if ($isDashed || $isDotted) {
+        $line{attr} = {
+            'stroke-dasharray' => $strokeDashArray,
+            'stroke-dashoffset' => $strokeDashOffset,
+        };
+    }
+    $self->drawHorizontalLinePattern(%line);
+}
+
+# draw vertical dashes, dots, or lines
+sub drawVertical {
+    my ($self) = @_;
+    my $x1 = my $gridX1 = $self->x1 // $self->document->leftMarginX;
+    my $x2 = my $gridX2 = $self->x2 // $self->document->rightMarginX;
+    my $y1 = my $gridY1 = $self->y1 // $self->document->topMarginY;
+    my $y2 = my $gridY2 = $self->y2 // $self->document->bottomMarginY;
+
+    my $isDashed = $self->isDashed || $self->isDashedY;
+    my $isDotted = $self->isDotted || $self->isDottedY;
+
+    my $cssClass = $self->cssClassHorizontal // $self->cssClass // (
+        $isDotted ? 'blue dot' : 'blue line'
+    ) . ' vertical';
+
+    my $strokeDashArray;
+    my $strokeDashOffset;
+
+    if ($self->extendVerticalGridLines || $self->extendGridLines) {
+        $y1 = $self->document->topMarginY;
+        $y2 = $self->document->bottomMarginY;
+    }
+
+    # spacing between dashes or dots
+    my $spacing = $self->spacing // $self->spacing // $self->ptY('1unit');
+    if ($isDashed) {
+        $spacing /= $self->dashesY;
+    } elsif ($isDotted) {
+        $spacing /= $self->dotsY;
+    }
+
+    my %dash;
+    if ($isDashed) {
+        my $dashLength = $spacing / 2;
+        %dash = (
+            min => $y1,
+            max => $y2,
+            length => $dashLength,
+            spacing => $spacing,
+            center => $gridY1,
+        );
+    } elsif ($isDotted) {
+        %dash = (
+            min => $y1,
+            max => $y2,
+            length => 0,
+            spacing => $spacing,
+            center => $gridY1,
+        );
+    }
+    if ($isDashed || $isDotted) {
+        $strokeDashArray = strokeDashArray(%dash);
+        $strokeDashOffset = strokeDashOffset(%dash);
+    }
+
+    my %line = (
+        cssClass => $cssClass,
+        xPointSeries => $self->xPointSeries,
+        y1 => $y1,
+        y2 => $y2,
+    );
+    if ($isDashed || $isDotted) {
+        $line{attr} = {
+            'stroke-dasharray' => $strokeDashArray,
+            'stroke-dashoffset' => $strokeDashOffset,
+        };
+    }
+    $self->drawVerticalLinePattern(%line);
+}
+
+sub drawOld {
     my ($self) = @_;
 
     my $x1 = $self->x1 // $self->document->leftMarginX;
