@@ -81,6 +81,8 @@ around generateRuling => sub {
             dashesX     => $dashedX,
             dashesY     => $dashedY,
             isDotted    => $dotted,
+            dotsX       => $dotted,
+            dotsY       => $dotted,
         );
         $grid->setSpacing('1unit');
     } else {
@@ -94,6 +96,8 @@ around generateRuling => sub {
             dashesX     => $dashedX,
             dashesY     => $dashedY,
             isDotted    => $dotted,
+            dotsX       => $dotted,
+            dotsY       => $dotted,
         );
         $grid->setSpacing('1unit');
     }
@@ -110,6 +114,8 @@ around generateRuling => sub {
             dashesX   => $feintDashedX,
             dashesY   => $feintDashedY,
             isDotted  => $feintDotted,
+            dotsX     => $feintDotted,
+            dotsY     => $feintDotted,
         );
         $feintGrid->setSpacing('1/' . $feintLines . 'unit');
     }
