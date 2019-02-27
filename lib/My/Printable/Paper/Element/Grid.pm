@@ -151,6 +151,8 @@ sub draw {
             x2 => $x2,
             y1 => $y1,
             y2 => $y2,
+            dotsX => $self->dotsX,
+            dotsY => $self->dotsY,
         );
         return;
     }
