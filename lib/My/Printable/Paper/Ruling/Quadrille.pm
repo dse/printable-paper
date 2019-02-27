@@ -39,11 +39,6 @@ around generateRuling => sub {
         }
     }
 
-    say STDERR $dashedX;
-    say STDERR $dashedY;
-    say STDERR $feintDashedX;
-    say STDERR $feintDashedY;
-
     if (defined $majorLinesX) {
         $majorLinesX = round($majorLinesX);
         $majorLinesX = undef if $majorLinesX < 2;
