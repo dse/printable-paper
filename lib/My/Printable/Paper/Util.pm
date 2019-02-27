@@ -28,7 +28,8 @@ our @EXPORT_OK = (
        side_direction
        sideDirection
        strokeDashArray
-       strokeDashOffset),
+       strokeDashOffset
+       flatten),
     @{$EXPORT_TAGS{const}},
     @{$EXPORT_TAGS{around}},
 );
@@ -196,6 +197,12 @@ sub strokeDashOffset {
         $offset += $spacing;
     }
     return sprintf('%.3f', $offset);
+}
+
+sub flatten {
+    return map {
+        eval { ref $_ eq 'ARRAY' } ? @$_ : $_
+    } @_;
 }
 
 1;
