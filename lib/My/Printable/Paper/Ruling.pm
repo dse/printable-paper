@@ -679,7 +679,7 @@ sub getMarginLinePosition {
         } else {
             $marginLinePosition = $self->modifiers->get('right-margin-line');
         }
-        if (!defined $marginLinePosition) {
+        if (!defined $marginLinePosition || $marginLinePosition eq 'yes') {
             my $originX = $self->ptX($self->getOriginX($side));
             if (!defined $originX) {
                 return undef;
@@ -712,7 +712,7 @@ sub getMarginLinePosition {
         } else {
             $marginLinePosition = $self->modifiers->get('bottom-margin-line');
         }
-        if (!defined $marginLinePosition) {
+        if (!defined $marginLinePosition || $marginLinePosition eq 'yes') {
             my $originY = $self->ptY($self->getOriginY($side));
             if (!defined $originY) {
                 return undef;
