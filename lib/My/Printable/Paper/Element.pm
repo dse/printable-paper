@@ -456,8 +456,6 @@ sub drawDotPatternUsingSVGDottedLines {
     my $dotsX = $args{dotsX} // 1;
     my $dotsY = $args{dotsY} // 1;
 
-    say STDERR "drawDotPatternUsingSVGDottedLines $dotsX $dotsY";
-
     my $dw = $self->dotDashWidth;
     my $dh = $self->dotDashHeight;
     if ($dw && $dh) {
@@ -503,8 +501,6 @@ sub drawDotPatternUsingSVGDottedLines {
 sub drawDotPatternUsingSVGDottedHorizontalLines {
     my ($self, %args) = @_;
 
-    say STDERR $args{dotsX} // 1;
-
     my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
     my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
     my $cssClass     = $args{cssClass} // $self->cssClass;
@@ -548,8 +544,6 @@ sub drawDotPatternUsingSVGDottedHorizontalLines {
 
 sub drawDotPatternUsingSVGDottedVerticalLines {
     my ($self, %args) = @_;
-
-    say STDERR $args{dotsY} // 1;
 
     my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
     my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
@@ -674,8 +668,6 @@ sub drawDotPatternUsingHorizontalRowsOfDots {
     my $dotsX = (delete $args{dotsX}) // 1;
     my $dotsY = (delete $args{dotsY}) // 1;
 
-    say STDERR "drawDotPatternUsingHorizontalRowsOfDots $dotsX $dotsY";
-
     my $cssClass = $args{cssClass} // $self->cssClass;
     my $xPointSeries = (delete $args{xPointSeries}) // $self->xPointSeries;
     my $yPointSeries = (delete $args{yPointSeries}) // $self->yPointSeries;
@@ -698,8 +690,6 @@ sub drawDotPatternUsingVerticalColumnsOfDots {
     $dotsX //= 1;
     $dotsY //= 1;
 
-    say STDERR "drawDotPatternUsingVerticalColumnsOfDots $dotsX $dotsY";
-
     my $cssClass = $args{cssClass} // $self->cssClass;
     my $xPointSeries = (delete $args{xPointSeries}) // $self->xPointSeries;
     my $yPointSeries = (delete $args{yPointSeries}) // $self->yPointSeries;
@@ -720,8 +710,6 @@ sub drawDotPatternUsingDots {
 
     my $dotsX = $args{dotsX} // 1;
     my $dotsY = $args{dotsY} // 1;
-
-    say STDERR "drawDotPatternUsingDots $dotsX $dotsY";
 
     if ($dotsX != 1 || $dotsY != 1) {
         $self->drawDotPatternUsingHorizontalRowsOfDots(%args);
