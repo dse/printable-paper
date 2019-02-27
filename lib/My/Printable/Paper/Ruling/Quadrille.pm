@@ -33,11 +33,18 @@ around generateRuling => sub {
     my $feintDashedX = $self->modifiers->get('feint-dashed') // $self->modifiers->get('feint-dashed-x');
     my $feintDashedY = $self->modifiers->get('feint-dashed') // $self->modifiers->get('feint-dashed-y');
 
-    foreach my $dashed ($dashedX, $dashedY, $feintDashedX, $feintDashedY) {
-        if (defined $dashed && $dashed && $dashed eq 'yes') {
-            $dashed = 1;
+    my $dotted      = $self->modifiers->get('dotted');
+    my $feintDotted = $self->modifiers->get('feint-dotted');
+
+    foreach my $value ($dashedX, $dashedY, $feintDashedX, $feintDashedY, $dotted, $feintDotted) {
+        if (defined $value && $value && $value eq 'yes') {
+            $value = 1;
         }
     }
+
+    # if dashed and dotted are specified, we're dashed and not dotted
+    $dotted      = 0 if $dashedX      || $dashedY;
+    $feintDotted = 0 if $feintDashedX || $feintDashedY;
 
     if (defined $majorLinesX) {
         $majorLinesX = round($majorLinesX);
@@ -73,6 +80,7 @@ around generateRuling => sub {
             isDashedY   => $dashedY,
             dashesX     => $dashedX,
             dashesY     => $dashedY,
+            isDotted    => $dotted,
         );
         $grid->setSpacing('1unit');
     } else {
@@ -85,6 +93,7 @@ around generateRuling => sub {
             isDashedY   => $dashedY,
             dashesX     => $dashedX,
             dashesY     => $dashedY,
+            isDotted    => $dotted,
         );
         $grid->setSpacing('1unit');
     }
@@ -100,6 +109,7 @@ around generateRuling => sub {
             isDashedY => $feintDashedY,
             dashesX   => $feintDashedX,
             dashesY   => $feintDashedY,
+            isDotted  => $feintDotted,
         );
         $feintGrid->setSpacing('1/' . $feintLines . 'unit');
     }
@@ -110,6 +120,17 @@ around generateRuling => sub {
     $self->document->appendElement($grid);
     if (defined $feintGrid) {
         $self->document->appendElement($feintGrid);
+    }
+
+    if (defined $majorGrid) {
+        $grid->excludePointsFrom($majorGrid);
+        if (defined $feintGrid) {
+            $feintGrid->excludePointsFrom($majorGrid, $grid);
+        }
+    } else {
+        if (defined $feintGrid) {
+            $feintGrid->excludePointsFrom($grid);
+        }
     }
 
     $self->$orig();
