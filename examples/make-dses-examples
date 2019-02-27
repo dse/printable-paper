@@ -29,7 +29,7 @@ p7  () { printable  --letter          quadrille  -o "${dir}"/quadrille--half-inc
 p8  () { printable  --letter          quadrille  -o "${dir}"/quadrille--third-inch-4-feints--letter           --pdf --2p   --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/3in -Dfeint-lines=4 -Dmajor-lines=4                                  ; }
 p9  () { printable  --letter          quadrille  -o "${dir}"/quadrille--quarter-inch-4-feints--letter         --pdf --2p   --dpi 600 --mjw 8 --lw 4 --fw 2 -Dunit=1/4in -Dfeint-lines=4 -Dmajor-lines=4                                  ; }
 
-p10 () { printable  --letter          quadrille  -o "${dir}"/quadrille--quarter-inch-dashed--letter           --pdf --2p   --dpi 600 --mjw 4 --lw 2        -Dunit=1/4in -Dmajor-lines=4 -Ddashed=4; }
+p10 () { printable  --letter          quadrille  -o "${dir}"/quadrille--quarter-inch-dashed--letter           --pdf --2p   --dpi 600 --mjw 4 --lw 2         -Dunit=1/4in -Dmajor-lines=4 -Ddashed=4; }
 p11 () { printable  --letter          quadrille  -o "${dir}"/quadrille--quarter-inch-dotted--letter           --pdf --2p   --dpi 600 --mjw 4 --lw 2 --dw 16 -Dunit=1/4in -Dmajor-lines=4 -Ddotted=4; }
 
 all () { p1; p2; p3; p4; p5; p6; p7; p8; p9; p10; p11; }
