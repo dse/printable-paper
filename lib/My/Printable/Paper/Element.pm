@@ -453,6 +453,11 @@ sub chopY {
 sub drawDotPatternUsingSVGDottedLines {
     my ($self, %args) = @_;
 
+    my $dotsX = $args{dotsX} // 1;
+    my $dotsY = $args{dotsY} // 1;
+
+    say STDERR "drawDotPatternUsingSVGDottedLines $dotsX $dotsY";
+
     my $dw = $self->dotDashWidth;
     my $dh = $self->dotDashHeight;
     if ($dw && $dh) {
@@ -469,69 +474,121 @@ sub drawDotPatternUsingSVGDottedLines {
     my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
     my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
     my $dw2 = $dw / 2;
-    my $dh2 = $dw / 2;
+    my $dh2 = $dh / 2;
     my $layer = $self->svgLayer;
 
-    if ($dw) {
-        my $x1 = $xPointSeries->startPoint;
-        my $x2 = $xPointSeries->endPoint;
-        $x1 -= $dw / 2;
-        $x2 += $dw / 2;
-        # series of horizontal dotted lines
-        my %dash = (
-            min => $x1,
-            max => $x2,
-            center => $xPointSeries->startPoint,
-            length => $dw,
-            spacing => $xPointSeries->spacing,
-        );
-        my $dasharray = strokeDashArray(%dash);
-        my $dashoffset = strokeDashOffset(%dash);
-        foreach my $y ($yPointSeries->getPoints()) {
-            next if $self->excludesY($y);
-            my %a = (
-                x1 => $x1,
-                x2 => $x2,
-                y => $y,
-                attr => {
-                    'stroke-dasharray' => $dasharray,
-                    'stroke-dashoffset' => $dashoffset,
-                },
-            );
-            $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
-            my $line = $self->createSVGLine(%a);
-            $layer->appendChild($line);
-        }
+    if ($dotsX != 1 && $dotsY != 1) {
+        $self->drawDotPatternUsingSVGDottedHorizontalLines(%args);
+        $self->drawDotPatternUsingSVGDottedVerticalLines(%args);
+    } elsif ($dotsX != 1 && $dh) {
+        $self->drawDotPatternUsingSVGDottedHorizontalLines(%args);
+        $self->drawDotPatternUsingSVGDottedVerticalLines(%args);
+    } elsif ($dotsY != 1 && $dw) {
+        $self->drawDotPatternUsingSVGDottedHorizontalLines(%args);
+        $self->drawDotPatternUsingSVGDottedVerticalLines(%args);
+    } elsif ($dotsX != 1) {
+        $self->drawDotPatternUsingSVGDottedHorizontalLines(%args);
+    } elsif ($dotsY != 1) {
+        $self->drawDotPatternUsingSVGDottedVerticalLines(%args);
+    } elsif ($dw) {
+        $self->drawDotPatternUsingSVGDottedHorizontalLines(%args);
+    } elsif ($dh) {
+        $self->drawDotPatternUsingSVGDottedVerticalLines(%args);
     } else {
-        my $y1 = $yPointSeries->startPoint;
-        my $y2 = $yPointSeries->endPoint;
-        $y1 -= $dh / 2;
-        $y2 += $dh / 2;
-        # series of vertical dotted lines
-        my %dash = (
-            min => $y1,
-            max => $y2,
-            center => $yPointSeries->startPoint,
-            length => $dh,
-            spacing => $yPointSeries->spacing,
+        # pick an arbitrary one
+        $self->drawDotPatternUsingSVGDottedVerticalLines(%args);
+    }
+}
+
+sub drawDotPatternUsingSVGDottedHorizontalLines {
+    my ($self, %args) = @_;
+
+    say STDERR $args{dotsX} // 1;
+
+    my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
+    my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
+    my $cssClass     = $args{cssClass} // $self->cssClass;
+    my $layer = $self->svgLayer;
+    my $dw = $self->dotDashWidth;
+    my $dh = $self->dotDashHeight;
+
+    my $x1 = $xPointSeries->startPoint;
+    my $x2 = $xPointSeries->endPoint;
+    $x1 -= $dw / 2;
+    $x2 += $dw / 2;
+
+    my $spacing = $xPointSeries->spacing / ($args{dotsX} // 1);
+
+    # series of horizontal dotted lines
+    my %dash = (
+        min => $x1,
+        max => $x2,
+        center => $xPointSeries->startPoint,
+        length => $dw,
+        spacing => $spacing,
+    );
+    my $dasharray = strokeDashArray(%dash);
+    my $dashoffset = strokeDashOffset(%dash);
+    foreach my $y ($yPointSeries->getPoints()) {
+        next if $self->excludesY($y);
+        my %a = (
+            x1 => $x1,
+            x2 => $x2,
+            y => $y,
+            attr => {
+                'stroke-dasharray' => $dasharray,
+                'stroke-dashoffset' => $dashoffset,
+            },
         );
-        my $dasharray = strokeDashArray(%dash);
-        my $dashoffset = strokeDashOffset(%dash);
-        foreach my $x ($xPointSeries->getPoints()) {
-            next if $self->excludesX($x);
-            my %a = (
-                y1 => $y1,
-                y2 => $y2,
-                x => $x,
-                attr => {
-                    'stroke-dasharray' => $dasharray,
-                    'stroke-dashoffset' => $dashoffset,
-                },
-            );
-            $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
-            my $line = $self->createSVGLine(%a);
-            $layer->appendChild($line);
-        }
+        $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+        my $line = $self->createSVGLine(%a);
+        $layer->appendChild($line);
+    }
+}
+
+sub drawDotPatternUsingSVGDottedVerticalLines {
+    my ($self, %args) = @_;
+
+    say STDERR $args{dotsY} // 1;
+
+    my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
+    my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
+    my $cssClass     = $args{cssClass} // $self->cssClass;
+    my $layer = $self->svgLayer;
+    my $dw = $self->dotDashWidth;
+    my $dh = $self->dotDashHeight;
+
+    my $y1 = $yPointSeries->startPoint;
+    my $y2 = $yPointSeries->endPoint;
+    $y1 -= $dh / 2;
+    $y2 += $dh / 2;
+
+    my $spacing = $yPointSeries->spacing / ($args{dotsY} // 1);
+
+    # series of vertical dotted lines
+    my %dash = (
+        min => $y1,
+        max => $y2,
+        center => $yPointSeries->startPoint,
+        length => $dh,
+        spacing => $spacing,
+    );
+    my $dasharray = strokeDashArray(%dash);
+    my $dashoffset = strokeDashOffset(%dash);
+    foreach my $x ($xPointSeries->getPoints()) {
+        next if $self->excludesX($x);
+        my %a = (
+            y1 => $y1,
+            y2 => $y2,
+            x => $x,
+            attr => {
+                'stroke-dasharray' => $dasharray,
+                'stroke-dashoffset' => $dashoffset,
+            },
+        );
+        $a{cssClass} = $cssClass if defined $cssClass && $cssClass ne '';
+        my $line = $self->createSVGLine(%a);
+        $layer->appendChild($line);
     }
 }
 
@@ -611,13 +668,79 @@ sub drawDotPatternUsingSVGPatterns {
     $self->document->svgInkscapeBugWorkaroundFilter();
 }
 
+sub drawDotPatternUsingHorizontalRowsOfDots {
+    my ($self, %args) = @_;
+
+    my $dotsX = (delete $args{dotsX}) // 1;
+    my $dotsY = (delete $args{dotsY}) // 1;
+
+    say STDERR "drawDotPatternUsingHorizontalRowsOfDots $dotsX $dotsY";
+
+    my $cssClass = $args{cssClass} // $self->cssClass;
+    my $xPointSeries = (delete $args{xPointSeries}) // $self->xPointSeries;
+    my $yPointSeries = (delete $args{yPointSeries}) // $self->yPointSeries;
+
+    $xPointSeries = $xPointSeries->clone();
+    $xPointSeries->spacing($xPointSeries->spacing / $dotsX);
+
+    $self->drawDotPatternUsingDots(
+        %args,
+        xPointSeries => $xPointSeries,
+        yPointSeries => $yPointSeries,
+    );
+}
+
+sub drawDotPatternUsingVerticalColumnsOfDots {
+    my ($self, %args) = @_;
+
+    my $dotsX = (delete $args{dotsX}) // 1;
+    my $dotsY = (delete $args{dotsY}) // 1;
+    $dotsX //= 1;
+    $dotsY //= 1;
+
+    say STDERR "drawDotPatternUsingVerticalColumnsOfDots $dotsX $dotsY";
+
+    my $cssClass = $args{cssClass} // $self->cssClass;
+    my $xPointSeries = (delete $args{xPointSeries}) // $self->xPointSeries;
+    my $yPointSeries = (delete $args{yPointSeries}) // $self->yPointSeries;
+
+    $yPointSeries = $yPointSeries->clone();
+    $yPointSeries->spacing($yPointSeries->spacing / $dotsY);
+
+    $self->drawDotPatternUsingDots(
+        %args,
+        xPointSeries => $xPointSeries,
+        yPointSeries => $yPointSeries,
+    );
+}
+
 # MAKE FASTER
 sub drawDotPatternUsingDots {
     my ($self, %args) = @_;
 
+    my $dotsX = $args{dotsX} // 1;
+    my $dotsY = $args{dotsY} // 1;
+
+    say STDERR "drawDotPatternUsingDots $dotsX $dotsY";
+
+    if ($dotsX != 1 || $dotsY != 1) {
+        $self->drawDotPatternUsingHorizontalRowsOfDots(%args);
+        $self->drawDotPatternUsingVerticalColumnsOfDots(%args);
+        return;
+    }
+
     my $cssClass = $args{cssClass} // $self->cssClass;
     my $xPointSeries = $args{xPointSeries} // $self->xPointSeries;
     my $yPointSeries = $args{yPointSeries} // $self->yPointSeries;
+
+    if ($dotsX != 1) {
+        $xPointSeries = $xPointSeries->clone();
+        $xPointSeries->spacing($xPointSeries->spacing / $dotsX);
+    }
+    if ($dotsY != 1) {
+        $yPointSeries = $yPointSeries->clone();
+        $yPointSeries->spacing($yPointSeries->spacing / $dotsY);
+    }
 
     my $dw2 = $self->dotDashWidth / 2;
     my $dh2 = $self->dotDashHeight / 2;
