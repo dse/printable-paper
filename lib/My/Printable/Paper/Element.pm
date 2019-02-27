@@ -12,6 +12,7 @@ use List::Util qw(min max);
 use Storable qw(dclone);
 use Data::Dumper qw(Dumper);
 use Text::Trim qw(trim);
+use Scalar::Util qw(blessed);
 
 use Moo;
 
@@ -100,6 +101,32 @@ has "svgLayer" => (
     clearer => "deleteSVGLayer",
 );
 
+has 'excludePointsFrom' => (
+    is => 'rw',
+);
+
+around 'excludePointsFrom' => sub {
+    my $orig = shift;
+    my $self = shift;
+    if (scalar @_) {
+        my $value = shift;
+        if (blessed($value)) {
+            return $self->$orig($value);
+        }
+        my $document = $self->document;
+        if (!$document) {
+            die("Element::excludePointsFrom: no owner document\n");
+        }
+        my $element = $document->elementsById->{$value};
+        if (!$element) {
+            die("Element::excludePointsFrom: owner document has no element with id '$value'\n");
+        }
+        return $self->$orig($element);
+    } else {
+        return $self->$orig();
+    }
+};
+
 sub BUILD {
     my ($self) = @_;
     foreach my $method (qw(x1 x2 y1 y2
@@ -107,6 +134,34 @@ sub BUILD {
                            originX originY dotDashWidth dotDashHeight)) {
         $self->$method($self->$method) if defined $self->$method;
     }
+}
+
+sub includesX {
+    my ($self, $x) = @_;
+    my $ps = $self->xPointSeries;
+    return 0 if !$ps;
+    return $ps->includes($x) && !$self->excludesX($x);
+}
+
+sub includesY {
+    my ($self, $y) = @_;
+    my $ps = $self->yPointSeries;
+    return 0 if !$ps;
+    return $ps->includes($y) && !$self->excludesY($y);
+}
+
+sub excludesX {
+    my ($self, $x) = @_;
+    my $exclude = $self->excludePointsFrom;
+    return 0 if !$exclude;
+    return $exclude->includesX($x);
+}
+
+sub excludesY {
+    my ($self, $y) = @_;
+    my $exclude = $self->excludePointsFrom;
+    return 0 if !$exclude;
+    return $exclude->includesY($y);
 }
 
 # MAKE FASTER
@@ -438,6 +493,7 @@ sub drawDotPatternUsingSVGDottedLines {
         my $dasharray = strokeDashArray(%dash);
         my $dashoffset = strokeDashOffset(%dash);
         foreach my $y ($yPointSeries->getPoints()) {
+            next if $self->excludesY($y);
             my %a = (
                 x1 => $x1,
                 x2 => $x2,
@@ -467,6 +523,7 @@ sub drawDotPatternUsingSVGDottedLines {
         my $dasharray = strokeDashArray(%dash);
         my $dashoffset = strokeDashOffset(%dash);
         foreach my $x ($xPointSeries->getPoints()) {
+            next if $self->excludesX($x);
             my %a = (
                 y1 => $y1,
                 y2 => $y2,
@@ -572,8 +629,12 @@ sub drawDotPatternUsingDots {
     my @x = $xPointSeries->getPoints();
     my @y = $yPointSeries->getPoints();
     my $layer = $self->svgLayer;
+  xValue:
     foreach my $x (@x) {
+        next xValue if $self->excludesX($x);
+      yValue:
         foreach my $y (@y) {
+            next yValue if $self->excludesY($y);
             if ($dw2 && $dh2) {
                 my $cx = $x;
                 my $cy = $y;

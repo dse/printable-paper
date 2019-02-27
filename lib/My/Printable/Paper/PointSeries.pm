@@ -149,15 +149,15 @@ sub setPoints {
 
 sub nearest {
     my ($self, $point) = @_;
-    my $x = $point - $self->startPoint;
-    my $y = $self->spacing;
-    my $t = trunc($x / $y) * $y;
-    my $m = $x - $t;
-    if ($m < $y / 2) {
-        return $self->startPoint + $t;
-    } else {
-        return $self->startPoint + $y + $t;
-    }
+    my $spacing = $self->spacing;
+    return $self->startPoint + round(($point - $self->startPoint) / $spacing) * $spacing;
+}
+
+sub includes {
+    my ($self, $point) = @_;
+    return 0 if snapcmp($point, $self->startPoint) < 0;
+    return 0 if snapcmp($point, $self->endPoint) > 0;
+    return snapcmp($point, $self->nearest($point)) == 0;
 }
 
 sub extendAhead {
