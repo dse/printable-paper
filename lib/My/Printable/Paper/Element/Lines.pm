@@ -57,6 +57,7 @@ sub draw {
             $strokeDashOffset = strokeDashOffset(%args);
         }
         foreach my $y ($self->yPointSeries->getPoints) {
+            next if $self->excludesY($y);
             my %line = (
                 y => $y, x1 => $x1, x2 => $x2,
                 cssClass => $cssClass,
@@ -97,6 +98,7 @@ sub draw {
             $strokeDashOffset = strokeDashOffset(%args);
         }
         foreach my $x ($self->xPointSeries->getPoints) {
+            next if $self->excludesX($x);
             my %line = (
                 x => $x, y1 => $y1, y2 => $y2,
                 cssClass => $cssClass,
