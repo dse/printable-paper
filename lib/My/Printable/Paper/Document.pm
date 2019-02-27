@@ -5,7 +5,7 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::ModifierList;
-use My::Printable::Paper::Util qw(:const snapcmp);
+use My::Printable::Paper::Util qw(:const snapcmp flatten);
 use My::Printable::Paper::Converter;
 use My::Printable::Paper::Color qw(:const);
 
@@ -761,10 +761,13 @@ sub getSquarePoints {
 sub defaultStyles {
     my ($self) = @_;
     return <<"EOF";
-        .line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; }
-        .stroke-linecap-butt   { stroke-linecap: butt; }
-        .stroke-linecap-round  { stroke-linecap: round; }
-        .stroke-linecap-square { stroke-linecap: square; }
+        .line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; stroke-linejoin: round; }
+        .stroke-linecap-butt    { stroke-linecap:  butt;   }
+        .stroke-linecap-round   { stroke-linecap:  round;  }
+        .stroke-linecap-square  { stroke-linecap:  square; }
+        .stroke-linejoin-butt   { stroke-linejoin: butt;   }
+        .stroke-linejoin-round  { stroke-linejoin: round;  }
+        .stroke-linejoin-square { stroke-linejoin: square; }
         .rectangle { fill: #ffffff; }
 EOF
 }
@@ -832,6 +835,24 @@ sub appendCSSClass {
         push(@classes, $class) unless grep { $_ eq $class } @classes;
     }
     return join(" ", @classes);
+}
+
+sub getElements {
+    my ($self, @elements) = @_;
+    @elements = flatten(@elements);
+    return grep { defined $_ } map { $self->getElement($_) } @elements;
+}
+
+sub getElement {
+    my ($self, $whatever) = @_;
+    if (!defined $whatever) {
+        return;
+    }
+    if (eval { $whatever->isa('My::Printable::Paper::Element') }) {
+        return $whatever;
+    }
+    my $element = $self->elementsById->{$whatever};
+    return $element;
 }
 
 1;
