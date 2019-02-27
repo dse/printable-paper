@@ -8,7 +8,7 @@ use My::Printable::Paper::Util qw(:const :around
                                   strokeDashArray
                                   strokeDashOffset);
 
-use List::Util qw(min max);
+use List::Util qw(min max any);
 use Storable qw(dclone);
 use Data::Dumper qw(Dumper);
 use Text::Trim qw(trim);
@@ -63,6 +63,8 @@ has "document" => (
         "svgDocument",
         "svgRoot",
         'svgDefs',
+        'getElements',
+        'getElement',
     ],
 );                              # My::Printable::Paper::Document
 
@@ -101,31 +103,20 @@ has "svgLayer" => (
     clearer => "deleteSVGLayer",
 );
 
-has 'excludePointsFrom' => (
+has 'rawExcludePointsFrom' => (
     is => 'rw',
+    default => sub { return []; },
 );
 
-around 'excludePointsFrom' => sub {
-    my $orig = shift;
+sub excludePointsFrom {
     my $self = shift;
     if (scalar @_) {
-        my $value = shift;
-        if (blessed($value)) {
-            return $self->$orig($value);
-        }
-        my $document = $self->document;
-        if (!$document) {
-            die("Element::excludePointsFrom: no owner document\n");
-        }
-        my $element = $document->elementsById->{$value};
-        if (!$element) {
-            die("Element::excludePointsFrom: owner document has no element with id '$value'\n");
-        }
-        return $self->$orig($element);
+        my @elements = $self->getElements(@_);
+        return $self->rawExcludePointsFrom(\@elements);
     } else {
-        return $self->$orig();
+        return $self->rawExcludePointsFrom();
     }
-};
+}
 
 sub BUILD {
     my ($self) = @_;
@@ -154,14 +145,14 @@ sub excludesX {
     my ($self, $x) = @_;
     my $exclude = $self->excludePointsFrom;
     return 0 if !$exclude;
-    return $exclude->includesX($x);
+    return any { $_->includesX($x) } @$exclude;
 }
 
 sub excludesY {
     my ($self, $y) = @_;
     my $exclude = $self->excludePointsFrom;
     return 0 if !$exclude;
-    return $exclude->includesY($y);
+    return any { $_->includesY($y) } @$exclude;
 }
 
 # MAKE FASTER
@@ -468,6 +459,10 @@ sub drawDotPatternUsingSVGDottedLines {
         # dotted lines won't achieve what we want.
         return $self->drawDotPatternUsingDots(%args);
     }
+    if (scalar @{$self->excludePointsFrom}) {
+        # dotted lines won't exclude points
+        return $self->drawDotPatternUsingDots(%args);
+    }
 
     my $cssClass     = $args{cssClass} // $self->cssClass;
 
@@ -733,6 +728,7 @@ sub drawLinePattern {
         $cssClass = trim(($cssClass // '') . ' horizontal');
         my @y = $yPointSeries->getPoints();
         foreach my $y (@y) {
+            next if $self->excludesY($y);
             my %line = (
                 x1 => $x1, x2 => $x2, y => $y,
                 cssClass => $cssClass,
@@ -745,6 +741,7 @@ sub drawLinePattern {
         $cssClass = trim(($cssClass // '') . ' vertical');
         my @x = $xPointSeries->getPoints();
         foreach my $x (@x) {
+            next if $self->excludesX($x);
             my %line = (
                 y1 => $y1, y2 => $y2, x => $x,
                 cssClass => $cssClass,
