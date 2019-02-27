@@ -35,6 +35,7 @@ around 'edgeMargin'     => \&aroundUnit;
 around 'paperDimension' => \&aroundUnit;
 
 use Data::Dumper qw(Dumper);
+use Storable qw(dclone);
 
 sub BUILD {
     my $self = shift;
@@ -205,6 +206,11 @@ sub getPoints {
         push(@points, $point);
     }
     return @points;
+}
+
+sub clone {
+    my $self = shift;
+    return dclone($self);
 }
 
 1;
