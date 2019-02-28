@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="421.373pt" height="595.911pt" viewBox="0.000 0.000 421.373 595.911">
   <style>
-        .line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; }
-        .stroke-linecap-butt   { stroke-linecap: butt; }
-        .stroke-linecap-round  { stroke-linecap: round; }
-        .stroke-linecap-square { stroke-linecap: square; }
+        .line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; stroke-linejoin: round; }
+        .stroke-linecap-butt    { stroke-linecap:  butt;   }
+        .stroke-linecap-round   { stroke-linecap:  round;  }
+        .stroke-linecap-square  { stroke-linecap:  square; }
+        .stroke-linejoin-butt   { stroke-linejoin: butt;   }
+        .stroke-linejoin-round  { stroke-linejoin: round;  }
+        .stroke-linejoin-square { stroke-linejoin: square; }
         .rectangle { fill: #ffffff; }
 
 
         .line        { stroke-width: 0.96px; opacity:  1; }
         .major-line  { stroke-width: 0.96px; opacity: 1; }
         .feint-line  { stroke-width: 0.24px; opacity:  1; }
+
         .dot         { stroke-width: 1.92px; opacity:  1; }
+
         .margin-line { stroke-width: 0.96px; opacity:  1; }
         .line        { stroke: #b3b3ff; }
         .major-line  { stroke: #b3b3ff; }
