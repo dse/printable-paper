@@ -21,7 +21,7 @@ around generateRuling => sub {
     my ($orig, $self) = @_;
 
     my $majorGrid;
-    my $grid;
+    my $regularGrid;
     my $feintGrid;
 
     my $majorLinesX = $self->modifiers->get('major-lines-x') // $self->modifiers->get('major-lines');
@@ -81,7 +81,7 @@ around generateRuling => sub {
         $majorGrid->setSpacingX($majorLinesX . 'unit');
         $majorGrid->setSpacingY($majorLinesY . 'unit');
 
-        $grid = My::Printable::Paper::Element::Grid->new(
+        $regularGrid = My::Printable::Paper::Element::Grid->new(
             document    => $self->document,
             id          => 'grid',
             cssClass    => $self->getRegularLineCSSClass,
@@ -95,9 +95,9 @@ around generateRuling => sub {
             dotsX       => $dotted,
             dotsY       => $dotted,
         );
-        $grid->setSpacing('1unit');
+        $regularGrid->setSpacing('1unit');
     } else {
-        $grid = My::Printable::Paper::Element::Grid->new(
+        $regularGrid = My::Printable::Paper::Element::Grid->new(
             document    => $self->document,
             id          => 'grid',
             cssClass    => $self->getRegularLineCSSClass,
@@ -110,7 +110,7 @@ around generateRuling => sub {
             dotsX       => $dotted,
             dotsY       => $dotted,
         );
-        $grid->setSpacing('1unit');
+        $regularGrid->setSpacing('1unit');
     }
 
     if (defined $feintLines) {
@@ -118,8 +118,8 @@ around generateRuling => sub {
             document  => $self->document,
             id        => 'feint-grid',
             cssClass  => $self->getFeintLineCSSClass,
-            originX   => $grid->originX,
-            originY   => $grid->originY,
+            originX   => $regularGrid->originX,
+            originY   => $regularGrid->originY,
             isDashedX => $feintDashedX,
             isDashedY => $feintDashedY,
             dashesX   => $feintDashedX,
@@ -134,19 +134,19 @@ around generateRuling => sub {
     if (defined $majorGrid) {
         $self->document->appendElement($majorGrid);
     }
-    $self->document->appendElement($grid);
+    $self->document->appendElement($regularGrid);
     if (defined $feintGrid) {
         $self->document->appendElement($feintGrid);
     }
 
     if (defined $majorGrid) {
-        $grid->excludePointsFrom($majorGrid);
+        $regularGrid->excludePointsFrom($majorGrid);
         if (defined $feintGrid) {
-            $feintGrid->excludePointsFrom($majorGrid, $grid);
+            $feintGrid->excludePointsFrom($majorGrid, $regularGrid);
         }
     } else {
         if (defined $feintGrid) {
-            $feintGrid->excludePointsFrom($grid);
+            $feintGrid->excludePointsFrom($regularGrid);
         }
     }
 
