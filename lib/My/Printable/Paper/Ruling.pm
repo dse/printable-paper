@@ -60,21 +60,21 @@ use Data::Dumper;
 sub thicknessCSS {
     my ($self) = @_;
 
-    my $regularLineWidth  = $self->regularLineWidth;
-    my $majorLineWidth = $self->majorLineWidth;
-    my $feintLineWidth  = $self->feintLineWidth;
+    my $regularLineWidth = $self->regularLineWidth;
+    my $majorLineWidth   = $self->majorLineWidth;
+    my $feintLineWidth   = $self->feintLineWidth;
     my $regularDotWidth  = $self->regularDotWidth;
     my $marginLineWidth  = $self->marginLineWidth;
 
-    my $regularLineOpacity  = 1;
-    my $majorLineOpacity = 1;
-    my $feintLineOpacity  = 1;
+    my $regularLineOpacity = 1;
+    my $majorLineOpacity   = 1;
+    my $feintLineOpacity   = 1;
     my $regularDotOpacity  = 1;
     my $marginLineOpacity  = 1;
 
-    if ($regularLineWidth < PD) { $regularLineOpacity  = $regularLineWidth  / PD; $regularLineWidth  = PD; }
-    if ($majorLineWidth   < PD) { $majorLineOpacity = $majorLineWidth / PD; $majorLineWidth = PD; }
-    if ($feintLineWidth   < PD) { $feintLineOpacity  = $feintLineWidth  / PD; $feintLineWidth  = PD; }
+    if ($regularLineWidth < PD) { $regularLineOpacity = $regularLineWidth / PD; $regularLineWidth = PD; }
+    if ($majorLineWidth   < PD) { $majorLineOpacity   = $majorLineWidth   / PD; $majorLineWidth   = PD; }
+    if ($feintLineWidth   < PD) { $feintLineOpacity   = $feintLineWidth   / PD; $feintLineWidth   = PD; }
     if ($regularDotWidth  < PD) { $regularDotOpacity  = $regularDotWidth  / PD; $regularDotWidth  = PD; }
     if ($marginLineWidth  < PD) { $marginLineOpacity  = $marginLineWidth  / PD; $marginLineWidth  = PD; }
 
