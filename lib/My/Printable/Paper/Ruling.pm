@@ -60,32 +60,30 @@ use Data::Dumper;
 sub thicknessCSS {
     my ($self) = @_;
 
-    my $lw  = $self->regularLineWidth;
-    my $mjw = $self->majorLineWidth;
-    my $fw  = $self->feintLineWidth;
-    my $dw  = $self->regularDotWidth;
-    my $mw  = $self->marginLineWidth;
+    my $regularLineWidth  = $self->regularLineWidth;
+    my $majorLineWidth = $self->majorLineWidth;
+    my $feintLineWidth  = $self->feintLineWidth;
+    my $regularDotWidth  = $self->regularDotWidth;
+    my $marginLineWidth  = $self->marginLineWidth;
 
-    my $lo  = 1;
-    my $mjo = 1;
-    my $fo  = 1;
-    my $do  = 1;
-    my $mo  = 1;
+    my $regularLineOpacity  = 1;
+    my $majorLineOpacity = 1;
+    my $feintLineOpacity  = 1;
+    my $regularDotOpacity  = 1;
+    my $marginLineOpacity  = 1;
 
-    if ($lw  < PD) { $lo  = $lw  / PD; $lw  = PD; }
-    if ($mjw < PD) { $mjo = $mjw / PD; $mjw = PD; }
-    if ($fw  < PD) { $fo  = $fw  / PD; $fw  = PD; }
-    if ($dw  < PD) { $do  = $dw  / PD; $dw  = PD; }
-    if ($mw  < PD) { $mo  = $mw  / PD; $mw  = PD; }
+    if ($regularLineWidth < PD) { $regularLineOpacity  = $regularLineWidth  / PD; $regularLineWidth  = PD; }
+    if ($majorLineWidth   < PD) { $majorLineOpacity = $majorLineWidth / PD; $majorLineWidth = PD; }
+    if ($feintLineWidth   < PD) { $feintLineOpacity  = $feintLineWidth  / PD; $feintLineWidth  = PD; }
+    if ($regularDotWidth  < PD) { $regularDotOpacity  = $regularDotWidth  / PD; $regularDotWidth  = PD; }
+    if ($marginLineWidth  < PD) { $marginLineOpacity  = $marginLineWidth  / PD; $marginLineWidth  = PD; }
 
     return <<"EOF";
-        .regular-line { stroke-width: {{  ${lw} pt }}; opacity:  ${lo}; }
-        .major-line   { stroke-width: {{ ${mjw} pt }}; opacity: ${mjo}; }
-        .feint-line   { stroke-width: {{  ${fw} pt }}; opacity:  ${fo}; }
-
-        .regular-dot  { stroke-width: {{  ${dw} pt }}; opacity:  ${do}; }
-
-        .margin-line  { stroke-width: {{  ${mw} pt }}; opacity:  ${mo}; }
+        .regular-line { stroke-width: {{ ${regularLineWidth} pt }}; opacity: ${regularLineOpacity}; }
+        .major-line   { stroke-width: {{ ${majorLineWidth}   pt }}; opacity: ${majorLineOpacity};   }
+        .feint-line   { stroke-width: {{ ${feintLineWidth}   pt }}; opacity: ${feintLineOpacity};   }
+        .regular-dot  { stroke-width: {{ ${regularDotWidth}  pt }}; opacity: ${regularDotOpacity};  }
+        .margin-line  { stroke-width: {{ ${marginLineWidth}  pt }}; opacity: ${marginLineOpacity};  }
 EOF
 }
 
