@@ -49,9 +49,9 @@ p12 () {
               -Dfeint-lines=3 \
               -Dleft-margin-line=3/4in \
               -Dtop-margin-line=3/4in  \
-              -Dmajor-dotted=8 \
-              -Ddotted=4 \
-              -Dfeint-dotted=2
+              -Dmajor-dashed=8 \
+              -Ddashed=4 \
+              -Dfeint-dashed=2
 }
                    
 
