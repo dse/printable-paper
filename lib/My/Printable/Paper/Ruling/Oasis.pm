@@ -30,7 +30,7 @@ sub baseDotWidth {
 sub additionalCSS {
     my ($self) = @_;
     return <<"END";
-        line.dot {
+        line.regular-dot {
             stroke-linecap: butt;
         }
 END

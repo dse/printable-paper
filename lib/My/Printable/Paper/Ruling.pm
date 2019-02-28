@@ -83,7 +83,7 @@ sub thicknessCSS {
         .major-line   { stroke-width: {{ ${mjw} pt }}; opacity: ${mjo}; }
         .feint-line   { stroke-width: {{  ${fw} pt }}; opacity:  ${fo}; }
 
-        .dot          { stroke-width: {{  ${dw} pt }}; opacity:  ${do}; }
+        .regular-dot  { stroke-width: {{  ${dw} pt }}; opacity:  ${do}; }
 
         .margin-line  { stroke-width: {{  ${mw} pt }}; opacity:  ${mo}; }
 EOF
@@ -187,7 +187,7 @@ sub colorCSS {
         .regular-line { stroke: $regularLineColor; }
         .major-line   { stroke: $majorLineColor; }
         .feint-line   { stroke: $feintLineColor; }
-        .dot          { stroke: $regularLineColor; }
+        .regular-dot  { stroke: $regularLineColor; }
         .margin-line  { stroke: $marginLineColor; }
 EOF
 }
@@ -307,7 +307,7 @@ sub getMarginLineCSSClass {
 
 sub getDotCSSClass {
     my ($self) = @_;
-    return 'dot';
+    return 'regular-dot';
 }
 
 sub getRegularLineCSSClass {
