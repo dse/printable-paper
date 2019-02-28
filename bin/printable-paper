@@ -36,14 +36,14 @@ our $opt_ps;
 our $opt_dry_run;
 our $opt_verbose = 0;
 
-our $opt_line_width;
+our $opt_regular_line_width;
 our $opt_major_line_width;
 our $opt_feint_line_width;
 our $opt_dot_width;
 our $opt_margin_line_width;
 our $opt_dpi;
 
-our $opt_line_color;
+our $opt_regular_line_color;
 our $opt_major_line_color;
 our $opt_feint_line_color;
 our $opt_margin_line_color;
@@ -95,19 +95,19 @@ Getopt::Long::GetOptions(
         $opt_ps        = 1;
         $opt_pdf       = 1;
     },
-    'n|dry-run'              => \$opt_dry_run,
-    'v|verbose+'             => \$opt_verbose,
-    'dpi=f'                  => \$opt_dpi,
-    'lw|line-width=f'        => \$opt_line_width,
-    'mjw|major-line-width=f' => \$opt_major_line_width,
-    'fw|feint-line-width=f'  => \$opt_feint_line_width,
-    'dw|dot-width=f'         => \$opt_dot_width,
-    'mw|margin-line-width=f' => \$opt_margin_line_width,
-    'lc|line-color=s'        => \$opt_line_color,
-    'mjc|major-line-color=s' => \$opt_major_line_color,
-    'fc|feint-line-color=s'  => \$opt_feint_line_color,
-    'mc|margin-line-color=s' => \$opt_margin_line_color,
-    'C|color=s'              => \$opt_color,
+    'n|dry-run'                          => \$opt_dry_run,
+    'v|verbose+'                         => \$opt_verbose,
+    'dpi=f'                              => \$opt_dpi,
+    'lw|line-width|regular-line-width=f' => \$opt_regular_line_width,
+    'mjw|major-line-width=f'             => \$opt_major_line_width,
+    'fw|feint-line-width=f'              => \$opt_feint_line_width,
+    'dw|dot-width=f'                     => \$opt_dot_width,
+    'mw|margin-line-width=f'             => \$opt_margin_line_width,
+    'lc|line-color|regular-line-color=s' => \$opt_regular_line_color,
+    'mjc|major-line-color=s'             => \$opt_major_line_color,
+    'fc|feint-line-color=s'              => \$opt_feint_line_color,
+    'mc|margin-line-color=s'             => \$opt_margin_line_color,
+    'C|color=s'                          => \$opt_color,
     "help|?" => sub {
         usage();
         exit(0);
@@ -143,13 +143,13 @@ if --filename is specified:
     --2p4u, --two-page-four-up  "    "        2-page 4-up file(s) "
 ruling line widths:
            --dpi=<dpi>          printer dots per inch (default 600)
-    --lw,  --line-width=<dots>
+    --lw,  --regular-line-width=<dots>
     --mjw, --major-line-width=<dots>
     --fw,  --feint-line-width=<dots>
     --dw,  --dot-width=<dots>
     --mw,  --margin-line-width=<dots>
 ruling line colors:             '#rrggbb[aa]', 'rgb()', 'rgba()' style colors
-    --lc,  --line-color=<color>
+    --lc,  --regular-line-color=<color>
     --mjc, --major-line-color=<color>
     --fc,  --feint-line-color=<color>
     --mc,  --margin-line-color=<color>
@@ -215,7 +215,7 @@ if ($opt_list_ruling_names || $opt_list_rulings) {
         $tt->header(
             'Ruling',
             'Color Type',
-            'Lines',
+            'Regular Lines',
             'Major Lines',
             'Feint Lines',
             'Dots',
@@ -227,15 +227,15 @@ if ($opt_list_ruling_names || $opt_list_rulings) {
                 $count += 1;
                 my $ruling_object = create_ruling_object($ruling_name);
                 $ruling_object->colorType($colorType);
-                my $lineWidth          = eval { $ruling_object->lineWidth       / PD * PT; } // 0;
-                my $majorLineWidth     = eval { $ruling_object->majorLineWidth  / PD * PT; } // 0;
-                my $feintLineWidth     = eval { $ruling_object->feintLineWidth  / PD * PT; } // 0;
-                my $dotWidth           = eval { $ruling_object->dotWidth        / PD * PT; } // 0;
-                my $marginLineWidth    = eval { $ruling_object->marginLineWidth / PD * PT; } // 0;
+                my $regularLineWidth = eval { $ruling_object->regularLineWidth / PD * PT; } // 0;
+                my $majorLineWidth   = eval { $ruling_object->majorLineWidth   / PD * PT; } // 0;
+                my $feintLineWidth   = eval { $ruling_object->feintLineWidth   / PD * PT; } // 0;
+                my $dotWidth         = eval { $ruling_object->dotWidth         / PD * PT; } // 0;
+                my $marginLineWidth  = eval { $ruling_object->marginLineWidth  / PD * PT; } // 0;
                 $tt->addRow(
                     $count == 1 ? $ruling_name : '',
                     $colorType,
-                    sprintf('%.3g', $lineWidth),
+                    sprintf('%.3g', $regularLineWidth),
                     sprintf('%.3g', $majorLineWidth),
                     sprintf('%.3g', $feintLineWidth),
                     sprintf('%.3g', $dotWidth),
@@ -266,32 +266,32 @@ sub create_ruling_object {
         die $@;
     }
     my $ruling_object = $ruling_class_name->new();
-    $ruling_object->id($opt_id)                                         if defined $opt_id;
-    $ruling_object->filename($opt_filename)                             if defined $opt_filename;
-    $ruling_object->paperSizeName($opt_papersize)                       if defined $opt_papersize;
-    $ruling_object->width($opt_width)                                   if defined $opt_width;
-    $ruling_object->height($opt_height)                                 if defined $opt_height;
-    $ruling_object->unitType($opt_unit_type)                            if defined $opt_unit_type;
-    $ruling_object->colorType($opt_color_type)                          if defined $opt_color_type;
-    $ruling_object->generate2Up($opt_2up)                               if defined $opt_2up;
-    $ruling_object->generate4Up($opt_4up)                               if defined $opt_4up;
-    $ruling_object->generate2Page($opt_2page)                           if defined $opt_2page;
-    $ruling_object->generate2Page2Up($opt_2page_2up)                    if defined $opt_2page_2up;
-    $ruling_object->generate2Page4Up($opt_2page_4up)                    if defined $opt_2page_4up;
-    $ruling_object->generatePS($opt_ps)                                 if defined $opt_ps;
-    $ruling_object->generatePDF($opt_pdf)                               if defined $opt_pdf;
-    $ruling_object->dryRun($opt_dry_run)                                if defined $opt_dry_run;
-    $ruling_object->verbose($opt_verbose)                               if defined $opt_verbose;
-    $ruling_object->dpi($opt_dpi)                                       if defined $opt_dpi;
-    $ruling_object->lineWidth($opt_line_width)                          if defined $opt_line_width;
-    $ruling_object->majorLineWidth($opt_major_line_width)               if defined $opt_major_line_width;
-    $ruling_object->feintLineWidth($opt_feint_line_width)               if defined $opt_feint_line_width;
-    $ruling_object->dotWidth($opt_dot_width)                            if defined $opt_dot_width;
-    $ruling_object->marginLineWidth($opt_margin_line_width)             if defined $opt_margin_line_width;
-    $ruling_object->lineColor($opt_line_color // $opt_color)            if defined $opt_line_color || defined $opt_color;
-    $ruling_object->majorLineColor($opt_major_line_color // $opt_color) if defined $opt_major_line_color || defined $opt_color;
-    $ruling_object->feintLineColor($opt_feint_line_color // $opt_color) if defined $opt_feint_line_color || defined $opt_color;
-    $ruling_object->marginLineColor($opt_margin_line_color)             if defined $opt_margin_line_color;
+    $ruling_object->id($opt_id)                                             if defined $opt_id;
+    $ruling_object->filename($opt_filename)                                 if defined $opt_filename;
+    $ruling_object->paperSizeName($opt_papersize)                           if defined $opt_papersize;
+    $ruling_object->width($opt_width)                                       if defined $opt_width;
+    $ruling_object->height($opt_height)                                     if defined $opt_height;
+    $ruling_object->unitType($opt_unit_type)                                if defined $opt_unit_type;
+    $ruling_object->colorType($opt_color_type)                              if defined $opt_color_type;
+    $ruling_object->generate2Up($opt_2up)                                   if defined $opt_2up;
+    $ruling_object->generate4Up($opt_4up)                                   if defined $opt_4up;
+    $ruling_object->generate2Page($opt_2page)                               if defined $opt_2page;
+    $ruling_object->generate2Page2Up($opt_2page_2up)                        if defined $opt_2page_2up;
+    $ruling_object->generate2Page4Up($opt_2page_4up)                        if defined $opt_2page_4up;
+    $ruling_object->generatePS($opt_ps)                                     if defined $opt_ps;
+    $ruling_object->generatePDF($opt_pdf)                                   if defined $opt_pdf;
+    $ruling_object->dryRun($opt_dry_run)                                    if defined $opt_dry_run;
+    $ruling_object->verbose($opt_verbose)                                   if defined $opt_verbose;
+    $ruling_object->dpi($opt_dpi)                                           if defined $opt_dpi;
+    $ruling_object->regularLineWidth($opt_regular_line_width)               if defined $opt_regular_line_width;
+    $ruling_object->majorLineWidth($opt_major_line_width)                   if defined $opt_major_line_width;
+    $ruling_object->feintLineWidth($opt_feint_line_width)                   if defined $opt_feint_line_width;
+    $ruling_object->dotWidth($opt_dot_width)                                if defined $opt_dot_width;
+    $ruling_object->marginLineWidth($opt_margin_line_width)                 if defined $opt_margin_line_width;
+    $ruling_object->regularLineColor($opt_regular_line_color // $opt_color) if defined $opt_regular_line_color || defined $opt_color;
+    $ruling_object->majorLineColor($opt_major_line_color // $opt_color)     if defined $opt_major_line_color || defined $opt_color;
+    $ruling_object->feintLineColor($opt_feint_line_color // $opt_color)     if defined $opt_feint_line_color || defined $opt_color;
+    $ruling_object->marginLineColor($opt_margin_line_color)                 if defined $opt_margin_line_color;
     $ruling_object->modifiers->setModifiers(@opt_modifiers);
     return $ruling_object;
 }

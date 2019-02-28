@@ -103,7 +103,7 @@ sub generateHeadLine {
     my $line = My::Printable::Paper::Element::Line->new(
         document => $self->document,
         id => 'head-line',
-        cssClass => $self->getLineCSSClass,
+        cssClass => $self->getRegularLineCSSClass,
     );
     $line->setY($self->getHeadLineY);
     return $line;
@@ -120,7 +120,7 @@ sub generatePageNumberLine {
     my $line = My::Printable::Paper::Element::Line->new(
         document => $self->document,
         id => 'page-number-line',
-        cssClass => $self->getLineCSSClass,
+        cssClass => $self->getRegularLineCSSClass,
     );
     $line->setY($self->getPageNumberLineY);
     if ($self->modifiers->has('even-page')) {

@@ -60,7 +60,7 @@ use Data::Dumper;
 sub thicknessCSS {
     my ($self) = @_;
 
-    my $lw  = $self->lineWidth;
+    my $lw  = $self->regularLineWidth;
     my $mjw = $self->majorLineWidth;
     my $fw  = $self->feintLineWidth;
     my $dw  = $self->dotWidth;
@@ -79,20 +79,22 @@ sub thicknessCSS {
     if ($mw  < PD) { $mo  = $mw  / PD; $mw  = PD; }
 
     return <<"EOF";
-        .line        { stroke-width: {{  ${lw} pt }}; opacity:  ${lo}; }
-        .major-line  { stroke-width: {{ ${mjw} pt }}; opacity: ${mjo}; }
-        .feint-line  { stroke-width: {{  ${fw} pt }}; opacity:  ${fo}; }
-        .dot         { stroke-width: {{  ${dw} pt }}; opacity:  ${do}; }
-        .margin-line { stroke-width: {{  ${mw} pt }}; opacity:  ${mo}; }
+        .regular-line { stroke-width: {{  ${lw} pt }}; opacity:  ${lo}; }
+        .major-line   { stroke-width: {{ ${mjw} pt }}; opacity: ${mjo}; }
+        .feint-line   { stroke-width: {{  ${fw} pt }}; opacity:  ${fo}; }
+
+        .dot          { stroke-width: {{  ${dw} pt }}; opacity:  ${do}; }
+
+        .margin-line  { stroke-width: {{  ${mw} pt }}; opacity:  ${mo}; }
 EOF
 }
 
-has 'rawLineColor'       => (is => 'rw');
-has 'rawMajorLineColor'  => (is => 'rw');
-has 'rawFeintLineColor'  => (is => 'rw');
-has 'rawMarginLineColor' => (is => 'rw');
+has 'rawRegularLineColor' => (is => 'rw');
+has 'rawMajorLineColor'   => (is => 'rw');
+has 'rawFeintLineColor'   => (is => 'rw');
+has 'rawMarginLineColor'  => (is => 'rw');
 
-sub defaultLineColor {
+sub defaultRegularLineColor {
     my ($self) = @_;
     return COLOR_BLUE if $self->colorType eq 'color';
     return COLOR_GRAY if $self->colorType eq 'grayscale';
@@ -117,16 +119,16 @@ sub defaultMarginLineColor {
     return COLOR_BLACK;
 }
 
-sub lineColor {
+sub regularLineColor {
     my $self = shift;
     if (!scalar @_) {
-        if (!defined $self->rawLineColor) {
-            return $self->defaultLineColor;
+        if (!defined $self->rawRegularLineColor) {
+            return $self->defaultRegularLineColor;
         }
-        return $self->rawLineColor->asHex;
+        return $self->rawRegularLineColor->asHex;
     }
     my $value = shift;
-    return $self->rawLineColor(
+    return $self->rawRegularLineColor(
         My::Printable::Paper::Color->new($value)
     )->asHex;
 }
@@ -176,17 +178,17 @@ sub marginLineColor {
 sub colorCSS {
     my ($self) = @_;
 
-    my $lineColor       = $self->lineColor;
-    my $majorLineColor  = $self->majorLineColor;
-    my $feintLineColor  = $self->feintLineColor;
-    my $marginLineColor = $self->marginLineColor;
+    my $regularLineColor = $self->regularLineColor;
+    my $majorLineColor   = $self->majorLineColor;
+    my $feintLineColor   = $self->feintLineColor;
+    my $marginLineColor  = $self->marginLineColor;
 
     return <<"EOF";
-        .line        { stroke: $lineColor; }
-        .major-line  { stroke: $majorLineColor; }
-        .feint-line  { stroke: $feintLineColor; }
-        .dot         { stroke: $lineColor; }
-        .margin-line { stroke: $marginLineColor; }
+        .regular-line { stroke: $regularLineColor; }
+        .major-line   { stroke: $majorLineColor; }
+        .feint-line   { stroke: $feintLineColor; }
+        .dot          { stroke: $regularLineColor; }
+        .margin-line  { stroke: $marginLineColor; }
 EOF
 }
 
@@ -246,7 +248,7 @@ sub generateRuling {
 
 sub generatePageNumberRectangle {
     my ($self) = @_;
-    my $cssClass = sprintf('%s rectangle', $self->getLineCSSClass());
+    my $cssClass = sprintf('%s rectangle', $self->getRegularLineCSSClass());
     my $rect = My::Printable::Paper::Element::Rectangle->new(
         document => $self->document,
         id => 'page-number-rect',
@@ -308,9 +310,9 @@ sub getDotCSSClass {
     return 'dot';
 }
 
-sub getLineCSSClass {
+sub getRegularLineCSSClass {
     my ($self) = @_;
-    return 'line';
+    return 'regular-line';
 }
 
 sub getFeintLineCSSClass {
@@ -337,23 +339,23 @@ has 'lineWidthUnit' => (
     ],
 );
 
-has 'rawLineWidth'       => (is => 'rw');
+has 'rawRegularLineWidth' => (is => 'rw');
 has 'rawMajorLineWidth'  => (is => 'rw');
 has 'rawFeintLineWidth'  => (is => 'rw');
 has 'rawDotWidth'        => (is => 'rw');
 has 'rawMarginLineWidth' => (is => 'rw');
 
-sub lineWidth {
+sub regularLineWidth {
     my $self = shift;
     if (!scalar @_) {
-        if (!defined $self->rawLineWidth) {
+        if (!defined $self->rawRegularLineWidth) {
             return $self->computeLineWidth();
         }
-        return $self->rawLineWidth;
+        return $self->rawRegularLineWidth;
     }
     my $value = shift;
     $value = $self->lineWidthUnit->pt($value);
-    return $self->rawLineWidth($value);
+    return $self->rawRegularLineWidth($value);
 }
 
 sub majorLineWidth {

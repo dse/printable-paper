@@ -29,7 +29,7 @@ around generateRuling => sub {
     my $grid = My::Printable::Paper::Element::Grid->new(
         document => $self->document,
         id => 'grid',
-        cssClassHorizontal => $self->getLineCSSClass,
+        cssClassHorizontal => $self->getRegularLineCSSClass,
         cssClassVertical => $self->getDotCSSClass,
     );
     $grid->setX1($self->getOriginX);

@@ -47,7 +47,7 @@ around generateRuling => sub {
         id => 'lines',
         direction => 'horizontal',
         spacing => "1unit",
-        cssClass => $self->getLineCSSClass(),
+        cssClass => $self->getRegularLineCSSClass(),
     );
 
     my $vertical_dotted_lines = My::Printable::Paper::Element::Grid->new(

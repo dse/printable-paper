@@ -42,7 +42,7 @@ around generateRuling => sub {
     my $lines = My::Printable::Paper::Element::Lines->new(
         document => $self->document,
         id => 'lines',
-        cssClass => $self->getLineCSSClass,
+        cssClass => $self->getRegularLineCSSClass,
     );
     $lines->setSpacing('1unit');
 
