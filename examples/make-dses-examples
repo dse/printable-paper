@@ -37,10 +37,20 @@ p12 () {
               --letter \
               -o "${dir}"/quadrille--quarter-inch-3-feints-dotted--half-letter \
               --pdf --2p2u \
-              --dpi 600 --lw 4 --fw 2 --dw 6 \
+              --dpi 600 \
+              --major-line-width=8 \
+              --regular-line-width=4 \
+              --feint-line-width=2 \
+              --major-dot-width=16 \
+              --regular-dot-width=8 \
+              --feint-dot-width=4 \
               -Dunit=1/4in \
+              -Dmajor-lines=4 \
               -Dfeint-lines=3 \
-              -Dleft-margin-line=3/4in -Dtop-margin-line=3/4in  \
+              -Dleft-margin-line=3/4in \
+              -Dtop-margin-line=3/4in  \
+              -Dmajor-dotted=8 \
+              -Ddotted=4 \
               -Dfeint-dotted=2
 }
                    
