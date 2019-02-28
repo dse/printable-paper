@@ -46,7 +46,6 @@ our $opt_dpi;
 our $opt_line_color;
 our $opt_major_line_color;
 our $opt_feint_line_color;
-our $opt_dot_color;
 our $opt_margin_line_color;
 our $opt_color;
 
@@ -107,7 +106,6 @@ Getopt::Long::GetOptions(
     'lc|line-color=s'        => \$opt_line_color,
     'mjc|major-line-color=s' => \$opt_major_line_color,
     'fc|feint-line-color=s'  => \$opt_feint_line_color,
-    'dc|dot-color=s'         => \$opt_dot_color,
     'mc|margin-line-color=s' => \$opt_margin_line_color,
     'C|color=s'              => \$opt_color,
     "help|?" => sub {
@@ -154,9 +152,8 @@ ruling line colors:             '#rrggbb[aa]', 'rgb()', 'rgba()' style colors
     --lc,  --line-color=<color>
     --mjc, --major-line-color=<color>
     --fc,  --feint-line-color=<color>
-    --dc,  --dot-color=<color>
     --mc,  --margin-line-color=<color>
-      -C,  --color=<color>      specify line, feint line, and dot color
+      -C,  --color=<color>      specify color for all lines and dots
 miscellaneous:
     -n, --dry-run
     -v, --verbose
@@ -294,7 +291,6 @@ sub create_ruling_object {
     $ruling_object->lineColor($opt_line_color // $opt_color)            if defined $opt_line_color || defined $opt_color;
     $ruling_object->majorLineColor($opt_major_line_color // $opt_color) if defined $opt_major_line_color || defined $opt_color;
     $ruling_object->feintLineColor($opt_feint_line_color // $opt_color) if defined $opt_feint_line_color || defined $opt_color;
-    $ruling_object->dotColor($opt_dot_color // $opt_color)              if defined $opt_dot_color || defined $opt_color;
     $ruling_object->marginLineColor($opt_margin_line_color)             if defined $opt_margin_line_color;
     $ruling_object->modifiers->setModifiers(@opt_modifiers);
     return $ruling_object;

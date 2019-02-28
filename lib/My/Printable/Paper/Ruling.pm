@@ -90,7 +90,6 @@ EOF
 has 'rawLineColor'       => (is => 'rw');
 has 'rawMajorLineColor'  => (is => 'rw');
 has 'rawFeintLineColor'  => (is => 'rw');
-has 'rawDotColor'        => (is => 'rw');
 has 'rawMarginLineColor' => (is => 'rw');
 
 sub defaultLineColor {
@@ -106,12 +105,6 @@ sub defaultMajorLineColor {
     return COLOR_BLACK;
 }
 sub defaultFeintLineColor {
-    my ($self) = @_;
-    return COLOR_BLUE if $self->colorType eq 'color';
-    return COLOR_GRAY if $self->colorType eq 'grayscale';
-    return COLOR_BLACK;
-}
-sub defaultDotColor {
     my ($self) = @_;
     return COLOR_BLUE if $self->colorType eq 'color';
     return COLOR_GRAY if $self->colorType eq 'grayscale';
@@ -166,20 +159,6 @@ sub feintLineColor {
     )->asHex;
 }
 
-sub dotColor {
-    my $self = shift;
-    if (!scalar @_) {
-        if (!defined $self->rawDotColor) {
-            return $self->defaultDotColor;
-        }
-        return $self->rawDotColor->asHex;
-    }
-    my $value = shift;
-    return $self->rawDotColor(
-        My::Printable::Paper::Color->new($value)
-    )->asHex;
-}
-
 sub marginLineColor {
     my $self = shift;
     if (!scalar @_) {
@@ -200,14 +179,13 @@ sub colorCSS {
     my $lineColor       = $self->lineColor;
     my $majorLineColor  = $self->majorLineColor;
     my $feintLineColor  = $self->feintLineColor;
-    my $dotColor        = $self->dotColor;
     my $marginLineColor = $self->marginLineColor;
 
     return <<"EOF";
         .line        { stroke: $lineColor; }
         .major-line  { stroke: $majorLineColor; }
         .feint-line  { stroke: $feintLineColor; }
-        .dot         { stroke: $dotColor; }
+        .dot         { stroke: $lineColor; }
         .margin-line { stroke: $marginLineColor; }
 EOF
 }
