@@ -39,7 +39,7 @@ our $opt_verbose = 0;
 our $opt_regular_line_width;
 our $opt_major_line_width;
 our $opt_feint_line_width;
-our $opt_dot_width;
+our $opt_regular_dot_width;
 our $opt_margin_line_width;
 our $opt_dpi;
 
@@ -101,7 +101,7 @@ Getopt::Long::GetOptions(
     'lw|line-width|regular-line-width=f' => \$opt_regular_line_width,
     'mjw|major-line-width=f'             => \$opt_major_line_width,
     'fw|feint-line-width=f'              => \$opt_feint_line_width,
-    'dw|dot-width=f'                     => \$opt_dot_width,
+    'dw|regular-dot-width|dot-width=f'   => \$opt_regular_dot_width,
     'mw|margin-line-width=f'             => \$opt_margin_line_width,
     'lc|line-color|regular-line-color=s' => \$opt_regular_line_color,
     'mjc|major-line-color=s'             => \$opt_major_line_color,
@@ -146,7 +146,7 @@ ruling line widths:
     --lw,  --regular-line-width=<dots>
     --mjw, --major-line-width=<dots>
     --fw,  --feint-line-width=<dots>
-    --dw,  --dot-width=<dots>
+    --dw,  --regular-dot-width=<dots>
     --mw,  --margin-line-width=<dots>
 ruling line colors:             '#rrggbb[aa]', 'rgb()', 'rgba()' style colors
     --lc,  --regular-line-color=<color>
@@ -218,7 +218,7 @@ if ($opt_list_ruling_names || $opt_list_rulings) {
             'Regular Lines',
             'Major Lines',
             'Feint Lines',
-            'Dots',
+            'Regular Dots',
             'Margin Lines',
         );
         foreach my $ruling_name (@{$inst->rulingNameList}) {
@@ -230,7 +230,7 @@ if ($opt_list_ruling_names || $opt_list_rulings) {
                 my $regularLineWidth = eval { $ruling_object->regularLineWidth / PD * PT; } // 0;
                 my $majorLineWidth   = eval { $ruling_object->majorLineWidth   / PD * PT; } // 0;
                 my $feintLineWidth   = eval { $ruling_object->feintLineWidth   / PD * PT; } // 0;
-                my $dotWidth         = eval { $ruling_object->dotWidth         / PD * PT; } // 0;
+                my $regularDotWidth  = eval { $ruling_object->regularDotWidth  / PD * PT; } // 0;
                 my $marginLineWidth  = eval { $ruling_object->marginLineWidth  / PD * PT; } // 0;
                 $tt->addRow(
                     $count == 1 ? $ruling_name : '',
@@ -238,7 +238,7 @@ if ($opt_list_ruling_names || $opt_list_rulings) {
                     sprintf('%.3g', $regularLineWidth),
                     sprintf('%.3g', $majorLineWidth),
                     sprintf('%.3g', $feintLineWidth),
-                    sprintf('%.3g', $dotWidth),
+                    sprintf('%.3g', $regularDotWidth),
                     sprintf('%.3g', $marginLineWidth),
                 );
             }
@@ -286,7 +286,7 @@ sub create_ruling_object {
     $ruling_object->regularLineWidth($opt_regular_line_width)               if defined $opt_regular_line_width;
     $ruling_object->majorLineWidth($opt_major_line_width)                   if defined $opt_major_line_width;
     $ruling_object->feintLineWidth($opt_feint_line_width)                   if defined $opt_feint_line_width;
-    $ruling_object->dotWidth($opt_dot_width)                                if defined $opt_dot_width;
+    $ruling_object->regularDotWidth($opt_regular_dot_width)                 if defined $opt_regular_dot_width;
     $ruling_object->marginLineWidth($opt_margin_line_width)                 if defined $opt_margin_line_width;
     $ruling_object->regularLineColor($opt_regular_line_color // $opt_color) if defined $opt_regular_line_color || defined $opt_color;
     $ruling_object->majorLineColor($opt_major_line_color // $opt_color)     if defined $opt_major_line_color || defined $opt_color;

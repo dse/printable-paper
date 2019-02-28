@@ -63,7 +63,7 @@ sub thicknessCSS {
     my $lw  = $self->regularLineWidth;
     my $mjw = $self->majorLineWidth;
     my $fw  = $self->feintLineWidth;
-    my $dw  = $self->dotWidth;
+    my $dw  = $self->regularDotWidth;
     my $mw  = $self->marginLineWidth;
 
     my $lo  = 1;
@@ -342,14 +342,14 @@ has 'lineWidthUnit' => (
 has 'rawRegularLineWidth' => (is => 'rw');
 has 'rawMajorLineWidth'  => (is => 'rw');
 has 'rawFeintLineWidth'  => (is => 'rw');
-has 'rawDotWidth'        => (is => 'rw');
+has 'rawRegularDotWidth'        => (is => 'rw');
 has 'rawMarginLineWidth' => (is => 'rw');
 
 sub regularLineWidth {
     my $self = shift;
     if (!scalar @_) {
         if (!defined $self->rawRegularLineWidth) {
-            return $self->computeLineWidth();
+            return $self->computeRegularLineWidth();
         }
         return $self->rawRegularLineWidth;
     }
@@ -384,17 +384,17 @@ sub feintLineWidth {
     return $self->rawFeintLineWidth($value);
 }
 
-sub dotWidth {
+sub regularDotWidth {
     my $self = shift;
     if (!scalar @_) {
-        if (!$self->rawDotWidth) {
-            return $self->computeDotWidth();
+        if (!$self->rawRegularDotWidth) {
+            return $self->computeRegularDotWidth();
         }
-        return $self->rawDotWidth;
+        return $self->rawRegularDotWidth;
     }
     my $value = shift;
     $value = $self->lineWidthUnit->pt($value);
-    return $self->rawDotWidth($value);
+    return $self->rawRegularDotWidth($value);
 }
 
 sub marginLineWidth {
@@ -443,7 +443,7 @@ sub baseMarginLineWidth {
     return 8 * PD;
 }
 
-sub computeLineWidth {
+sub computeRegularLineWidth {
     my ($self) = @_;
     my $x = $self->baseLineWidth;
     if ($self->modifiers->has('xx-thinner-lines')) {
@@ -511,7 +511,7 @@ sub computeFeintLineWidth {
     return $x;
 }
 
-sub computeDotWidth {
+sub computeRegularDotWidth {
     my ($self) = @_;
     my $x = $self->baseDotWidth;
     if ($self->modifiers->has('xx-thinner-dots')) {
