@@ -64,18 +64,24 @@ sub thicknessCSS {
     my $majorLineWidth   = $self->majorLineWidth;
     my $feintLineWidth   = $self->feintLineWidth;
     my $regularDotWidth  = $self->regularDotWidth;
+    my $majorDotWidth    = $self->majorDotWidth;
+    my $feintDotWidth    = $self->feintDotWidth;
     my $marginLineWidth  = $self->marginLineWidth;
 
     my $regularLineOpacity = 1;
     my $majorLineOpacity   = 1;
     my $feintLineOpacity   = 1;
     my $regularDotOpacity  = 1;
+    my $majorDotOpacity    = 1;
+    my $feintDotOpacity    = 1;
     my $marginLineOpacity  = 1;
 
     if ($regularLineWidth < PD) { $regularLineOpacity = $regularLineWidth / PD; $regularLineWidth = PD; }
     if ($majorLineWidth   < PD) { $majorLineOpacity   = $majorLineWidth   / PD; $majorLineWidth   = PD; }
     if ($feintLineWidth   < PD) { $feintLineOpacity   = $feintLineWidth   / PD; $feintLineWidth   = PD; }
     if ($regularDotWidth  < PD) { $regularDotOpacity  = $regularDotWidth  / PD; $regularDotWidth  = PD; }
+    if ($majorDotWidth    < PD) { $majorDotOpacity    = $majorDotWidth    / PD; $majorDotWidth    = PD; }
+    if ($feintDotWidth    < PD) { $feintDotOpacity    = $feintDotWidth    / PD; $feintDotWidth    = PD; }
     if ($marginLineWidth  < PD) { $marginLineOpacity  = $marginLineWidth  / PD; $marginLineWidth  = PD; }
 
     return <<"EOF";
@@ -83,6 +89,8 @@ sub thicknessCSS {
         .major-line   { stroke-width: {{ ${majorLineWidth}   pt }}; opacity: ${majorLineOpacity};   }
         .feint-line   { stroke-width: {{ ${feintLineWidth}   pt }}; opacity: ${feintLineOpacity};   }
         .regular-dot  { stroke-width: {{ ${regularDotWidth}  pt }}; opacity: ${regularDotOpacity};  }
+        .major-dot    { stroke-width: {{ ${majorDotWidth}    pt }}; opacity: ${majorDotOpacity};    }
+        .feint-dot    { stroke-width: {{ ${feintDotWidth}    pt }}; opacity: ${feintDotOpacity};    }
         .margin-line  { stroke-width: {{ ${marginLineWidth}  pt }}; opacity: ${marginLineOpacity};  }
 EOF
 }
@@ -183,10 +191,12 @@ sub colorCSS {
 
     return <<"EOF";
         .regular-line { stroke: $regularLineColor; }
-        .major-line   { stroke: $majorLineColor; }
-        .feint-line   { stroke: $feintLineColor; }
+        .major-line   { stroke: $majorLineColor;   }
+        .feint-line   { stroke: $feintLineColor;   }
         .regular-dot  { stroke: $regularLineColor; }
-        .margin-line  { stroke: $marginLineColor; }
+        .major-dot    { stroke: $majorLineColor;   }
+        .feint-dot    { stroke: $feintLineColor;   }
+        .margin-line  { stroke: $marginLineColor;  }
 EOF
 }
 
@@ -303,9 +313,19 @@ sub getMarginLineCSSClass {
     return 'margin-line';
 }
 
-sub getDotCSSClass {
+sub getRegularDotCSSClass {
     my ($self) = @_;
     return 'regular-dot';
+}
+
+sub getMajorDotCSSClass {
+    my ($self) = @_;
+    return 'major-dot';
+}
+
+sub getFeintDotCSSClass {
+    my ($self) = @_;
+    return 'feint-dot';
 }
 
 sub getRegularLineCSSClass {
@@ -338,10 +358,12 @@ has 'lineWidthUnit' => (
 );
 
 has 'rawRegularLineWidth' => (is => 'rw');
-has 'rawMajorLineWidth'  => (is => 'rw');
-has 'rawFeintLineWidth'  => (is => 'rw');
-has 'rawRegularDotWidth'        => (is => 'rw');
-has 'rawMarginLineWidth' => (is => 'rw');
+has 'rawMajorLineWidth'   => (is => 'rw');
+has 'rawFeintLineWidth'   => (is => 'rw');
+has 'rawRegularDotWidth'  => (is => 'rw');
+has 'rawMajorDotWidth'    => (is => 'rw');
+has 'rawFeintDotWidth'    => (is => 'rw');
+has 'rawMarginLineWidth'  => (is => 'rw');
 
 sub regularLineWidth {
     my $self = shift;
@@ -395,6 +417,32 @@ sub regularDotWidth {
     return $self->rawRegularDotWidth($value);
 }
 
+sub majorDotWidth {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!$self->rawMajorDotWidth) {
+            return $self->computeMajorDotWidth();
+        }
+        return $self->rawMajorDotWidth;
+    }
+    my $value = shift;
+    $value = $self->lineWidthUnit->pt($value);
+    return $self->rawMajorDotWidth($value);
+}
+
+sub feintDotWidth {
+    my $self = shift;
+    if (!scalar @_) {
+        if (!$self->rawFeintDotWidth) {
+            return $self->computeFeintDotWidth();
+        }
+        return $self->rawFeintDotWidth;
+    }
+    my $value = shift;
+    $value = $self->lineWidthUnit->pt($value);
+    return $self->rawFeintDotWidth($value);
+}
+
 sub marginLineWidth {
     my $self = shift;
     if (!scalar @_) {
@@ -411,7 +459,7 @@ sub marginLineWidth {
 # before thinner-lines, thinner-dots, thinner-grid, denser-grid, and
 # other modifiers are applied.
 
-sub baseLineWidth {
+sub baseRegularLineWidth {
     my ($self) = @_;
     return 2 * PD if $self->colorType eq 'black';
     return 8 * PD;
@@ -429,10 +477,22 @@ sub baseFeintLineWidth {
     return 8 / sqrt(2) * PD;
 }
 
-sub baseDotWidth {
+sub baseRegularDotWidth {
     my ($self) = @_;
     return 8 * PD if $self->colorType eq 'black';
     return 16 * PD;
+}
+
+sub baseMajorDotWidth {
+    my ($self) = @_;
+    return 16 * PD if $self->colorType eq 'black';
+    return 32 * PD;
+}
+
+sub baseFeintDotWidth {
+    my ($self) = @_;
+    return 4 * PD if $self->colorType eq 'black';
+    return 8 * PD;
 }
 
 sub baseMarginLineWidth {
@@ -443,7 +503,7 @@ sub baseMarginLineWidth {
 
 sub computeRegularLineWidth {
     my ($self) = @_;
-    my $x = $self->baseLineWidth;
+    my $x = $self->baseRegularLineWidth;
     if ($self->modifiers->has('xx-thinner-lines')) {
         $x /= (2 * sqrt(2));
     } elsif ($self->modifiers->has('x-thinner-lines')) {
@@ -511,7 +571,39 @@ sub computeFeintLineWidth {
 
 sub computeRegularDotWidth {
     my ($self) = @_;
-    my $x = $self->baseDotWidth;
+    my $x = $self->baseRegularDotWidth;
+    if ($self->modifiers->has('xx-thinner-dots')) {
+        $x /= (2 * sqrt(2));
+    } elsif ($self->modifiers->has('x-thinner-dots')) {
+        $x /= 2;
+    } elsif ($self->modifiers->has('thinner-dots')) {
+        $x /= sqrt(2);
+    }
+    if ($x < PD) {
+        $x = PD;
+    }
+    return $x;
+}
+
+sub computeMajorDotWidth {
+    my ($self) = @_;
+    my $x = $self->baseMajorDotWidth;
+    if ($self->modifiers->has('xx-thinner-dots')) {
+        $x /= (2 * sqrt(2));
+    } elsif ($self->modifiers->has('x-thinner-dots')) {
+        $x /= 2;
+    } elsif ($self->modifiers->has('thinner-dots')) {
+        $x /= sqrt(2);
+    }
+    if ($x < PD) {
+        $x = PD;
+    }
+    return $x;
+}
+
+sub computeFeintDotWidth {
+    my ($self) = @_;
+    my $x = $self->baseFeintDotWidth;
     if ($self->modifiers->has('xx-thinner-dots')) {
         $x /= (2 * sqrt(2));
     } elsif ($self->modifiers->has('x-thinner-dots')) {

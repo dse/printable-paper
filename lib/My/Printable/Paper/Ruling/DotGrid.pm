@@ -20,7 +20,7 @@ around generateRuling => sub {
     my $grid = My::Printable::Paper::Element::Grid->new(
         document => $self->document,
         id => 'grid',
-        cssClass => $self->getDotCSSClass,
+        cssClass => $self->getRegularDotCSSClass,
     );
     $grid->isDotGrid(1);
     $grid->setSpacing('1unit');

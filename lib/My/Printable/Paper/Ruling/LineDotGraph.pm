@@ -30,7 +30,7 @@ around generateRuling => sub {
         document => $self->document,
         id => 'grid',
         cssClassHorizontal => $self->getRegularLineCSSClass,
-        cssClassVertical => $self->getDotCSSClass,
+        cssClassVertical => $self->getRegularDotCSSClass,
     );
     $grid->setX1($self->getOriginX);
     $grid->setY1($self->getTopLineY);

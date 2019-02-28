@@ -33,6 +33,12 @@ sub additionalCSS {
         line.regular-dot {
             stroke-linecap: butt;
         }
+        line.major-dot {
+            stroke-linecap: butt;
+        }
+        line.feint-dot {
+            stroke-linecap: butt;
+        }
 END
 }
 
@@ -57,7 +63,7 @@ around generateRuling => sub {
         spacingX => '1unit',
         spacingY => '1/6unit',
         dotDashHeight => $dotCrosswise,
-        cssClass => $self->getDotCSSClass(),
+        cssClass => $self->getRegularDotCSSClass(),
     );
 
     my $horizontal_dotted_lines_1 = My::Printable::Paper::Element::Grid->new(
@@ -68,7 +74,7 @@ around generateRuling => sub {
         spacingY => '1unit',
         originY => $self->originY + $self->ptY('1/3unit'),
         dotDashWidth => $dotCrosswise,
-        cssClass => $self->getDotCSSClass(),
+        cssClass => $self->getRegularDotCSSClass(),
     );
 
     my $horizontal_dotted_lines_2 = My::Printable::Paper::Element::Grid->new(
@@ -79,7 +85,7 @@ around generateRuling => sub {
         spacingY => '1unit',
         originY => $self->originY - $self->ptY('1/3unit'),
         dotDashWidth => $dotCrosswise,
-        cssClass => $self->getDotCSSClass(),
+        cssClass => $self->getRegularDotCSSClass(),
     );
 
     my $grid_4 = My::Printable::Paper::Element::Grid->new(
@@ -89,7 +95,7 @@ around generateRuling => sub {
         spacingX => '1unit',
         spacingY => '1unit',
         dotDashHeight => $dotCrosswise2,
-        cssClass => $self->getDotCSSClass(),
+        cssClass => $self->getRegularDotCSSClass(),
     );
 
     $self->document->appendElement($horizontal_lines);
