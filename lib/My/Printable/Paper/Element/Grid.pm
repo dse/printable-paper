@@ -255,7 +255,7 @@ sub drawVertical {
     }
 
     # spacing between dashes or dots
-    my $spacing = $self->spacing // $self->spacing // $self->ptY('1unit');
+    my $spacing = $self->spacingY // $self->spacing // $self->ptY('1unit');
     if ($isDashed) {
         $spacing /= $self->dashesY;
     } elsif ($isDotted) {

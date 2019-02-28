@@ -39,7 +39,12 @@ around generateRuling => sub {
     my $dotted      = $self->modifiers->get('dotted');
     my $feintDotted = $self->modifiers->get('feint-dotted');
 
-    foreach my $value ($dashedX, $dashedY, $feintDashedX, $feintDashedY, $majorDotted, $dotted, $feintDotted) {
+    foreach my $value ($dashedX, $dashedY,
+                       $feintDashedX, $feintDashedY,
+                       $majorDashedX, $majorDashedY,
+                       $majorDotted,
+                       $dotted,
+                       $feintDotted) {
         if (defined $value && $value && $value eq 'yes') {
             $value = 1;
         }
@@ -64,22 +69,41 @@ around generateRuling => sub {
         $feintLines = undef if $feintLines < 2;
     }
 
+    my $shiftPointsX = !$self->hasMarginLine('left') && !$self->hasMarginLine('right');
+    my $shiftPointsY = !$self->hasMarginLine('top')  && !$self->hasMarginLine('bottom');
+
+    say STDERR $shiftPointsX ? 1 : 0;
+    say STDERR $shiftPointsY ? 1 : 0;
+
     if (defined $majorLinesX && defined $majorLinesY) {
         $majorGrid = My::Printable::Paper::Element::Grid->new(
-            document    => $self->document,
-            id          => 'major-grid',
-            cssClass    => $self->getMajorLineCSSClass,
-            shiftPoints => 1,
-            isDashedX   => $majorDashedX,
-            isDashedY   => $majorDashedY,
-            dashesX     => $majorDashedX,
-            dashesY     => $majorDashedY,
-            isDotted    => $majorDotted,
-            dotsX       => $majorDotted,
-            dotsY       => $majorDotted,
+            document     => $self->document,
+            id           => 'major-grid',
+            cssClass     => $self->getMajorLineCSSClass,
+            shiftPointsX => $shiftPointsX,
+            shiftPointsY => $shiftPointsY,
+            isDashedX    => $majorDashedX,
+            isDashedY    => $majorDashedY,
+            dashesX      => $majorDashedX,
+            dashesY      => $majorDashedY,
+            isDotted     => $majorDotted,
+            dotsX        => $majorDotted,
+            dotsY        => $majorDotted,
         );
+
         $majorGrid->setSpacingX($majorLinesX . 'unit');
         $majorGrid->setSpacingY($majorLinesY . 'unit');
+
+        if ($self->hasMarginLine('left')) {
+            $majorGrid->originX($self->getMarginLinePosition('left'));
+        } elsif ($self->hasMarginLine('right')) {
+            $majorGrid->originX($self->getMarginLinePosition('right'));
+        }
+        if ($self->hasMarginLine('top')) {
+            $majorGrid->originY($self->getMarginLinePosition('top'));
+        } elsif ($self->hasMarginLine('bottom')) {
+            $majorGrid->originY($self->getMarginLinePosition('bottom'));
+        }
 
         $regularGrid = My::Printable::Paper::Element::Grid->new(
             document    => $self->document,
@@ -98,19 +122,31 @@ around generateRuling => sub {
         $regularGrid->setSpacing('1unit');
     } else {
         $regularGrid = My::Printable::Paper::Element::Grid->new(
-            document    => $self->document,
-            id          => 'grid',
-            cssClass    => $self->getRegularLineCSSClass,
-            shiftPoints => 1,
-            isDashedX   => $dashedX,
-            isDashedY   => $dashedY,
-            dashesX     => $dashedX,
-            dashesY     => $dashedY,
-            isDotted    => $dotted,
-            dotsX       => $dotted,
-            dotsY       => $dotted,
+            document     => $self->document,
+            id           => 'grid',
+            cssClass     => $self->getRegularLineCSSClass,
+            shiftPointsX => $shiftPointsX,
+            shiftPointsY => $shiftPointsY,
+            isDashedX    => $dashedX,
+            isDashedY    => $dashedY,
+            dashesX      => $dashedX,
+            dashesY      => $dashedY,
+            isDotted     => $dotted,
+            dotsX        => $dotted,
+            dotsY        => $dotted,
         );
         $regularGrid->setSpacing('1unit');
+
+        if ($self->hasMarginLine('left')) {
+            $regularGrid->originX($self->getMarginLinePosition('left'));
+        } elsif ($self->hasMarginLine('right')) {
+            $regularGrid->originX($self->getMarginLinePosition('right'));
+        }
+        if ($self->hasMarginLine('top')) {
+            $regularGrid->originY($self->getMarginLinePosition('top'));
+        } elsif ($self->hasMarginLine('bottom')) {
+            $regularGrid->originY($self->getMarginLinePosition('bottom'));
+        }
     }
 
     if (defined $feintLines) {
@@ -139,14 +175,18 @@ around generateRuling => sub {
         $self->document->appendElement($feintGrid);
     }
 
+    my $majorLineGrid   = $majorDotted ? undef : $majorGrid;
+    my $regularLineGrid = $dotted      ? undef : $regularGrid;
+    my $feintLineGrid   = $feintDotted ? undef : $feintGrid;
+
     if (defined $majorGrid) {
-        $regularGrid->excludePointsFrom($majorGrid);
+        $regularGrid->excludePointsFrom($majorLineGrid);
         if (defined $feintGrid) {
-            $feintGrid->excludePointsFrom($majorGrid, $regularGrid);
+            $feintGrid->excludePointsFrom($majorLineGrid, $regularLineGrid);
         }
     } else {
         if (defined $feintGrid) {
-            $feintGrid->excludePointsFrom($regularGrid);
+            $feintGrid->excludePointsFrom($regularLineGrid);
         }
     }
 
