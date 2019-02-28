@@ -28,15 +28,18 @@ around generateRuling => sub {
     my $majorLinesY = $self->modifiers->get('major-lines-y') // $self->modifiers->get('major-lines');
     my $feintLines  = $self->modifiers->get('feint-lines');
 
+    my $majorDashedX = $self->modifiers->get('major-dashed') // $self->modifiers->get('major-dashed-x');
+    my $majorDashedY = $self->modifiers->get('major-dashed') // $self->modifiers->get('major-dashed-y');
     my $dashedX      = $self->modifiers->get('dashed')       // $self->modifiers->get('dashed-x');
     my $dashedY      = $self->modifiers->get('dashed')       // $self->modifiers->get('dashed-y');
     my $feintDashedX = $self->modifiers->get('feint-dashed') // $self->modifiers->get('feint-dashed-x');
     my $feintDashedY = $self->modifiers->get('feint-dashed') // $self->modifiers->get('feint-dashed-y');
 
+    my $majorDotted = $self->modifiers->get('major-dotted');
     my $dotted      = $self->modifiers->get('dotted');
     my $feintDotted = $self->modifiers->get('feint-dotted');
 
-    foreach my $value ($dashedX, $dashedY, $feintDashedX, $feintDashedY, $dotted, $feintDotted) {
+    foreach my $value ($dashedX, $dashedY, $feintDashedX, $feintDashedY, $majorDotted, $dotted, $feintDotted) {
         if (defined $value && $value && $value eq 'yes') {
             $value = 1;
         }
@@ -45,6 +48,7 @@ around generateRuling => sub {
     # if dashed and dotted are specified, we're dashed and not dotted
     $dotted      = 0 if $dashedX      || $dashedY;
     $feintDotted = 0 if $feintDashedX || $feintDashedY;
+    $majorDotted = 0 if $majorDashedX || $majorDashedY;
 
     if (defined $majorLinesX) {
         $majorLinesX = round($majorLinesX);
@@ -66,6 +70,13 @@ around generateRuling => sub {
             id          => 'major-grid',
             cssClass    => $self->getMajorLineCSSClass,
             shiftPoints => 1,
+            isDashedX   => $majorDashedX,
+            isDashedY   => $majorDashedY,
+            dashesX     => $majorDashedX,
+            dashesY     => $majorDashedY,
+            isDotted    => $majorDotted,
+            dotsX       => $majorDotted,
+            dotsY       => $majorDotted,
         );
         $majorGrid->setSpacingX($majorLinesX . 'unit');
         $majorGrid->setSpacingY($majorLinesY . 'unit');
