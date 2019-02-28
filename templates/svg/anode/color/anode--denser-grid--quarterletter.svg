@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="306.000pt" height="396.000pt" viewBox="0.000 0.000 306.000 396.000">
   <style>
-        .line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; stroke-linejoin: round; }
+        .regular-line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; stroke-linejoin: round; }
         .stroke-linecap-butt    { stroke-linecap:  butt;   }
         .stroke-linecap-round   { stroke-linecap:  round;  }
         .stroke-linecap-square  { stroke-linecap:  square; }
@@ -11,18 +11,16 @@
         .rectangle { fill: #ffffff; }
 
 
-        .line        { stroke-width: 0.96px; opacity:  1; }
-        .major-line  { stroke-width: 0.96px; opacity: 1; }
-        .feint-line  { stroke-width: 0.24px; opacity:  1; }
-
-        .dot         { stroke-width: 1.92px; opacity:  1; }
-
-        .margin-line { stroke-width: 0.96px; opacity:  1; }
-        .line        { stroke: #b3b3ff; }
-        .major-line  { stroke: #b3b3ff; }
-        .feint-line  { stroke: #b3b3ff; }
-        .dot         { stroke: #b3b3ff; }
-        .margin-line { stroke: #ff9e9e; }
+        .regular-line { stroke-width: 0.96px; opacity: 1; }
+        .major-line   { stroke-width: 0.96px; opacity: 1;   }
+        .feint-line   { stroke-width: 0.24px; opacity: 1;   }
+        .regular-dot  { stroke-width: 1.92px; opacity: 1;  }
+        .margin-line  { stroke-width: 0.96px; opacity: 1;  }
+        .regular-line { stroke: #b3b3ff; }
+        .major-line   { stroke: #b3b3ff; }
+        .feint-line   { stroke: #b3b3ff; }
+        .regular-dot  { stroke: #b3b3ff; }
+        .margin-line  { stroke: #ff9e9e; }
   </style>
   <defs/>
   <g id="grid">
@@ -146,28 +144,28 @@
     <line x1="303.000" x2="303.000" y1="0.000" y2="396.000" class="feint-line vertical"/>
   </g>
   <g id="lines">
-    <line x1="0.000" x2="306.000" y1="6.000" y2="6.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="24.000" y2="24.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="42.000" y2="42.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="60.000" y2="60.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="78.000" y2="78.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="96.000" y2="96.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="114.000" y2="114.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="132.000" y2="132.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="150.000" y2="150.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="168.000" y2="168.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="186.000" y2="186.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="204.000" y2="204.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="222.000" y2="222.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="240.000" y2="240.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="258.000" y2="258.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="276.000" y2="276.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="294.000" y2="294.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="312.000" y2="312.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="330.000" y2="330.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="348.000" y2="348.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="366.000" y2="366.000" class="line"/>
-    <line x1="0.000" x2="306.000" y1="384.000" y2="384.000" class="line"/>
+    <line x1="0.000" x2="306.000" y1="6.000" y2="6.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="24.000" y2="24.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="42.000" y2="42.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="60.000" y2="60.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="78.000" y2="78.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="96.000" y2="96.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="114.000" y2="114.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="132.000" y2="132.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="150.000" y2="150.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="168.000" y2="168.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="186.000" y2="186.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="204.000" y2="204.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="222.000" y2="222.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="240.000" y2="240.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="258.000" y2="258.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="276.000" y2="276.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="294.000" y2="294.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="312.000" y2="312.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="330.000" y2="330.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="348.000" y2="348.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="366.000" y2="366.000" class="regular-line"/>
+    <line x1="0.000" x2="306.000" y1="384.000" y2="384.000" class="regular-line"/>
   </g>
   <g id="margin-line">
     <line x1="63.000" x2="63.000" y1="0.000" y2="396.000" class="margin-line vertical"/>
