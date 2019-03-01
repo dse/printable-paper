@@ -14,7 +14,9 @@ our %EXPORT_TAGS = (
                  SVG_DOTTED_LINE_FUDGE_FACTOR)],
     around => [qw(aroundUnit
                   aroundUnitX
-                  aroundUnitY)],
+                  aroundUnitY
+                  makeAroundArrayAccessor
+                  makeAroundHashAccessor)],
 );
 our @EXPORT_OK = (
     qw(exclude
@@ -203,6 +205,58 @@ sub flatten {
     return map {
         eval { ref $_ eq 'ARRAY' } ? @$_ : $_
     } @_;
+}
+
+sub makeAroundArrayAccessor {
+    my %args = @_;
+    my $set = $args{set};
+    return sub {
+        my $orig = shift;
+        my $self = shift;
+        if (!scalar @_) {
+            return $self->$orig;
+        }
+        my $arrayRefOrIndex = shift;
+        if (eval { ref $arrayRefOrIndex eq 'ARRAY' }) {
+            return $self->$orig($arrayRefOrIndex);
+        }
+        my $index = $arrayRefOrIndex;
+        my $arrayRef = $self->$orig();
+        if (!scalar @_) {
+            return $arrayRef->[$index];
+        }
+        my $value = shift;
+        if ($set) {
+            $value = $self->$set($value);
+        }
+        return $arrayRef->[$index] = $value;
+    };
+}
+
+sub makeAroundHashAccessor {
+    my %args = @_;
+    my $set = $args{set};
+    return sub {
+        my $orig = shift;
+        my $self = shift;
+        if (!scalar @_) {
+            return $self->$orig;
+        }
+        my $hashRefOrKey = shift;
+        if (eval { ref $hashRefOrKey eq 'HASH' }) {
+            return $self->$orig($hashRefOrKey);
+        }
+        my $key = $hashRefOrKey;
+        my $hashRef = $self->$orig();
+        if (!scalar @_) {
+            return $hashRef->{$key};
+        }
+        my $value = shift;
+        if ($set) {
+            $value = $self->$set($value);
+        }
+        return $hashRef->{$key} = $value;
+    };
 }
 
 1;
