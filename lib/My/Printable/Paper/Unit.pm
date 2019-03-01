@@ -61,16 +61,11 @@ our $UNITS = {
     }
 };
 
-has rawDPI => (is => 'rw', default => DEFAULT_DPI);
+has dpi => (is => 'rw', default => DEFAULT_DPI, trigger => \&triggerDPI);
 
-sub dpi {
-    my $self = shift;
-    if (!scalar @_) {
-        return $self->rawDPI;
-    }
-    my $dpi = shift;
+sub triggerDPI {
+    my ($self, $dpi) = @_;
     $self->units->{pd}->{to_pt} = $self->units->{pt}->{to_pt} * IN / $dpi;
-    return $self->rawDPI($dpi);
 }
 
 has defaultUnit => (is => 'rw', default => 'pt');
