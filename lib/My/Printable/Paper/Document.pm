@@ -14,9 +14,9 @@ use Scalar::Util qw(refaddr);
 
 use Moo;
 
-has 'id' => (is => 'rw');
+has id => (is => 'rw');
 
-has 'rawFilename' => (is => 'rw');
+has rawFilename => (is => 'rw');
 
 use constant DEFAULT_PAPER_SIZE_NAME => 'letter';
 use constant DEFAULT_WIDTH           => 612;
@@ -37,7 +37,7 @@ sub filename {
     return $self->rawFilename;
 }
 
-has 'rawPaperSizeName' => (
+has rawPaperSizeName => (
     is => 'rw',
     default => DEFAULT_PAPER_SIZE_NAME,
 );
@@ -66,7 +66,7 @@ sub paperSizeName {
     $self->rawPaperSizeName($spec);
 }
 
-has 'rawWidth' => (
+has rawWidth => (
     is => 'rw',
     default => DEFAULT_WIDTH,
 );
@@ -87,7 +87,7 @@ sub width {
     $self->setOrientationFromDimensions();
 };
 
-has 'rawHeight' => (
+has rawHeight => (
     is => 'rw',
     default => DEFAULT_HEIGHT,
 );
@@ -109,41 +109,41 @@ sub height {
 };
 
 # 'imperial', 'metric';
-has 'unitType' => (is => 'rw', default => DEFAULT_UNIT_TYPE);
+has unitType => (is => 'rw', default => DEFAULT_UNIT_TYPE);
 
 # 'color', 'grayscale', 'black'
-has 'colorType' => (is => 'rw', default => DEFAULT_COLOR_TYPE);
+has colorType => (is => 'rw', default => DEFAULT_COLOR_TYPE);
 
 # 'seyes', etc.
-has 'rulingName' => (is => 'rw');
+has rulingName => (is => 'rw');
 
-has 'leftMarginX' => (is => 'rw');              # in pt, left = 0
-has 'rightMarginX' => (is => 'rw');             # in pt, left = 0
-has 'topMarginY' => (is => 'rw');               # in pt, top = 0
-has 'bottomMarginY' => (is => 'rw');            # in pt, top = 0
+has leftMarginX => (is => 'rw');              # in pt, left = 0
+has rightMarginX => (is => 'rw');             # in pt, left = 0
+has topMarginY => (is => 'rw');               # in pt, top = 0
+has bottomMarginY => (is => 'rw');            # in pt, top = 0
 
 # My::Printable::Paper::Unit
-has 'unit' => (is => 'rw');
-has 'unitX' => (is => 'rw');
-has 'unitY' => (is => 'rw');
+has unit => (is => 'rw');
+has unitX => (is => 'rw');
+has unitY => (is => 'rw');
 
-has 'modifiers' => (
+has modifiers => (
     is => 'rw',
     default => sub { return My::Printable::Paper::ModifierList->new(); },
 );
-has 'elements' => (
+has elements => (
     is => 'rw',
     default => sub { return []; },         # via appendElement
 );
-has 'elementsById' => (
+has elementsById => (
     is => 'rw',
     default => sub { return {}; },         # via appendElement
 );
 
-has 'originX' => (is => 'rw', default => DEFAULT_WIDTH / 2);
-has 'originY' => (is => 'rw', default => DEFAULT_HEIGHT / 2);
+has originX => (is => 'rw', default => DEFAULT_WIDTH / 2);
+has originY => (is => 'rw', default => DEFAULT_HEIGHT / 2);
 
-around 'originX' => sub {
+around originX => sub {
     my $orig = shift;
     my $self = shift;
     if (scalar @_) {
@@ -152,7 +152,7 @@ around 'originX' => sub {
     }
     return $self->$orig();
 };
-around 'originY' => sub {
+around originY => sub {
     my $orig = shift;
     my $self = shift;
     if (scalar @_) {
@@ -162,10 +162,10 @@ around 'originY' => sub {
     return $self->$orig();
 };
 
-has 'isGenerated' => (is => 'rw', default => 0);
-has 'additionalStyles' => (is => 'rw');
+has isGenerated => (is => 'rw', default => 0);
+has additionalStyles => (is => 'rw');
 
-has 'svgDocument' => (
+has svgDocument => (
     is => 'rw',
     lazy => 1, default => sub {
         my ($self) = @_;
@@ -175,7 +175,7 @@ has 'svgDocument' => (
     clearer => 'deleteSVGDocument',
 );
 
-has 'svgRoot' => (
+has svgRoot => (
     is => 'rw',
     lazy => 1, default => sub {
         my ($self) = @_;
@@ -209,7 +209,7 @@ after 'svgRoot' => sub {
     $in -= 1;
 };
 
-has 'svgDefs' => (
+has svgDefs => (
     is => 'rw',
     lazy => 1, builder => sub {
         my ($self) = @_;
@@ -222,7 +222,7 @@ has 'svgDefs' => (
     clearer => 'deleteSVGDefs',
 );
 
-has 'svgInkscapeBugWorkaroundFilter' => (
+has svgInkscapeBugWorkaroundFilter => (
     is => 'rw',
     lazy => 1, builder => sub {
         my ($self) = @_;
@@ -242,7 +242,7 @@ has 'svgInkscapeBugWorkaroundFilter' => (
     clearer => 'deleteSVGInkscapeBugWorkaroundFilter',
 );
 
-has 'svgStyle' => (
+has svgStyle => (
     is => 'rw',
     lazy => 1, builder => sub {
         my ($self) = @_;
@@ -254,7 +254,7 @@ has 'svgStyle' => (
     clearer => 'deleteSVGStyle',
 );
 
-has 'svgContext' => (
+has svgContext => (
     is => 'rw',
     lazy => 1, builder => sub {
         my ($self) = @_;
@@ -265,12 +265,12 @@ has 'svgContext' => (
     clearer => 'deleteSVGContext',
 );
 
-has 'dryRun'  => (is => 'rw', default => 0);
-has 'verbose' => (is => 'rw', default => 0);
+has dryRun  => (is => 'rw', default => 0);
+has verbose => (is => 'rw', default => 0);
 
-has 'edgeMargin' => (is => 'rw', default => 18); # 0.25in
+has edgeMargin => (is => 'rw', default => 18); # 0.25in
 
-has 'rawOrientation' => (is => 'rw', default => DEFAULT_ORIENTATION);
+has rawOrientation => (is => 'rw', default => DEFAULT_ORIENTATION);
 sub orientation {
     my $self = shift;
     if (!scalar @_) {
@@ -553,13 +553,13 @@ sub printToFile {
     return;
 }
 
-has 'generatePDF'      => (is => 'rw', default => 0);
-has 'generatePS'       => (is => 'rw', default => 0);
-has 'generate2Page2Up' => (is => 'rw', default => 0);
-has 'generate2Page4Up' => (is => 'rw', default => 0);
-has 'generate2Page'    => (is => 'rw', default => 0);
-has 'generate2Up'      => (is => 'rw', default => 0);
-has 'generate4Up'      => (is => 'rw', default => 0);
+has generatePDF      => (is => 'rw', default => 0);
+has generatePS       => (is => 'rw', default => 0);
+has generate2Page2Up => (is => 'rw', default => 0);
+has generate2Page4Up => (is => 'rw', default => 0);
+has generate2Page    => (is => 'rw', default => 0);
+has generate2Up      => (is => 'rw', default => 0);
+has generate4Up      => (is => 'rw', default => 0);
 
 sub generateFormats {
     my ($self) = @_;
@@ -807,8 +807,8 @@ sub doubleBracketExpr {
     return eval $expr;
 }
 
-has 'cssClasses'      => (is => 'rw', builder => sub { return {}; });
-has 'cssClassCounter' => (is => 'rw', default => 0);
+has cssClasses      => (is => 'rw', builder => sub { return {}; });
+has cssClassCounter => (is => 'rw', default => 0);
 
 sub resetCSSClasses {
     my ($self) = @_;

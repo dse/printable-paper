@@ -10,17 +10,17 @@ use Moo;
 
 extends qw(My::Printable::Paper::Element);
 
-has 'width' => (is => 'rw');
-has 'height' => (is => 'rw');
-has 'rx' => (is => 'rw');
-has 'ry' => (is => 'rw');
-has 'r' => (is => 'rw');
+has width => (is => 'rw');
+has height => (is => 'rw');
+has rx => (is => 'rw');
+has ry => (is => 'rw');
+has r => (is => 'rw');
 
-around 'width'  => \&aroundUnitX;
-around 'height' => \&aroundUnitY;
-around 'rx'     => \&aroundUnitX;
-around 'ry'     => \&aroundUnitY;
-around 'r'      => \&aroundUnit;
+around width  => \&aroundUnitX;
+around height => \&aroundUnitY;
+around rx     => \&aroundUnitX;
+around ry     => \&aroundUnitY;
+around r      => \&aroundUnit;
 
 sub BUILD {
     my ($self) = @_;

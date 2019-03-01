@@ -8,10 +8,10 @@ use File::Spec::Functions qw(canonpath abs2rel);
 
 use Moo;
 
-has 'rawModuleList' => (
+has rawModuleList => (
     is => 'rw',
 );
-has 'rawModuleHash' => (
+has rawModuleHash => (
     is => 'rw',
 );
 sub moduleList {
@@ -35,10 +35,10 @@ sub getListOfRulingModules {
     return @modules;
 }
 
-has 'rawRulingModuleList' => (
+has rawRulingModuleList => (
     is => 'rw',
 );
-has 'rawRulingNameList' => (
+has rawRulingNameList => (
     is => 'rw',
 );
 sub rulingModuleList {

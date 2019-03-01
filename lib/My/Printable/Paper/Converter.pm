@@ -22,7 +22,7 @@ use IPC::Run qw(run);
 
 use Moo;
 
-has 'inkscapeShell' => (
+has inkscapeShell => (
     is => 'rw',
     lazy => 1,
     default => sub {
@@ -33,10 +33,10 @@ has 'inkscapeShell' => (
     },
 );
 
-has 'dryRun'  => (is => 'rw', default => 0);
-has 'verbose' => (is => 'rw', default => 0);
-has 'width'   => (is => 'rw', default => 0);
-has 'height'  => (is => 'rw', default => 0);
+has dryRun  => (is => 'rw', default => 0);
+has verbose => (is => 'rw', default => 0);
+has width   => (is => 'rw', default => 0);
+has height  => (is => 'rw', default => 0);
 
 sub convertSVGToPDF {
     my ($self, $fromFilename, $toFilename) = @_;
@@ -447,7 +447,7 @@ sub convertPDFToPS {
 # can't just run which('pdfnup') because there's a python library that
 # installs a completely unrelated 'pdfnup' script.  We want the one
 # that comes with pdfjam.
-has 'pdfnupLocation' => (
+has pdfnupLocation => (
     is => 'rw',
     lazy => 1,
     default => sub {

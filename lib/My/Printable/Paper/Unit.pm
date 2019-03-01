@@ -14,9 +14,9 @@ our @EXPORT_OK = (
 );
 our @EXPORT = ();
 
-has "units" => (is => 'rw');
-has "axis" => (is => 'rw');
-has "size" => (is => 'rw');
+has units => (is => 'rw');
+has axis => (is => 'rw');
+has size => (is => 'rw');
 
 use Storable qw(dclone);
 
@@ -61,7 +61,7 @@ our $UNITS = {
     }
 };
 
-has 'rawDPI' => (is => 'rw', default => DEFAULT_DPI);
+has rawDPI => (is => 'rw', default => DEFAULT_DPI);
 
 sub dpi {
     my $self = shift;
@@ -73,7 +73,7 @@ sub dpi {
     return $self->rawDPI($dpi);
 }
 
-has 'defaultUnit' => (is => 'rw', default => 'pt');
+has defaultUnit => (is => 'rw', default => 'pt');
 
 sub BUILD {
     my ($self) = @_;

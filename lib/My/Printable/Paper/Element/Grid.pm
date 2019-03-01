@@ -5,44 +5,44 @@ use v5.10.0;
 
 use Moo;
 
-has "cssClassHorizontal" => (is => 'rw');
-has "cssClassVertical" => (is => 'rw');
+has cssClassHorizontal => (is => 'rw');
+has cssClassVertical => (is => 'rw');
 
 ###############################################################################
 
-has "isDotGrid"                    => (is => 'rw', default => 0);
-has "hasDottedGridLines"           => (is => 'rw', default => 0);
-has "hasDottedHorizontalGridLines" => (is => 'rw', default => 0);
-has "hasDottedVerticalGridLines"   => (is => 'rw', default => 0);
-has "extendGridLines"              => (is => 'rw', default => 0); # keep
-has "extendHorizontalGridLines"    => (is => 'rw', default => 0); # keep
-has "extendVerticalGridLines"      => (is => 'rw', default => 0); # keep
+has isDotGrid                    => (is => 'rw', default => 0);
+has hasDottedGridLines           => (is => 'rw', default => 0);
+has hasDottedHorizontalGridLines => (is => 'rw', default => 0);
+has hasDottedVerticalGridLines   => (is => 'rw', default => 0);
+has extendGridLines              => (is => 'rw', default => 0); # keep
+has extendHorizontalGridLines    => (is => 'rw', default => 0); # keep
+has extendVerticalGridLines      => (is => 'rw', default => 0); # keep
 
 # for dotted line grids
-has "horizontalDots"               => (is => 'rw', default => 2);
-has "verticalDots"                 => (is => 'rw', default => 2);
+has horizontalDots               => (is => 'rw', default => 2);
+has verticalDots                 => (is => 'rw', default => 2);
 
-has "dottedLineXPointSeries"       => (is => 'rw');
-has "dottedLineYPointSeries"       => (is => 'rw');
-has "origDottedLineXPointSeries"   => (is => 'rw');
-has "origDottedLineYPointSeries"   => (is => 'rw');
+has dottedLineXPointSeries       => (is => 'rw');
+has dottedLineYPointSeries       => (is => 'rw');
+has origDottedLineXPointSeries   => (is => 'rw');
+has origDottedLineYPointSeries   => (is => 'rw');
 
 ###############################################################################
 
-has 'isDashed'  => (is => 'rw', default => 0);
-has 'isDashedX' => (is => 'rw', default => 0);
-has 'isDashedY' => (is => 'rw', default => 0);
-has 'dashesX'   => (is => 'rw', default => 1);
-has 'dashesY'   => (is => 'rw', default => 1);
-has 'dashSize'  => (is => 'rw');
-has 'dashSizeX' => (is => 'rw');
-has 'dashSizeY' => (is => 'rw');
+has isDashed  => (is => 'rw', default => 0);
+has isDashedX => (is => 'rw', default => 0);
+has isDashedY => (is => 'rw', default => 0);
+has dashesX   => (is => 'rw', default => 1);
+has dashesY   => (is => 'rw', default => 1);
+has dashSize  => (is => 'rw');
+has dashSizeX => (is => 'rw');
+has dashSizeY => (is => 'rw');
 
-has 'isDotted'  => (is => 'rw', default => 0);
-has 'isDottedX' => (is => 'rw', default => 0);
-has 'isDottedY' => (is => 'rw', default => 0);
-has 'dotsX'     => (is => 'rw', default => 1);
-has 'dotsY'     => (is => 'rw', default => 1);
+has isDotted  => (is => 'rw', default => 0);
+has isDottedX => (is => 'rw', default => 0);
+has isDottedY => (is => 'rw', default => 0);
+has dotsX     => (is => 'rw', default => 1);
+has dotsY     => (is => 'rw', default => 1);
 
 ###############################################################################
 

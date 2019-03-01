@@ -16,45 +16,45 @@ use Scalar::Util qw(blessed);
 
 use Moo;
 
-has 'id' => (is => 'rw');
+has id => (is => 'rw');
 
-has 'x1' => (is => 'rw');
-has 'x2' => (is => 'rw');
-has 'y1' => (is => 'rw');
-has 'y2' => (is => 'rw');
+has x1 => (is => 'rw');
+has x2 => (is => 'rw');
+has y1 => (is => 'rw');
+has y2 => (is => 'rw');
 
-around 'x1' => \&aroundUnitX;
-around 'x2' => \&aroundUnitX;
-around 'y1' => \&aroundUnitY;
-around 'y2' => \&aroundUnitY;
+around x1 => \&aroundUnitX;
+around x2 => \&aroundUnitX;
+around y1 => \&aroundUnitY;
+around y2 => \&aroundUnitY;
 
-has 'xPointSeries' => (is => 'rw');
-has 'yPointSeries' => (is => 'rw');
-has 'origXPointSeries' => (is => 'rw');
-has 'origYPointSeries' => (is => 'rw');
+has xPointSeries => (is => 'rw');
+has yPointSeries => (is => 'rw');
+has origXPointSeries => (is => 'rw');
+has origYPointSeries => (is => 'rw');
 
-has 'shiftPointsX' => (is => 'rw', default => 0);
-has 'shiftPointsY' => (is => 'rw', default => 0);
-has 'shiftPoints'  => (is => 'rw', default => 0);
+has shiftPointsX => (is => 'rw', default => 0);
+has shiftPointsY => (is => 'rw', default => 0);
+has shiftPoints  => (is => 'rw', default => 0);
 
-has 'spacing' => (is => 'rw');
-has 'spacingX' => (is => 'rw');
-has 'spacingY' => (is => 'rw');
+has spacing => (is => 'rw');
+has spacingX => (is => 'rw');
+has spacingY => (is => 'rw');
 
-around 'spacing' => \&aroundUnit;
-around 'spacingX' => \&aroundUnitX;
-around 'spacingY' => \&aroundUnitY;
+around spacing => \&aroundUnit;
+around spacingX => \&aroundUnitX;
+around spacingY => \&aroundUnitY;
 
-has "cssClass" => (is => 'rw');
-has 'lineCap' => (is => 'rw', default => 'round'); # butt, round, or square
+has cssClass => (is => 'rw');
+has lineCap => (is => 'rw', default => 'round'); # butt, round, or square
 
-has 'originX' => (is => 'rw');
-has 'originY' => (is => 'rw');
+has originX => (is => 'rw');
+has originY => (is => 'rw');
 
-around 'originX' => \&aroundUnitX;
-around 'originY' => \&aroundUnitY;
+around originX => \&aroundUnitX;
+around originY => \&aroundUnitY;
 
-has "document" => (
+has document => (
     is => 'rw',
     handles => [
         "unit",
@@ -68,24 +68,24 @@ has "document" => (
     ],
 );                              # My::Printable::Paper::Document
 
-has "extendLeft" => (is => 'rw');
-has "extendRight" => (is => 'rw');
-has "extendTop" => (is => 'rw');
-has "extendBottom" => (is => 'rw');
+has extendLeft => (is => 'rw');
+has extendRight => (is => 'rw');
+has extendTop => (is => 'rw');
+has extendBottom => (is => 'rw');
 
 # mainly for grids
-has 'dotDashWidth'  => (is => 'rw', default => 0);
-has 'dotDashHeight' => (is => 'rw', default => 0);
+has dotDashWidth  => (is => 'rw', default => 0);
+has dotDashHeight => (is => 'rw', default => 0);
 
-has 'dotDashStartAtBottom' => (is => 'rw', default => 0);
-has 'dotDashStartAtTop'    => (is => 'rw', default => 0);
-has 'dotDashStartAtLeft'   => (is => 'rw', default => 0);
-has 'dotDashStartAtRight'  => (is => 'rw', default => 0);
+has dotDashStartAtBottom => (is => 'rw', default => 0);
+has dotDashStartAtTop    => (is => 'rw', default => 0);
+has dotDashStartAtLeft   => (is => 'rw', default => 0);
+has dotDashStartAtRight  => (is => 'rw', default => 0);
 
-around 'dotDashWidth'  => \&aroundUnitX;
-around 'dotDashHeight' => \&aroundUnitY;
+around dotDashWidth  => \&aroundUnitX;
+around dotDashHeight => \&aroundUnitY;
 
-has "svgLayer" => (
+has svgLayer => (
     is => 'rw',
     lazy => 1,
     default => sub {
@@ -103,7 +103,7 @@ has "svgLayer" => (
     clearer => "deleteSVGLayer",
 );
 
-has 'rawExcludePointsFrom' => (
+has rawExcludePointsFrom => (
     is => 'rw',
     default => sub { return []; },
 );

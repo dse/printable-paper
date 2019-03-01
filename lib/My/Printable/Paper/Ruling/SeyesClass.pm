@@ -30,7 +30,7 @@ sub getOriginX {
     }
 }
 
-around 'getUnit' => sub {
+around getUnit => sub {
     my ($orig, $self) = @_;
     if ($self->unitType eq 'imperial') {
         if ($self->modifiers->has('10mm')) {

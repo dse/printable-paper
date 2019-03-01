@@ -13,7 +13,7 @@ use My::Printable::Paper::Element::Line;
 
 use Moo;
 
-has 'document' => (
+has document => (
     is => 'rw',
     default => sub {
         return My::Printable::Paper::Document->new();
@@ -95,10 +95,10 @@ sub thicknessCSS {
 EOF
 }
 
-has 'rawRegularLineColor' => (is => 'rw');
-has 'rawMajorLineColor'   => (is => 'rw');
-has 'rawFeintLineColor'   => (is => 'rw');
-has 'rawMarginLineColor'  => (is => 'rw');
+has rawRegularLineColor => (is => 'rw');
+has rawMajorLineColor   => (is => 'rw');
+has rawFeintLineColor   => (is => 'rw');
+has rawMarginLineColor  => (is => 'rw');
 
 sub defaultRegularLineColor {
     my ($self) = @_;
@@ -345,7 +345,7 @@ sub getMajorLineCSSClass {
 
 ###############################################################################
 
-has 'lineWidthUnit' => (
+has lineWidthUnit => (
     is => 'rw',
     default => sub {
         my $unit = My::Printable::Paper::Unit->new();
@@ -357,13 +357,13 @@ has 'lineWidthUnit' => (
     ],
 );
 
-has 'rawRegularLineWidth' => (is => 'rw');
-has 'rawMajorLineWidth'   => (is => 'rw');
-has 'rawFeintLineWidth'   => (is => 'rw');
-has 'rawRegularDotWidth'  => (is => 'rw');
-has 'rawMajorDotWidth'    => (is => 'rw');
-has 'rawFeintDotWidth'    => (is => 'rw');
-has 'rawMarginLineWidth'  => (is => 'rw');
+has rawRegularLineWidth => (is => 'rw');
+has rawMajorLineWidth   => (is => 'rw');
+has rawFeintLineWidth   => (is => 'rw');
+has rawRegularDotWidth  => (is => 'rw');
+has rawMajorDotWidth    => (is => 'rw');
+has rawFeintDotWidth    => (is => 'rw');
+has rawMarginLineWidth  => (is => 'rw');
 
 sub regularLineWidth {
     my $self = shift;

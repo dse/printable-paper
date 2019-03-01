@@ -29,14 +29,14 @@ use constant USE_PDF_API2 => 1;
 
 use Moo;
 
-has 'verbose'             => (is => 'rw', default => 0);
-has 'dryRun'              => (is => 'rw', default => 0);
-has 'force'               => (is => 'rw', default => 0);
-has 'templatesArray'      => (is => 'rw', default => sub { return []; });
-has 'perlModulesArray'    => (is => 'rw', default => sub { return []; });
-has 'projectRoot'         => (is => 'rw');
-has 'buildHashByFilename' => (is => 'rw', default => sub { return {}; });
-has 'buildsArray'         => (is => 'rw', default => sub { return []; });
+has verbose             => (is => 'rw', default => 0);
+has dryRun              => (is => 'rw', default => 0);
+has force               => (is => 'rw', default => 0);
+has templatesArray      => (is => 'rw', default => sub { return []; });
+has perlModulesArray    => (is => 'rw', default => sub { return []; });
+has projectRoot         => (is => 'rw');
+has buildHashByFilename => (is => 'rw', default => sub { return {}; });
+has buildsArray         => (is => 'rw', default => sub { return []; });
 
 sub BUILD {
     my ($self) = @_;
@@ -260,7 +260,7 @@ sub buildSVG {
     }
 }
 
-has 'inkscapeShell' => (is => 'rw');
+has inkscapeShell => (is => 'rw');
 
 sub buildPDFFromSVG {
     my ($self, %args) = @_;

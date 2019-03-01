@@ -10,29 +10,29 @@ use My::Printable::Paper::Util qw(:around :const snapcmp snapnum);
 
 use Moo;
 
-has 'startPoint'     => (is => 'rw');
-has 'endPoint'       => (is => 'rw');
-has 'spacing'        => (is => 'rw');
-has 'origin'         => (is => 'rw');
-has 'min'            => (is => 'rw');
-has 'max'            => (is => 'rw');
-has 'edgeMargin'     => (is => 'rw', default => 18); # 0.25in
-has 'paperDimension' => (is => 'rw'); # width or height of document
+has startPoint     => (is => 'rw');
+has endPoint       => (is => 'rw');
+has spacing        => (is => 'rw');
+has origin         => (is => 'rw');
+has min            => (is => 'rw');
+has max            => (is => 'rw');
+has edgeMargin     => (is => 'rw', default => 18); # 0.25in
+has paperDimension => (is => 'rw'); # width or height of document
 
 # 'x' or 'y'
-has 'axis' => (is => 'rw');
+has axis => (is => 'rw');
 
 # boolean
-has 'shiftPoints' => (is => 'rw', default => 0);
+has shiftPoints => (is => 'rw', default => 0);
 
-around 'startPoint'     => \&aroundUnit;
-around 'endPoint'       => \&aroundUnit;
-around 'spacing'        => \&aroundUnit;
-around 'origin'         => \&aroundUnit;
-around 'min'            => \&aroundUnit;
-around 'max'            => \&aroundUnit;
-around 'edgeMargin'     => \&aroundUnit;
-around 'paperDimension' => \&aroundUnit;
+around startPoint     => \&aroundUnit;
+around endPoint       => \&aroundUnit;
+around spacing        => \&aroundUnit;
+around origin         => \&aroundUnit;
+around min            => \&aroundUnit;
+around max            => \&aroundUnit;
+around edgeMargin     => \&aroundUnit;
+around paperDimension => \&aroundUnit;
 
 use Data::Dumper qw(Dumper);
 use Storable qw(dclone);

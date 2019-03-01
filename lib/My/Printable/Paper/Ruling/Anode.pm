@@ -57,7 +57,7 @@ around generateRuling => sub {
     $self->$orig();
 };
 
-around 'getUnit' => sub {
+around getUnit => sub {
     my ($orig, $self) = @_;
     if ($self->unitType eq 'imperial') {
         if ($self->modifiers->has('denser-grid')) {

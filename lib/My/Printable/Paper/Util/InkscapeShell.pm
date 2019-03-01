@@ -7,7 +7,7 @@ use Moo;
 
 use Expect qw();
 
-has 'expect' => (
+has expect => (
     is => 'rw',
     lazy => 1, builder => sub {
         my @cmd = ('inkscape', '--shell');

@@ -49,10 +49,10 @@ BEGIN {
     );
 }
 
-has 'r' => (is => 'rw', default => 1);
-has 'g' => (is => 'rw', default => 1);
-has 'b' => (is => 'rw', default => 1);
-has 'a' => (is => 'rw', default => 1);
+has r => (is => 'rw', default => 1);
+has g => (is => 'rw', default => 1);
+has b => (is => 'rw', default => 1);
+has a => (is => 'rw', default => 1);
 
 around BUILDARGS => sub {
     my ($orig, $class, @args) = @_;
