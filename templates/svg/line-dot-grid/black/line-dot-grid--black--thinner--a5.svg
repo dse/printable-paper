@@ -11,16 +11,20 @@
         .rectangle { fill: #ffffff; }
 
 
-        .regular-line { stroke-width: 0.12px; opacity: 1; }
+        .regular-line { stroke-width: 0.169705627484771px; opacity: 1; }
         .major-line   { stroke-width: 0.24px; opacity: 1;   }
         .feint-line   { stroke-width: 0.12px; opacity: 1;   }
-        .regular-dot  { stroke-width: 0.96px; opacity: 1;  }
+        .regular-dot  { stroke-width: 0.678822509939086px; opacity: 1;  }
+        .major-dot    { stroke-width: 1.35764501987817px; opacity: 1;    }
+        .feint-dot    { stroke-width: 0.339411254969543px; opacity: 1;    }
         .margin-line  { stroke-width: 0.24px; opacity: 1;  }
         .regular-line { stroke: #000000; }
-        .major-line   { stroke: #000000; }
-        .feint-line   { stroke: #000000; }
+        .major-line   { stroke: #000000;   }
+        .feint-line   { stroke: #000000;   }
         .regular-dot  { stroke: #000000; }
-        .margin-line  { stroke: #000000; }
+        .major-dot    { stroke: #000000;   }
+        .feint-dot    { stroke: #000000;   }
+        .margin-line  { stroke: #000000;  }
   </style>
   <defs/>
   <g id="grid">
