@@ -16,14 +16,14 @@ use Moo;
 
 has id => (is => 'rw');
 
-has rawFilename => (is => 'rw');
-
 use constant DEFAULT_PAPER_SIZE_NAME => 'letter';
 use constant DEFAULT_WIDTH           => 612;
 use constant DEFAULT_HEIGHT          => 792;
 use constant DEFAULT_ORIENTATION     => 'portrait';
 use constant DEFAULT_UNIT_TYPE       => 'imperial';
 use constant DEFAULT_COLOR_TYPE      => 'color';
+
+has rawFilename => (is => 'rw');
 
 sub filename {
     my $self = shift;
