@@ -72,9 +72,6 @@ around generateRuling => sub {
     my $shiftPointsX = !$self->hasMarginLine('left') && !$self->hasMarginLine('right');
     my $shiftPointsY = !$self->hasMarginLine('top')  && !$self->hasMarginLine('bottom');
 
-    say STDERR $shiftPointsX ? 1 : 0;
-    say STDERR $shiftPointsY ? 1 : 0;
-
     if (defined $majorLinesX && defined $majorLinesY) {
         $majorGrid = My::Printable::Paper::Element::Grid->new(
             document     => $self->document,
