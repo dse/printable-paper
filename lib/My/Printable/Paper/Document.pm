@@ -5,12 +5,13 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::ModifierList;
-use My::Printable::Paper::Util qw(:const snapcmp flatten);
+use My::Printable::Paper::Util qw(:const :around snapcmp flatten);
 use My::Printable::Paper::Converter;
 use My::Printable::Paper::Color qw(:const);
 
 use XML::LibXML;
 use Scalar::Util qw(refaddr);
+use List::Util qw(max);
 
 use Moo;
 
@@ -268,8 +269,6 @@ has svgContext => (
 has dryRun  => (is => 'rw', default => 0);
 has verbose => (is => 'rw', default => 0);
 
-has edgeMargin => (is => 'rw', default => 18); # 0.25in
-
 has rawOrientation => (is => 'rw', default => DEFAULT_ORIENTATION);
 sub orientation {
     my $self = shift;
@@ -323,6 +322,24 @@ sub setOrientationFromDimensions {
     }
 }
 
+has 'leftClip'   => (is => 'rw', default => 0);
+has 'rightClip'  => (is => 'rw', default => 0);
+has 'topClip'    => (is => 'rw', default => 0);
+has 'bottomClip' => (is => 'rw', default => 0);
+
+around 'leftClip'   => \&aroundUnitX;
+around 'rightClip'  => \&aroundUnitX;
+around 'topClip'    => \&aroundUnitY;
+around 'bottomClip' => \&aroundUnitY;
+
+sub setClip {
+    my ($self, $clip) = @_;
+    $self->leftClip($clip);
+    $self->rightClip($clip);
+    $self->topClip($clip);
+    $self->bottomClip($clip);
+}
+
 sub addStyleElement {
     my ($self, @cssText) = @_;
     my $cssText = join("\n\n", grep { defined $_ && m{\S} } @cssText);
@@ -340,6 +357,35 @@ sub addStyleElement {
         $root->insertBefore($style, $root->firstChild);
     }
     return $style;
+}
+
+has 'clipPath' => (is => 'rw');
+
+sub addOrRemoveClipPathDefinition {
+    my ($self) = @_;
+    if ($self->clipPath) {
+        my $defs = $self->svgDefs;
+        $defs->removeChild($self->clipPath);
+        $self->clipPath(undef);
+    }
+    if ($self->leftClip > 0 || $self->rightClip > 0 ||
+            $self->topClip > 0 || $self->bottomClip > 0) {
+        my $clipX = $self->leftClip;
+        my $clipY = $self->topClip;
+        my $clipWidth = $self->width - $self->leftClip - $self->rightClip;
+        my $clipHeight = $self->height - $self->topClip - $self->bottomClip;
+        my $defs = $self->svgDefs;
+        my $clipPath = $self->svgDocument->createElement('clipPath');
+        $clipPath->setAttribute('id', 'document-clip-path');
+        my $rect = $self->svgDocument->createElement('rect');
+        $rect->setAttribute('x', sprintf('%g', $clipX));
+        $rect->setAttribute('y', sprintf('%g', $clipY));
+        $rect->setAttribute('width', sprintf('%g', $clipWidth));
+        $rect->setAttribute('height', sprintf('%g', $clipHeight));
+        $defs->appendChild($clipPath);
+        $clipPath->appendChild($rect);
+        $self->clipPath($clipPath);
+    }
 }
 
 sub findStyleNodeInsertionPoint {
@@ -439,6 +485,26 @@ sub setBottomMargin {
     }
 }
 
+sub setMargins {
+    my ($self, $value) = @_;
+    $self->setLeftMargin($value);
+    $self->setRightMargin($value);
+    $self->setTopMargin($value);
+    $self->setBottomMargin($value);
+}
+
+sub setHorizontalMargins {
+    my ($self, $value) = @_;
+    $self->setLeftMargin($value);
+    $self->setRightMargin($value);
+}
+
+sub setVerticalMargins {
+    my ($self, $value) = @_;
+    $self->setTopMargin($value);
+    $self->setBottomMargin($value);
+}
+
 sub setUnit {
     my ($self, $value) = @_;
     $self->unit->addUnit("unit", scalar($self->pt($value)));
@@ -455,6 +521,9 @@ sub generate {
     $self->forEach("chopDocumentMargins");
     $self->forEach("extend");
     # excluding individual coordinates, if elemented, would go here.
+
+    $self->addOrRemoveClipPathDefinition();
+
     $self->forEach("draw");
     $self->leaveAMark();
     $self->isGenerated(1);
@@ -497,6 +566,9 @@ sub leaveAMark {
             $rect->setAttribute('stroke', 'none');
             $rect->setAttribute('stroke-width', '0px');
         }
+        if ($self->clipPath) {
+            $rect->setAttribute('clip-path', 'url(#document-clip-path)');
+        }
         $self->svgRoot->appendChild($rect);
     }
     {
@@ -509,6 +581,9 @@ sub leaveAMark {
         $text->setAttribute('stroke-width', '0');
         $text->setAttribute('style', $text_style);
         $text->appendText($text_data);
+        if ($self->clipPath) {
+            $text->setAttribute('clip-path', 'url(#document-clip-path)');
+        }
         $self->svgRoot->appendChild($text);
     }
 }
@@ -716,6 +791,9 @@ sub appendElement {
 sub appendSVGLayer {
     my ($self, $svg_layer) = @_;
     return if $svg_layer->ownerDocument == $self->svgDocument;
+    if ($self->clipPath) {
+        $svg_layer->setAttribute('clip-path', 'url(#document-clip-path)');
+    }
     $self->svgRoot->appendChild($svg_layer);
 }
 
@@ -761,7 +839,11 @@ sub getSquarePoints {
 sub defaultStyles {
     my ($self) = @_;
     return <<"EOF";
-        .regular-line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; stroke-linejoin: round; }
+        .line, .regular-line, .major-line, .feint-line,
+        .dot,  .regular-dot,  .major-dot,  .feint-dot,
+        .margin-line {
+            stroke-linecap: round; stroke-linejoin: round;
+        }
         .stroke-linecap-butt    { stroke-linecap:  butt;   }
         .stroke-linecap-round   { stroke-linecap:  round;  }
         .stroke-linecap-square  { stroke-linecap:  square; }
@@ -853,6 +935,31 @@ sub getElement {
     }
     my $element = $self->elementsById->{$whatever};
     return $element;
+}
+
+sub leftVisibleBoundaryX {
+    my ($self) = @_;
+    my $clip   = $self->leftClip;
+    my $margin = $self->leftMarginX;
+    return max(0, $clip, $margin);
+}
+sub rightVisibleBoundaryX {
+    my ($self) = @_;
+    my $clip   = $self->rightClip;
+    my $margin = $self->width - $self->rightMarginX;
+    return max(0, $clip, $margin);
+}
+sub topVisibleBoundaryY {
+    my ($self) = @_;
+    my $clip   = $self->topClip;
+    my $margin = $self->topMarginY;
+    return max(0, $clip, $margin);
+}
+sub bottomVisibleBoundaryY {
+    my ($self) = @_;
+    my $clip   = $self->bottomClip;
+    my $margin = $self->height - $self->bottomMarginY;
+    return max(0, $clip, $margin);
 }
 
 1;
