@@ -66,8 +66,6 @@ sub round3 {
         return;
     }
     $value = sprintf('%.3f', $value);
-#    $value =~ s{(\.\d*?)0+$}{$1};
-#    $value =~ s{\.$}{};
     return $value;
 }
 
