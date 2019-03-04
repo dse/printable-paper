@@ -69,16 +69,16 @@ around generateRuling => sub {
         $feintLines = undef if $feintLines < 2;
     }
 
-    my $shiftPointsX = !$self->hasMarginLine('left') && !$self->hasMarginLine('right');
-    my $shiftPointsY = !$self->hasMarginLine('top')  && !$self->hasMarginLine('bottom');
+    my $canShiftPointsX = !$self->hasMarginLine('left') && !$self->hasMarginLine('right');
+    my $canShiftPointsY = !$self->hasMarginLine('top')  && !$self->hasMarginLine('bottom');
 
     if (defined $majorLinesX && defined $majorLinesY) {
         $majorGrid = My::Printable::Paper::Element::Grid->new(
             document     => $self->document,
             id           => 'major-grid',
             cssClass     => $self->getMajorLineCSSClass,
-            shiftPointsX => $shiftPointsX,
-            shiftPointsY => $shiftPointsY,
+            canShiftPointsX => $canShiftPointsX,
+            canShiftPointsY => $canShiftPointsY,
             isDashedX    => $majorDashedX,
             isDashedY    => $majorDashedY,
             dashesX      => $majorDashedX,
@@ -122,8 +122,8 @@ around generateRuling => sub {
             document     => $self->document,
             id           => 'grid',
             cssClass     => $self->getRegularLineCSSClass,
-            shiftPointsX => $shiftPointsX,
-            shiftPointsY => $shiftPointsY,
+            canShiftPointsX => $canShiftPointsX,
+            canShiftPointsY => $canShiftPointsY,
             isDashedX    => $dashedX,
             isDashedY    => $dashedY,
             dashesX      => $dashedX,
