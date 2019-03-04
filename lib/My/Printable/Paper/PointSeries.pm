@@ -16,14 +16,13 @@ has spacing        => (is => 'rw');
 has origin         => (is => 'rw');
 has min            => (is => 'rw');
 has max            => (is => 'rw');
-has edgeMargin     => (is => 'rw', default => 18); # 0.25in
 has paperDimension => (is => 'rw'); # width or height of document
 
 # 'x' or 'y'
 has axis => (is => 'rw');
 
 # boolean
-has shiftPoints => (is => 'rw', default => 0);
+has canShiftPoints => (is => 'rw', default => 0);
 
 around startPoint     => \&aroundUnit;
 around endPoint       => \&aroundUnit;
@@ -31,8 +30,13 @@ around spacing        => \&aroundUnit;
 around origin         => \&aroundUnit;
 around min            => \&aroundUnit;
 around max            => \&aroundUnit;
-around edgeMargin     => \&aroundUnit;
 around paperDimension => \&aroundUnit;
+
+has startVisibleBoundary => (is => 'rw');
+has endVisibleBoundary   => (is => 'rw');
+
+around startVisibleBoundary => \&aroundUnit;
+around endVisibleBoundary   => \&aroundUnit;
 
 use Data::Dumper qw(Dumper);
 use Storable qw(dclone);
@@ -56,27 +60,41 @@ sub BUILD {
     # what to base shiftpoints on
     my $min = $self->min;
     my $max = $self->max;
-    if (defined $self->edgeMargin && defined $self->paperDimension) {
-        my $leftEdge  = $self->edgeMargin;
-        my $rightEdge = $self->paperDimension - $self->edgeMargin;
-        if ($min < $leftEdge) {
-            $min = $leftEdge;
+
+    say STDERR "PointSeries min $min max $max";
+
+    my $startVisibleBoundary = $self->startVisibleBoundary;
+    my $endVisibleBoundary   = $self->endVisibleBoundary;
+
+    say STDERR "PointSeries vb $startVisibleBoundary $endVisibleBoundary";
+
+    if (defined $startVisibleBoundary) {
+        if ($min < $startVisibleBoundary) {
+            $min = $startVisibleBoundary;
         }
-        if ($max > $rightEdge) {
-            $max = $rightEdge;
+    }
+    if (defined $endVisibleBoundary) {
+        if ($max > $endVisibleBoundary) {
+            $max = $endVisibleBoundary;
         }
     }
 
+    say STDERR "PointSeries min $min max $max";
+
     $self->setPoints();
 
-    if ($self->shiftPoints) {
+    if ($self->canShiftPoints) {
         my $pointCount  = $self->getPointCount;
         my $pointCount2 = $self->getPointCount($self->spacing / 2);
         if ($pointCount2 > $pointCount) {
+            my $beforeOrigin = $self->origin;
             $self->origin($self->origin - $self->spacing / 2);
             $self->startPoint(undef);
             $self->endPoint(undef);
             $self->setPoints();
+            printf STDERR ("%s: %g => %g (pc %d %d)\n", $self->axis, $beforeOrigin, $self->origin, $pointCount, $pointCount2);
+        } else {
+            printf STDERR ("%s: %g not changing (same # points)\n", $self->axis, $self->origin);
         }
     }
 }
@@ -87,23 +105,43 @@ sub getPointCount {
 
     my $startPoint = $self->startPoint + $diff;
     my $endPoint   = $self->endPoint   + $diff;
+    printf STDERR ("PC: %g %g\n", $startPoint, $endPoint);
     my $spacing    = $self->spacing;
 
     my $min = $self->min;
     my $max = $self->max;
-    my $edgeMargin = $self->edgeMargin;
-    my $paperDimension = $self->paperDimension;
-    if (defined $edgeMargin && defined $paperDimension) {
-        my $startEdge = $edgeMargin;
-        my $endEdge   = $paperDimension - $edgeMargin;
-        if ($min < $startEdge) { $min = $startEdge; }
-        if ($max > $endEdge)   { $max = $endEdge;   }
+
+    my $startVisibleBoundary = $self->startVisibleBoundary;
+    my $endVisibleBoundary   = $self->endVisibleBoundary;
+
+    printf STDERR ("    VB: %g %g\n", $startVisibleBoundary, $endVisibleBoundary);
+
+    if (defined $startVisibleBoundary) {
+        if ($min < $startVisibleBoundary) {
+            $min = $startVisibleBoundary;
+        }
+    }
+    if (defined $endVisibleBoundary) {
+        if ($max > $endVisibleBoundary) {
+            $max = $endVisibleBoundary;
+        }
     }
 
+    printf STDERR ("    MM: %g %g\n", $min, $max);
+
+    printf STDERR ("    SP %g MIN %g\n", $startPoint, $min);
     while (snapcmp($startPoint, $min) > 0) { $startPoint -= $spacing; }
+    printf STDERR ("    SP %g\n", $startPoint);
     while (snapcmp($startPoint, $min) < 0) { $startPoint += $spacing; }
+    printf STDERR ("    SP %g\n", $startPoint);
+
+    printf STDERR ("    EP %g MAX %g\n", $endPoint, $max);
     while (snapcmp($endPoint,   $max) < 0) { $endPoint   += $spacing; }
+    printf STDERR ("    EP %g\n", $endPoint);
     while (snapcmp($endPoint,   $max) > 0) { $endPoint   -= $spacing; }
+    printf STDERR ("    EP %g\n", $endPoint);
+
+    printf STDERR ("PC: %g %g\n", $startPoint, $endPoint);
 
     return round(($endPoint - $startPoint) / $spacing);
 }
