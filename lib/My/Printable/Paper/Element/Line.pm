@@ -13,12 +13,12 @@ extends qw(My::Printable::Paper::Element);
 
 has isDotted   => (is => 'rw', default => 0);
 has dotCenter  => (is => 'rw', default => 0);
-has dotSpacing => (is => 'rw', default => 0);
+has dotSpacing => (is => 'rw', default => 18);
 
 has isDashed    => (is => 'rw', default => 0);
 has dashCenter  => (is => 'rw', default => 0);
-has dashLength  => (is => 'rw', default => 0);
-has dashSpacing => (is => 'rw', default => 0);
+has dashLength  => (is => 'rw', default => 0.5);
+has dashSpacing => (is => 'rw', default => 18);
 
 # stroke-dasharray
 # stroke-dashoffset
