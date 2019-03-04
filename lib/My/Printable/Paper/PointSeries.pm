@@ -61,12 +61,8 @@ sub BUILD {
     my $min = $self->min;
     my $max = $self->max;
 
-    say STDERR "PointSeries min $min max $max";
-
     my $startVisibleBoundary = $self->startVisibleBoundary;
     my $endVisibleBoundary   = $self->endVisibleBoundary;
-
-    say STDERR "PointSeries vb $startVisibleBoundary $endVisibleBoundary";
 
     if (defined $startVisibleBoundary) {
         if ($min < $startVisibleBoundary) {
@@ -78,8 +74,6 @@ sub BUILD {
             $max = $endVisibleBoundary;
         }
     }
-
-    say STDERR "PointSeries min $min max $max";
 
     $self->setPoints();
 
@@ -92,9 +86,6 @@ sub BUILD {
             $self->startPoint(undef);
             $self->endPoint(undef);
             $self->setPoints();
-            printf STDERR ("%s: %g => %g (pc %d %d)\n", $self->axis, $beforeOrigin, $self->origin, $pointCount, $pointCount2);
-        } else {
-            printf STDERR ("%s: %g not changing (same # points)\n", $self->axis, $self->origin);
         }
     }
 }
@@ -105,7 +96,6 @@ sub getPointCount {
 
     my $startPoint = $self->startPoint + $diff;
     my $endPoint   = $self->endPoint   + $diff;
-    printf STDERR ("PC: %g %g\n", $startPoint, $endPoint);
     my $spacing    = $self->spacing;
 
     my $min = $self->min;
@@ -113,8 +103,6 @@ sub getPointCount {
 
     my $startVisibleBoundary = $self->startVisibleBoundary;
     my $endVisibleBoundary   = $self->endVisibleBoundary;
-
-    printf STDERR ("    VB: %g %g\n", $startVisibleBoundary, $endVisibleBoundary);
 
     if (defined $startVisibleBoundary) {
         if ($min < $startVisibleBoundary) {
@@ -127,21 +115,11 @@ sub getPointCount {
         }
     }
 
-    printf STDERR ("    MM: %g %g\n", $min, $max);
-
-    printf STDERR ("    SP %g MIN %g\n", $startPoint, $min);
     while (snapcmp($startPoint, $min) > 0) { $startPoint -= $spacing; }
-    printf STDERR ("    SP %g\n", $startPoint);
     while (snapcmp($startPoint, $min) < 0) { $startPoint += $spacing; }
-    printf STDERR ("    SP %g\n", $startPoint);
 
-    printf STDERR ("    EP %g MAX %g\n", $endPoint, $max);
     while (snapcmp($endPoint,   $max) < 0) { $endPoint   += $spacing; }
-    printf STDERR ("    EP %g\n", $endPoint);
     while (snapcmp($endPoint,   $max) > 0) { $endPoint   -= $spacing; }
-    printf STDERR ("    EP %g\n", $endPoint);
-
-    printf STDERR ("PC: %g %g\n", $startPoint, $endPoint);
 
     return round(($endPoint - $startPoint) / $spacing);
 }
