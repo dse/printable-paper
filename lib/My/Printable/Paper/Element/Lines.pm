@@ -13,6 +13,7 @@ has direction => (
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::PointSeries;
+use My::Printable::Paper::Util qw(strokeDashArray strokeDashOffset :around);
 
 use Moo;
 
@@ -20,16 +21,48 @@ extends qw(My::Printable::Paper::Element);
 
 has isDotted    => (is => 'rw', default => 0);
 has dotCenter   => (is => 'rw', default => 0);
-has dotSpacing  => (is => 'rw', default => 0);
+has dotSpacing  => (is => 'rw', default => 18);
 
 has isDashed    => (is => 'rw', default => 0);
 has dashCenter  => (is => 'rw', default => 0);
-has dashLength  => (is => 'rw', default => 0);
-has dashSpacing => (is => 'rw', default => 0);
+has dashSize    => (is => 'rw', default => 0.5);
+has dashSpacing => (is => 'rw', default => 18);
+
+sub aroundUnitBasedOnDirection {
+    my $orig = shift;
+    my $self = shift;
+    if (!scalar @_) {
+        return $self->$orig;
+    }
+    my $value = shift;
+    if ($self->direction eq 'horizontal') {
+        $value = $self->ptX($value);
+    } elsif ($self->direction eq 'vertical') {
+        $value = $self->ptY($value);
+    } else {
+        $value = $self->pt($value);
+    }
+    $self->$orig($value, @_);
+}
+
+around dotCenter   => \&aroundUnitBasedOnDirection;
+around dotSpacing  => \&aroundUnitBasedOnDirection;
+around dashCenter  => \&aroundUnitBasedOnDirection;
+around dashSpacing => \&aroundUnitBasedOnDirection;
 
 sub draw {
     my ($self) = @_;
     my $cssClass = $self->cssClass // "thin blue line";
+    if ($self->isDotted) {
+        $cssClass =~ s{(^|\s)line($|\s)}
+                      {$1dot$2}g;
+        $cssClass =~ s{(^|\s)major-line($|\s)}
+                      {$1major-dot$2}g;
+        $cssClass =~ s{(^|\s)regular-line($|\s)}
+                      {$1regular-dot$2}g;
+        $cssClass =~ s{(^|\s)feint-line($|\s)}
+                      {$1feint-dot$2}g;
+    }
     if ($self->direction eq "horizontal") {
         my $x1 = $self->x1 // $self->document->leftMarginX;
         my $x2 = $self->x2 // $self->document->rightMarginX;
@@ -39,7 +72,7 @@ sub draw {
             my %args = (
                 min => $x1,
                 max => $x2,
-                length => $self->dashLength,
+                length => $self->dashSize * $self->dashSpacing,
                 spacing => $self->dashSpacing,
                 center => $x1,
             );
@@ -80,7 +113,7 @@ sub draw {
             my %args = (
                 min => $y1,
                 max => $y2,
-                length => $self->dashLength,
+                length => $self->dashSize * $self->dashSpacing,
                 spacing => $self->dashSpacing,
                 center => $y1,
             );
