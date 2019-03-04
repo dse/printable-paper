@@ -33,8 +33,7 @@ around generateRuling => sub {
 
     say STDERR "canShiftPointsY = $canShiftPointsY";
 
-    # $self->document->setClip('11/48in');
-    $self->document->setClip('7.5/72in');
+    $self->document->setClip('13.5pt');
 
     foreach my $value ($horizontalMajorDashed, $horizontalRegularDashed,
                        $horizontalMajorDotted, $horizontalRegularDotted,
