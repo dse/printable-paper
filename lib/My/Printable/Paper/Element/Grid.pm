@@ -142,7 +142,14 @@ sub draw {
     # dotted grid
     if ($self->isDotted) {
         my $cssClass = $self->cssClass // "blue dot";
-        $cssClass =~ s{(^|\s)line($|\s)}{$1dot$2}g;
+        $cssClass =~ s{(^|\s)line($|\s)}
+                      {$1dot$2}g;
+        $cssClass =~ s{(^|\s)major-line($|\s)}
+                      {$1major-dot$2}g;
+        $cssClass =~ s{(^|\s)regular-line($|\s)}
+                      {$1regular-dot$2}g;
+        $cssClass =~ s{(^|\s)feint-line($|\s)}
+                      {$1feint-dot$2}g;
         $self->drawDotPattern(
             cssClass => $cssClass,
             xPointSeries => $self->xPointSeries,
