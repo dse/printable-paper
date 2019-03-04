@@ -33,9 +33,9 @@ has yPointSeries => (is => 'rw');
 has origXPointSeries => (is => 'rw');
 has origYPointSeries => (is => 'rw');
 
-has shiftPointsX => (is => 'rw', default => 0);
-has shiftPointsY => (is => 'rw', default => 0);
-has shiftPoints  => (is => 'rw', default => 0);
+has canShiftPointsX => (is => 'rw', default => 0);
+has canShiftPointsY => (is => 'rw', default => 0);
+has canShiftPoints  => (is => 'rw', default => 0);
 
 has spacing => (is => 'rw');
 has spacingX => (is => 'rw');
@@ -316,31 +316,43 @@ sub computeX {
     my $spacingX = $self->spacingX // $self->spacing // $self->ptX("1unit");
     my $originX  = $self->originX // $self->document->originX;
 
-    my $shiftPoints = $self->shiftPointsX || $self->shiftPoints;
-    my $edgeMargin  = $self->document->edgeMargin // 0;
+    my $canShiftPoints = $self->canShiftPointsX || $self->canShiftPoints;
+
+    say STDERR "computeX: canShiftPoints? $canShiftPoints";
+
+    my $leftClip   = $self->document->leftClip   // 0;
+    my $rightClip  = $self->document->rightClip  // 0;
+    if ($leftClip  < 0) { $leftClip  = 0; }
+    if ($rightClip < 0) { $rightClip = 0; }
+
+    say STDERR "          LC $leftClip RC $rightClip";
 
     $self->xPointSeries(My::Printable::Paper::PointSeries->new(
-        axis           => 'x',
-        paperDimension => $self->document->width,
-        spacing        => $spacingX,
-        min            => scalar($self->x1 // $self->document->leftMarginX),
-        max            => scalar($self->x2 // $self->document->rightMarginX),
-        origin         => $originX,
-        shiftPoints    => $shiftPoints,
-        edgeMargin     => $edgeMargin,
+        axis                => 'x',
+        paperDimension      => $self->document->width,
+        spacing             => $spacingX,
+        min                 => scalar($self->x1 // $self->document->leftMarginX),
+        max                 => scalar($self->x2 // $self->document->rightMarginX),
+        origin              => $originX,
+        canShiftPoints      => $canShiftPoints,
+        startVisibleBoundary => $leftClip,
+        endVisibleBoundary  => ($self->document->width - $rightClip),
     ));
     $self->origXPointSeries(My::Printable::Paper::PointSeries->new(
-        axis           => 'x',
-        paperDimension => $self->document->width,
-        spacing        => $spacingX,
-        min            => scalar($self->document->leftMarginX),
-        max            => scalar($self->document->rightMarginX),
-        origin         => $originX,
-        shiftPoints    => $shiftPoints,
-        edgeMargin     => $edgeMargin,
+        axis                => 'x',
+        paperDimension      => $self->document->width,
+        spacing             => $spacingX,
+        min                 => scalar($self->document->leftMarginX),
+        max                 => scalar($self->document->rightMarginX),
+        origin              => $originX,
+        canShiftPoints      => $canShiftPoints,
+        startVisibleBoundary => $leftClip,
+        endVisibleBoundary  => ($self->document->width - $rightClip),
     ));
 
     $self->originX($self->xPointSeries->origin);
+
+    say STDERR "computeX ends";
 }
 
 sub computeY {
@@ -349,31 +361,43 @@ sub computeY {
     my $spacingY = $self->spacingY // $self->spacing // $self->ptY("1unit");
     my $originY = $self->originY // $self->document->originY;
 
-    my $shiftPoints = $self->shiftPointsY || $self->shiftPoints;
-    my $edgeMargin  = $self->document->edgeMargin // 0;
+    my $canShiftPoints = $self->canShiftPointsY || $self->canShiftPoints;
+
+    say STDERR "computeY: canShiftPoints? $canShiftPoints";
+
+    my $topClip    = $self->document->topClip    // 0;
+    my $bottomClip = $self->document->bottomClip // 0;
+    if ($topClip    < 0) { $topClip    = 0; }
+    if ($bottomClip < 0) { $bottomClip = 0; }
+
+    say STDERR "          TC $topClip BC $bottomClip";
 
     $self->yPointSeries(My::Printable::Paper::PointSeries->new(
-        axis           => 'y',
-        paperDimension => $self->document->height,
-        spacing        => $spacingY,
-        min            => scalar($self->y1 // $self->document->topMarginY),
-        max            => scalar($self->y2 // $self->document->bottomMarginY),
-        origin         => $originY,
-        shiftPoints    => $shiftPoints,
-        edgeMargin     => $edgeMargin,
+        axis                 => 'y',
+        paperDimension       => $self->document->height,
+        spacing              => $spacingY,
+        min                  => scalar($self->y1 // $self->document->topMarginY),
+        max                  => scalar($self->y2 // $self->document->bottomMarginY),
+        origin               => $originY,
+        canShiftPoints       => $canShiftPoints,
+        startVisibleBoundary => $topClip,
+        endVisibleBoundary   => ($self->document->height - $bottomClip),
     ));
     $self->origYPointSeries(My::Printable::Paper::PointSeries->new(
-        axis           => 'y',
-        paperDimension => $self->document->height,
-        spacing        => $spacingY,
-        min            => scalar($self->document->topMarginY),
-        max            => scalar($self->document->bottomMarginY),
-        origin         => $originY,
-        shiftPoints    => $shiftPoints,
-        edgeMargin     => $edgeMargin,
+        axis                 => 'y',
+        paperDimension       => $self->document->height,
+        spacing              => $spacingY,
+        min                  => scalar($self->document->topMarginY),
+        max                  => scalar($self->document->bottomMarginY),
+        origin               => $originY,
+        canShiftPoints       => $canShiftPoints,
+        startVisibleBoundary => $topClip,
+        endVisibleBoundary   => ($self->document->height - $bottomClip),
     ));
 
     $self->originY($self->yPointSeries->origin);
+
+    say STDERR "computeY ends";
 }
 
 sub snap {
