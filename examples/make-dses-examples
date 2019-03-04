@@ -67,6 +67,8 @@ p13 () {
               --regular-dot-width=16 \
               --feint-dot-width=8 \
               -Dunit=1/4in \
+              -Dleft-margin-line=3/4in \
+              -Dtop-margin-line=3/4in \
               -Dvertical-feint-dashed=yes
 }
 
