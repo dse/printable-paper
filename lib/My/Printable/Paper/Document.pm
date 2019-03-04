@@ -512,6 +512,8 @@ sub setUnit {
     $self->unitY->addUnit("unit", scalar($self->ptY($value)));
 }
 
+has disableDeveloperMark => (is => 'rw', default => 0);
+
 sub generate {
     my ($self) = @_;
     $self->deleteSVG();
@@ -525,7 +527,9 @@ sub generate {
     $self->addOrRemoveClipPathDefinition();
 
     $self->forEach("draw");
-    $self->leaveAMark();
+    if (!$self->disableDeveloperMark) {
+        $self->leaveAMark();
+    }
     $self->isGenerated(1);
 }
 
@@ -825,6 +829,11 @@ sub isA5SizeClass {
 sub isA6SizeClass {
     my ($self) = @_;
     return $self->isPaperSizeClass('quarterletter') || $self->isPaperSizeClass('a6');
+}
+
+sub isTravelersClass {
+    my ($self) = @_;
+    return $self->isPaperSizeClass('travelers');
 }
 
 sub getSquarePoints {

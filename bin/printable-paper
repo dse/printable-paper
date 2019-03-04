@@ -51,6 +51,8 @@ our $opt_feint_line_color;
 our $opt_margin_line_color;
 our $opt_color;
 
+our $opt_disable_developer_mark;
+
 use lib "$ENV{HOME}/git/dse.d/utilities/lib";
 use My::Text::Table;
 
@@ -112,6 +114,7 @@ Getopt::Long::GetOptions(
     'fc|feint-line-color=s'              => \$opt_feint_line_color,
     'mc|margin-line-color=s'             => \$opt_margin_line_color,
     'C|color=s'                          => \$opt_color,
+    'no-mark|disable-developer-mark'     => \$opt_disable_developer_mark,
     "help|?" => sub {
         usage();
         exit(0);
@@ -306,6 +309,7 @@ sub create_ruling_object {
     $ruling_object->majorLineColor($opt_major_line_color // $opt_color)     if defined $opt_major_line_color || defined $opt_color;
     $ruling_object->feintLineColor($opt_feint_line_color // $opt_color)     if defined $opt_feint_line_color || defined $opt_color;
     $ruling_object->marginLineColor($opt_margin_line_color)                 if defined $opt_margin_line_color;
+    $ruling_object->disableDeveloperMark($opt_disable_developer_mark)       if defined $opt_disable_developer_mark;
     $ruling_object->modifiers->setModifiers(@opt_modifiers);
     return $ruling_object;
 }

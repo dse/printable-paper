@@ -152,6 +152,8 @@ our @SIZES = (
     { size => 'a5',            '2up' => 'a4'     },
     { size => 'quarterletter', '2up' => 'halfletter', '4up' => 'letter' },
     { size => 'a6',            '2up' => 'a5',         '4up' => 'a4' },
+
+    { size => 'travelers', '2up' => 'travelers-sheet' },
 );
 
 our @COLLECTIONS = (

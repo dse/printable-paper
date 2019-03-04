@@ -47,6 +47,7 @@ has document => (
         'generate2Page',
         'generate2Page2Up',
         'generate2Page4Up',
+        'disableDeveloperMark',
     ],
 );
 

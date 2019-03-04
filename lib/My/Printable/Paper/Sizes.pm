@@ -13,6 +13,7 @@ use POSIX qw(round);
 our $SIZES;
 INIT {                          # cannot use BEGIN here.
     $SIZES = {
+
         letter => {
             width  => scalar(My::Printable::Paper::Unit->pt([8.5, "in"])),
             height => scalar(My::Printable::Paper::Unit->pt([11, "in"])),
@@ -41,6 +42,16 @@ INIT {                          # cannot use BEGIN here.
         a6 => {
             width  => scalar(My::Printable::Paper::Unit->pt([125 / sqrt(sqrt(2)), "mm"])),
             height => scalar(My::Printable::Paper::Unit->pt([125 * sqrt(sqrt(2)), "mm"])),
+            type   => "metric",
+        },
+        'travelers' => {
+            width  => scalar(My::Printable::Paper::Unit->pt('110mm')),
+            height => scalar(My::Printable::Paper::Unit->pt('210mm')),
+            type   => "metric",
+        },
+        'travelers-sheet' => {
+            width  => scalar(My::Printable::Paper::Unit->pt('210mm')),
+            height => scalar(My::Printable::Paper::Unit->pt('220mm')),
             type   => "metric",
         },
     };
