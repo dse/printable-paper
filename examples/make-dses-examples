@@ -53,9 +53,24 @@ p12 () {
               -Ddashed=4 \
               -Dfeint-dashed=2
 }
-                   
 
-all () { p1; p2; p3; p4; p5; p6; p7; p8; p9; p10; p11; p12; }
+p13 () {
+    printable embry1 \
+              --half-letter \
+              -o "${dir}"/embry1--half-letter \
+              --pdf --2p2u --2p \
+              --dpi 600 \
+              --major-line-width=8 \
+              --regular-line-width=4 \
+              --feint-line-width=2 \
+              --major-dot-width=32 \
+              --regular-dot-width=16 \
+              --feint-dot-width=8 \
+              -Dunit=1/4in \
+              -Dvertical-feint-dashed=yes
+}
+
+all () { p1; p2; p3; p4; p5; p6; p7; p8; p9; p10; p11; p12; p13; }
 
 if (( $# )) ; then
     for i ; do
