@@ -318,14 +318,10 @@ sub computeX {
 
     my $canShiftPoints = $self->canShiftPointsX || $self->canShiftPoints;
 
-    say STDERR "computeX: canShiftPoints? $canShiftPoints";
-
     my $leftClip   = $self->document->leftClip   // 0;
     my $rightClip  = $self->document->rightClip  // 0;
     if ($leftClip  < 0) { $leftClip  = 0; }
     if ($rightClip < 0) { $rightClip = 0; }
-
-    say STDERR "          LC $leftClip RC $rightClip";
 
     $self->xPointSeries(My::Printable::Paper::PointSeries->new(
         axis                => 'x',
@@ -351,8 +347,6 @@ sub computeX {
     ));
 
     $self->originX($self->xPointSeries->origin);
-
-    say STDERR "computeX ends";
 }
 
 sub computeY {
@@ -363,14 +357,10 @@ sub computeY {
 
     my $canShiftPoints = $self->canShiftPointsY || $self->canShiftPoints;
 
-    say STDERR "computeY: canShiftPoints? $canShiftPoints";
-
     my $topClip    = $self->document->topClip    // 0;
     my $bottomClip = $self->document->bottomClip // 0;
     if ($topClip    < 0) { $topClip    = 0; }
     if ($bottomClip < 0) { $bottomClip = 0; }
-
-    say STDERR "          TC $topClip BC $bottomClip";
 
     $self->yPointSeries(My::Printable::Paper::PointSeries->new(
         axis                 => 'y',
@@ -396,8 +386,6 @@ sub computeY {
     ));
 
     $self->originY($self->yPointSeries->origin);
-
-    say STDERR "computeY ends";
 }
 
 sub snap {
