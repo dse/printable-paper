@@ -31,8 +31,6 @@ around generateRuling => sub {
 
     my $canShiftPointsY = !$self->hasMarginLine('top')  && !$self->hasMarginLine('bottom');
 
-    say STDERR "canShiftPointsY = $canShiftPointsY";
-
     $self->document->setClip('13.5pt');
 
     foreach my $value ($horizontalMajorDashed, $horizontalRegularDashed,
@@ -54,8 +52,6 @@ around generateRuling => sub {
     $verticalFeintDotted     = 0 if $verticalFeintDashed;
 
 
-
-    say STDERR "HORIZONTAL LINES";
 
     my $horizontalMajorLinesElement = My::Printable::Paper::Element::Lines->new(
         direction      => 'horizontal',
@@ -82,9 +78,7 @@ around generateRuling => sub {
         # $horizontalMajorLinesElement->dotCenter($horizontalMajorLinesElement->originX);
     }
 
-    say STDERR "computing <";
     $horizontalMajorLinesElement->compute();
-    say STDERR ">";
 
     my $horizontalRegularLinesElement = My::Printable::Paper::Element::Lines->new(
         direction    => 'horizontal',
@@ -106,16 +100,11 @@ around generateRuling => sub {
         # $horizontalRegularLinesElement->dotCenter($horizontalRegularLinesElement->originX);
     }
 
-    say STDERR "computing <";
     $horizontalRegularLinesElement->compute();
-    say STDERR ">";
 
 
-
-    say STDERR "VERTICAL LINES";
 
     my $canShiftPointsX = !$self->hasMarginLine('left') && !$self->hasMarginLine('right');
-    say STDERR "canShiftPointsX = $canShiftPointsX";
 
     my $verticalRegularLinesElement = My::Printable::Paper::Element::Lines->new(
         direction      => 'vertical',
@@ -142,9 +131,7 @@ around generateRuling => sub {
         # $verticalRegularLinesElement->dotCenter($verticalRegularLinesElement->originY);
     }
 
-    say STDERR "computing <";
     $verticalRegularLinesElement->compute();
-    say STDERR ">";
 
     my $verticalFeintLinesElement = My::Printable::Paper::Element::Lines->new(
         direction    => 'vertical',
@@ -166,16 +153,9 @@ around generateRuling => sub {
         # $verticalFeintLinesElement->dotCenter($verticalFeintLinesElement->originY);
     }
 
-    say STDERR "computing <";
     $verticalFeintLinesElement->compute();
-    say STDERR ">";
 
 
-
-    say STDERR "originY = ", $horizontalMajorLinesElement->originY // '(undef)';
-    say STDERR "originX = ", $verticalRegularLinesElement->originX // '(undef)';
-    say STDERR "yPointSeries = ", $horizontalMajorLinesElement->yPointSeries // '(undef)';
-    say STDERR "xPointSeries = ", $verticalRegularLinesElement->xPointSeries // '(undef)';
 
     $self->document->appendElement($horizontalMajorLinesElement);
     $self->document->appendElement($horizontalRegularLinesElement);
