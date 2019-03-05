@@ -1,4 +1,6 @@
 package My::Printable::Paper::Ruling::Seyes;
+# French or Séyès ruling.
+use utf8;
 use warnings;
 use strict;
 use v5.10.0;
