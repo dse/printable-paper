@@ -1,47 +1,40 @@
 # printable-paper
 
-Some different types of printable lined, dot grid, and grid paper, and
-a Perl program that generates them.
+A program and set of Perl modules that can produce almost any kind of
+printable ruled and grid paper.  Lines and grids can be dotted or
+dashed.
 
-For now this utility specializes primarily in simple series of
-horizontal and vertical lines and grids for now.  No logarithmic,
-isometric, polar, or other fancy stuff yet.
+This package specializes in regular series of lines (or dots).  It
+does not produce non-right angles, logarithmic, isometric, polar, or
+other fancy stuff.
 
-SVG, PDF, and PostScript formats are included.
+Features include:
 
-Two-page PDF and PostScript files of all paper rulings are provided,
-for convenient double-sided printing, flip on long edge.
+-   SVG, PDF, and PostScript output formats.
 
-Two-page, two-up PDF and PostScript files, printed as what are
-apparently called "signatures", are also provided, for convenient
-double-sided printing, flip on long edge:
+-   Metric and US/Imperial paper sizes.
 
-    Output paper size        Cut in half cross-wise for:
-    ---------------------    ---------------------------
-    Letter (8.5in × 11in)    Half-Letter (5.5in × 8.5in)
-    A4 (210mm × 297mm)       A5 (149mm × 210mm)
+-   Two-page output files are supported for double-sided printing,
+    flip on long edge.
+
+-   2-up and 4-up printing.  Typical use cases:
+
+    |output paper size    |2-up: cut in half cross-wise for:|4-up: cut in quarters for:     |
+    |:--------------------|:--------------------------------|:------------------------------|
+    |Letter (8.5in × 11in)|Half-Letter (5.5in × 8.5in)      |Quarter-Letter (4.25in × 5.5in)|
+    |A4 (210mm × 297mm)   |A5 (149mm × 210mm)               |A6 (105mm × 149mm)             |
 
 ## Rulings Included
 
--   A 1/4" or 6mm dot grid.
+-   Basic quadrille graph paper.
+
+-   Dot grids.
+
+-   Lined dot grids.
 
 -   French ruling, or Seyès ruling.
 
-    Index lines 5/16″ apart on letter size, 8mm apart on A4.
-
--   French ruling, with thinner grid lines.
-
--   A 5/16" or 8mm hybrid line dot graph, based on French ruling.
-
--   A 1/4" or 6mm line dot grid.  In regular, thinner, and
-    extra-thinner variants.
-
--   A version of French ruling with major lines every three lines
-    instead of four.  (Do not use for Lego bricks, as the proportions
-    are not correct.)
-
--   A 3-per-line French style ruling, but with dotted lines for the
-    grid instead of solid lines.
+-   A few other custom rulings.
 
 ## Utilities Required
 
