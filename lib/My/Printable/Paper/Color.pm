@@ -54,6 +54,8 @@ has g => (is => 'rw', default => 1);
 has b => (is => 'rw', default => 1);
 has a => (is => 'rw', default => 1);
 
+# so M::P::P::Color->new("#xxxxxx") or other one-argument forms can
+# work.
 around BUILDARGS => sub {
     my ($orig, $class, @args) = @_;
     if (scalar @args == 1) {
