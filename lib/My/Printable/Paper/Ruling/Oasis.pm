@@ -1,4 +1,5 @@
 package My::Printable::Paper::Ruling::Oasis;
+# Based on Itoya's Portfolio Oasis Notebooks
 use warnings;
 use strict;
 use v5.10.0;
