@@ -1,4 +1,5 @@
 package My::Printable::Paper::Ruling::Anode;
+# Based on Doane Paper
 use warnings;
 use strict;
 use v5.10.0;
