@@ -1,4 +1,5 @@
 package My::Printable::Paper::Ruling::SeyesClass;
+# subclass for Seyes and LineDotGraph.
 use warnings;
 use strict;
 use v5.10.0;
