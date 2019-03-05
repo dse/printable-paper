@@ -1,4 +1,5 @@
 package My::Printable::Paper::Ruling::Quadrille;
+# Regular quadrille graph paper, customizable.
 use warnings;
 use strict;
 use v5.10.0;
