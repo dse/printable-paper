@@ -49,10 +49,38 @@ BEGIN {
     );
 }
 
+sub aroundZeroToOne {
+    my $orig = shift;
+    my $self = shift;
+    if (!scalar @_) {
+        my $value = $self->$orig();
+        if ($value < 0) {
+            return $self->$orig(0);
+        }
+        if ($value > 1) {
+            return $self->$orig(1);
+        }
+        return $value;
+    }
+    my $value = shift;
+    if ($value < 0) {
+        return $self->$orig(0);
+    }
+    if ($value > 1) {
+        return $self->$orig(1);
+    }
+    return $self->$orig($value);
+}
+
 has r => (is => 'rw', default => 1);
 has g => (is => 'rw', default => 1);
 has b => (is => 'rw', default => 1);
 has a => (is => 'rw', default => 1);
+
+around r => \&aroundZeroToOne;
+around g => \&aroundZeroToOne;
+around b => \&aroundZeroToOne;
+around a => \&aroundZeroToOne;
 
 # so M::P::P::Color->new("#xxxxxx") or other one-argument forms can
 # work.
