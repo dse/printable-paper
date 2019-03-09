@@ -5,7 +5,9 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::ModifierList;
-use My::Printable::Paper::Util qw(:const :around snapcmp flatten);
+use My::Printable::Paper::Util qw(:const :around
+                                  snapcmp flatten
+                                  triggerWrapper);
 use My::Printable::Paper::Converter;
 use My::Printable::Paper::Color qw(:const);
 
@@ -24,18 +26,14 @@ use constant DEFAULT_ORIENTATION     => 'portrait';
 use constant DEFAULT_UNIT_TYPE       => 'imperial';
 use constant DEFAULT_COLOR_TYPE      => 'color';
 
-has rawFilename => (is => 'rw');
+has filename => (is => 'rw', trigger => triggerWrapper(\&triggerFilename));
 
-sub filename {
-    my $self = shift;
-    if (scalar @_) {
-        my $filename = shift;
-        if (defined $filename && $filename !~ m{\.svg\z}i) {
-            $filename .= '.svg';
-        }
-        return $self->rawFilename($filename);
+sub triggerFilename {
+    my ($self, $filename) = @_;
+    if (defined $filename && $filename !~ m{\.svg\z}i) {
+        $filename .= '.svg';
+        $self->filename($filename);
     }
-    return $self->rawFilename;
 }
 
 has rawPaperSizeName => (
