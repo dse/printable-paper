@@ -36,17 +36,13 @@ sub triggerFilename {
     }
 }
 
-has rawPaperSizeName => (
-    is => 'rw',
-    default => DEFAULT_PAPER_SIZE_NAME,
-);
+has paperSizeName => (is => 'rw',
+                      default => DEFAULT_PAPER_SIZE_NAME,
+                      trigger => triggerWrapper(\&triggerPaperSizeName));
 
-sub paperSizeName {
-    my $self = shift;
-    if (!scalar @_) {
-        return $self->rawPaperSizeName;
-    }
-    my $spec = shift;
+sub triggerPaperSizeName {
+    my ($self, $spec) = @_;
+    return unless defined $spec;
     my ($name, $width, $height, $unit_type) = My::Printable::Paper::Sizes->parse($spec);
     $self->unitType($unit_type);
     $self->rawWidth($width);
@@ -62,7 +58,6 @@ sub paperSizeName {
     $self->setTopMargin(0);
     $self->setLeftMargin(0);
     $self->setRightMargin(0);
-    $self->rawPaperSizeName($spec);
 }
 
 has rawWidth => (
@@ -77,7 +72,7 @@ sub width {
     my $value = shift;
     my ($pt, $unit_type) = $self->pt($value);
     $self->unitType($unit_type);
-    $self->rawPaperSizeName(undef);
+    $self->paperSizeName(undef);
     $self->unitX->setPercentageBasis($pt);
     $self->originX($pt / 2);
     $self->setLeftMargin(0);
@@ -98,7 +93,7 @@ sub height {
     my $value = shift;
     my ($pt, $unit_type) = $self->pt($value);
     $self->unitType($unit_type);
-    $self->rawPaperSizeName(undef);
+    $self->paperSizeName(undef);
     $self->unitY->setPercentageBasis($pt);
     $self->originY($pt / 2);
     $self->setBottomMargin(0);
@@ -292,7 +287,7 @@ sub orientation {
     }
 
     if ($swap) {
-        $self->rawPaperSizeName(undef);
+        $self->paperSizeName(undef);
         my $unitX = $self->unitX;
         my $unitY = $self->unitY;
         my $originX = $self->originX;
