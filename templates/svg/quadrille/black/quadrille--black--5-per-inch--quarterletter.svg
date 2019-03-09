@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="306.000pt" height="396.000pt" viewBox="0.000 0.000 306.000 396.000">
   <style>
-        .regular-line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; stroke-linejoin: round; }
+        .line, .regular-line, .major-line, .feint-line,
+        .dot,  .regular-dot,  .major-dot,  .feint-dot,
+        .margin-line {
+            stroke-linecap: round; stroke-linejoin: round;
+        }
         .stroke-linecap-butt    { stroke-linecap:  butt;   }
         .stroke-linecap-round   { stroke-linecap:  round;  }
         .stroke-linecap-square  { stroke-linecap:  square; }
@@ -56,27 +60,28 @@
     <line x1="0.000" x2="306.000" y1="363.600" y2="363.600" class="regular-line horizontal"/>
     <line x1="0.000" x2="306.000" y1="378.000" y2="378.000" class="regular-line horizontal"/>
     <line x1="0.000" x2="306.000" y1="392.400" y2="392.400" class="regular-line horizontal"/>
-    <line x1="9.000" x2="9.000" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="23.400" x2="23.400" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="37.800" x2="37.800" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="52.200" x2="52.200" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="66.600" x2="66.600" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="81.000" x2="81.000" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="95.400" x2="95.400" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="109.800" x2="109.800" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="124.200" x2="124.200" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="138.600" x2="138.600" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="153.000" x2="153.000" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="167.400" x2="167.400" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="181.800" x2="181.800" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="196.200" x2="196.200" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="210.600" x2="210.600" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="225.000" x2="225.000" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="239.400" x2="239.400" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="253.800" x2="253.800" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="268.200" x2="268.200" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="282.600" x2="282.600" y1="0.000" y2="396.000" class="regular-line vertical"/>
-    <line x1="297.000" x2="297.000" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="1.800" x2="1.800" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="16.200" x2="16.200" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="30.600" x2="30.600" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="45.000" x2="45.000" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="59.400" x2="59.400" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="73.800" x2="73.800" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="88.200" x2="88.200" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="102.600" x2="102.600" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="117.000" x2="117.000" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="131.400" x2="131.400" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="145.800" x2="145.800" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="160.200" x2="160.200" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="174.600" x2="174.600" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="189.000" x2="189.000" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="203.400" x2="203.400" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="217.800" x2="217.800" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="232.200" x2="232.200" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="246.600" x2="246.600" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="261.000" x2="261.000" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="275.400" x2="275.400" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="289.800" x2="289.800" y1="0.000" y2="396.000" class="regular-line vertical"/>
+    <line x1="304.200" x2="304.200" y1="0.000" y2="396.000" class="regular-line vertical"/>
   </g>
   <rect x="58.5" y="370" width="189" height="12" fill="#ffffff" stroke="none" stroke-width="0px"/>
   <text x="153" y="378" text-anchor="middle" fill="#000000" stroke="none" stroke-width="0" style="font-family: &quot;Courier&quot;, &quot;Courier New&quot;, monospace; font-size: 6pt;">https://github.com/dse/printable-paper</text>

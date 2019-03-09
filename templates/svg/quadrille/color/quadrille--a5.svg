@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="421.373pt" height="595.911pt" viewBox="0.000 0.000 421.373 595.911">
   <style>
-        .regular-line, .dot, .major-line, .feint-line, .margin-line { stroke-linecap: round; stroke-linejoin: round; }
+        .line, .regular-line, .major-line, .feint-line,
+        .dot,  .regular-dot,  .major-dot,  .feint-dot,
+        .margin-line {
+            stroke-linecap: round; stroke-linejoin: round;
+        }
         .stroke-linecap-butt    { stroke-linecap:  butt;   }
         .stroke-linecap-round   { stroke-linecap:  round;  }
         .stroke-linecap-square  { stroke-linecap:  square; }
@@ -28,41 +32,42 @@
   </style>
   <defs/>
   <g id="grid">
-    <line x1="0.000" x2="421.373" y1="8.822" y2="8.822" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="25.829" y2="25.829" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="42.837" y2="42.837" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="59.845" y2="59.845" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="76.853" y2="76.853" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="93.861" y2="93.861" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="110.869" y2="110.869" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="127.877" y2="127.877" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="144.885" y2="144.885" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="161.892" y2="161.892" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="178.900" y2="178.900" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="195.908" y2="195.908" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="212.916" y2="212.916" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="229.924" y2="229.924" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="246.932" y2="246.932" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="263.940" y2="263.940" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="280.948" y2="280.948" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="297.955" y2="297.955" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="314.963" y2="314.963" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="331.971" y2="331.971" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="348.979" y2="348.979" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="365.987" y2="365.987" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="382.995" y2="382.995" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="400.003" y2="400.003" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="417.011" y2="417.011" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="434.018" y2="434.018" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="451.026" y2="451.026" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="468.034" y2="468.034" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="485.042" y2="485.042" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="502.050" y2="502.050" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="519.058" y2="519.058" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="536.066" y2="536.066" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="553.074" y2="553.074" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="570.081" y2="570.081" class="regular-line horizontal"/>
-    <line x1="0.000" x2="421.373" y1="587.089" y2="587.089" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="0.318" y2="0.318" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="17.326" y2="17.326" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="34.333" y2="34.333" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="51.341" y2="51.341" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="68.349" y2="68.349" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="85.357" y2="85.357" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="102.365" y2="102.365" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="119.373" y2="119.373" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="136.381" y2="136.381" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="153.388" y2="153.388" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="170.396" y2="170.396" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="187.404" y2="187.404" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="204.412" y2="204.412" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="221.420" y2="221.420" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="238.428" y2="238.428" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="255.436" y2="255.436" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="272.444" y2="272.444" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="289.451" y2="289.451" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="306.459" y2="306.459" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="323.467" y2="323.467" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="340.475" y2="340.475" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="357.483" y2="357.483" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="374.491" y2="374.491" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="391.499" y2="391.499" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="408.507" y2="408.507" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="425.514" y2="425.514" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="442.522" y2="442.522" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="459.530" y2="459.530" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="476.538" y2="476.538" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="493.546" y2="493.546" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="510.554" y2="510.554" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="527.562" y2="527.562" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="544.570" y2="544.570" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="561.577" y2="561.577" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="578.585" y2="578.585" class="regular-line horizontal"/>
+    <line x1="0.000" x2="421.373" y1="595.593" y2="595.593" class="regular-line horizontal"/>
     <line x1="6.592" x2="6.592" y1="0.000" y2="595.911" class="regular-line vertical"/>
     <line x1="23.600" x2="23.600" y1="0.000" y2="595.911" class="regular-line vertical"/>
     <line x1="40.608" x2="40.608" y1="0.000" y2="595.911" class="regular-line vertical"/>
