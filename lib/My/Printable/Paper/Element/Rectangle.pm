@@ -4,23 +4,17 @@ use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Paper::Util qw(:around);
+use My::Printable::Paper::Util qw(:around :trigger);
 
 use Moo;
 
 extends qw(My::Printable::Paper::Element);
 
-has width => (is => 'rw');
-has height => (is => 'rw');
-has rx => (is => 'rw');
-has ry => (is => 'rw');
-has r => (is => 'rw');
-
-around width  => \&aroundUnitX;
-around height => \&aroundUnitY;
-around rx     => \&aroundUnitX;
-around ry     => \&aroundUnitY;
-around r      => \&aroundUnit;
+has width  => (is => 'rw', trigger => triggerUnitX('width'));
+has height => (is => 'rw', trigger => triggerUnitY('height'));
+has rx     => (is => 'rw', trigger => triggerUnitX('rx'));
+has ry     => (is => 'rw', trigger => triggerUnitY('ry'));
+has r      => (is => 'rw', trigger => triggerUnit('r'));
 
 sub BUILD {
     my ($self) = @_;
