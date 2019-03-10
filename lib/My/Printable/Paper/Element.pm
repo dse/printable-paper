@@ -4,7 +4,7 @@ use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Paper::Util qw(:const :around
+use My::Printable::Paper::Util qw(:const :around :trigger
                                   strokeDashArray
                                   strokeDashOffset);
 
@@ -18,15 +18,10 @@ use Moo;
 
 has id => (is => 'rw');
 
-has x1 => (is => 'rw');
-has x2 => (is => 'rw');
-has y1 => (is => 'rw');
-has y2 => (is => 'rw');
-
-around x1 => \&aroundUnitX;
-around x2 => \&aroundUnitX;
-around y1 => \&aroundUnitY;
-around y2 => \&aroundUnitY;
+has x1 => (is => 'rw', trigger => triggerUnitX('x1'));
+has x2 => (is => 'rw', trigger => triggerUnitX('x2'));
+has y1 => (is => 'rw', trigger => triggerUnitY('y1'));
+has y2 => (is => 'rw', trigger => triggerUnitY('y2'));
 
 has xPointSeries => (is => 'rw');
 has yPointSeries => (is => 'rw');
@@ -37,22 +32,15 @@ has canShiftPointsX => (is => 'rw', default => 0);
 has canShiftPointsY => (is => 'rw', default => 0);
 has canShiftPoints  => (is => 'rw', default => 0);
 
-has spacing => (is => 'rw');
-has spacingX => (is => 'rw');
-has spacingY => (is => 'rw');
-
-around spacing => \&aroundUnit;
-around spacingX => \&aroundUnitX;
-around spacingY => \&aroundUnitY;
+has spacing  => (is => 'rw', trigger => triggerUnit('spacing'));
+has spacingX => (is => 'rw', trigger => triggerUnitX('spacingX'));
+has spacingY => (is => 'rw', trigger => triggerUnitY('spacingY'));
 
 has cssClass => (is => 'rw');
 has lineCap => (is => 'rw', default => 'round'); # butt, round, or square
 
-has originX => (is => 'rw');
-has originY => (is => 'rw');
-
-around originX => \&aroundUnitX;
-around originY => \&aroundUnitY;
+has originX => (is => 'rw', trigger => triggerUnitX('originX'));
+has originY => (is => 'rw', trigger => triggerUnitY('originY'));
 
 has document => (
     is => 'rw',
@@ -74,16 +62,13 @@ has extendTop => (is => 'rw');
 has extendBottom => (is => 'rw');
 
 # mainly for grids
-has dotDashWidth  => (is => 'rw', default => 0);
-has dotDashHeight => (is => 'rw', default => 0);
+has dotDashWidth  => (is => 'rw', default => 0, trigger => triggerUnitX('dotDashWidth'));
+has dotDashHeight => (is => 'rw', default => 0, trigger => triggerUnitY('dotDashHeight'));
 
 has dotDashStartAtBottom => (is => 'rw', default => 0);
 has dotDashStartAtTop    => (is => 'rw', default => 0);
 has dotDashStartAtLeft   => (is => 'rw', default => 0);
 has dotDashStartAtRight  => (is => 'rw', default => 0);
-
-around dotDashWidth  => \&aroundUnitX;
-around dotDashHeight => \&aroundUnitY;
 
 has svgLayer => (
     is => 'rw',
