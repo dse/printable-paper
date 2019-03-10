@@ -13,42 +13,48 @@ has direction => (
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::PointSeries;
-use My::Printable::Paper::Util qw(strokeDashArray strokeDashOffset :around);
+use My::Printable::Paper::Util qw(strokeDashArray strokeDashOffset :around :trigger);
 
 use Moo;
 
 extends qw(My::Printable::Paper::Element);
 
 has isDotted    => (is => 'rw', default => 0);
-has dotCenter   => (is => 'rw', default => 0);
-has dotSpacing  => (is => 'rw', default => 18);
+has dotCenter   => (is => 'rw', default => 0, trigger => triggerWrapper(\&triggerDotCenter));
+has dotSpacing  => (is => 'rw', default => 18, trigger => triggerWrapper(\&triggerDotSpacing));
 
 has isDashed    => (is => 'rw', default => 0);
-has dashCenter  => (is => 'rw', default => 0);
+has dashCenter  => (is => 'rw', default => 0, trigger => triggerWrapper(\&triggerDashCenter));
 has dashSize    => (is => 'rw', default => 0.5);
-has dashSpacing => (is => 'rw', default => 18);
+has dashSpacing => (is => 'rw', default => 18, trigger => triggerWrapper(\&triggerDashSpacing));
 
-sub aroundUnitBasedOnDirection {
-    my $orig = shift;
-    my $self = shift;
-    if (!scalar @_) {
-        return $self->$orig;
-    }
-    my $value = shift;
-    if ($self->direction eq 'horizontal') {
-        $value = $self->ptX($value);
-    } elsif ($self->direction eq 'vertical') {
-        $value = $self->ptY($value);
-    } else {
-        $value = $self->pt($value);
-    }
-    $self->$orig($value, @_);
+sub triggerDotCenter {
+    my ($self, $value) = @_;
+    return $self->dotCenter($self->ptX($value)) if $self->direction eq 'horizontal';
+    return $self->dotCenter($self->ptY($value)) if $self->direction eq 'vertical';
+    return $self->dotCenter($self->pt($value));
 }
 
-around dotCenter   => \&aroundUnitBasedOnDirection;
-around dotSpacing  => \&aroundUnitBasedOnDirection;
-around dashCenter  => \&aroundUnitBasedOnDirection;
-around dashSpacing => \&aroundUnitBasedOnDirection;
+sub triggerDotSpacing {
+    my ($self, $value) = @_;
+    return $self->dotSpacing($self->ptX($value)) if $self->direction eq 'horizontal';
+    return $self->dotSpacing($self->ptY($value)) if $self->direction eq 'vertical';
+    return $self->dotSpacing($self->pt($value));
+}
+
+sub triggerDashCenter {
+    my ($self, $value) = @_;
+    return $self->dashCenter($self->ptX($value)) if $self->direction eq 'horizontal';
+    return $self->dashCenter($self->ptY($value)) if $self->direction eq 'vertical';
+    return $self->dashCenter($self->pt($value));
+}
+
+sub triggerDashSpacing {
+    my ($self, $value) = @_;
+    return $self->dashSpacing($self->ptX($value)) if $self->direction eq 'horizontal';
+    return $self->dashSpacing($self->ptY($value)) if $self->direction eq 'vertical';
+    return $self->dashSpacing($self->pt($value));
+}
 
 sub draw {
     my ($self) = @_;
