@@ -6,17 +6,17 @@ use v5.10.0;
 use POSIX qw(trunc round);
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Paper::Util qw(:around :const snapcmp snapnum);
+use My::Printable::Paper::Util qw(:around :const :trigger snapcmp snapnum);
 
 use Moo;
 
-has startPoint     => (is => 'rw');
-has endPoint       => (is => 'rw');
-has spacing        => (is => 'rw');
-has origin         => (is => 'rw');
-has min            => (is => 'rw');
-has max            => (is => 'rw');
-has paperDimension => (is => 'rw'); # width or height of document
+has startPoint     => (is => 'rw', trigger => triggerUnit('startPoint'));
+has endPoint       => (is => 'rw', trigger => triggerUnit('endPoint'));
+has spacing        => (is => 'rw', trigger => triggerUnit('spacing'));
+has origin         => (is => 'rw', trigger => triggerUnit('origin'));
+has min            => (is => 'rw', trigger => triggerUnit('min'));
+has max            => (is => 'rw', trigger => triggerUnit('max'));
+has paperDimension => (is => 'rw', trigger => triggerUnit('paperDimension'));
 
 # 'x' or 'y'
 has axis => (is => 'rw');
@@ -24,19 +24,8 @@ has axis => (is => 'rw');
 # boolean
 has canShiftPoints => (is => 'rw', default => 0);
 
-around startPoint     => \&aroundUnit;
-around endPoint       => \&aroundUnit;
-around spacing        => \&aroundUnit;
-around origin         => \&aroundUnit;
-around min            => \&aroundUnit;
-around max            => \&aroundUnit;
-around paperDimension => \&aroundUnit;
-
-has startVisibleBoundary => (is => 'rw');
-has endVisibleBoundary   => (is => 'rw');
-
-around startVisibleBoundary => \&aroundUnit;
-around endVisibleBoundary   => \&aroundUnit;
+has startVisibleBoundary => (is => 'rw', trigger => triggerUnit('startVisibleBoundary'));
+has endVisibleBoundary   => (is => 'rw', trigger => triggerUnit('endVisibleBoundary'));
 
 use Data::Dumper qw(Dumper);
 use Storable qw(dclone);
