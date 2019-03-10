@@ -5,9 +5,8 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::ModifierList;
-use My::Printable::Paper::Util qw(:const :around
-                                  snapcmp flatten
-                                  triggerWrapper);
+use My::Printable::Paper::Util qw(:const :around :trigger
+                                  snapcmp flatten);
 use My::Printable::Paper::Converter;
 use My::Printable::Paper::Color qw(:const);
 
@@ -132,18 +131,8 @@ has elementsById => (
     default => sub { return {}; },         # via appendElement
 );
 
-has originX => (is => 'rw', default => DEFAULT_WIDTH / 2,  trigger => triggerWrapper(\&triggerOriginX));
-has originY => (is => 'rw', default => DEFAULT_HEIGHT / 2, trigger => triggerWrapper(\&triggerOriginY));
-
-sub triggerOriginX {
-    my ($self, $value) = @_;
-    $self->originX($self->ptX($value));
-}
-
-sub triggerOriginY {
-    my ($self, $value) = @_;
-    $self->originY($self->ptY($value));
-}
+has originX => (is => 'rw', default => DEFAULT_WIDTH / 2,  trigger => triggerUnitX('originX'));
+has originY => (is => 'rw', default => DEFAULT_HEIGHT / 2, trigger => triggerUnitY('originY'));
 
 has isGenerated => (is => 'rw', default => 0);
 has additionalStyles => (is => 'rw');
@@ -176,6 +165,7 @@ has svgRoot => (
     },
     clearer => 'deleteSVGRoot',
 );
+
 after 'svgRoot' => sub {
     my ($self) = @_;
 
@@ -301,15 +291,10 @@ sub setOrientationFromDimensions {
     }
 }
 
-has 'leftClip'   => (is => 'rw', default => 0);
-has 'rightClip'  => (is => 'rw', default => 0);
-has 'topClip'    => (is => 'rw', default => 0);
-has 'bottomClip' => (is => 'rw', default => 0);
-
-around 'leftClip'   => \&aroundUnitX;
-around 'rightClip'  => \&aroundUnitX;
-around 'topClip'    => \&aroundUnitY;
-around 'bottomClip' => \&aroundUnitY;
+has 'leftClip'   => (is => 'rw', default => 0, trigger => triggerUnitX('leftClip'));
+has 'rightClip'  => (is => 'rw', default => 0, trigger => triggerUnitX('rightClip'));
+has 'topClip'    => (is => 'rw', default => 0, trigger => triggerUnitX('topClip'));
+has 'bottomClip' => (is => 'rw', default => 0, trigger => triggerUnitX('bottomClip'));
 
 sub setClip {
     my ($self, $clip) = @_;
