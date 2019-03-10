@@ -44,9 +44,9 @@ sub triggerPaperSizeName {
     my ($self, $spec) = @_;
     return unless defined $spec;
     my ($name, $width, $height, $unit_type) = My::Printable::Paper::Sizes->parse($spec);
+    $self->width($width);
+    $self->height($height);
     $self->unitType($unit_type);
-    $self->rawWidth($width);
-    $self->rawHeight($height);
     $self->setOrientationFromDimensions();
     $self->unitX->size($width);
     $self->unitY->size($height);
@@ -60,45 +60,43 @@ sub triggerPaperSizeName {
     $self->setRightMargin(0);
 }
 
-has rawWidth => (
+has width => (
     is => 'rw',
     default => DEFAULT_WIDTH,
+    trigger => triggerWrapper(\&triggerWidth),
 );
-sub width {
-    my $self = shift;
-    if (!scalar @_) {
-        return $self->rawWidth;
-    }
-    my $value = shift;
+
+has height => (
+    is => 'rw',
+    default => DEFAULT_HEIGHT,
+    trigger => triggerWrapper(\&triggerHeight),
+);
+
+sub triggerWidth {
+    my ($self, $value) = @_;
     my ($pt, $unit_type) = $self->pt($value);
+    $self->width($pt);
+
     $self->unitType($unit_type);
     $self->paperSizeName(undef);
     $self->unitX->setPercentageBasis($pt);
     $self->originX($pt / 2);
     $self->setLeftMargin(0);
     $self->setRightMargin(0);
-    $self->rawWidth($pt);
     $self->setOrientationFromDimensions();
 };
 
-has rawHeight => (
-    is => 'rw',
-    default => DEFAULT_HEIGHT,
-);
-sub height {
-    my $self = shift;
-    if (!scalar @_) {
-        return $self->rawHeight;
-    }
-    my $value = shift;
+sub triggerHeight {
+    my ($self, $value) = @_;
     my ($pt, $unit_type) = $self->pt($value);
+    $self->height($pt);
+
     $self->unitType($unit_type);
     $self->paperSizeName(undef);
     $self->unitY->setPercentageBasis($pt);
     $self->originY($pt / 2);
     $self->setBottomMargin(0);
     $self->setTopMargin(0);
-    $self->rawHeight($pt);
     $self->setOrientationFromDimensions();
 };
 
