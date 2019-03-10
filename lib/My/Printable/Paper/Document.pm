@@ -132,27 +132,18 @@ has elementsById => (
     default => sub { return {}; },         # via appendElement
 );
 
-has originX => (is => 'rw', default => DEFAULT_WIDTH / 2);
-has originY => (is => 'rw', default => DEFAULT_HEIGHT / 2);
+has originX => (is => 'rw', default => DEFAULT_WIDTH / 2,  trigger => triggerWrapper(\&triggerOriginX));
+has originY => (is => 'rw', default => DEFAULT_HEIGHT / 2, trigger => triggerWrapper(\&triggerOriginY));
 
-around originX => sub {
-    my $orig = shift;
-    my $self = shift;
-    if (scalar @_) {
-        my $value = shift;
-        return $self->$orig($self->ptX($value));
-    }
-    return $self->$orig();
-};
-around originY => sub {
-    my $orig = shift;
-    my $self = shift;
-    if (scalar @_) {
-        my $value = shift;
-        return $self->$orig($self->ptY($value));
-    }
-    return $self->$orig();
-};
+sub triggerOriginX {
+    my ($self, $value) = @_;
+    $self->originX($self->ptX($value));
+}
+
+sub triggerOriginY {
+    my ($self, $value) = @_;
+    $self->originY($self->ptY($value));
+}
 
 has isGenerated => (is => 'rw', default => 0);
 has additionalStyles => (is => 'rw');
