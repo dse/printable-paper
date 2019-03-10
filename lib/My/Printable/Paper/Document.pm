@@ -251,13 +251,10 @@ has svgContext => (
 has dryRun  => (is => 'rw', default => 0);
 has verbose => (is => 'rw', default => 0);
 
-has rawOrientation => (is => 'rw', default => DEFAULT_ORIENTATION);
-sub orientation {
-    my $self = shift;
-    if (!scalar @_) {
-        return $self->rawOrientation;
-    }
-    my $orientation = shift;
+has orientation => (is => 'rw', default => DEFAULT_ORIENTATION, trigger => triggerWrapper(\&triggerOrientation));
+
+sub triggerOrientation {
+    my ($self, $orientation) = @_;
 
     my $width = $self->width;
     my $height = $self->height;
@@ -281,8 +278,8 @@ sub orientation {
         my $unitY = $self->unitY;
         my $originX = $self->originX;
         my $originY = $self->originY;
-        $self->rawWidth($height);
-        $self->rawHeight($width);
+        $self->width($height);
+        $self->height($width);
         $self->unitY($unitX);
         $self->unitX($unitY);
         $self->originY($originX);
@@ -296,11 +293,11 @@ sub setOrientationFromDimensions {
     my $height = $self->height;
     my $cmp = snapcmp($width, $height);
     if ($cmp == 0) {
-        $self->rawOrientation('square');
+        $self->orientation('square');
     } elsif ($cmp < 0) {
-        $self->rawOrientation('portrait');
+        $self->orientation('portrait');
     } else {
-        $self->rawOrientation('landscape');
+        $self->orientation('landscape');
     }
 }
 
