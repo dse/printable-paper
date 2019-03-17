@@ -42,7 +42,7 @@ has paperSizeName => (is => 'rw',
 sub triggerPaperSizeName {
     my ($self, $spec) = @_;
     return unless defined $spec;
-    my ($name, $width, $height, $unit_type) = My::Printable::Paper::Sizes->parse($spec);
+    my ($name, $width, $height, $unit_type) = My::Printable::Paper::SizeDefinitions->parse($spec);
     $self->width($width);
     $self->height($height);
     $self->unitType($unit_type);
@@ -362,7 +362,7 @@ sub findStyleNodeInsertionPoint {
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::Util qw(round3);
 use My::Printable::Paper::Unit;
-use My::Printable::Paper::Sizes;
+use My::Printable::Paper::SizeDefinitions;
 
 sub deleteSVG {
     my ($self) = @_;
@@ -773,7 +773,7 @@ sub appendToSVGDefs {
 
 sub isPaperSizeClass {
     my ($self, $size) = @_;
-    my $sqpt_size = My::Printable::Paper::Sizes->get_square_points($size);
+    my $sqpt_size = My::Printable::Paper::SizeDefinitions->get_square_points($size);
     my $sqpt      = $self->getSquarePoints();
     return 0 if !$sqpt_size || !$sqpt;
     my $ratio = $sqpt / $sqpt_size;

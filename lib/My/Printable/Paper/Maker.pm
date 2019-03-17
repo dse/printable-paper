@@ -269,7 +269,7 @@ sub buildPDFFromSVG {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::SizeDefinitions->parse($size);
 
     my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
@@ -288,7 +288,7 @@ sub buildPSFromSVG {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::SizeDefinitions->parse($size);
 
     my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
@@ -307,7 +307,7 @@ sub build2PagePDF {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::SizeDefinitions->parse($size);
 
     my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
@@ -326,7 +326,7 @@ sub build2PagePS {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::SizeDefinitions->parse($size);
 
     my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
@@ -345,7 +345,7 @@ sub build2Page2UpPDF {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::SizeDefinitions->parse($size);
 
     my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,
@@ -364,7 +364,7 @@ sub build2Page2UpPS {
     my ($target, $dependencies, $template, $file, $build) = @args{qw(target dependencies template file build)};
 
     my $size = $template->{size};
-    my ($width, $height) = My::Printable::Paper::Sizes->parse($size);
+    my ($width, $height) = My::Printable::Paper::SizeDefinitions->parse($size);
 
     my $converter = My::Printable::Paper::Converter->new(
         dryRun => $self->dryRun,

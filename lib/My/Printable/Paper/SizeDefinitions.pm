@@ -1,4 +1,4 @@
-package My::Printable::Paper::Sizes;
+package My::Printable::Paper::SizeDefinitions;
 use warnings;
 use strict;
 use v5.10.0;
@@ -196,7 +196,7 @@ sub get_square_points {
     if (exists $SQUARE_POINTS{$size}) {
         return $SQUARE_POINTS{$size};
     }
-    my $hash = My::Printable::Paper::Sizes->parse($size);
+    my $hash = My::Printable::Paper::SizeDefinitions->parse($size);
     if (!$hash) {
         return $SQUARE_POINTS{$size} = undef;
     }
