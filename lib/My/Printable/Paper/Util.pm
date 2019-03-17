@@ -17,6 +17,10 @@ our %EXPORT_TAGS = (
                   aroundUnitY
                   makeAroundArrayAccessor
                   makeAroundHashAccessor)],
+    trigger => [qw(triggerWrapper
+                   triggerUnit
+                   triggerUnitX
+                   triggerUnitY)],
 );
 our @EXPORT_OK = (
     qw(exclude
@@ -31,7 +35,11 @@ our @EXPORT_OK = (
        sideDirection
        strokeDashArray
        strokeDashOffset
-       flatten),
+       flatten
+       triggerWrapper
+       triggerUnit
+       triggerUnitX
+       triggerUnitY),
     @{$EXPORT_TAGS{const}},
     @{$EXPORT_TAGS{around}},
 );
@@ -255,6 +263,60 @@ sub makeAroundHashAccessor {
         }
         return $hashRef->{$key} = $value;
     };
+}
+
+sub triggerWrapper {
+    my ($sub) = @_;
+    my $wrapper = sub {
+        state $x = 0;
+        return if $x;
+        $x += 1;
+        my $result;
+        my @result;
+        if (wantarray) {
+            @result = $sub->(@_);
+        } else {
+            $result = $sub->(@_);
+        }
+        $x -= 1;
+        return @result if wantarray;
+        return $result;
+    };
+    return $wrapper;
+}
+
+sub triggerUnit {
+    my ($name) = @_;
+    my $trigger = sub {
+        my ($self, $value) = @_;
+        if ($self->can('pt')) {
+            $value = $self->pt($value);
+        } else {
+            $value = My::Printable::Paper::Unit->pt($value);
+        }
+        $self->$name($value);
+    };
+    return triggerWrapper($trigger);
+}
+
+sub triggerUnitX {
+    my ($name) = @_;
+    my $trigger = sub {
+        my ($self, $value) = @_;
+        $value = $self->ptX($value);
+        $self->$name($value);
+    };
+    return triggerWrapper($trigger);
+}
+
+sub triggerUnitY {
+    my ($name) = @_;
+    my $trigger = sub {
+        my ($self, $value) = @_;
+        $value = $self->ptY($value);
+        $self->$name($value);
+    };
+    return triggerWrapper($trigger);
 }
 
 1;
