@@ -51,6 +51,10 @@ our $opt_feint_line_color;
 our $opt_margin_line_color;
 our $opt_color;
 
+our $opt_output_paper_size;
+our $opt_output_2up_paper_size;
+our $opt_output_4up_paper_size;
+
 our $opt_disable_developer_mark;
 
 use lib "$ENV{HOME}/git/dse.d/utilities/lib";
@@ -90,6 +94,9 @@ Getopt::Long::GetOptions(
     '4u|4up|four-up|genreate-four-up|generate-4up'                                          => \$opt_4up,
     'ps|postscript|generate-ps|generate-postscript'                                         => \$opt_ps,
     'pdf|generate-pdf'                                                                      => \$opt_pdf,
+    'output-paper-size=s'     => \$opt_output_paper_size,
+    'output-2up-paper-size=s' => \$opt_output_2up_paper_size,
+    'output-4up-paper-size=s' => \$opt_output_4up_paper_size,
     'everything' => sub {
         $opt_2page_2up = 1;
         $opt_2page_4up = 1;
@@ -309,6 +316,9 @@ sub create_ruling_object {
     $ruling_object->majorLineColor($opt_major_line_color // $opt_color)     if defined $opt_major_line_color || defined $opt_color;
     $ruling_object->feintLineColor($opt_feint_line_color // $opt_color)     if defined $opt_feint_line_color || defined $opt_color;
     $ruling_object->marginLineColor($opt_margin_line_color)                 if defined $opt_margin_line_color;
+    $ruling_object->outputPaperSize($opt_output_paper_size)                 if defined $opt_output_paper_size;
+    $ruling_object->output2upPaperSize($opt_output_2up_paper_size)          if defined $opt_output_2up_paper_size;
+    $ruling_object->output4upPaperSize($opt_output_4up_paper_size)          if defined $opt_output_4up_paper_size;
     $ruling_object->disableDeveloperMark($opt_disable_developer_mark)       if defined $opt_disable_developer_mark;
     $ruling_object->modifiers->setModifiers(@opt_modifiers);
     return $ruling_object;

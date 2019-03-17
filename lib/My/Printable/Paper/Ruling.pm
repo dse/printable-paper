@@ -48,6 +48,9 @@ has document => (
         'generate2Page2Up',
         'generate2Page4Up',
         'disableDeveloperMark',
+        'outputPaperSize',
+        'output2upPaperSize',
+        'output4upPaperSize',
     ],
 );
 
