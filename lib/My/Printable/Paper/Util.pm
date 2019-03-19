@@ -11,7 +11,13 @@ our %EXPORT_TAGS = (
                  USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS
                  USE_SVG_FILTER_INKSCAPE_BUG_WORKAROUND
                  FUDGE_FACTOR
-                 SVG_DOTTED_LINE_FUDGE_FACTOR)],
+                 SVG_DOTTED_LINE_FUDGE_FACTOR
+                 DEFAULT_PAPER_SIZE_NAME
+                 DEFAULT_WIDTH
+                 DEFAULT_HEIGHT
+                 DEFAULT_ORIENTATION
+                 DEFAULT_UNIT_TYPE
+                 DEFAULT_COLOR_TYPE)],
     around => [qw(aroundUnit
                   aroundUnitX
                   aroundUnitY
@@ -44,6 +50,13 @@ our @EXPORT_OK = (
     @{$EXPORT_TAGS{around}},
 );
 our @EXPORT = ();
+
+use constant DEFAULT_PAPER_SIZE_NAME => 'letter';
+use constant DEFAULT_WIDTH           => 612;
+use constant DEFAULT_HEIGHT          => 792;
+use constant DEFAULT_ORIENTATION     => 'portrait';
+use constant DEFAULT_UNIT_TYPE       => 'imperial';
+use constant DEFAULT_COLOR_TYPE      => 'color';
 
 use constant USE_SVG_PATTERNS_FOR_DOT_GRIDS => 0;
 use constant USE_SVG_DOTTED_LINES_FOR_DOT_GRIDS => 1;
