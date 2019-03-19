@@ -152,14 +152,15 @@ our @SIZES = (
     { size => 'a5',            '2up' => 'a4'     },
     { size => 'quarterletter', '2up' => 'halfletter', '4up' => 'letter' },
     { size => 'a6',            '2up' => 'a5',         '4up' => 'a4' },
-
     { size => 'travelers', '2up' => 'travelers-sheet' },
 );
+
+our @MAKE_SIZES = grep { $_->{size} ne 'travelers' } @SIZES;
 
 our @COLLECTIONS = (
     {
         ruling => 'oasis',
-        sizes => [@SIZES],
+        sizes => [@MAKE_SIZES],
         variants => [
             [qw()],
             [qw(denser-grid)],
@@ -168,7 +169,7 @@ our @COLLECTIONS = (
     },
     {
         ruling => 'anode',
-        sizes => [@SIZES],
+        sizes => [@MAKE_SIZES],
         variants => [
             [qw()],
             [qw(denser-grid)],
@@ -177,7 +178,7 @@ our @COLLECTIONS = (
     },
     {
         ruling => 'quadrille',
-        sizes => [@SIZES],
+        sizes => [@MAKE_SIZES],
         variants => [
             [qw()],
             [qw(5-per-inch)],
@@ -186,7 +187,7 @@ our @COLLECTIONS = (
     },
     {
         ruling => 'line-dot-grid',
-        sizes => [@SIZES],
+        sizes => [@MAKE_SIZES],
         variants => [
             [qw()],
             { name => 'thinner',   modifiers => [qw(thinner-dots thinner-lines)]     },
@@ -196,7 +197,7 @@ our @COLLECTIONS = (
     },
     {
         ruling => 'seyes',
-        sizes => [@SIZES],
+        sizes => [@MAKE_SIZES],
         variants => [
             { modifiers => []                            },
             { modifiers => [qw(thinner-grid)]            },
@@ -209,15 +210,17 @@ our @COLLECTIONS = (
     },
     {
         ruling => 'dot-grid',
-        sizes => [@SIZES],
+        sizes => [@MAKE_SIZES],
         color_types => ['color', 'black'],
     },
     {
         ruling => 'line-dot-graph',
-        sizes => [@SIZES],
+        sizes => [@MAKE_SIZES],
         color_types => ['color', 'black'],
     },
 );
+
+our @MAKE_COLLECTIONS = @COLLECTIONS;
 
 sub buildSVG {
     my ($self, %args) = @_;
@@ -512,7 +515,7 @@ sub buildTemplatesArray {
 
     @{$self->templatesArray} = ();
 
-    foreach my $collection (@COLLECTIONS) {
+    foreach my $collection (@MAKE_COLLECTIONS) {
         my $ruling      = $collection->{ruling};
         my $sizes       = $collection->{sizes};
         my $variants    = $collection->{variants};
