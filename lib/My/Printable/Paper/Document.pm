@@ -102,10 +102,10 @@ has colorType => (is => 'rw', default => DEFAULT_COLOR_TYPE);
 has rulingName => (is => 'rw');
 
 # in points from edge of paper
-has leftMargin   => (is => 'rw', default => 0);
-has rightMargin  => (is => 'rw', default => 0);
-has topMargin    => (is => 'rw', default => 0);
-has bottomMargin => (is => 'rw', default => 0);
+has leftMarginX   => (is => 'rw', default => 0);
+has rightMarginX  => (is => 'rw', default => 0);
+has topMarginY    => (is => 'rw', default => 0);
+has bottomMarginY => (is => 'rw', default => 0);
 
 # My::Printable::Paper::Unit
 has unit => (is => 'rw');
