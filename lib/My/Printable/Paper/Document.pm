@@ -90,9 +90,6 @@ has unitType => (is => 'rw', default => DEFAULT_UNIT_TYPE);
 # 'color', 'grayscale', 'black'
 has colorType => (is => 'rw', default => DEFAULT_COLOR_TYPE);
 
-# 'seyes', etc.
-has rulingName => (is => 'rw');
-
 # in points from RESPECTIVE edge of paper
 has leftMargin   => (is => 'rw', default => 0, trigger => triggerUnit('leftMargin',   axis => 'x', edge => 'near'));
 has rightMargin  => (is => 'rw', default => 0, trigger => triggerUnit('rightMargin',  axis => 'x', edge => 'far'));
