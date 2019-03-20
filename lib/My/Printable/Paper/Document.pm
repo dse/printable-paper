@@ -93,11 +93,33 @@ has colorType => (is => 'rw', default => DEFAULT_COLOR_TYPE);
 # 'seyes', etc.
 has rulingName => (is => 'rw');
 
-# in points from edge of paper
-has leftMarginX   => (is => 'rw', default => 0);
-has rightMarginX  => (is => 'rw', default => 0);
-has topMarginY    => (is => 'rw', default => 0);
-has bottomMarginY => (is => 'rw', default => 0);
+# in points from RESPECTIVE edge of paper
+has leftMargin   => (is => 'rw', default => 0, trigger => triggerUnit('leftMargin',   axis => 'x', edge => 'near'));
+has rightMargin  => (is => 'rw', default => 0, trigger => triggerUnit('rightMargin',  axis => 'x', edge => 'far'));
+has topMargin    => (is => 'rw', default => 0, trigger => triggerUnit('topMargin',    axis => 'y', edge => 'near'));
+has bottomMargin => (is => 'rw', default => 0, trigger => triggerUnit('bottomMargin', axis => 'y', edge => 'far'));
+
+# in points from LEFT or TOP edge of paper
+sub leftMarginX {
+    my $self = shift;
+    die("leftMarginX is read-only") if scalar @_;
+    return $self->leftMargin;
+}
+sub rightMarginX {
+    my $self = shift;
+    die("rightMarginX is read-only") if scalar @_;
+    return $self->width - $self->rightMargin;
+}
+sub topMarginY {
+    my $self = shift;
+    die("topMarginY is read-only") if scalar @_;
+    return $self->topMargin;
+}
+sub bottomMarginY {
+    my $self = shift;
+    die("bottomMarginY is read-only") if scalar @_;
+    return $self->height - $self->bottomMargin;
+}
 
 # My::Printable::Paper::Unit
 has unit => (is => 'rw');
@@ -393,10 +415,6 @@ sub BUILD {
     $self->unitY->setPercentageBasis($self->height);
     $self->unitX->axis("x");
     $self->unitY->axis("y");
-    $self->setBottomMargin(0);
-    $self->setTopMargin(0);
-    $self->setLeftMargin(0);
-    $self->setRightMargin(0);
 }
 
 sub reset {
@@ -405,54 +423,24 @@ sub reset {
     $self->elementsById({});
 }
 
-sub setLeftMargin {
-    my ($self, $value) = @_;
-    $self->leftMarginX($self->ptX($value));
-}
-
-sub setRightMargin {
-    my ($self, $value) = @_;
-    my ($pt, $unit_type, $is_from_end) = $self->ptX($value);
-    if ($is_from_end) {
-        $self->rightMarginX($self->ptX($value));
-    } else {
-        $self->rightMarginX($self->width - $self->ptX($value));
-    }
-}
-
-sub setTopMargin {
-    my ($self, $value) = @_;
-    $self->topMarginY($self->ptY($value));
-}
-
-sub setBottomMargin {
-    my ($self, $value) = @_;
-    my ($pt, $unit_type, $is_from_end) = $self->ptY($value);
-    if ($is_from_end) {
-        $self->bottomMarginY($self->ptY($value));
-    } else {
-        $self->bottomMarginY($self->height - $self->ptY($value));
-    }
-}
-
 sub setMargins {
     my ($self, $value) = @_;
-    $self->setLeftMargin($value);
-    $self->setRightMargin($value);
-    $self->setTopMargin($value);
-    $self->setBottomMargin($value);
+    $self->leftMargin($value);
+    $self->rightMargin($value);
+    $self->topMargin($value);
+    $self->bottomMargin($value);
 }
 
 sub setHorizontalMargins {
     my ($self, $value) = @_;
-    $self->setLeftMargin($value);
-    $self->setRightMargin($value);
+    $self->leftMargin($value);
+    $self->rightMargin($value);
 }
 
 sub setVerticalMargins {
     my ($self, $value) = @_;
-    $self->setTopMargin($value);
-    $self->setBottomMargin($value);
+    $self->topMargin($value);
+    $self->bottomMargin($value);
 }
 
 sub setUnit {
@@ -899,25 +887,25 @@ sub getElement {
 sub leftVisibleBoundaryX {
     my ($self) = @_;
     my $clip   = $self->leftClip;
-    my $margin = $self->leftMarginX;
+    my $margin = $self->leftMargin;
     return max(0, $clip, $margin);
 }
 sub rightVisibleBoundaryX {
     my ($self) = @_;
     my $clip   = $self->rightClip;
-    my $margin = $self->width - $self->rightMarginX;
+    my $margin = $self->rightMargin;
     return max(0, $clip, $margin);
 }
 sub topVisibleBoundaryY {
     my ($self) = @_;
     my $clip   = $self->topClip;
-    my $margin = $self->topMarginY;
+    my $margin = $self->topMargin;
     return max(0, $clip, $margin);
 }
 sub bottomVisibleBoundaryY {
     my ($self) = @_;
     my $clip   = $self->bottomClip;
-    my $margin = $self->height - $self->bottomMarginY;
+    my $margin = $self->bottomMargin;
     return max(0, $clip, $margin);
 }
 
