@@ -18,11 +18,7 @@ our %EXPORT_TAGS = (
                  DEFAULT_ORIENTATION
                  DEFAULT_UNIT_TYPE
                  DEFAULT_COLOR_TYPE)],
-    around => [qw(aroundUnit
-                  aroundUnitX
-                  aroundUnitY
-                  makeAroundArrayAccessor
-                  makeAroundHashAccessor)],
+    around => [qw()],
     trigger => [qw(triggerWrapper
                    triggerUnit
                    triggerUnitX
@@ -120,43 +116,6 @@ sub withTemp {
     return $result;
 }
 
-sub aroundUnit {
-    my $orig = shift;
-    my $self = shift;
-    if (!scalar @_) {
-        return $self->$orig;
-    }
-    my $value = shift;
-    if ($self->can('pt')) {
-        $value = $self->pt($value);
-    } else {
-        $value = My::Printable::Paper::Unit->pt($value);
-    }
-    $self->$orig($value, @_);
-}
-
-sub aroundUnitX {
-    my $orig = shift;
-    my $self = shift;
-    if (!scalar @_) {
-        return $self->$orig;
-    }
-    my $value = shift;
-    $value = $self->ptX($value);
-    $self->$orig($value, @_);
-}
-
-sub aroundUnitY {
-    my $orig = shift;
-    my $self = shift;
-    if (!scalar @_) {
-        return $self->$orig;
-    }
-    my $value = shift;
-    $value = $self->ptY($value);
-    $self->$orig($value, @_);
-}
-
 sub snapcmp {
     my ($a, $b, $fudge) = @_;
     $fudge //= FUDGE_FACTOR;
@@ -224,58 +183,6 @@ sub flatten {
     return map {
         eval { ref $_ eq 'ARRAY' } ? @$_ : $_
     } @_;
-}
-
-sub makeAroundArrayAccessor {
-    my %args = @_;
-    my $set = $args{set};
-    return sub {
-        my $orig = shift;
-        my $self = shift;
-        if (!scalar @_) {
-            return $self->$orig;
-        }
-        my $arrayRefOrIndex = shift;
-        if (eval { ref $arrayRefOrIndex eq 'ARRAY' }) {
-            return $self->$orig($arrayRefOrIndex);
-        }
-        my $index = $arrayRefOrIndex;
-        my $arrayRef = $self->$orig();
-        if (!scalar @_) {
-            return $arrayRef->[$index];
-        }
-        my $value = shift;
-        if ($set) {
-            $value = $self->$set($value);
-        }
-        return $arrayRef->[$index] = $value;
-    };
-}
-
-sub makeAroundHashAccessor {
-    my %args = @_;
-    my $set = $args{set};
-    return sub {
-        my $orig = shift;
-        my $self = shift;
-        if (!scalar @_) {
-            return $self->$orig;
-        }
-        my $hashRefOrKey = shift;
-        if (eval { ref $hashRefOrKey eq 'HASH' }) {
-            return $self->$orig($hashRefOrKey);
-        }
-        my $key = $hashRefOrKey;
-        my $hashRef = $self->$orig();
-        if (!scalar @_) {
-            return $hashRef->{$key};
-        }
-        my $value = shift;
-        if ($set) {
-            $value = $self->$set($value);
-        }
-        return $hashRef->{$key} = $value;
-    };
 }
 
 sub triggerWrapper {
