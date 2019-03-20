@@ -407,14 +407,12 @@ sub pt {
 sub BUILD {
     my ($self) = @_;
     $self->unit(My::Printable::Paper::Unit->new());
-    $self->unitX(My::Printable::Paper::Unit->new());
-    $self->unitY(My::Printable::Paper::Unit->new());
+    $self->unitX(My::Printable::Paper::Unit->new(axis => 'x'));
+    $self->unitY(My::Printable::Paper::Unit->new(axis => 'y'));
     $self->unitX->size($self->width);
     $self->unitY->size($self->height);
     $self->unitX->setPercentageBasis($self->width);
     $self->unitY->setPercentageBasis($self->height);
-    $self->unitX->axis("x");
-    $self->unitY->axis("y");
 }
 
 sub reset {
