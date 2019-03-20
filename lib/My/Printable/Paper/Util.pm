@@ -206,37 +206,40 @@ sub triggerWrapper {
 }
 
 sub triggerUnit {
-    my ($name) = @_;
+    my ($name, %args) = @_;
+    my $axis = $args{axis};
+    my $edge = $args{edge};
+
+    my $isX          = defined $axis && $axis eq 'x';
+    my $isY          = defined $axis && $axis eq 'y';
+    my $isForFarEdge = defined $edge && $edge eq 'far';
+
     my $trigger = sub {
         my ($self, $value) = @_;
-        if ($self->can('pt')) {
-            $value = $self->pt($value);
+        my @pt;
+        if ($isX) {
+            @pt = $self->ptX($value);
+        } elsif ($isY) {
+            @pt = $self->ptY($value);
+        } elsif ($self->can('pt')) {
+            @pt = $self->pt($value);
         } else {
-            $value = My::Printable::Paper::Unit->pt($value);
+            @pt = My::Printable::Paper::Unit->pt($value);
         }
-        $self->$name($value);
+        my ($pt, $unitType, $isFromFarEdge) = @pt;
+        $self->$name($pt);
     };
     return triggerWrapper($trigger);
 }
 
 sub triggerUnitX {
-    my ($name) = @_;
-    my $trigger = sub {
-        my ($self, $value) = @_;
-        $value = $self->ptX($value);
-        $self->$name($value);
-    };
-    return triggerWrapper($trigger);
+    my $name = shift;
+    return triggerUnit($name, axis => 'x');
 }
 
 sub triggerUnitY {
-    my ($name) = @_;
-    my $trigger = sub {
-        my ($self, $value) = @_;
-        $value = $self->ptY($value);
-        $self->$name($value);
-    };
-    return triggerWrapper($trigger);
+    my $name = shift;
+    return triggerUnit($name, axis => 'y');
 }
 
 1;
