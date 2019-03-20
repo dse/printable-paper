@@ -6,7 +6,7 @@ use v5.10.0;
 use POSIX qw(trunc round);
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Paper::Util qw(:around :const :trigger snapcmp snapnum);
+use My::Printable::Paper::Util qw(:const :trigger snapcmp snapnum);
 
 use Moo;
 

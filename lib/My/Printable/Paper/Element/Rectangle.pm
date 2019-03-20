@@ -4,7 +4,7 @@ use strict;
 use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
-use My::Printable::Paper::Util qw(:around :trigger);
+use My::Printable::Paper::Util qw(:trigger);
 
 use Moo;
 

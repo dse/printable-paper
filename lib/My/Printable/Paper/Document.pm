@@ -5,8 +5,7 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::ModifierList;
-use My::Printable::Paper::Util qw(:const :around :trigger
-                                  snapcmp flatten);
+use My::Printable::Paper::Util qw(:const :trigger snapcmp flatten);
 use My::Printable::Paper::Converter;
 use My::Printable::Paper::Color qw(:const);
 

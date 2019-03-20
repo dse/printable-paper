@@ -13,7 +13,7 @@ has direction => (
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::PointSeries;
-use My::Printable::Paper::Util qw(strokeDashArray strokeDashOffset :around :trigger);
+use My::Printable::Paper::Util qw(strokeDashArray strokeDashOffset :trigger);
 
 use Moo;
 

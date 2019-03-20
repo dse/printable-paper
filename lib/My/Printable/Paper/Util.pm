@@ -18,7 +18,6 @@ our %EXPORT_TAGS = (
                  DEFAULT_ORIENTATION
                  DEFAULT_UNIT_TYPE
                  DEFAULT_COLOR_TYPE)],
-    around => [qw()],
     trigger => [qw(triggerWrapper
                    triggerUnit
                    triggerUnitX
@@ -43,7 +42,6 @@ our @EXPORT_OK = (
        triggerUnitX
        triggerUnitY),
     @{$EXPORT_TAGS{const}},
-    @{$EXPORT_TAGS{around}},
 );
 our @EXPORT = ();
 
