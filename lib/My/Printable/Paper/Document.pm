@@ -46,10 +46,6 @@ sub triggerPaperSizeName {
     $self->unitY->setPercentageBasis($height);
     $self->originX($width / 2);
     $self->originY($height / 2);
-    $self->setBottomMargin(0);
-    $self->setTopMargin(0);
-    $self->setLeftMargin(0);
-    $self->setRightMargin(0);
 }
 
 has width => (
@@ -73,8 +69,6 @@ sub triggerWidth {
     $self->paperSizeName(undef);
     $self->unitX->setPercentageBasis($pt);
     $self->originX($pt / 2);
-    $self->setLeftMargin(0);
-    $self->setRightMargin(0);
     $self->setOrientationFromDimensions();
 };
 
@@ -87,8 +81,6 @@ sub triggerHeight {
     $self->paperSizeName(undef);
     $self->unitY->setPercentageBasis($pt);
     $self->originY($pt / 2);
-    $self->setBottomMargin(0);
-    $self->setTopMargin(0);
     $self->setOrientationFromDimensions();
 };
 
