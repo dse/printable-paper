@@ -227,6 +227,17 @@ sub triggerUnit {
             @pt = My::Printable::Paper::Unit->pt($value);
         }
         my ($pt, $unitType, $isFromFarEdge) = @pt;
+
+        my $isOppositeEdge = (($isFromFarEdge && !$isForFarEdge) ||
+                                  (!$isFromFarEdge && $isForFarEdge));
+        if ($isOppositeEdge) {
+            if ($isX) {
+                $pt = $self->width - $pt if $self->can('width');
+            } elsif ($isY) {
+                $pt = $self->height - $pt if $self->can('height');
+            }
+        }
+
         $self->$name($pt);
     };
     return triggerWrapper($trigger);
