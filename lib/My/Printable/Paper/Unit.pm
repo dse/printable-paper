@@ -7,7 +7,7 @@ use Moo;
 
 use Exporter 'import';
 our %EXPORT_TAGS = (
-    const => [qw(PT PC IN CM MM PX PD)],
+    const => [qw(PT PC IN CM MM PX PD DEFAULT_DPI)],
 );
 our @EXPORT_OK = (
     @{$EXPORT_TAGS{const}}
