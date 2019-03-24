@@ -74,6 +74,7 @@ p13 () {
 }
 
 p14 () {
+    # torture test
     printable embry1 \
               --half-letter \
               -o "${dir}"/embry1A--half-letter \
