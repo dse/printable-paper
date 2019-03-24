@@ -6,6 +6,7 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::ModifierList;
 use My::Printable::Paper::Util qw(:const :trigger snapcmp flatten);
+use My::Printable::Paper::Unit qw(:const);
 use My::Printable::Paper::Converter;
 use My::Printable::Paper::Color qw(:const);
 
@@ -25,6 +26,19 @@ sub triggerFilename {
         $filename .= '.svg';
         $self->filename($filename);
     }
+}
+
+has dpi => (is => 'rw', default => DEFAULT_DPI, trigger => \&triggerDPI);
+
+sub triggerDPI {
+    my ($self, $dpi) = @_;
+    my $pt = 72 / $dpi;
+    $self->unit->deleteUnit('dp');
+    $self->unitX->deleteUnit('dp');
+    $self->unitY->deleteUnit('dp');
+    $self->unit->addUnit('dp', $pt);
+    $self->unitX->addUnit('dp', $pt);
+    $self->unitY->addUnit('dp', $pt);
 }
 
 has paperSizeName => (is => 'rw',
