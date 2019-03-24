@@ -8,7 +8,7 @@ use My::Printable::Paper::Document;
 use My::Printable::Paper::Element::Rectangle;
 use My::Printable::Paper::Unit qw(:const);
 use My::Printable::Paper::Color qw(:const);
-use My::Printable::Paper::Util qw(side_direction snapcmp);
+use My::Printable::Paper::Util qw(side_direction snapcmp :trigger);
 use My::Printable::Paper::Element::Line;
 
 use Moo;
@@ -51,6 +51,8 @@ has document => (
         'outputPaperSize',
         'output2upPaperSize',
         'output4upPaperSize',
+        'unit',
+        'dpi',
     ],
 );
 
@@ -99,10 +101,44 @@ sub thicknessCSS {
 EOF
 }
 
-has rawRegularLineColor => (is => 'rw');
-has rawMajorLineColor   => (is => 'rw');
-has rawFeintLineColor   => (is => 'rw');
-has rawMarginLineColor  => (is => 'rw');
+# when getting, if not set, return something based on colorType, and
+# don't set the default.
+sub aroundColor {
+    my (%args) = @_;
+    my $defaultName = $args{defaultName};
+    my $name        = $args{name};
+    return sub {
+        my $orig = shift;
+        my $self = shift;
+        if (!scalar @_) {
+            # getter
+            my $result = $self->$orig() || $self->$defaultName();
+            if (eval { $result->isa('My::Printable::Paper::Color') }) {
+                return $result->asHex;
+            }
+        }
+        # setter
+        my $value = shift;
+        return $self->$orig($value);
+    };
+}
+
+# when setting, set the underlying value to an object
+sub triggerColor {
+    my (%args) = @_;
+    my $defaultName = $args{defaultName};
+    my $name        = $args{name};
+    return triggerWrapper(
+        sub {
+            my $self = shift;
+            my $value = shift;
+            my $color = My::Printable::Paper::Color->new($value);
+            my $hex = $color->asHex;
+            $self->$name($color);
+            return $hex;
+        }
+    );
+}
 
 sub defaultRegularLineColor {
     my ($self) = @_;
@@ -110,18 +146,21 @@ sub defaultRegularLineColor {
     return COLOR_GRAY if $self->colorType eq 'grayscale';
     return COLOR_BLACK;
 }
+
 sub defaultMajorLineColor {
     my ($self) = @_;
     return COLOR_BLUE if $self->colorType eq 'color';
     return COLOR_GRAY if $self->colorType eq 'grayscale';
     return COLOR_BLACK;
 }
+
 sub defaultFeintLineColor {
     my ($self) = @_;
     return COLOR_BLUE if $self->colorType eq 'color';
     return COLOR_GRAY if $self->colorType eq 'grayscale';
     return COLOR_BLACK;
 }
+
 sub defaultMarginLineColor {
     my ($self) = @_;
     return COLOR_RED  if $self->colorType eq 'color';
@@ -129,61 +168,42 @@ sub defaultMarginLineColor {
     return COLOR_BLACK;
 }
 
-sub regularLineColor {
-    my $self = shift;
-    if (!scalar @_) {
-        if (!defined $self->rawRegularLineColor) {
-            return $self->defaultRegularLineColor;
-        }
-        return $self->rawRegularLineColor->asHex;
-    }
-    my $value = shift;
-    return $self->rawRegularLineColor(
-        My::Printable::Paper::Color->new($value)
-    )->asHex;
-}
+has regularLineColor => (
+    is => 'rw',
+    trigger => triggerColor(
+        name => 'regularLineColor',
+        defaultName => 'defaultRegularLineColor',
+    ),
+);
 
-sub majorLineColor {
-    my $self = shift;
-    if (!scalar @_) {
-        if (!defined $self->rawMajorLineColor) {
-            return $self->defaultMajorLineColor;
-        }
-        return $self->rawMajorLineColor->asHex;
-    }
-    my $value = shift;
-    return $self->rawMajorLineColor(
-        My::Printable::Paper::Color->new($value)
-    )->asHex;
-}
+has majorLineColor => (
+    is => 'rw',
+    trigger => triggerColor(
+        name => 'majorLineColor',
+        defaultName => 'defaultMajorLineColor',
+    ),
+);
 
-sub feintLineColor {
-    my $self = shift;
-    if (!scalar @_) {
-        if (!defined $self->rawFeintLineColor) {
-            return $self->defaultFeintLineColor;
-        }
-        return $self->rawFeintLineColor->asHex;
-    }
-    my $value = shift;
-    return $self->rawFeintLineColor(
-        My::Printable::Paper::Color->new($value)
-    )->asHex;
-}
+has feintLineColor => (
+    is => 'rw',
+    trigger => triggerColor(
+        name => 'feintLineColor',
+        defaultName => 'defaultFeintLineColor',
+    ),
+);
 
-sub marginLineColor {
-    my $self = shift;
-    if (!scalar @_) {
-        if (!defined $self->rawMarginLineColor) {
-            return $self->defaultMarginLineColor;
-        }
-        return $self->rawMarginLineColor->asHex;
-    }
-    my $value = shift;
-    return $self->rawMarginLineColor(
-        My::Printable::Paper::Color->new($value)
-    )->asHex;
-}
+has marginLineColor => (
+    is => 'rw',
+    trigger => triggerColor(
+        name => 'marginLineColor',
+        defaultName => 'defaultMarginLineColor',
+    ),
+);
+
+around regularLineColor => aroundColor(name => 'regularLineColor', defaultName => 'defaultRegularLineColor');
+around majorLineColor   => aroundColor(name => 'majorLineColor',   defaultName => 'defaultMajorLineColor');
+around feintLineColor   => aroundColor(name => 'feintLineColor',   defaultName => 'defaultFeintLineColor');
+around marginLineColor  => aroundColor(name => 'marginLineColor',  defaultName => 'defaultMarginLineColor');
 
 sub colorCSS {
     my ($self) = @_;
@@ -192,6 +212,8 @@ sub colorCSS {
     my $majorLineColor   = $self->majorLineColor;
     my $feintLineColor   = $self->feintLineColor;
     my $marginLineColor  = $self->marginLineColor;
+
+    warn $marginLineColor;
 
     return <<"EOF";
         .regular-line { stroke: $regularLineColor; }
@@ -349,18 +371,6 @@ sub getMajorLineCSSClass {
 
 ###############################################################################
 
-has lineWidthUnit => (
-    is => 'rw',
-    default => sub {
-        my $unit = My::Printable::Paper::Unit->new();
-        $unit->defaultUnit('pd');
-        return $unit;
-    },
-    handles => [
-        'dpi',
-    ],
-);
-
 has rawRegularLineWidth => (is => 'rw');
 has rawMajorLineWidth   => (is => 'rw');
 has rawFeintLineWidth   => (is => 'rw');
@@ -378,7 +388,7 @@ sub regularLineWidth {
         return $self->rawRegularLineWidth;
     }
     my $value = shift;
-    $value = $self->lineWidthUnit->pt($value);
+    $value = $self->unit->pt($value);
     return $self->rawRegularLineWidth($value);
 }
 
@@ -391,7 +401,7 @@ sub majorLineWidth {
         return $self->rawMajorLineWidth;
     }
     my $value = shift;
-    $value = $self->lineWidthUnit->pt($value);
+    $value = $self->unit->pt($value);
     return $self->rawMajorLineWidth($value);
 }
 
@@ -404,7 +414,7 @@ sub feintLineWidth {
         return $self->rawFeintLineWidth;
     }
     my $value = shift;
-    $value = $self->lineWidthUnit->pt($value);
+    $value = $self->unit->pt($value);
     return $self->rawFeintLineWidth($value);
 }
 
@@ -417,7 +427,7 @@ sub regularDotWidth {
         return $self->rawRegularDotWidth;
     }
     my $value = shift;
-    $value = $self->lineWidthUnit->pt($value);
+    $value = $self->unit->pt($value);
     return $self->rawRegularDotWidth($value);
 }
 
@@ -430,7 +440,7 @@ sub majorDotWidth {
         return $self->rawMajorDotWidth;
     }
     my $value = shift;
-    $value = $self->lineWidthUnit->pt($value);
+    $value = $self->unit->pt($value);
     return $self->rawMajorDotWidth($value);
 }
 
@@ -443,7 +453,7 @@ sub feintDotWidth {
         return $self->rawFeintDotWidth;
     }
     my $value = shift;
-    $value = $self->lineWidthUnit->pt($value);
+    $value = $self->unit->pt($value);
     return $self->rawFeintDotWidth($value);
 }
 
@@ -456,7 +466,7 @@ sub marginLineWidth {
         return $self->rawMarginLineWidth;
     }
     my $value = shift;
-    $value = $self->lineWidthUnit->pt($value);
+    $value = $self->unit->pt($value);
     return $self->rawMarginLineWidth($value);
 }
 
