@@ -7,11 +7,16 @@ use Moo;
 
 use Exporter 'import';
 our %EXPORT_TAGS = (
-    const => [qw(COLOR_RED
+    const => [qw(COLOR_BLUE
                  COLOR_GREEN
-                 COLOR_BLUE
+                 COLOR_RED
                  COLOR_GRAY
-                 COLOR_BLACK)],
+                 COLOR_ORANGE
+                 COLOR_MAGENTA
+                 COLOR_CYAN
+                 COLOR_YELLOW
+                 COLOR_BLACK
+                 COLOR_NON_REPRO_BLUE)],
 );
 our @EXPORT_OK = (
     @{$EXPORT_TAGS{const}},
