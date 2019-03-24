@@ -73,7 +73,30 @@ p13 () {
               --disable-developer-mark
 }
 
-all () { p1; p2; p3; p4; p5; p6; p7; p8; p9; p10; p11; p12; p13; }
+p14 () {
+    printable embry1 \
+              --half-letter \
+              -o "${dir}"/embry1A--half-letter \
+              --pdf --2p2u --2p \
+              --dpi 600 \
+              --major-line-width=4 \
+              --regular-line-width=2 \
+              --feint-line-width=2 \
+              --major-dot-width=32 \
+              --regular-dot-width=16 \
+              --feint-dot-width=8 \
+              -Dunit=1/4in \
+              -Dleft-margin-line=3/4in \
+              -Dtop-margin-line=3/4in \
+              -Dvertical-feint-dashed=2 \
+              --regular-line-color='#9999ff' \
+              --major-line-color='#0000ff' \
+              --feint-line-color='#ccccff' \
+              --margin-line-color='#ff0000' \
+              --disable-developer-mark
+}
+
+all () { p1; p2; p3; p4; p5; p6; p7; p8; p9; p10; p11; p12; p13; p14; }
 
 if (( $# )) ; then
     for i ; do
