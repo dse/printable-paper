@@ -127,6 +127,14 @@ sub set {
 sub parse {
     my ($self, $value) = @_;
 
+    if (eval { $value->isa(__PACKAGE__) }) {
+        return ($value->r,
+                $value->g,
+                $value->b,
+                $value->a) if wantarray;
+        return;
+    }
+
     my $rx_int_or_pct = qr{(?:
                                \d+(?:\.\d*)?
                            |
