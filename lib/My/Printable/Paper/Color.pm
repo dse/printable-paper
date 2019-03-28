@@ -125,7 +125,9 @@ sub set {
 }
 
 sub parse {
-    my ($self, $value) = @_;
+    my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
+
+    my ($value) = @_;
 
     if (eval { $value->isa(__PACKAGE__) }) {
         return ($value->r,
@@ -224,38 +226,55 @@ sub parse {
         die("invalid color $value\n");
     }
     return ($r, $g, $b, $a) if wantarray;
+    return asHex($r, $g, $b, $a);
 }
 
 use POSIX qw(round);
 
 sub asHex {
-    my ($self) = @_;
-    if ($self->a == 1) {
+    my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
+
+    my ($r, $g, $b, $a);
+    if (ref $self) {
+        ($r, $g, $b, $a) = map { $self->$_ } qw(r g b a);
+    } else {
+        ($r, $g, $b, $a) = @_;
+    }
+
+    if ($a >= 1) {
         return sprintf('#%02x%02x%02x',
-                       round($self->r * 255),
-                       round($self->g * 255),
-                       round($self->b * 255));
+                       round($r * 255),
+                       round($g * 255),
+                       round($b * 255));
     }
     return sprintf('#%02x%02x%02x%02x',
-                   round($self->r * 255),
-                   round($self->g * 255),
-                   round($self->b * 255),
-                   round($self->a * 255));
+                   round($r * 255),
+                   round($g * 255),
+                   round($b * 255),
+                   round($a * 255));
 }
 
 sub asRGB {
-    my ($self) = @_;
-    if ($self->a == 1) {
+    my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
+
+    my ($r, $g, $b, $a);
+    if (ref $self) {
+        ($r, $g, $b, $a) = map { $self->$_ } qw(r g b a);
+    } else {
+        ($r, $g, $b, $a) = @_;
+    }
+
+    if ($a >= 1) {
         return sprintf('rgb(%d, %d, %d)',
-                       round($self->r * 255),
-                       round($self->g * 255),
-                       round($self->b * 255));
+                       round($r * 255),
+                       round($g * 255),
+                       round($b * 255));
     }
     return sprintf('rgba(%d, %d, %d, %g)',
-                   round($self->r * 255),
-                   round($self->g * 255),
-                   round($self->b * 255),
-                   $self->a);
+                   round($r * 255),
+                   round($g * 255),
+                   round($b * 255),
+                   $a);
 }
 
 1;
