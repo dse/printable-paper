@@ -92,9 +92,6 @@ around a => \&aroundZeroToOne;
 around BUILDARGS => sub {
     my ($orig, $class, @args) = @_;
     if (scalar @args == 1) {
-        if (eval { $args[0]->isa(__PACKAGE__) }) {
-            return $args[0];
-        }
         my ($r, $g, $b, $a) = $class->parse($args[0]);
         return $class->$orig(
             r => $r,
