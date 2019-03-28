@@ -21,7 +21,10 @@ our %EXPORT_TAGS = (
     trigger => [qw(triggerWrapper
                    triggerUnit
                    triggerUnitX
-                   triggerUnitY)],
+                   triggerUnitY
+                   createDimensionTrigger
+                   createPaperSizeTrigger)],
+    around => [qw(aroundDimension)],
 );
 our @EXPORT_OK = (
     qw(exclude
@@ -36,12 +39,10 @@ our @EXPORT_OK = (
        sideDirection
        strokeDashArray
        strokeDashOffset
-       flatten
-       triggerWrapper
-       triggerUnit
-       triggerUnitX
-       triggerUnitY),
+       flatten),
     @{$EXPORT_TAGS{const}},
+    @{$EXPORT_TAGS{trigger}},
+    @{$EXPORT_TAGS{around}},
 );
 our @EXPORT = ();
 
@@ -204,7 +205,14 @@ sub triggerWrapper {
 }
 
 sub triggerUnit {
-    my ($name, %args) = @_;
+    my @args = @_;
+    if (scalar @args % 2 == 1) {
+        # from: ('name', %args)
+        # to:   (name => 'name', %args)
+        unshift(@args, 'name');
+    }
+    my %args = @_;
+    my $name = $args{name};
     my $axis = $args{axis};
     my $edge = $args{edge};
 
@@ -242,13 +250,55 @@ sub triggerUnit {
 }
 
 sub triggerUnitX {
-    my $name = shift;
-    return triggerUnit($name, axis => 'x');
+    my @args = @_;
+    return triggerUnit(@args, axis => 'x');
 }
 
 sub triggerUnitY {
-    my $name = shift;
-    return triggerUnit($name, axis => 'y');
+    my @args = @_;
+    return triggerUnit(@args, axis => 'y');
+}
+
+sub createDimensionTrigger {
+    my %args = @_;
+    my $axis = $args{axis};
+    my $name = $args{name};
+    my $trigger = sub {
+        my ($self, $value) = @_;
+        $self->$name->set($value);
+    };
+    return triggerWrapper($trigger);
+}
+
+sub createPaperSizeTrigger {
+    my (%args) = @_;
+    my $name = $args{name};
+    my $trigger = sub {
+        my ($self, $value) = @_;
+        $self->$name->set($value);
+    };
+    return triggerWrapper($trigger);
+}
+
+sub aroundDimension {
+    my ($orig, $self) = @_;
+    if (scalar @_) {
+        return $self->$orig(@_);
+    }
+    return $self->$orig()->asPoints;
+}
+
+sub aroundPaperSize {
+    my ($orig, $self) = @_;
+    if (scalar @_) {
+        return $self->$orig(@_);
+    }
+    if (wantarray) {
+        my $width = $self->$orig->width;
+        my $height = $self->$orig->height;
+        return ($width, $height);
+    }
+    return $self->$orig();
 }
 
 1;
