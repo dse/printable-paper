@@ -211,7 +211,7 @@ sub triggerUnit {
         # to:   (name => 'name', %args)
         unshift(@args, 'name');
     }
-    my %args = @_;
+    my %args = @args;
     my $name = $args{name};
     my $axis = $args{axis};
     my $edge = $args{edge};
