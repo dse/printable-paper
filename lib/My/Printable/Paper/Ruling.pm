@@ -116,6 +116,7 @@ sub aroundColor {
             if (eval { $result->isa('My::Printable::Paper::Color') }) {
                 return $result->asHex;
             }
+            return $result;
         }
         # setter
         my $value = shift;
@@ -124,7 +125,7 @@ sub aroundColor {
 }
 
 # when setting, set the underlying value to an object
-sub triggerColor {
+sub createColorTrigger {
     my (%args) = @_;
     my $defaultName = $args{defaultName};
     my $name        = $args{name};
@@ -168,37 +169,10 @@ sub defaultMarginLineColor {
     return COLOR_BLACK;
 }
 
-has regularLineColor => (
-    is => 'rw',
-    trigger => triggerColor(
-        name => 'regularLineColor',
-        defaultName => 'defaultRegularLineColor',
-    ),
-);
-
-has majorLineColor => (
-    is => 'rw',
-    trigger => triggerColor(
-        name => 'majorLineColor',
-        defaultName => 'defaultMajorLineColor',
-    ),
-);
-
-has feintLineColor => (
-    is => 'rw',
-    trigger => triggerColor(
-        name => 'feintLineColor',
-        defaultName => 'defaultFeintLineColor',
-    ),
-);
-
-has marginLineColor => (
-    is => 'rw',
-    trigger => triggerColor(
-        name => 'marginLineColor',
-        defaultName => 'defaultMarginLineColor',
-    ),
-);
+has regularLineColor => (is => 'rw', trigger => createColorTrigger(name => 'regularLineColor', defaultName => 'defaultRegularLineColor'));
+has majorLineColor   => (is => 'rw', trigger => createColorTrigger(name => 'majorLineColor',   defaultName => 'defaultMajorLineColor'));
+has feintLineColor   => (is => 'rw', trigger => createColorTrigger(name => 'feintLineColor',   defaultName => 'defaultFeintLineColor'));
+has marginLineColor  => (is => 'rw', trigger => createColorTrigger(name => 'marginLineColor',  defaultName => 'defaultMarginLineColor'));
 
 around regularLineColor => aroundColor(name => 'regularLineColor', defaultName => 'defaultRegularLineColor');
 around majorLineColor   => aroundColor(name => 'majorLineColor',   defaultName => 'defaultMajorLineColor');
@@ -212,8 +186,6 @@ sub colorCSS {
     my $majorLineColor   = $self->majorLineColor;
     my $feintLineColor   = $self->feintLineColor;
     my $marginLineColor  = $self->marginLineColor;
-
-    warn $marginLineColor;
 
     return <<"EOF";
         .regular-line { stroke: $regularLineColor; }
