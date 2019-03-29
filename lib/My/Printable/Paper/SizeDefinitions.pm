@@ -16,59 +16,58 @@ INIT {                          # cannot use BEGIN here.
         letter => {
             width  => scalar(My::Printable::Paper::Unit->pt([8.5, "in"])),
             height => scalar(My::Printable::Paper::Unit->pt([11, "in"])),
-            type   => "imperial",
+            unitType => "imperial",
         },
         a4 => {
             width  => scalar(My::Printable::Paper::Unit->pt([250 / sqrt(sqrt(2)), "mm"])),
             height => scalar(My::Printable::Paper::Unit->pt([250 * sqrt(sqrt(2)), "mm"])),
-            type   => "metric",
+            unitType => "metric",
         },
         halfletter => {
             width  => scalar(My::Printable::Paper::Unit->pt([5.5, "in"])),
             height => scalar(My::Printable::Paper::Unit->pt([8.5, "in"])),
-            type   => "imperial",
+            unitType => "imperial",
         },
         a5 => {
             width  => scalar(My::Printable::Paper::Unit->pt([125 * sqrt(sqrt(2)), "mm"])),
             height => scalar(My::Printable::Paper::Unit->pt([250 / sqrt(sqrt(2)), "mm"])),
-            type   => "metric",
+            unitType => "metric",
         },
         quarterletter => {
             width  => scalar(My::Printable::Paper::Unit->pt([4.25, "in"])),
             height => scalar(My::Printable::Paper::Unit->pt([5.5, "in"])),
-            type   => "imperial",
+            unitType => "imperial",
         },
         a6 => {
             width  => scalar(My::Printable::Paper::Unit->pt([125 / sqrt(sqrt(2)), "mm"])),
             height => scalar(My::Printable::Paper::Unit->pt([125 * sqrt(sqrt(2)), "mm"])),
-            type   => "metric",
+            unitType => "metric",
         },
         'travelers' => {
             width  => scalar(My::Printable::Paper::Unit->pt('110mm')),
             height => scalar(My::Printable::Paper::Unit->pt('210mm')),
-            type   => "metric",
+            unitType => "metric",
         },
         'travelers-sheet' => {
             width  => scalar(My::Printable::Paper::Unit->pt('210mm')),
             height => scalar(My::Printable::Paper::Unit->pt('220mm')),
-            type   => "metric",
+            unitType => "metric",
         },
     };
 }
 
 sub parse {
-    my ($self, $spec) = @_;
-    $spec = lc $spec;
+    my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
 
     my $result =
-        $self->parse_builtin_papersize($spec) //
-        $self->parse_custom_papersize($spec) //
-        $self->parse_paperconf_papersize($spec);
+        $self->parse_builtin_papersize(@_) //
+        $self->parse_custom_papersize(@_) //
+        $self->parse_paperconf_papersize(@_);
     if (wantarray) {
         return ($result->{name},
                 $result->{width},
                 $result->{height},
-                $result->{type});
+                $result->{unitType});
     }
     return $result;
 }
@@ -78,8 +77,9 @@ sub parse_builtin_papersize {
 }
 
 sub parseBuiltinPapersize {
-    my ($self, $spec) = @_;
-    $spec = lc $spec;
+    my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
+
+    my $spec = shift;
 
     my $info = $SIZES->{$spec};
     return if !$info;
@@ -94,8 +94,9 @@ sub parse_paperconf_papersize {
 }
 
 sub parsePaperconfPapersize {
-    my ($self, $spec) = @_;
-    $spec = lc $spec;
+    my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
+
+    my $spec = shift;
 
     my $ph;
     my @cmd;
@@ -129,7 +130,7 @@ sub parsePaperconfPapersize {
         name => $name,
         width => $width,
         height => $height,
-        type   => $unit_type
+        unitType => $unit_type
     };
 }
 
@@ -138,8 +139,9 @@ sub parse_custom_papersize {
 }
 
 sub parseCustomPapersize {
-    my ($self, $spec) = @_;
-    $spec = lc $spec;
+    my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
+
+    my $spec = shift;
 
     my $rx_number = My::Printable::Paper::Unit->rx_number;
     my $rx_units  = My::Printable::Paper::Unit->rx_units;
@@ -194,7 +196,7 @@ sub parseCustomPapersize {
         return {
             width  => $width,
             height => $height,
-            type   => $unit_type
+            unitType => $unit_type
         };
     }
     return;
@@ -207,7 +209,9 @@ sub get_square_points {
 }
 
 sub getSquarePoints {
-    my ($self, $size) = @_;
+    my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
+
+    my $size = shift;
     if (exists $SQUARE_POINTS{$size}) {
         return $SQUARE_POINTS{$size};
     }
