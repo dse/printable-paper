@@ -33,31 +33,31 @@ use constant PD => 72 / DEFAULT_DPI; # printer dots
 our $UNITS = {
     "pt" => {
         to_pt => 1,
-        type => "imperial",
+        unitType => "imperial",
     },
     "pc" => {
         to_pt => PC,
-        type => "imperial",
+        unitType => "imperial",
     },
     "in" => {
         to_pt => IN,
-        type => "imperial",
+        unitType => "imperial",
     },
     "cm" => {
         to_pt => CM,
-        type => "metric",
+        unitType => "metric",
     },
     "mm" => {
         to_pt => MM,
-        type => "metric",
+        unitType => "metric",
     },
     "px" => {
         to_pt => PX,
-        type => "imperial"
+        unitType => "imperial"
     },
     "pd" => {
         to_pt => PD,
-        type => "imperial"
+        unitType => "imperial"
     }
 };
 
@@ -111,7 +111,7 @@ sub addUnit {
 
     my $hash = {
         to_pt => $pt,
-        type => $unit_type,
+        unitType => $unit_type,
         %options
     };
     return $self->units->{$unit} = $hash;
@@ -287,7 +287,7 @@ sub pt {
             die("defaultUnit of $defaultUnit does not exist\n");
         }
         my $defaultUnitToPt = $defaultUnitInfo->{to_pt};
-        my $defaultUnitType = $defaultUnitInfo->{type};
+        my $defaultUnitType = $defaultUnitInfo->{unitType};
 
         $number *= $defaultUnitToPt;
         return ($number, $defaultUnitType) if wantarray;
@@ -304,7 +304,7 @@ sub pt {
     }
 
     my $result_pt   = $number * $unit_info->{to_pt};
-    my $result_type = $unit_info->{type};
+    my $result_type = $unit_info->{unitType};
 
     if ($is_from_end) {
         $result_pt = $self->size - $result_pt;
