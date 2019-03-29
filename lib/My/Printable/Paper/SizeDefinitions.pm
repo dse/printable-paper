@@ -13,7 +13,6 @@ use POSIX qw(round);
 our $SIZES;
 INIT {                          # cannot use BEGIN here.
     $SIZES = {
-
         letter => {
             width  => scalar(My::Printable::Paper::Unit->pt([8.5, "in"])),
             height => scalar(My::Printable::Paper::Unit->pt([11, "in"])),
@@ -75,6 +74,10 @@ sub parse {
 }
 
 sub parse_builtin_papersize {
+    goto &parseBuiltinPapersize;
+}
+
+sub parseBuiltinPapersize {
     my ($self, $spec) = @_;
     $spec = lc $spec;
 
@@ -87,6 +90,10 @@ sub parse_builtin_papersize {
 }
 
 sub parse_paperconf_papersize {
+    goto &parsePaperconfPapersize;
+}
+
+sub parsePaperconfPapersize {
     my ($self, $spec) = @_;
     $spec = lc $spec;
 
@@ -127,6 +134,10 @@ sub parse_paperconf_papersize {
 }
 
 sub parse_custom_papersize {
+    goto &parseCustomPapersize;
+}
+
+sub parseCustomPapersize {
     my ($self, $spec) = @_;
     $spec = lc $spec;
 
@@ -192,6 +203,10 @@ sub parse_custom_papersize {
 our %SQUARE_POINTS;
 
 sub get_square_points {
+    goto &getSquarePoints;
+}
+
+sub getSquarePoints {
     my ($self, $size) = @_;
     if (exists $SQUARE_POINTS{$size}) {
         return $SQUARE_POINTS{$size};
@@ -206,16 +221,6 @@ sub get_square_points {
         return $SQUARE_POINTS{$size} = 0;
     }
     return $SQUARE_POINTS{$size} = $width * $height;
-}
-
-our $SINGLETON;
-
-sub object {
-    my ($self) = @_;
-    if (!ref $self) {
-        $self = ($SINGLETON //= __PACKAGE__->new);
-    }
-    return $self;
 }
 
 1;
