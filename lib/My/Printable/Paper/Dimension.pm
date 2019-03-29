@@ -5,6 +5,7 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::Unit qw(:const);
+use My::Printable::Paper::Regexp qw(:regexp);
 
 use Moo;
 
@@ -21,10 +22,6 @@ sub setFrom {
 }
 
 use Scalar::Util qw(blessed);
-use Regexp::Common qw /number/;
-
-our $RE_NUMBER = qr{$RE{num}{real}};
-our $RE_UNIT   = qr{[[:alpha:]]+|%};
 
 # ::Dimension->new();
 # ::Dimension->new('18pt');
