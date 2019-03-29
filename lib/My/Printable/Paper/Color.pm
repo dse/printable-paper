@@ -3,6 +3,9 @@ use warnings;
 use strict;
 use v5.10.0;
 
+use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
+use My::Printable::Paper::Regexp qw(:regexp);
+
 use Moo;
 
 use Exporter 'import';
@@ -148,55 +151,25 @@ sub parse {
     }
 
     my ($r, $g, $b, $a);
-    if ($value =~ m{\A\#
-                    ([[:xdigit:]])
-                    ([[:xdigit:]])
-                    ([[:xdigit:]])
-                    ([[:xdigit:]])?
-                    \z}xi) {
+    if ($value =~ m{^${RE_COLOR_12BIT}$}) {
         ($r, $g, $b, $a) = ($1, $2, $3, $4);
         $r = hex($r) / 15;
         $g = hex($g) / 15;
         $b = hex($b) / 15;
         $a = hex($a // 'f') / 15;
-    } elsif ($value =~ m{\A\#
-                         ([[:xdigit:]]{2})
-                         ([[:xdigit:]]{2})
-                         ([[:xdigit:]]{2})
-                         ([[:xdigit:]]{2})?
-                         \z}xi) {
+    } elsif ($value =~ m{^${RE_COLOR_24BIT}$}) {
         ($r, $g, $b, $a) = ($1, $2, $3, $4);
         $r = hex($r) / 255;
         $g = hex($g) / 255;
         $b = hex($b) / 255;
         $a = hex($a // 'ff') / 255;
-    } elsif ($value =~ m{\A\#
-                         ([[:xdigit:]]{4})
-                         ([[:xdigit:]]{4})
-                         ([[:xdigit:]]{4})
-                         ([[:xdigit:]]{4})?
-                         \z}xi) {
+    } elsif ($value =~ m{^${RE_COLOR_48BIT}$}) {
         ($r, $g, $b, $a) = ($1, $2, $3, $4);
         $r = hex($r) / 65535;
         $g = hex($g) / 65535;
         $b = hex($b) / 65535;
         $a = hex($a // 'ffff') / 65535;
-    } elsif ($value =~ m{\A
-                         rgba?
-                         \(
-                         \s*
-                         ($rx_int_or_pct)
-                         (?:\s+|\s*,\s*)
-                         ($rx_int_or_pct)
-                         (?:\s+|\s*,\s*)
-                         ($rx_int_or_pct)
-                         (?:
-                             (?:\s+|\s*,\s*)
-                             ($rx_int_or_pct)
-                         )?
-                         \s*
-                         \)
-                         \z}xi) {
+    } elsif ($value =~ m{^${RE_COLOR_CSS}$}) {
         ($r, $g, $b, $a) = ($1, $2, $3, $4);
         foreach ($r, $g, $b) {
             if (defined $_) {
