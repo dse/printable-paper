@@ -5,120 +5,131 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::Unit qw(:const);
-use My::Printable::Paper::Regexp qw(:regexp);
+use My::Printable::Paper::Regexp qw(:functions);
 
 use Moo;
 
 has number   => (is => 'rw', default => 0);
-has unit     => (is => 'rw', default => 'pt');
+has unit     => (is => 'rw', default => 'pt'); # pt, in, mm, etc.
 has document => (is => 'rw');
-has axis     => (is => 'rw');
+has axis     => (is => 'rw');   # x or y
+has unitType => (is => 'rw', default => 'imperial'); # imperial or metric
+has fromEdge => (is => 'rw');   # left, right, top, or bottom
 
-sub setFrom {
-    my ($self, $from) = @_;
-    foreach my $prop (qw(number unit document axis)) {
-        $self->$prop($from->$prop);
-    }
-}
+=head2 new
 
-use Scalar::Util qw(blessed);
+    my $dim = My::Printable::Paper::Dimension->new();
+    my $dim = My::Printable::Paper::Dimension->new('18pt');
+    my $dim = My::Printable::Paper::Dimension->new('18pt', axis => 'x', ...);
+    my $dim = My::Printable::Paper::Dimension->new([18, 'pt']);
+    my $dim = My::Printable::Paper::Dimension->new([18, 'pt'], axis => 'x', ...);
 
-# ::Dimension->new();
-# ::Dimension->new('18pt');
-# ::Dimension->new('18pt', axis => 'x');
-# ::Dimension->new([18, 'pt']);
-# ::Dimension->new([18, 'pt'], axis => 'x');
+=cut
+
 around BUILDARGS => sub {
     my $orig = shift;
     my $class = shift;
     if (scalar @_ % 2 == 1) {
-        # first argument is like '18pt' or ['18', 'pt']
         my $value = shift;
         my $hash = $class->$orig(@_);
-        # set number to an arrayref; BUILD method will
-        # parse at end of object creation.
-        if (ref $value eq 'ARRAY') {
-            $hash->{number} //= $value;
-        } else {
-            $hash->{number} //= [$value];
-        }
+        $hash->{number} = \$value; # BUILD will process
         return $hash;
     } else {
-        if ($_[0] =~ m{^${RE_NUMBER}$} && $_[1] =~ m{^${RE_UNIT}$}) {
-            # first two arguments are a number and a unit
-            my $number = shift;
-            my $unit = shift;
-            my $hash = $class->$orig(@_);
-            $hash->{number} //= $number;
-            $hash->{unit} //= $unit;
-            return $hash;
-        } else {
-            return $class->$orig(@_);
-        }
+        my $value = shift . shift;
+        my $hash = $class->$orig(@_);
+        $hash->{number} = \$value;
+        return $hash;
     }
 };
 
 use Data::Dumper qw(Dumper);
+use Scalar::Util qw(blessed);
 
 sub BUILD {
     my ($self, $args) = @_;
-    if (ref $self->number eq 'ARRAY') {
-        my ($number, $unit) = $self->parse($self->number);
-        $self->number($number);
-        $self->unit($unit);
+    my $value;
+    if (ref $self->number eq 'SCALAR') {
+        $value = ${$self->number};
+    } elsif (ref $self->number eq 'ARRAY') {
+        $value = join('', @{$self->number});
+    }
+    if (defined $value) {
+        $self->set($value);
     }
 }
 
-# __PACKAGE__->parse(...) or $dimension->parse(...) or parse(...);
-#
-# ...->parse([18]);
-# ...->parse([18, 'pt']);
-# ...->parse(18);
-# ...->parse(18, 'pt');
+=head2 parse
+
+    my ($number, $unit, $unitType) = parse(18);
+    my ($number, $unit, $unitType) = parse('18pt');
+    my ($number, $unit, $unitType) = parse('18', 'pt');
+    my ($number, $unit, $unitType) = parse(['18']);
+    my ($number, $unit, $unitType) = parse(['18', 'pt']);
+
+=cut
+
 sub parse {
     my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
-    my ($value, $unit);
-    if (ref $_[0] eq 'ARRAY') {
-        ($value, $unit) = @{$_[0]};
+    my $value;
+    if (scalar @_ % 2 == 1) {
+        $value = shift;
+        $value = join('', @$value) if eval { ref $value eq 'ARRAY' };
     } else {
-        ($value, $unit) = @_;
+        $value = shift . shift;
     }
-    $value //= 0;
-    if ($value =~ m{^\s*
-                    (${RE_NUMBER})\s*
-                    (?:/\s*(${RE_NUMBER})\s*)?
-                    (?:(${RE_UNIT})\s*)?
-                    $}x) {
-        my $number = $1 + 0;
-        my $denom = ($2 // 1) + 0;
-        $unit = $3 // $unit // 'pt';
-        $number /= $denom;
-        return ($number, $unit);
-    }
-    if (defined $unit) {
-        die("invalid dimension: '$value $unit'");
-    } else {
+    my $match;
+    if (!($match = matchDimension($value))) {
         die("invalid dimension: '$value'");
+    }
+    my $number   = ($match->{number2} // 0) + $match->{number} / ($match->{denominator} // 1);
+    my $unit     = $match->{unit};
+    my $fromEdge = $match->{fromEdge};
+    my $unitType = $self->getUnitType($unit);
+    return ($number, $unit, $fromEdge) if wantarray;
+    return {
+        number   => $number,
+        unit     => $unit,
+        fromEdge => $fromEdge,
+    };
+}
+
+sub setFrom {
+    my $self = shift;
+    my $from = shift;
+    foreach my $prop (qw(number unit document axis unitType fromEdge)) {
+        $self->$prop($from->$prop);
     }
 }
 
 sub set {
-    my ($self, $value, $unit) = @_;
-    if (eval { $value->isa(__PACKAGE__) }) {
-        $self->setFrom($value);
+    my $self = shift;
+    if (eval { $_[0]->isa(__PACKAGE__) }) {
+        $self->setFrom(shift);
         return;
     }
-    (my $number, $unit) = $self->parse($value, $unit);
-    $self->number($number);
-    $self->unit($unit);
+    my $result = $self->parse(@_);
+    $self->number($result->{number});
+    $self->unit($result->{unit});
+    $self->fromEdge($result->{fromEdge});
+    $self->unitType($result->{unitType});
 }
+
+use constant UNIT_PERCENT => qw(% pct percent);
+use constant UNIT_PT      => qw(pt pts point points);
+use constant UNIT_PC      => qw(pc pcs pica picas);
+use constant UNIT_IN      => qw(in ins inch inches);
+use constant UNIT_CM      => qw(cm cms centimeter centimeters centimetre centimetres);
+use constant UNIT_MM      => qw(mm mms millimeter millimeters millimetre millimetres);
+use constant UNIT_PX      => qw(px pxs pixel pixels);
+use constant UNIT_PD      => qw(pd pds dot dots);
+use constant UNIT_TICK    => qw(tick ticks grid grids gridline gridlines line lines square squares unit units);
 
 sub asPoints {
     my ($self) = @_;
     if (!defined $self->unit) {
         return $self->number;
     }
-    if (grep { $self->unit eq $_ } qw(% pct percent)) {
+    if (grep { $self->unit eq $_ } UNIT_PERCENT) {
         if (!defined $self->document) {
             die("document must be defined to use % unit");
         }
@@ -128,19 +139,19 @@ sub asPoints {
         return $self->document->width  * $self->number / 100 if $self->axis eq 'x';
         return $self->document->height * $self->number / 100;
     }
-    return $self->number * PT if grep { $self->unit eq $_ } qw(pt pts point points);
-    return $self->number * PC if grep { $self->unit eq $_ } qw(pc pcs pica picas);
-    return $self->number * IN if grep { $self->unit eq $_ } qw(in ins inch inches);
-    return $self->number * CM if grep { $self->unit eq $_ } qw(cm cms centimeter centimeters centimetre centimetres);
-    return $self->number * MM if grep { $self->unit eq $_ } qw(mm mms millimeter millimeters millimetre millimetres);
-    return $self->number * PX if grep { $self->unit eq $_ } qw(px pxs pixel pixels);
-    if (grep { $self->unit eq $_ } qw(pd pds dot dots)) {
+    return $self->number * PT if grep { $self->unit eq $_ } UNIT_PT;
+    return $self->number * PC if grep { $self->unit eq $_ } UNIT_PC;
+    return $self->number * IN if grep { $self->unit eq $_ } UNIT_IN;
+    return $self->number * CM if grep { $self->unit eq $_ } UNIT_CM;
+    return $self->number * MM if grep { $self->unit eq $_ } UNIT_MM;
+    return $self->number * PX if grep { $self->unit eq $_ } UNIT_PX;
+    if (grep { $self->unit eq $_ } UNIT_PD) {
         if (!defined $self->document) {
             die("document must be defined to use pd unit");
         }
         return $self->number * 72 / $self->document->dpi;
     }
-    if (grep { $self->unit eq $_ } qw(tick ticks grid grids gridline gridlines line lines square squares unit units)) {
+    if (grep { $self->unit eq $_ } UNIT_TICK) {
         if (!defined $self->document) {
             die("document must be defined to use tick unit");
         }
@@ -151,6 +162,27 @@ sub asPoints {
         return $self->number * $self->document->gridUnitY->asPoints;
     }
     die(sprintf("unit %s not defined", $self->unit));
+}
+
+sub getUnitType {
+    my $self = eval { $_[0]->isa(__PACKAGE__) } ? shift : __PACKAGE__;
+    my $unit;
+    if (blessed $self) {
+        $unit = shift // $self->unit;
+    } else {
+        $unit = shift;
+    }
+    return if !defined $unit || $unit !~ m{\S};
+    return            if grep { $unit eq $_ } UNIT_PERCENT;
+    return 'imperial' if grep { $unit eq $_ } UNIT_PT;
+    return 'imperial' if grep { $unit eq $_ } UNIT_PC;
+    return 'imperial' if grep { $unit eq $_ } UNIT_IN;
+    return 'metric'   if grep { $unit eq $_ } UNIT_CM;
+    return 'metric'   if grep { $unit eq $_ } UNIT_MM;
+    return 'imperial' if grep { $unit eq $_ } UNIT_PX;
+    return            if grep { $unit eq $_ } UNIT_PD;
+    return            if grep { $unit eq $_ } UNIT_TICK;
+    return;
 }
 
 1;
