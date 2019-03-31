@@ -15,6 +15,7 @@ has document => (is => 'rw');
 has axis     => (is => 'rw');   # x or y
 has unitType => (is => 'rw', default => 'imperial'); # imperial or metric
 has fromEdge => (is => 'rw');   # left, right, top, or bottom
+has isNonNegative   => (is => 'rw', default => 0);
 
 =head2 new
 
@@ -126,8 +127,12 @@ use constant UNIT_TICK    => qw(tick ticks grid grids gridline gridlines line li
 
 sub asPoints {
     my ($self) = @_;
+    my $number = $self->number;
+    if ($self->isNonNegative) {
+        $number = 0 if $number < 0;
+    }
     if (!defined $self->unit) {
-        return $self->number;
+        return $number;
     }
     if (grep { $self->unit eq $_ } UNIT_PERCENT) {
         if (!defined $self->document) {
@@ -136,20 +141,20 @@ sub asPoints {
         if (!defined $self->axis && $self->axis ne 'x' && $self->axis ne 'y') {
             die("axis must be 'x' or 'y' to use % unit");
         }
-        return $self->document->width  * $self->number / 100 if $self->axis eq 'x';
-        return $self->document->height * $self->number / 100;
+        return $self->document->width  * $number / 100 if $self->axis eq 'x';
+        return $self->document->height * $number / 100;
     }
-    return $self->number * PT if grep { $self->unit eq $_ } UNIT_PT;
-    return $self->number * PC if grep { $self->unit eq $_ } UNIT_PC;
-    return $self->number * IN if grep { $self->unit eq $_ } UNIT_IN;
-    return $self->number * CM if grep { $self->unit eq $_ } UNIT_CM;
-    return $self->number * MM if grep { $self->unit eq $_ } UNIT_MM;
-    return $self->number * PX if grep { $self->unit eq $_ } UNIT_PX;
+    return $number * PT if grep { $self->unit eq $_ } UNIT_PT;
+    return $number * PC if grep { $self->unit eq $_ } UNIT_PC;
+    return $number * IN if grep { $self->unit eq $_ } UNIT_IN;
+    return $number * CM if grep { $self->unit eq $_ } UNIT_CM;
+    return $number * MM if grep { $self->unit eq $_ } UNIT_MM;
+    return $number * PX if grep { $self->unit eq $_ } UNIT_PX;
     if (grep { $self->unit eq $_ } UNIT_PD) {
         if (!defined $self->document) {
             die("document must be defined to use pd unit");
         }
-        return $self->number * 72 / $self->document->dpi;
+        return $number * 72 / $self->document->dpi;
     }
     if (grep { $self->unit eq $_ } UNIT_TICK) {
         if (!defined $self->document) {
@@ -158,10 +163,31 @@ sub asPoints {
         if (!defined $self->axis) {
             die("axis must be defined to use tick unit");
         }
-        return $self->number * $self->document->gridUnitX->asPoints if $self->axis eq 'x';
-        return $self->number * $self->document->gridUnitY->asPoints;
+        return $number * $self->document->gridUnitX->asPoints if $self->axis eq 'x';
+        return $number * $self->document->gridUnitY->asPoints;
     }
     die(sprintf("unit %s not defined", $self->unit));
+}
+
+sub asX { goto &asCoorindate; }
+sub asY { goto &asCoorindate; }
+sub asCoordinate {
+    my ($self) = @_;
+    die("asCoordinate: document must be specified") if !defined $self->document;
+    die("asCoordinate: axis must be specified") if !defined $self->axis;
+    if ($self->axis eq 'x') {
+        if ($self->fromEdge eq 'right') {
+            return $self->document->width - $self->asPoints;
+        }
+        return $self->asPoints;
+    }
+    if ($self->axis eq 'y') {
+        if ($self->fromEdge eq 'bottom') {
+            return $self->document->height - $self->asPoints;
+        }
+        return $self->asPoints;
+    }
+    die("asCoordinate: axis must be 'x' or 'y'");
 }
 
 sub getUnitType {
