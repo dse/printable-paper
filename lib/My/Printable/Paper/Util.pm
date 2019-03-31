@@ -261,7 +261,6 @@ sub triggerUnitY {
 
 sub createDimensionTrigger {
     my %args = @_;
-    my $axis = $args{axis};
     my $name = $args{name};
     my $trigger = sub {
         my ($self, $value) = @_;
