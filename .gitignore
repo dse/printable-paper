@@ -5,3 +5,4 @@
 .DS_Store
 nytprof
 nytprof.out
+node_modules
