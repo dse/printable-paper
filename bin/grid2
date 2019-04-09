@@ -1,0 +1,83 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use v5.10.0;
+
+use FindBin;
+use lib "${FindBin::Bin}/../lib";
+
+use My::Printable::Paper::2::Paper;
+
+my $paper = My::Printable::Paper::2::Paper->new(
+    size => 'a4'
+);
+$paper->clipLeft(9);
+$paper->clipRight(9);
+$paper->clipTop(9);
+$paper->clipBottom(9);
+
+my $majorLineType = $paper->lineType(
+    id => 'major',
+    width => '3 dots',
+);
+my $minorLineType = $paper->lineType(
+    id => 'minor',
+    width => '1 dot',
+    style => 'dashed',
+);
+my $marginLineType = $paper->lineType(
+    id => 'margin',
+    width => '3 dots',
+    stroke => 'red',
+);
+
+my $majorGridX = $paper->xPointSeries(
+    id => 'major-x',
+    shiftPoints => 1,
+);
+my $majorGridY = $paper->yPointSeries(
+    id => 'major-y',
+    shiftPoints => 1,
+);
+$majorGridX->compute();
+$majorGridY->compute();
+
+my $minorGridX = $paper->xPointSeries(
+    id => 'minor-x',
+    step => '1/3 grid',
+    origin => $majorGridX->computedOrigin,
+);
+my $minorGridY = $paper->yPointSeries(
+    id => 'minor-y',
+    step => '1/3 grid',
+    origin => $majorGridY->computedOrigin,
+);
+$minorGridX->compute();
+$minorGridY->compute();
+
+$paper->startSVG();
+
+$paper->drawGrid(
+    id => 'major-grid',
+    x => $majorGridX,
+    y => $majorGridY,
+    lineType => 'major',
+);
+$paper->drawGrid(
+    id => 'minor-grid',
+    x => $minorGridX,
+    y => $minorGridY,
+    lineType => 'minor',
+);
+$paper->drawVerticalLines(
+    id => 'left-margin-line',
+    x => $majorGridX->nearest('0.75in'),
+    lineType => 'margin',
+);
+$paper->drawHorizontalLines(
+    id => 'top-margin-line',
+    y => $majorGridY->nearest('0.75in'),
+    lineType => 'margin',
+);
+
+$paper->write(format => 'svg', basename => 'paper');
