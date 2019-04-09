@@ -132,6 +132,9 @@ sub convertPDFToNPage4UpPDF {
             my $outputPDF = PDF::API2->new();
             for (my $page = 0; $page < $nPages; $page += 1) {
                 my $outputPage = $outputPDF->page();
+                $outputPage->mediabox(
+                    0, 0, $outputWidth, $outputHeight
+                );
                 my $xo = $outputPDF->importPageIntoForm($inputPDF, 1);
 
                 # for printing with long edge binding
@@ -172,6 +175,9 @@ sub convertPDFToNPage2UpPDF {
             my $outputPDF = PDF::API2->new();
             for (my $page = 0; $page < $nPages; $page += 1) {
                 my $outputPage = $outputPDF->page();
+                $outputPage->mediabox(
+                    0, 0, $outputWidth, $outputHeight
+                );
                 my $xo = $outputPDF->importPageIntoForm($inputPDF, 1);
 
                 # for printing with long edge binding
