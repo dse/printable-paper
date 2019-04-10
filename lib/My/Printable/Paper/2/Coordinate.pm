@@ -35,10 +35,14 @@ INIT {
                                 from
                             )?
                             \s+
-                            (?<edge>top|bottom|left|right|start|begin|stop|end)
+                            (?<side>top|bottom|left|right|start|begin|stop|end)
                             (?:
                                 \s+
-                                (?:side|edge)
+                                (?<boundary>side|edge|clip)
+                                (?:
+                                    \s+
+                                    boundary
+                                )?
                             )?
                         )?
                         \s*
@@ -61,23 +65,24 @@ sub parse {
     if ($value !~ $RE_COORDINATE) {
         die("invalid coordinate '$value'");
     }
-    my $mixed = 0 + ($+{mixed} // 0);
-    my $numer = 0 + $+{numer};
-    my $denom = 0 + ($+{denom} // 1);
-    my $unit  = $+{unit};
-    my $edge  = $+{edge};
+    my $mixed    = 0 + ($+{mixed} // 0);
+    my $numer    = 0 + $+{numer};
+    my $denom    = 0 + ($+{denom} // 1);
+    my $unit     = $+{unit};
+    my $side     = $+{side};
+    my $boundary = $+{boundary} // 'edge'; # side, edge, clip
 
     my $resultPt = $mixed + $numer / $denom;
     if (defined $unit) {
         $resultPt *= My::Printable::Paper::2::Unit::parse($unit, $axis, $paper);
     }
-    if (defined $edge) {
+    if (defined $side) {
         if (!defined $paper) {
-            die("cannot specify edge without paper object");
+            die("cannot specify side without paper object");
         }
         my $sizePt;
         if (!defined $axis) {
-            die("axis must be 'x' or 'y' to use edge-based coordinate");
+            die("axis must be 'x' or 'y' to use side-based coordinate");
         } elsif ($axis eq 'x') {
             $sizePt = My::Printable::Paper::2::Coordinate::parse(
                 $paper->width, 'x', $paper
@@ -89,12 +94,21 @@ sub parse {
         } else {
             die("invalid axis '$axis'");
         }
-        if (any { $_ eq $edge } qw(top left start begin)) {
+        my $clipStart = $axis eq 'x' ? $paper->xx('clipLeft') : $paper->xx('clipTop');
+        my $clipEnd   = $axis eq 'x' ? $paper->xx('clipTop')  : $paper->xx('clipBottom');
+        if (any { $_ eq $side } qw(top left start begin)) {
+            if ($boundary eq 'clip') {
+                $resultPt = $resultPt + $clipStart;
+            }
             # do nothing
-        } elsif (any { $_ eq $edge } qw(bottom right stop end)) {
-            $resultPt = $sizePt - $resultPt;
+        } elsif (any { $_ eq $side } qw(bottom right stop end)) {
+            if ($boundary eq 'clip') {
+                $resultPt = $sizePt - $resultPt - $clipEnd;
+            } else {
+                $resultPt = $sizePt - $resultPt;
+            }
         } else {
-            die("invalid edge '$edge'");
+            die("invalid side '$side'");
         }
     }
     return $resultPt;
