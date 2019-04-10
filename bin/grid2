@@ -18,7 +18,7 @@ $paper->clipBottom(9);
 
 my $majorLineType = $paper->lineType(
     id => 'major',
-    width => '3 dots',
+    width => '2 dots',
 );
 my $minorLineType = $paper->lineType(
     id => 'minor',
@@ -55,7 +55,7 @@ my $minorGridY = $paper->yPointSeries(
 $minorGridX->compute();
 $minorGridY->compute();
 
-$paper->startSVG();
+$paper->startSvg();
 
 $paper->drawGrid(
     id => 'major-grid',
@@ -80,4 +80,12 @@ $paper->drawHorizontalLines(
     lineType => 'margin',
 );
 
-$paper->write(format => 'svg', basename => 'paper');
+$paper->basename('paper');
+$paper->writePs(2, 2);
+$paper->writePs(2, 1);
+$paper->writePs(4, 2);
+$paper->writePs(4, 1);
+$paper->writePdf(2, 2);
+$paper->writePdf(2, 1);
+$paper->writePdf(4, 2);
+$paper->writePdf(4, 1);
