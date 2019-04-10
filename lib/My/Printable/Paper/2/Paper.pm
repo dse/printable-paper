@@ -10,6 +10,7 @@ use My::Printable::Paper::2::LineType;
 use My::Printable::Paper::2::PointSeries;
 use My::Printable::Paper::2::Coordinate;
 use My::Printable::Paper::2::Util qw(:stroke);
+use My::Printable::Paper::2::Converter;
 
 use Moo;
 
@@ -55,10 +56,11 @@ has size => (
 has lineTypeHash    => (is => 'rw', default => sub { return {}; });
 has pointSeriesHash => (is => 'rw', default => sub { return {}; });
 has dpi             => (is => 'rw', default => 600);
-has inkscapeShell => (
+
+has converter => (
     is => 'rw', lazy => 1, default => sub {
         my $self = shift;
-        return My::Printable::Paper::2::InkscapeShell->new();
+        return My::Printable::Paper::2::Converter->new(paper => $self);
     },
 );
 
@@ -245,7 +247,7 @@ sub drawGrid {
     # vertical lines
     foreach my $x (@xPt) {
         $group->appendChild(
-            $self->createSVGLine(
+            $self->createSvgLine(
                 x => $x, y1 => $y1, y2 => $y2, lineType => $lineType,
                 %vDashArgs,
             )
@@ -255,7 +257,7 @@ sub drawGrid {
     # horizontal lines
     foreach my $y (@yPt) {
         $group->appendChild(
-            $self->createSVGLine(
+            $self->createSvgLine(
                 y => $y, x1 => $x1, x2 => $x2, lineType => $lineType,
                 %hDashArgs,
             )
@@ -280,7 +282,7 @@ sub drawHorizontalLines {
     my $group = $self->svgGroupElement(id => $id, parentId => $parentId);
     foreach my $y (@yPt) {
         $group->appendChild(
-            $self->createSVGLine(
+            $self->createSvgLine(
                 y => $y, x1 => $x1, x2 => $x2, lineType => $lineType,
             )
         );
@@ -304,7 +306,7 @@ sub drawVerticalLines {
     my $group = $self->svgGroupElement(id => $id, parentId => $parentId);
     foreach my $x (@xPt) {
         $group->appendChild(
-            $self->createSVGLine(
+            $self->createSvgLine(
                 x => $x, y1 => $y1, y2 => $y2, lineType => $lineType,
             )
         );
@@ -315,48 +317,117 @@ sub write {
     my $self = shift;
     my %args = @_;
     my $format   = $args{format} // 'pdf'; # pdf, svg, or ps
-    my $basename = $args{basename} // $self->basename;
+    my $basename = $self->basename;
     if (!defined $basename) {
         die("write: basename must be specified");
     }
-    return $self->writeSVG(%args) if $format eq 'svg';
-    return $self->writePDF(%args) if $format eq 'pdf';
-    return $self->writePS(%args)  if $format eq 'ps';
+    return $self->writeSvg(%args) if $format eq 'svg';
+    return $self->writePdf(%args) if $format eq 'pdf';
+    return $self->writePs(%args)  if $format eq 'ps';
 }
 
 use File::Slurp qw(write_file);
 
-has 'svgIsGenerated' => (is => 'rw', default => sub { return {}; });
+has 'isGenerated' => (is => 'rw', default => sub { return {}; });
 
-sub writeSVG {
+sub getBasePdfFilename {
     my $self = shift;
-    my %args = @_;
-    my $basename = $args{basename} // $self->basename;
-    say STDERR "writeSVG: nup argument ignored"    if defined $args{nup};
-    say STDERR "writeSVG: npages argument ignored" if defined $args{npages};
-    my $filename = sprintf('%s.svg', $basename);
-    return if $self->svgIsGenerated->{$filename};
-    write_file($filename, $self->toSVG) or die("write $filename: $!\n");
-    $self->svgIsGenerated->{$filename} = 1;
+    return $self->basename . '.pdf';
 }
 
-sub writePDF {
+sub getBasePsFilename {
+    my $self = shift;
+    return $self->basename . '.ps';
+}
+
+sub getSvgFilename {
+    my $self = shift;
+    return $self->basename . '.svg';
+}
+
+sub getPdfFilename {
+    my ($self, $nup, $npages) = @_;
+    my $filename = $self->basename;
+    $filename .= sprintf('-%dup', $nup)    if $nup    != 1;
+    $filename .= sprintf('-%dpg', $npages) if $npages != 1;
+    $filename .= '.pdf';
+    return $filename;
+}
+
+sub getPsFilename {
+    my ($self, $nup, $npages) = @_;
+    my $filename = $self->basename;
+    $filename .= sprintf('-%dup', $nup)    if $nup    != 1;
+    $filename .= sprintf('-%dpg', $npages) if $npages != 1;
+    $filename .= '.ps';
+    return $filename;
+}
+
+sub writeSvg {
     my $self = shift;
     my %args = @_;
-    my $basename = $args{basename} // $self->basename;
-    my $nup      = $args{nup}    // 1; # 1 or 2 or 4
-    my $npages   = $args{npages} // 1; # 1 or 2
+    my $svgFilename = $self->getSvgFilename;
+    return if $self->isGenerated->{$svgFilename};
+    write_file($svgFilename, $self->toSvg) or die("write $svgFilename: $!\n");
+    $self->isGenerated->{$svgFilename} = 1;
+}
 
+sub writeBasePdf {
+    my $self = shift;
+    return if $self->isGenerated->{$self->getBasePdfFilename};
+    $self->writeSvg;
+    $self->converter->exportSvg(
+        $self->getSvgFilename,
+        $self->getBasePdfFilename
+    );
+    $self->isGenerated->{$self->getBasePdfFilename} = 1;
+}
+
+sub writeBasePs {
+    my $self = shift;
+    return if $self->isGenerated->{$self->getBasePsFilename};
+    $self->writeSvg;
+    $self->converter->exportSvg(
+        $self->getSvgFilename,
+        $self->getBasePsFilename
+    );
+    $self->isGenerated->{$self->getBasePsFilename} = 1;
+}
+
+sub writePdf {
+    my ($self, $nup, $npages) = @_;
     if ($nup != 1 && $nup != 2 && $nup != 4) {
-        die("writePDF: nup must be 1, 2, or 4");
+        die("writePdf: nup must be 1, 2, or 4");
     }
     if ($npages != 1 && $npages != 2) {
-        die("writePDF: npages must be 1 or 2");
+        die("writePdf: npages must be 1 or 2");
     }
+    $self->writeBasePdf();
+    $self->converter->convertPdf(
+        $self->getBasePdfFilename,
+        $self->getPdfFilename($nup, $npages),
+        $nup, $npages,
+        $self->xx('width'),
+        $self->yy('height'),
+    );
+}
 
-    $basename .= sprintf('-%dup', $nup)    if $nup    != 1;
-    $basename .= sprintf('-%dpg', $npages) if $npages != 1;
-    my $filename = sprintf('%s.pdf', $basename);
+sub writePs {
+    my ($self, $nup, $npages) = @_;
+    if ($nup != 1 && $nup != 2 && $nup != 4) {
+        die("writePs: nup must be 1, 2, or 4");
+    }
+    if ($npages != 1 && $npages != 2) {
+        die("writePs: npages must be 1 or 2");
+    }
+    $self->writeBasePs();
+    $self->converter->convertPs(
+        $self->getBasePsFilename,
+        $self->getPsFilename($nup, $npages),
+        $nup, $npages,
+        $self->xx('width'),
+        $self->yy('height'),
+    );
 }
 
 sub pointSeries {
@@ -411,7 +482,7 @@ sub parseUnit {
 
 use XML::LibXML;
 
-sub startSVG {
+sub startSvg {
     my $self = shift;
     $self->svgDocument();
     $self->svgRootElement();
@@ -469,7 +540,7 @@ sub svgGroupElement {
     return $group;
 }
 
-sub createSVGLine {
+sub createSvgLine {
     my $self = shift;
     my %args = @_;
     my $x1 = $args{x1} // $args{x};
@@ -545,7 +616,7 @@ sub coordinate {
     die("can't parse '$value' as coordinate(s)");
 }
 
-sub toSVG {
+sub toSvg {
     my $self = shift;
     return $self->svgDocument->toString(2);
 }
