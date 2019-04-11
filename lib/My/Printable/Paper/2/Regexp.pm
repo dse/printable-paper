@@ -21,7 +21,7 @@ our @EXPORT_OK = (
 
 use Regexp::Common qw(number);
 
-our $RE_UNIT = qr{[[:alpha:]]*|%|\'|\"}xi;
+our $RE_UNIT = qr{[[:alpha:]]+|%|\'|\"}xi;
 
 our $RE_COORDINATE = qr{(?:
                             (?<mixed>$RE{num}{real})
