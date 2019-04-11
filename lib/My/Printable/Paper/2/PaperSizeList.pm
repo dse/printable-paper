@@ -7,6 +7,21 @@ use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::2::Const qw(:unit);
 use My::Printable::Paper::2::Util qw(:snap);
 
+use base 'Exporter';
+our %EXPORT_TAGS;
+our @EXPORT;
+our @EXPORT_OK;
+BEGIN {
+    %EXPORT_TAGS = (
+        functions => [qw(getPaperSizeByName)],
+    );
+    @EXPORT = (
+    );
+    @EXPORT_OK = (
+        (map { @$_ } values %EXPORT_TAGS),
+    );
+}
+
 our $PAPER_SIZES;
 our %PAPER_SIZES;
 BEGIN {
