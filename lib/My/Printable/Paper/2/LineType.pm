@@ -12,7 +12,7 @@ has stroke  => (is => 'rw', default => 'blue');
 has fill    => (is => 'rw');
 has paper   => (is => 'rw');
 has dashes  => (is => 'rw', default => 1);
-has dots    => (is => 'rw', default => 2);
+has dots    => (is => 'rw', default => 1);
 has opacity => (is => 'rw');
 
 sub getCSS {
