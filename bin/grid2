@@ -9,7 +9,8 @@ use lib "${FindBin::Bin}/../lib";
 use My::Printable::Paper::2::Paper;
 
 my $paper = My::Printable::Paper::2::Paper->new(
-    size => 'a4'
+    size => 'a4',
+    basename => 'paper',
 );
 $paper->clipLeft(9);
 $paper->clipRight(9);
@@ -82,7 +83,8 @@ $paper->drawHorizontalLines(
     lineType => 'margin',
 );
 
-$paper->basename('paper');
+$paper->endSVG();
+
 $paper->writeSVG();
 # $paper->writePS(1, 1);
 # $paper->writePS(1, 2);
