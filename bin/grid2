@@ -18,16 +18,18 @@ $paper->clipBottom(9);
 
 my $majorLineType = $paper->lineType(
     id => 'major',
-    width => '2 dots',
+    width => '2 printerdots',
 );
 my $minorLineType = $paper->lineType(
     id => 'minor',
-    width => '1 dot',
+    width => '1 printerdot',
     style => 'dashed',
+    dots => 2,
+    dashes => 2,
 );
 my $marginLineType = $paper->lineType(
     id => 'margin',
-    width => '3 dots',
+    width => '3 printerdots',
     stroke => 'red',
 );
 
@@ -44,18 +46,18 @@ $majorGridY->compute();
 
 my $minorGridX = $paper->xPointSeries(
     id => 'minor-x',
-    step => '1/3 grid',
+    step => '1/3 gridunit',
     origin => $majorGridX->computedOrigin,
 );
 my $minorGridY = $paper->yPointSeries(
     id => 'minor-y',
-    step => '1/3 grid',
+    step => '1/3 gridunit',
     origin => $majorGridY->computedOrigin,
 );
 $minorGridX->compute();
 $minorGridY->compute();
 
-$paper->startSvg();
+$paper->startSVG();
 
 $paper->drawGrid(
     id => 'major-grid',
@@ -81,11 +83,16 @@ $paper->drawHorizontalLines(
 );
 
 $paper->basename('paper');
-$paper->writePs(2, 2);
-$paper->writePs(2, 1);
-$paper->writePs(4, 2);
-$paper->writePs(4, 1);
-$paper->writePdf(2, 2);
-$paper->writePdf(2, 1);
-$paper->writePdf(4, 2);
-$paper->writePdf(4, 1);
+$paper->writeSVG();
+# $paper->writePS(1, 1);
+# $paper->writePS(1, 2);
+# $paper->writePS(2, 1);
+# $paper->writePS(2, 2);
+# $paper->writePS(4, 1);
+# $paper->writePS(4, 2);
+# $paper->writePDF(1, 1);
+# $paper->writePDF(1, 2);
+# $paper->writePDF(2, 1);
+# $paper->writePDF(2, 2);
+# $paper->writePDF(4, 1);
+# $paper->writePDF(4, 2);
