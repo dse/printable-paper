@@ -82,16 +82,8 @@ sub snappos {
 
 sub strokeDashArray {
     my %args = @_;
-    my $dashLength      = $args{dashLength};
-    my $dashSpacing     = $args{dashSpacing};
-    my $dashLineStartAt = $args{dashLineStartAt};
-    my $dashCenterAt    = $args{dashCenterAt};
-
-    my $lineLength;
-    my ($x1, $x2, $y1, $y2) = @args{qw(x1 x2 y1 y2)};
-    if (all { defined $_ } ($x1, $x2, $y1, $y2)) {
-        $lineLength = sqrt(($x2 - $x1) ** 2 + ($y2 - $y1) ** 2);
-    }
+    my $dashLength  = $args{dashLength};
+    my $dashSpacing = $args{dashSpacing};
 
     if ($dashLength < SVG_STROKE_DASH_TOLERANCE) {
         $dashLength = SVG_STROKE_DASH_TOLERANCE;
@@ -103,8 +95,8 @@ sub strokeDashOffset {
     my %args = @_;
     my $dashLength    = $args{dashLength};
     my $dashSpacing   = $args{dashSpacing};
-    my $dashLineStart = $args{dashLineStart};
-    my $dashCenterAt  = $args{dashCenterAt};
+    my $dashLineStart = $args{dashLineStart} // 0;
+    my $dashCenterAt  = $args{dashCenterAt} // 0;
 
     my $lineLength;
     my ($x1, $x2, $y1, $y2) = @args{qw(x1 x2 y1 y2)};
