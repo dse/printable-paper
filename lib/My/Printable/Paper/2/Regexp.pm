@@ -76,7 +76,8 @@ our $RE_PAPERSIZE = qr{(?:
                        )?
                        \s*
                        (?:
-                           x|\*
+                           (?:x|\*)
+                           \s*
                        )
                        (?:
                            (?<mixed2>$RE{num}{real})
