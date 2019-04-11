@@ -94,8 +94,8 @@ sub parse {
         } else {
             die("invalid axis '$axis'");
         }
-        my $clipStart = $axis eq 'x' ? $paper->xx('clipLeft') : $paper->xx('clipTop');
-        my $clipEnd   = $axis eq 'x' ? $paper->xx('clipTop')  : $paper->xx('clipBottom');
+        my $clipStart = $axis eq 'x' ? $paper->xx('clipLeft') : $paper->yy('clipTop');
+        my $clipEnd   = $axis eq 'x' ? $paper->xx('clipTop')  : $paper->yy('clipBottom');
         if (any { $_ eq $side } qw(top left start begin)) {
             if ($boundary eq 'clip') {
                 $resultPt = $resultPt + $clipStart;
