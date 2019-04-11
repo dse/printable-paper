@@ -32,7 +32,7 @@ sub parse {
         }
         return 72 / $paper->dpi;
     }
-    if (any { $_ eq $unit } qw(grid grids unit units)) {
+    if (any { $_ eq $unit } qw(grid grids unit units gridunit gridunits)) {
         if (!defined $paper) {
             die("cannot use $unit unit without paper object");
         }
