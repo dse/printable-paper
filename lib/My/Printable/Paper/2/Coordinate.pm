@@ -20,7 +20,7 @@ sub parse {
     if (defined $axis && ($axis ne 'x' && $axis ne 'y')) {
         die("axis must be 'x', 'y', or undef");
     }
-    if ($value !~ $RE_COORDINATE) {
+    if ($value !~ m{^\s*$RE_COORDINATE\s*$}) {
         die("invalid coordinate '$value'");
     }
     my $mixed    = 0 + ($+{mixed} // 0);

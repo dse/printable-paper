@@ -23,9 +23,7 @@ use Regexp::Common qw(number);
 
 our $RE_UNIT = qr{[[:alpha:]]*|%|\'|\"}xi;
 
-our $RE_COORDINATE = qr{^
-                        \s*
-                        (?:
+our $RE_COORDINATE = qr{(?:
                             (?<mixed>$RE{num}{real})
                             \s*
                             (?:[\+\-])
@@ -57,13 +55,9 @@ our $RE_COORDINATE = qr{^
                                     boundary
                                 )?
                             )?
-                        )?
-                        \s*
-                        $}xi;
+                        )?}xi;
 
-our $RE_PAPERSIZE = qr{^
-                       \s*
-                       (?:
+our $RE_PAPERSIZE = qr{(?:
                            (?<mixed1>$RE{num}{real})
                            \s*
                            (?:[\+\-])
@@ -100,8 +94,6 @@ our $RE_PAPERSIZE = qr{^
                        (?:
                            \s*
                            (?<unit2>$RE_UNIT)
-                       )?
-                       \s*
-                       $}xi;
+                       )?}xi;
 
 1;
