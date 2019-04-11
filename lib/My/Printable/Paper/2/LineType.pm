@@ -15,7 +15,7 @@ has dashes  => (is => 'rw', default => 1);
 has dots    => (is => 'rw', default => 1);
 has opacity => (is => 'rw');
 
-sub getCSS {
+sub getComputedCSS {
     my $self = shift;
 
     my $stroke  = $self->parseColor($self->stroke);
@@ -26,10 +26,6 @@ sub getCSS {
 
     my $result = '';
     $result .= <<"END";
-        * {
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
         .${id} {
 END
     $result .= <<"END" if defined $stroke;
