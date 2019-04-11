@@ -25,7 +25,7 @@ sub globalInkscapeShell {
     return $inkscapeShell ||= My::Printable::Paper::2::InkscapeShell->new();
 }
 
-sub exportSvg {
+sub exportSVG {
     my $self = shift;
     my $from = shift;
     my $to = shift;
@@ -35,7 +35,7 @@ sub exportSvg {
     } elsif ($to =~ m{\.ps\z}i) {
         $format = 'ps';
     } else {
-        die("exportSvgTo: only pdf and ps supported");
+        die("exportSVGTo: only pdf and ps supported");
     }
     $self->tempFileOperation(
         $to, sub {
@@ -57,33 +57,33 @@ sub exportSvg {
     );
 }
 
-sub convertPdf {
+sub convertPDF {
     my $self = shift;
 
     my ($from, $to, $nup, $npages) = @_;
     if ($to eq $from || ($nup == 1 && $npages == 1)) {
         return;
     }
-    return $self->convertPdfNpage($from, $to, $npages) if $nup == 1;
-    return $self->convertPdf2upNpage($from, $to, $npages) if $nup == 2;
-    return $self->convertPdf4upNpage($from, $to, $npages) if $nup == 4;
+    return $self->convertPDFNpage($from, $to, $npages) if $nup == 1;
+    return $self->convertPDF2upNpage($from, $to, $npages) if $nup == 2;
+    return $self->convertPDF4upNpage($from, $to, $npages) if $nup == 4;
 }
 
-sub convertPs {
+sub convertPS {
     my $self = shift;
 
     my ($from, $to, $nup, $npages) = @_;
     if ($to eq $from || ($nup == 1 && $npages == 1)) {
         return;
     }
-    return $self->convertPsNpage($from, $to, $npages) if $nup == 1;
-    return $self->convertPs2upNpage($from, $to, $npages) if $nup == 2;
-    return $self->convertPs4upNpage($from, $to, $npages) if $nup == 4;
+    return $self->convertPSNpage($from, $to, $npages) if $nup == 1;
+    return $self->convertPS2upNpage($from, $to, $npages) if $nup == 2;
+    return $self->convertPS4upNpage($from, $to, $npages) if $nup == 4;
 }
 
 use PDF::API2;
 
-sub convertPdfNpage {
+sub convertPDFNpage {
     my $self = shift;
 
     my ($from, $to, $npages) = @_;
@@ -103,7 +103,7 @@ sub convertPdfNpage {
     );
 }
 
-sub convertPsNpage {
+sub convertPSNpage {
     my $self = shift;
 
     my ($from, $to, $npages) = @_;
@@ -127,7 +127,7 @@ sub convertPsNpage {
     );
 }
 
-sub convertPdf2upNpage {
+sub convertPDF2upNpage {
     my $self = shift;
 
     my ($from, $to, $npages) = @_;
@@ -166,7 +166,7 @@ sub convertPdf2upNpage {
 
 use IPC::Run qw(run);
 
-sub convertPs2upNpage {
+sub convertPS2upNpage {
     my $self = shift;
 
     my ($from, $to, $npages) = @_;
@@ -209,7 +209,7 @@ sub convertPs2upNpage {
     );
 }
 
-sub convertPdf4upNpage {
+sub convertPDF4upNpage {
     my $self = shift;
 
     my ($from, $to, $npages) = @_;
@@ -240,7 +240,7 @@ sub convertPdf4upNpage {
     );
 }
 
-sub convertPs4upNpage {
+sub convertPS4upNpage {
     my $self = shift;
 
     my ($from, $to, $npages) = @_;
