@@ -26,7 +26,7 @@ sub parse {
                                         centimetre centimetres);
     return PX if any { $_ eq $unit } qw(px pxs pixel pixels);
 
-    if (any { $_ eq $unit } qw(pd pds dot dots)) {
+    if (any { $_ eq $unit } qw(pd pds dot dots printerdot printerdots)) {
         if (!defined $paper) {
             die("cannot use $unit unit without paper object");
         }
