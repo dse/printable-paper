@@ -5,7 +5,7 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::2::Unit;
-use My::Printable::Paper::2::Regexp qw($RE_COORDINATE);
+use My::Printable::Paper::2::Regexp qw($RE_COORDINATE parseMixedFraction);
 
 use List::Util qw(any);
 
@@ -23,14 +23,10 @@ sub parse {
     if ($value !~ m{^\s*$RE_COORDINATE\s*$}) {
         die("invalid coordinate '$value'");
     }
-    my $mixed    = 0 + ($+{mixed} // 0);
-    my $numer    = 0 + $+{numer};
-    my $denom    = 0 + ($+{denom} // 1);
     my $unit     = $+{unit};
     my $side     = $+{side};
     my $boundary = $+{boundary} // 'edge'; # side, edge, clip
-
-    my $resultPt = $mixed + $numer / $denom;
+    my $resultPt = parseMixedFraction($+{mixed}, $+{numer}, $+{denom});
     if (defined $unit) {
         $resultPt *= My::Printable::Paper::2::Unit::parse($unit, $axis, $paper);
     }
