@@ -276,6 +276,7 @@ sub drawGrid {
             $group->appendChild(
                 $self->createSVGLine(
                     x => $x, y1 => $y1, y2 => $y2, lineType => $lineType,
+                    useStrokeDashCSSClasses => 1,
                     %vDashArgs,
                 )
             );
@@ -286,6 +287,7 @@ sub drawGrid {
             $group->appendChild(
                 $self->createSVGLine(
                     y => $y, x1 => $x1, x2 => $x2, lineType => $lineType,
+                    useStrokeDashCSSClasses => 1,
                     %hDashArgs,
                 )
             );
@@ -651,6 +653,7 @@ sub createSVGLine {
     my $lineType = $args{lineType};
     my $attr = $args{attr};
     my $line = $self->svgDocument->createElement('line');
+    my $useStrokeDashCSSClasses = $args{useStrokeDashCSSClasses};
     $line->setAttribute('x1', sprintf('%.3f', $self->xx($x1)));
     $line->setAttribute('x2', sprintf('%.3f', $self->xx($x2)));
     $line->setAttribute('y1', sprintf('%.3f', $self->yy($y1)));
@@ -664,10 +667,15 @@ sub createSVGLine {
         if ($isDashedOrDotted) {
             my $strokeDashArray = strokeDashArray(%args);
             my $strokeDashOffset = strokeDashOffset(%args);
-            my $sdaClassName = $self->getStrokeDashArrayClassName($strokeDashArray);
-            my $sdoClassName = $self->getStrokeDashOffsetClassName($strokeDashOffset);
-            $cssClass .= ' ' . $sdaClassName if defined $sdaClassName;
-            $cssClass .= ' ' . $sdoClassName if defined $sdoClassName;
+            if ($useStrokeDashCSSClasses) {
+                my $sdaClassName = $self->getStrokeDashArrayClassName($strokeDashArray);
+                my $sdoClassName = $self->getStrokeDashOffsetClassName($strokeDashOffset);
+                $cssClass .= ' ' . $sdaClassName if defined $sdaClassName;
+                $cssClass .= ' ' . $sdoClassName if defined $sdoClassName;
+            } else {
+                $line->setAttribute('stroke-dasharray', $strokeDashArray);
+                $line->setAttribute('stroke-dashoffset', $strokeDashOffset);
+            }
             $cssClass .= ' dashed' if $isDashed;
             $cssClass .= ' dotted' if $isDotted;
         }
