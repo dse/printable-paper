@@ -12,6 +12,9 @@ our %EXPORT_TAGS = (
         '$RE_PAPERSIZE',
         '$RE_UNIT',
     ],
+    sub => [
+        'parseMixedFraction',
+    ],
 );
 our @EXPORT = (
 );
@@ -94,5 +97,16 @@ our $RE_PAPERSIZE = qr{(?:
                            \s*
                            (?<unit2>$RE_UNIT)
                        )?}xi;
+
+sub parseMixedFraction {
+    my ($mixed, $numer, $denom) = @_;
+    $mixed //= '0';
+    $denom //= '1';
+    my $mixedSign = ($mixed =~ m{^\-}) ? -1 : 1; # '-0' is negative, heh
+    $mixed = 0 + $mixed;
+    $numer = 0 + $numer;
+    $denom = 0 + $denom;
+    return $mixed + $numer * $mixedSign / $denom;
+}
 
 1;
