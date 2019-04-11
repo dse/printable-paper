@@ -20,7 +20,7 @@ sub getCSS {
 
     my $stroke  = $self->parseColor($self->stroke);
     my $fill    = $self->parseColor($self->fill);
-    my $width   = $self->paper->parseCoordinate($self->width);
+    my $width   = $self->paper->coordinate($self->width);
     my $id      = $self->id;
     my $opacity = $self->opacity;
 

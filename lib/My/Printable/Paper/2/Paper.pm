@@ -510,21 +510,7 @@ sub lineType {
     return $lineType;
 }
 
-sub parseCoordinate {
-    my $self = shift;
-    my $value = shift;
-    my $axis = shift;
-    return My::Printable::Paper::2::Coordinate::parse($value, $axis, $self);
-}
-
 use List::Util qw(any);
-
-sub parseUnit {
-    my $self = shift;
-    my $unit = shift;
-    my $axis = shift;
-    return My::Printable::Paper::2::Unit::parse($unit, $axis, $self);
-}
 
 use XML::LibXML;
 
@@ -651,7 +637,7 @@ sub coordinate {
         return \@points;
     }
     if ($value =~ m{^\s*$RE{num}{real}}) {
-        return $self->parseCoordinate($value, $axis);
+        return My::Printable::Paper::2::Coordinate::parse($value, $axis, $self);
     }
     if ($self->can($value)) {
         return $self->coordinate($self->$value, $axis);

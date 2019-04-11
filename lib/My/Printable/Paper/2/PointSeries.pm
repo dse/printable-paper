@@ -29,24 +29,17 @@ sub compute {
     if (!defined $self->axis) {
         die("getPoints: axis must be defined");
     } elsif ($self->axis eq 'x') {
-        $size = $self->paper->parseCoordinate($self->paper->width, 'x');
+        $size = $self->paper->xx('width');
     } elsif ($self->axis eq 'y') {
-        $size = $self->paper->parseCoordinate($self->paper->height, 'y');
+        $size = $self->paper->yy('height');
     } else {
         die("getPoints: axis must be 'x' or 'y'");
     }
-    my $fromPt = $self->paper->parseCoordinate(
-        $self->from, $self->axis
-    );
-    my $toPt   = $self->paper->parseCoordinate(
-        $self->to, $self->axis
-    );
-    my $step   = $self->paper->parseCoordinate(
-        $self->step, $self->axis
-    );
-    my $origin = $self->paper->parseCoordinate(
-        $self->origin // $self->from, $self->axis
-    );
+    my $fromPt = $self->paper->coordinate($self->from, $self->axis);
+    my $toPt   = $self->paper->coordinate($self->to, $self->axis);
+    my $step   = $self->paper->coordinate($self->step, $self->axis);
+    my $origin = $self->paper->coordinate($self->origin // $self->from,
+                                          $self->axis);
     my @pts = ($origin);
     my $pt;
     for ($pt = $origin + $step; snapcmp($pt, $toPt) < 0; $pt += $step) {

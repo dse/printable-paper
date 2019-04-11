@@ -40,10 +40,10 @@ sub parse {
             die("axis not specified for '$unit' unit");
         }
         if ($axis eq 'x') {
-            return $paper->parseCoordinate($paper->gridSpacingX, 'x');
+            return $paper->xx('gridSpacingX');
         }
         if ($axis eq 'y') {
-            return $paper->parseCoordinate($paper->gridSpacingY, 'y');
+            return $paper->yy('gridSpacingY');
         }
         die("axis must be 'x' or 'y' for '$unit' unit");
     }
@@ -55,10 +55,10 @@ sub parse {
             die("axis not specified for '$unit' unit");
         }
         if ($axis eq 'x') {
-            return 0.01 * $paper->parseCoordinate($paper->width, 'x');
+            return 0.01 * $paper->xx('width');
         }
         if ($axis eq 'y') {
-            return 0.01 * $paper->parseCoordinate($paper->height, 'y');
+            return 0.01 * $paper->yy('height');
         }
         die("axis must be 'x' or 'y' for '$unit' unit");
     }
