@@ -521,25 +521,63 @@ sub startSVG {
     $self->svgDefsElement();
     $self->svgStyleElement();
     $self->svgTopLevelGroupElement();
-    $self->setCSS();
+    $self->updateCSS();
     $self->updateClipPathElement();
 }
 
-sub setCSS {
+sub endSVG {
+    my $self = shift;
+    $self->updateCSS();
+}
+
+sub updateCSS {
     my $self = shift;
     $self->svgStyleElement->removeChildNodes();
-    my $css = $self->getCSS;
+    my $css = $self->getComputedCSS;
     $css =~ s{\s+\z}{};
     $css = "\n" . $css . "\n  ";
     $self->svgStyleElement->appendTextNode($css);
 }
 
-sub getCSS {
+use Sort::Naturally qw(nsort);
+
+sub getComputedCSS {
     my $self = shift;
     my $result = '';
+    $result .= <<"END";
+        * {
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        *.dashed {
+            stroke-linecap: butt;
+            stroke-linejoin: butt;
+        }
+        *.dotted {
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+END
     foreach my $lineTypeName (sort keys %{$self->lineTypeHash}) {
         my $lineType = $self->lineTypeHash->{$lineTypeName};
-        $result .= $lineType->getCSS;
+        $result .= $lineType->getComputedCSS;
+    }
+    foreach my $className (nsort keys %{$self->cssClassValues}) {
+        my $hash = $self->cssClassValues->{$className};
+        if ($hash && scalar keys %$hash) {
+            $result .= <<"END";
+        .${className} {
+END
+            foreach my $property (nsort keys %$hash) {
+                my $value = $hash->{$property};
+            $result .= <<"END";
+            ${property}: ${value};
+END
+            }
+            $result .= <<"END";
+        }
+END
+        }
     }
     return $result;
 }
@@ -572,6 +610,37 @@ sub svgGroupElement {
     return $group;
 }
 
+has cssClassCounters  => (is => 'rw', default => sub { return {}; });
+has cssClassesByValue => (is => 'rw', default => sub { return {}; });
+has cssClassValues    => (is => 'rw', default => sub { return {}; });
+
+sub getCSSClassNameByValue {
+    my ($self, $classNamePrefix, $property, $value) = @_;
+    return $self->cssClassesByValue->{$classNamePrefix}->{$property}->{$value}
+        if eval { exists $self->cssClassesByValue->{$classNamePrefix}->{$property}->{$value}; };
+    my $counter = $self->cssClassCounters->{$classNamePrefix} //= 0;
+    $self->cssClassCounters->{$classNamePrefix} += 1;
+    my $className = $classNamePrefix . '--' . $counter;
+    $self->cssClassesByValue->{$classNamePrefix} //= {};
+    $self->cssClassesByValue->{$classNamePrefix}->{$property} //= {};
+    $self->cssClassesByValue->{$classNamePrefix}->{$property}->{$value} = $className;
+    $self->cssClassValues->{$className} //= {};
+    $self->cssClassValues->{$className}->{$property} = $value;
+    return $className;
+}
+
+sub getStrokeDashArrayClassName {
+    my ($self, $value) = @_;
+    return undef if !defined $value;
+    return $self->getCSSClassNameByValue('sda', 'stroke-dasharray', $value);
+}
+
+sub getStrokeDashOffsetClassName {
+    my ($self, $value) = @_;
+    return undef if !defined $value;
+    return $self->getCSSClassNameByValue('sdo', 'stroke-dashoffset', $value);
+}
+
 sub createSVGLine {
     my $self = shift;
     my %args = @_;
@@ -587,16 +656,22 @@ sub createSVGLine {
     $line->setAttribute('y1', sprintf('%.3f', $self->yy($y1)));
     $line->setAttribute('y2', sprintf('%.3f', $self->yy($y2)));
     if (defined $lineType) {
-        $line->setAttribute('class', $lineType);
+        my $cssClass = $lineType;
         my $lineTypeObject = $self->lineTypeHash->{$lineType};
-        if ($lineTypeObject && $lineTypeObject->style eq 'dotted') {
-            $line->setAttribute('stroke-dasharray', strokeDashArray(%args));
-            $line->setAttribute('stroke-dashoffset', strokeDashOffset(%args));
+        my $isDashed = $lineTypeObject && $lineTypeObject->style eq 'dashed';
+        my $isDotted = $lineTypeObject && $lineTypeObject->style eq 'dotted';
+        my $isDashedOrDotted = $isDotted || $isDashed;
+        if ($isDashedOrDotted) {
+            my $strokeDashArray = strokeDashArray(%args);
+            my $strokeDashOffset = strokeDashOffset(%args);
+            my $sdaClassName = $self->getStrokeDashArrayClassName($strokeDashArray);
+            my $sdoClassName = $self->getStrokeDashOffsetClassName($strokeDashOffset);
+            $cssClass .= ' ' . $sdaClassName if defined $sdaClassName;
+            $cssClass .= ' ' . $sdoClassName if defined $sdoClassName;
+            $cssClass .= ' dashed' if $isDashed;
+            $cssClass .= ' dotted' if $isDotted;
         }
-        if ($lineTypeObject && $lineTypeObject->style eq 'dashed') {
-            $line->setAttribute('stroke-dasharray', strokeDashArray(%args));
-            $line->setAttribute('stroke-dashoffset', strokeDashOffset(%args));
-        }
+        $line->setAttribute('class', $cssClass);
     }
     if (eval { ref $attr eq 'HASH' }) {
         foreach my $name (sort keys %$attr) {
