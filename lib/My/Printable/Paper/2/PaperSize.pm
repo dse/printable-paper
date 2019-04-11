@@ -5,7 +5,7 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::2::PaperSizeList;
-use My::Printable::Paper::2::Regexp qw($RE_PAPERSIZE);
+use My::Printable::Paper::2::Regexp qw($RE_PAPERSIZE parseMixedFraction);
 
 use Moo;
 
@@ -27,14 +27,10 @@ around BUILDARGS => sub {
         my %args = @_;
         my $paper = $args{paper};
         if ($value =~ m{^\s*$RE_PAPERSIZE\s*$}) {
-            my $mixed1 = 0 + ($+{mixed1} // 0);
-            my $numer1 = 0 + $+{numer1};
-            my $denom1 = 0 + ($+{denom1} // 1);
-            my $unit1  = $+{unit1};
-            my $mixed2 = 0 + ($+{mixed2} // 0);
-            my $numer2 = 0 + $+{numer2};
-            my $denom2 = 0 + ($+{denom2} // 1);
-            my $unit2  = $+{unit2};
+            my $unit1 = $+{unit1};
+            my $unit2 = $+{unit2};
+            my $width  = parseCoordinate($+{mixed1}, $+{numer1}, $+{denom1});
+            my $height = parseCoordinate($+{mixed2}, $+{numer2}, $+{denom2});
             $unit1 //= $unit2 if defined $unit2;
             $unit2 //= $unit1 if defined $unit1;
 
@@ -50,8 +46,6 @@ around BUILDARGS => sub {
                 $unit2 = 1;
             }
 
-            my $width  = ($mixed1 + $numer1 / $denom1) * $unit1;
-            my $height = ($mixed2 + $numer2 / $denom2) * $unit2;
             return $self->$orig(width => $width, height => $height, @_);
         }
         return $self->$orig(width  => 8.5  * 72,
