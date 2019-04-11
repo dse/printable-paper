@@ -46,6 +46,8 @@ around BUILDARGS => sub {
                 $unit2 = 1;
             }
 
+            $width  *= $unit1;
+            $height *= $unit2;
             return $self->$orig(width => $width, height => $height, @_);
         }
         my $result = getPaperSizeByName($value);
