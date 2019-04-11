@@ -5,49 +5,7 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::2::Unit;
-
-use Regexp::Common qw(number);
-
-our $RE_COORDINATE;
-INIT {
-    $RE_COORDINATE = qr{^
-                        \s*
-                        (?:
-                            (?<mixed>$RE{num}{real})
-                            \s*
-                            (?:[\+\-])
-                            \s*
-                        )?
-                        (?<numer>$RE{num}{real})
-                        (?:
-                            \s*
-                            /
-                            \s*
-                            (?<denom>$RE{num}{real})
-                        )?
-                        (?:
-                            \s*
-                            (?<unit>[[:alpha:]]*|%|\'|\")
-                        )?
-                        (?:
-                            (?:
-                                \s+
-                                from
-                            )?
-                            \s+
-                            (?<side>top|bottom|left|right|start|begin|stop|end)
-                            (?:
-                                \s+
-                                (?<boundary>side|edge|clip)
-                                (?:
-                                    \s+
-                                    boundary
-                                )?
-                            )?
-                        )?
-                        \s*
-                        $}xi;
-}
+use My::Printable::Paper::2::Regexp qw($RE_COORDINATE);
 
 use List::Util qw(any);
 

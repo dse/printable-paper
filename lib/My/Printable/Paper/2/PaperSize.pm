@@ -5,6 +5,7 @@ use v5.10.0;
 
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::2::PaperSizeList;
+use My::Printable::Paper::2::Regexp qw($RE_PAPERSIZE);
 
 use Moo;
 
@@ -13,53 +14,6 @@ has height      => (is => 'rw', default => '11in');
 has orientation => (is => 'rw', default => 'portrait');
 has name        => (is => 'rw', default => 'letter');
 has paper       => (is => 'rw');
-
-use Regexp::Common qw(number);
-
-our $RE_PAPERSIZE;
-INIT {
-    $RE_PAPERSIZE = qr{^
-                       \s*
-                       (?:
-                           (?<mixed1>$RE{num}{real})
-                           \s*
-                           (?:[\+\-])
-                           \s*
-                       )?
-                       (?<numer1>$RE{num}{real})
-                       (?:
-                           \s*
-                           /
-                           \s*
-                           (?<denom1>$RE{num}{real})
-                       )?
-                       (?:
-                           \s*
-                           (?<unit1>[[:alpha:]]*|%|\'|\")
-                       )?
-                       \s*
-                       (?:
-                           x|\*
-                       )
-                       (?:
-                           (?<mixed2>$RE{num}{real})
-                           \s*
-                           (?:[\+\-])
-                           \s*
-                       )?
-                       (?<numer2>$RE{num}{real})
-                       (?:
-                           \s*
-                           /
-                           \s*
-                           (?<denom2>$RE{num}{real})
-                       )?
-                       (?:
-                           \s*
-                           (?<unit2>[[:alpha:]]*|%|\'|\")
-                       )?
-                       $}xi;
-}
 
 around BUILDARGS => sub {
     my $orig = shift;
