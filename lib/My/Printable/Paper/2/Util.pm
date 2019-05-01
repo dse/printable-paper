@@ -82,8 +82,23 @@ sub snappos {
 
 sub strokeDashArray {
     my %args = @_;
+    my $paper = $args{paper};
+    my $axis = $args{axis};
     my $dashLength  = $args{dashLength};
     my $dashSpacing = $args{dashSpacing};
+
+    return undef if !defined $dashLength && !defined $dashSpacing;
+
+    if (defined $paper && defined $axis) {
+        foreach my $d ($dashLength, $dashSpacing) {
+            $d = $paper->coordinate($d, $axis) if defined $d;
+        }
+    }
+    if (defined $dashSpacing && !defined $dashLength) {
+        $dashLength = $dashSpacing / 2;
+    } elsif (defined $dashLength && !defined $dashSpacing) {
+        $dashSpacing = $dashLength * 2;
+    }
 
     if ($dashLength < SVG_STROKE_DASH_TOLERANCE) {
         $dashLength = SVG_STROKE_DASH_TOLERANCE;
@@ -93,10 +108,25 @@ sub strokeDashArray {
 
 sub strokeDashOffset {
     my %args = @_;
+    my $paper = $args{paper};
+    my $axis = $args{axis};
     my $dashLength    = $args{dashLength};
     my $dashSpacing   = $args{dashSpacing};
     my $dashLineStart = $args{dashLineStart} // 0;
     my $dashCenterAt  = $args{dashCenterAt} // 0;
+
+    return undef if !defined $dashLength && !defined $dashSpacing;
+
+    if (defined $paper && defined $axis) {
+        foreach my $d ($dashLength, $dashSpacing) {
+            $d = $paper->coordinate($d, $axis) if defined $d;
+        }
+    }
+    if (defined $dashSpacing && !defined $dashLength) {
+        $dashLength = $dashSpacing / 2;
+    } elsif (defined $dashLength && !defined $dashSpacing) {
+        $dashSpacing = $dashLength * 2;
+    }
 
     my $lineLength;
     my ($x1, $x2, $y1, $y2) = @args{qw(x1 x2 y1 y2)};

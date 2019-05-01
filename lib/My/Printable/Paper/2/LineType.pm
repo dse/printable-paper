@@ -61,4 +61,19 @@ sub parseColor {
     return $value;
 }
 
+sub isDashed {
+    my $self = shift;
+    return $self->style eq 'dashed';
+}
+
+sub isDotted {
+    my $self = shift;
+    return $self->style eq 'dotted';
+}
+
+sub isDashedOrDotted {
+    my $self = shift;
+    return $self->isDashed || $self->isDotted;
+}
+
 1;
