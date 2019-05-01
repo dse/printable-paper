@@ -12,6 +12,12 @@ use My::Printable::Paper::2::Coordinate;
 use My::Printable::Paper::2::Util qw(:stroke);
 use My::Printable::Paper::2::Converter;
 
+use List::Util qw(max any);
+use File::Slurp qw(write_file);
+use XML::LibXML;
+use Sort::Naturally qw(nsort);
+use Regexp::Common qw(number);
+
 use Moo;
 
 has id           => (is => 'rw');
@@ -118,8 +124,6 @@ has svgTopLevelGroupElement => (
 
 has clipPathElement => (is => 'rw');
 
-use List::Util qw(max);
-
 sub updateClipPathElement {
     my $self = shift;
     if ($self->clipPathElement) {
@@ -159,8 +163,6 @@ sub updateClipPathElement {
         $self->svgTopLevelGroupElement->removeAttribute('clip-path');
     }
 }
-
-use List::Util qw(any);
 
 sub drawGrid {
     my $self = shift;
@@ -374,8 +376,6 @@ sub write {
     return $self->writePS(%args)  if $format eq 'ps';
 }
 
-use File::Slurp qw(write_file);
-
 has 'isGenerated' => (is => 'rw', default => sub { return {}; });
 
 sub getBasePDFFilename {
@@ -442,8 +442,31 @@ sub writeBasePS {
     $self->isGenerated->{$self->getBasePSFilename} = 1;
 }
 
+sub writeArgs {
+    my $self = shift;
+    my %args;
+    my $callingSub = (caller(1))[3];
+    $callingSub =~ s{^.*::}{};
+    if ((scalar @_) % 2 == 1) {
+        die("$callingSub: odd number of arguments passed to writeArgs");
+    }
+    if ($_[0] =~ m{^$RE{num}{int}$} && $_[1] =~ m{^$RE{num}{int}$}) {
+        $args{nup} = shift;
+        $args{npages} = shift;
+    }
+    %args = (%args, @_);
+    return @args{qw(nup npages)};
+}
+
 sub writePDF {
-    my ($self, $nup, $npages) = @_;
+    my $self = shift;
+    my ($nup, $npages) = $self->writeArgs(@_);
+    if (!defined $nup) {
+        die("writePDF: nup not specified");
+    }
+    if (!defined $npages) {
+        die("writePDF: npages not specified");
+    }
     if ($nup != 1 && $nup != 2 && $nup != 4) {
         die("writePDF: nup must be 1, 2, or 4");
     }
@@ -461,7 +484,14 @@ sub writePDF {
 }
 
 sub writePS {
-    my ($self, $nup, $npages) = @_;
+    my $self = shift;
+    my ($nup, $npages) = $self->writeArgs(@_);
+    if (!defined $nup) {
+        die("writePDF: nup not specified");
+    }
+    if (!defined $npages) {
+        die("writePDF: npages not specified");
+    }
     if ($nup != 1 && $nup != 2 && $nup != 4) {
         die("writePS: nup must be 1, 2, or 4");
     }
@@ -512,10 +542,6 @@ sub lineType {
     return $lineType;
 }
 
-use List::Util qw(any);
-
-use XML::LibXML;
-
 sub startSVG {
     my $self = shift;
     $self->svgDocument();
@@ -540,8 +566,6 @@ sub updateCSS {
     $css = "\n" . $css . "\n  ";
     $self->svgStyleElement->appendTextNode($css);
 }
-
-use Sort::Naturally qw(nsort);
 
 sub getComputedCSS {
     my $self = shift;
@@ -700,8 +724,6 @@ sub yy {
     my $value = shift;
     return $self->coordinate($value, 'y');
 }
-
-use Regexp::Common qw(number);
 
 sub coordinate {
     my $self = shift;

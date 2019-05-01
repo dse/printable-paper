@@ -9,13 +9,13 @@ use lib "${FindBin::Bin}/../lib";
 use My::Printable::Paper::2::Paper;
 
 my $paper = My::Printable::Paper::2::Paper->new(
-    size => 'a4',
+    size => 'half-letter',
     basename => 'paper',
 );
-$paper->clipLeft(9);
-$paper->clipRight(9);
-$paper->clipTop(9);
-$paper->clipBottom(9);
+$paper->clipLeft(13.5);
+$paper->clipRight(13.5);
+$paper->clipTop(13.5);
+$paper->clipBottom(13.5);
 
 my $majorLineType = $paper->lineType(
     id => 'major',
@@ -86,6 +86,7 @@ $paper->drawHorizontalLines(
 $paper->endSVG();
 
 $paper->writeSVG();
+$paper->writePDF(nup => 2, npages => 2);
 # $paper->writePS(1, 1);
 # $paper->writePS(1, 2);
 # $paper->writePS(2, 1);
