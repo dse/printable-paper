@@ -111,6 +111,12 @@ sub getPoints {
     return @{$self->computedPoints};
 }
 
+sub getOrigin {
+    my $self = shift;
+    $self->compute();
+    return $self->computedOrigin;
+}
+
 sub nearest {
     my $self = shift;
     my $value = shift;
