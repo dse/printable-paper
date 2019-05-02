@@ -36,11 +36,11 @@ my $marginLineType = $paper->addLineType(
 
 my $majorGridX = $paper->addXPointSeries(
     id => 'major-x',
-    shiftPoints => 1,
+    canShiftPoints => 1,
 );
 my $majorGridY = $paper->addYPointSeries(
     id => 'major-y',
-    shiftPoints => 1,
+    canShiftPoints => 1,
 );
 $majorGridX->compute();
 $majorGridY->compute();
@@ -64,23 +64,23 @@ $paper->drawGrid(
     id => 'major-grid',
     x => $majorGridX,
     y => $majorGridY,
-    lineType => 'major',
+    lineTypeId => 'major',
 );
 $paper->drawGrid(
     id => 'minor-grid',
     x => $minorGridX,
     y => $minorGridY,
-    lineType => 'minor',
+    lineTypeId => 'minor',
 );
 $paper->drawVerticalLines(
     id => 'left-margin-line',
     x => $majorGridX->nearest('0.75in'),
-    lineType => 'margin',
+    lineTypeId => 'margin',
 );
 $paper->drawHorizontalLines(
     id => 'top-margin-line',
     y => $majorGridY->nearest('0.75in'),
-    lineType => 'margin',
+    lineTypeId => 'margin',
 );
 
 $paper->endSVG();

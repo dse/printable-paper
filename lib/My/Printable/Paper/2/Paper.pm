@@ -169,7 +169,7 @@ sub drawGrid {
     my %args = @_;
     my $x = $args{x};           # number, string, or PointSeries
     my $y = $args{y};           # number, string, or PointSeries
-    my $lineType = $args{lineType};
+    my $lineTypeId = $args{lineTypeId};
     my $isClosed = $args{isClosed};
     my $parentId = $args{parentId};
     my $id = $args{id};
@@ -213,13 +213,13 @@ sub drawGrid {
         $isExtendedVertically   = $isExtendedAbove || $isExtendedBelow;
     }
 
-    my $lineStyle = eval { $self->lineTypeHash->{$lineType}->style; };
+    my $lineStyle = eval { $self->lineTypeHash->{$lineTypeId}->style; };
     my $isDashed = eval { $lineStyle eq 'dashed' };
     my $isDotted = eval { $lineStyle eq 'dotted' };
     my $isDashedOrDotted = $isDashed || $isDotted;
 
-    my $dashes = eval { $self->lineTypeHash->{$lineType}->dashes; } || 1;
-    my $dots   = eval { $self->lineTypeHash->{$lineType}->dots;   } || 1;
+    my $dashes = eval { $self->lineTypeHash->{$lineTypeId}->dashes; } || 1;
+    my $dots   = eval { $self->lineTypeHash->{$lineTypeId}->dots;   } || 1;
 
     my $hDashLength;
     my $vDashLength;
@@ -277,7 +277,7 @@ sub drawGrid {
         foreach my $x (@xPt) {
             $group->appendChild(
                 $self->createSVGLine(
-                    x => $x, y1 => $y1, y2 => $y2, lineType => $lineType,
+                    x => $x, y1 => $y1, y2 => $y2, lineTypeId => $lineTypeId,
                     useStrokeDashCSSClasses => 1,
                     %vDashArgs,
                 )
@@ -288,7 +288,7 @@ sub drawGrid {
         foreach my $y (@yPt) {
             $group->appendChild(
                 $self->createSVGLine(
-                    y => $y, x1 => $x1, x2 => $x2, lineType => $lineType,
+                    y => $y, x1 => $x1, x2 => $x2, lineTypeId => $lineTypeId,
                     useStrokeDashCSSClasses => 1,
                     %hDashArgs,
                 )
@@ -321,7 +321,7 @@ sub drawHorizontalLines {
     my $y  = $args{y};          # number, string, or PointSeries
     my $x1 = $args{x1} // '0pt from start'; # number or string
     my $x2 = $args{x2} // '0pt from end';   # number or string
-    my $lineType = $args{lineType};
+    my $lineTypeId = $args{lineTypeId};
     my $parentId = $args{parentId};
     my $id = $args{id};
 
@@ -333,7 +333,7 @@ sub drawHorizontalLines {
     foreach my $y (@yPt) {
         $group->appendChild(
             $self->createSVGLine(
-                y => $y, x1 => $x1, x2 => $x2, lineType => $lineType,
+                y => $y, x1 => $x1, x2 => $x2, lineTypeId => $lineTypeId,
             )
         );
     }
@@ -345,7 +345,7 @@ sub drawVerticalLines {
     my $x  = $args{x};          # number, string, or PointSeries
     my $y1 = $args{y1} // '0pt from start'; # number or string
     my $y2 = $args{y2} // '0pt from end';   # number or string
-    my $lineType = $args{lineType};
+    my $lineTypeId = $args{lineTypeId};
     my $parentId = $args{parentId};
     my $id = $args{id};
 
@@ -357,7 +357,7 @@ sub drawVerticalLines {
     foreach my $x (@xPt) {
         $group->appendChild(
             $self->createSVGLine(
-                x => $x, y1 => $y1, y2 => $y2, lineType => $lineType,
+                x => $x, y1 => $y1, y2 => $y2, lineTypeId => $lineTypeId,
             )
         );
     }
@@ -676,7 +676,7 @@ sub createSVGLine {
     my $x2 = $args{x2} // $args{x};
     my $y1 = $args{y1} // $args{y};
     my $y2 = $args{y2} // $args{y};
-    my $lineType = $args{lineType};
+    my $lineTypeId = $args{lineTypeId};
     my $attr = $args{attr};
     my $line = $self->svgDocument->createElement('line');
     my $useStrokeDashCSSClasses = $args{useStrokeDashCSSClasses};
@@ -684,13 +684,10 @@ sub createSVGLine {
     $line->setAttribute('x2', sprintf('%.3f', $self->xx($x2)));
     $line->setAttribute('y1', sprintf('%.3f', $self->yy($y1)));
     $line->setAttribute('y2', sprintf('%.3f', $self->yy($y2)));
-    if (defined $lineType) {
-        my $cssClass = $lineType;
-        my $lineTypeObject = $self->lineTypeHash->{$lineType};
-        my $isDashed = $lineTypeObject && $lineTypeObject->style eq 'dashed';
-        my $isDotted = $lineTypeObject && $lineTypeObject->style eq 'dotted';
-        my $isDashedOrDotted = $isDotted || $isDashed;
-        if ($isDashedOrDotted) {
+    if (defined $lineTypeId) {
+        my $cssClass = $lineTypeId;
+        my $lineType = $self->lineTypeHash->{$lineTypeId};
+        if ($lineType && $lineType->isDashedOrDotted) {
             my $strokeDashArray = strokeDashArray(%args);
             my $strokeDashOffset = strokeDashOffset(%args);
             if ($useStrokeDashCSSClasses) {
@@ -702,8 +699,8 @@ sub createSVGLine {
                 $line->setAttribute('stroke-dasharray', $strokeDashArray);
                 $line->setAttribute('stroke-dashoffset', $strokeDashOffset);
             }
-            $cssClass .= ' dashed' if $isDashed;
-            $cssClass .= ' dotted' if $isDotted;
+            $cssClass .= ' dashed' if $lineType->isDashed;
+            $cssClass .= ' dotted' if $lineType->isDotted;
         }
         $line->setAttribute('class', $cssClass);
     }
