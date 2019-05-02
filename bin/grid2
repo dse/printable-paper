@@ -30,7 +30,7 @@ my $minorLineType = $paper->lineType(
 );
 my $marginLineType = $paper->lineType(
     id => 'margin',
-    width => '3 printerdots',
+    width => '4 printerdots',
     stroke => 'red',
 );
 
@@ -86,7 +86,7 @@ $paper->drawHorizontalLines(
 $paper->endSVG();
 
 $paper->writeSVG();
-$paper->writePDF(nup => 2, npages => 2);
+$paper->writePDF(nUp => 2, nPages => 2);
 # $paper->writePS(1, 1);
 # $paper->writePS(1, 2);
 # $paper->writePS(2, 1);
