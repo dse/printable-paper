@@ -395,20 +395,20 @@ sub getSVGFilename {
 
 sub getPDFFilename {
     my $self = shift;
-    my ($nup, $npages) = $self->nUpNPagesArgs(@_);
+    my ($nUp, $nPages) = $self->nUpNPagesArgs(@_);
     my $filename = $self->basename;
-    $filename .= sprintf('-%dup', $nup)    if $nup    != 1;
-    $filename .= sprintf('-%dpg', $npages) if $npages != 1;
+    $filename .= sprintf('-%dup', $nUp)    if $nUp    != 1;
+    $filename .= sprintf('-%dpg', $nPages) if $nPages != 1;
     $filename .= '.pdf';
     return $filename;
 }
 
 sub getPSFilename {
     my $self = shift;
-    my ($nup, $npages) = $self->nUpNPagesArgs(@_);
+    my ($nUp, $nPages) = $self->nUpNPagesArgs(@_);
     my $filename = $self->basename;
-    $filename .= sprintf('-%dup', $nup)    if $nup    != 1;
-    $filename .= sprintf('-%dpg', $npages) if $npages != 1;
+    $filename .= sprintf('-%dup', $nUp)    if $nUp    != 1;
+    $filename .= sprintf('-%dpg', $nPages) if $nPages != 1;
     $filename .= '.ps';
     return $filename;
 }
@@ -453,33 +453,33 @@ sub nUpNPagesArgs {
         die("$callingSub: odd number of arguments passed to nUpNPagesArgs");
     }
     if ($_[0] =~ m{^$RE{num}{int}$} && $_[1] =~ m{^$RE{num}{int}$}) {
-        $args{nup} = shift;
-        $args{npages} = shift;
+        $args{nUp} = shift;
+        $args{nPages} = shift;
     }
     %args = (%args, @_);
-    return @args{qw(nup npages)};
+    return @args{qw(nUp nPages)};
 }
 
 sub writePDF {
     my $self = shift;
-    my ($nup, $npages) = $self->nUpNPagesArgs(@_);
-    if (!$nup) {
-        die("writePDF: nup not specified");
+    my ($nUp, $nPages) = $self->nUpNPagesArgs(@_);
+    if (!$nUp) {
+        die("writePDF: nUp not specified");
     }
-    if (!$npages) {
-        die("writePDF: npages not specified");
+    if (!$nPages) {
+        die("writePDF: nPages not specified");
     }
-    if ($nup != 1 && $nup != 2 && $nup != 4) {
-        die("writePDF: nup must be 1, 2, or 4");
+    if ($nUp != 1 && $nUp != 2 && $nUp != 4) {
+        die("writePDF: nUp must be 1, 2, or 4");
     }
-    if ($npages != 1 && $npages != 2) {
-        die("writePDF: npages must be 1 or 2");
+    if ($nPages != 1 && $nPages != 2) {
+        die("writePDF: nPages must be 1 or 2");
     }
     $self->writeBasePDF();
     $self->converter->convertPDF(
         $self->getBasePDFFilename,
-        $self->getPDFFilename($nup, $npages),
-        $nup, $npages,
+        $self->getPDFFilename($nUp, $nPages),
+        $nUp, $nPages,
         $self->xx('width'),
         $self->yy('height'),
     );
@@ -487,24 +487,24 @@ sub writePDF {
 
 sub writePS {
     my $self = shift;
-    my ($nup, $npages) = $self->nUpNPagesArgs(@_);
-    if (!$nup) {
-        die("writePDF: nup not specified");
+    my ($nUp, $nPages) = $self->nUpNPagesArgs(@_);
+    if (!$nUp) {
+        die("writePDF: nUp not specified");
     }
-    if (!$npages) {
-        die("writePDF: npages not specified");
+    if (!$nPages) {
+        die("writePDF: nPages not specified");
     }
-    if ($nup != 1 && $nup != 2 && $nup != 4) {
-        die("writePS: nup must be 1, 2, or 4");
+    if ($nUp != 1 && $nUp != 2 && $nUp != 4) {
+        die("writePS: nUp must be 1, 2, or 4");
     }
-    if ($npages != 1 && $npages != 2) {
-        die("writePS: npages must be 1 or 2");
+    if ($nPages != 1 && $nPages != 2) {
+        die("writePS: nPages must be 1 or 2");
     }
     $self->writeBasePS();
     $self->converter->convertPS(
         $self->getBasePSFilename,
-        $self->getPSFilename($nup, $npages),
-        $nup, $npages,
+        $self->getPSFilename($nUp, $nPages),
+        $nUp, $nPages,
         $self->xx('width'),
         $self->yy('height'),
     );
