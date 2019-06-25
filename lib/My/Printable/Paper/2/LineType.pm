@@ -76,22 +76,4 @@ sub parseColor {
     return $value;
 }
 
-# stub
-sub strokeDashArray {
-    my $self = shift;
-    return undef if !$self->isDashedOrDotted;
-    my %args = @_;
-    my $paper = $args{paper};
-    my $axis  = $args{axis};
-}
-
-# stub
-sub strokeDashOffset {
-    my $self = shift;
-    return undef if !$self->isDashedOrDotted;
-    my %args = @_;
-    my $paper = $args{paper};
-    my $axis  = $args{axis};
-}
-
 1;
