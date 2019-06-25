@@ -332,7 +332,8 @@ sub getSVGFilename {
 }
 
 sub getPDFFilename {
-    my ($self, $nup, $npages) = @_;
+    my $self = shift;
+    my ($nup, $npages) = $self->nUpNPagesArgs(@_);
     my $filename = $self->basename;
     $filename .= sprintf('-%dup', $nup)    if $nup    != 1;
     $filename .= sprintf('-%dpg', $npages) if $npages != 1;
@@ -341,7 +342,8 @@ sub getPDFFilename {
 }
 
 sub getPSFilename {
-    my ($self, $nup, $npages) = @_;
+    my $self = shift;
+    my ($nup, $npages) = $self->nUpNPagesArgs(@_);
     my $filename = $self->basename;
     $filename .= sprintf('-%dup', $nup)    if $nup    != 1;
     $filename .= sprintf('-%dpg', $npages) if $npages != 1;
@@ -380,13 +382,13 @@ sub writeBasePS {
     $self->isGenerated->{$self->getBasePSFilename} = 1;
 }
 
-sub writeArgs {
+sub nUpNPagesArgs {
     my $self = shift;
     my %args;
     my $callingSub = (caller(1))[3];
     $callingSub =~ s{^.*::}{};
     if ((scalar @_) % 2 == 1) {
-        die("$callingSub: odd number of arguments passed to writeArgs");
+        die("$callingSub: odd number of arguments passed to nUpNPagesArgs");
     }
     if ($_[0] =~ m{^$RE{num}{int}$} && $_[1] =~ m{^$RE{num}{int}$}) {
         $args{nup} = shift;
@@ -398,11 +400,11 @@ sub writeArgs {
 
 sub writePDF {
     my $self = shift;
-    my ($nup, $npages) = $self->writeArgs(@_);
-    if (!defined $nup) {
+    my ($nup, $npages) = $self->nUpNPagesArgs(@_);
+    if (!$nup) {
         die("writePDF: nup not specified");
     }
-    if (!defined $npages) {
+    if (!$npages) {
         die("writePDF: npages not specified");
     }
     if ($nup != 1 && $nup != 2 && $nup != 4) {
@@ -423,11 +425,11 @@ sub writePDF {
 
 sub writePS {
     my $self = shift;
-    my ($nup, $npages) = $self->writeArgs(@_);
-    if (!defined $nup) {
+    my ($nup, $npages) = $self->nUpNPagesArgs(@_);
+    if (!$nup) {
         die("writePDF: nup not specified");
     }
-    if (!defined $npages) {
+    if (!$npages) {
         die("writePDF: npages not specified");
     }
     if ($nup != 1 && $nup != 2 && $nup != 4) {
