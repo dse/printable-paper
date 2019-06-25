@@ -60,25 +60,25 @@ sub exportSVG {
 sub convertPDF {
     my $self = shift;
 
-    my ($from, $to, $nup, $npages) = @_;
-    if ($to eq $from || ($nup == 1 && $npages == 1)) {
+    my ($from, $to, $nUp, $nPages) = @_;
+    if ($to eq $from || ($nUp == 1 && $nPages == 1)) {
         return;
     }
-    return $self->convertPDFNpage($from, $to, $npages) if $nup == 1;
-    return $self->convertPDF2upNpage($from, $to, $npages) if $nup == 2;
-    return $self->convertPDF4upNpage($from, $to, $npages) if $nup == 4;
+    return $self->convertPDFNpage($from, $to, $nPages) if $nUp == 1;
+    return $self->convertPDF2upNpage($from, $to, $nPages) if $nUp == 2;
+    return $self->convertPDF4upNpage($from, $to, $nPages) if $nUp == 4;
 }
 
 sub convertPS {
     my $self = shift;
 
-    my ($from, $to, $nup, $npages) = @_;
-    if ($to eq $from || ($nup == 1 && $npages == 1)) {
+    my ($from, $to, $nUp, $nPages) = @_;
+    if ($to eq $from || ($nUp == 1 && $nPages == 1)) {
         return;
     }
-    return $self->convertPSNpage($from, $to, $npages) if $nup == 1;
-    return $self->convertPS2upNpage($from, $to, $npages) if $nup == 2;
-    return $self->convertPS4upNpage($from, $to, $npages) if $nup == 4;
+    return $self->convertPSNpage($from, $to, $nPages) if $nUp == 1;
+    return $self->convertPS2upNpage($from, $to, $nPages) if $nUp == 2;
+    return $self->convertPS4upNpage($from, $to, $nPages) if $nUp == 4;
 }
 
 use PDF::API2;
@@ -86,8 +86,8 @@ use PDF::API2;
 sub convertPDFNpage {
     my $self = shift;
 
-    my ($from, $to, $npages) = @_;
-    if ($npages < 2) {
+    my ($from, $to, $nPages) = @_;
+    if ($nPages < 2) {
         return;
     }
     $self->tempFileOperation(
@@ -95,7 +95,7 @@ sub convertPDFNpage {
             my $temp = shift;
             my $inputPDF = PDF::API2->open($from);
             my $outputPDF = PDF::API2->new();
-            foreach my $i (1 .. $npages) {
+            foreach my $i (1 .. $nPages) {
                 $outputPDF->import_page($inputPDF, 1, 0);
             }
             $outputPDF->saveas($temp);
@@ -106,14 +106,14 @@ sub convertPDFNpage {
 sub convertPSNpage {
     my $self = shift;
 
-    my ($from, $to, $npages) = @_;
-    if ($npages < 2) {
+    my ($from, $to, $nPages) = @_;
+    if ($nPages < 2) {
         return;
     }
     $self->tempFileOperation(
         $to, sub {
             my $temp = shift;
-            my $pages = join(',', ('1' x $npages));
+            my $pages = join(',', ('1' x $nPages));
             my $cmd = sprintf(
                 'psselect %s %s %s',
                 shell_quote($pages),
@@ -130,7 +130,7 @@ sub convertPSNpage {
 sub convertPDF2upNpage {
     my $self = shift;
 
-    my ($from, $to, $npages) = @_;
+    my ($from, $to, $nPages) = @_;
     $self->tempFileOperation(
         $to, sub {
             my $temp = shift;
@@ -140,7 +140,7 @@ sub convertPDF2upNpage {
             my $inputHeight = $self->paper->yy('height');
             my $outputWidth  = $inputHeight;
             my $outputHeight = 2 * $inputWidth;
-            foreach my $page (0 .. ($npages - 1)) {
+            foreach my $page (0 .. ($nPages - 1)) {
                 my $outputPage = $outputPDF->page();
                 $outputPage->mediabox(0, 0, $outputWidth, $outputHeight);
                 my $xo = $outputPDF->importPageIntoForm($inputPDF, 1);
@@ -169,7 +169,7 @@ use IPC::Run qw(run);
 sub convertPS2upNpage {
     my $self = shift;
 
-    my ($from, $to, $npages) = @_;
+    my ($from, $to, $nPages) = @_;
     my $inputWidth = $self->paper->xx('width');
     my $inputHeight = $self->paper->yy('height');
     my $outputWidth  = $inputHeight;
@@ -177,21 +177,21 @@ sub convertPS2upNpage {
     $self->tempFileOperation(
         $to, sub {
             my $temp = shift;
-            my $pages = join(',', ('1,1' x $npages));
+            my $pages = join(',', ('1,1' x $nPages));
             my $psselect = ['psselect', $pages, $from];
             my $spec;
-            if ($npages == 1) {
+            if ($nPages == 1) {
                 $spec = '2:0L(1h,0)+1L(1h,1w)';
-            } elsif ($npages == 2) {
+            } elsif ($nPages == 2) {
                 $spec = '4:0L(1h,0)+1L(1h,1w),2R(0,1w)+3R(0,2w)';
             } else {
-                $spec = sprintf('%d:', $npages * 2);
+                $spec = sprintf('%d:', $nPages * 2);
                 my @spec = ();
-                foreach my $page (0 .. $npages) {
+                foreach my $page (0 .. $nPages) {
                     if ($page % 2 == 0) {
-                        push(@spec, '%dL(1h,0)+%dL(1h,1w)', $npages * 2, $npages * 2 + 1);
+                        push(@spec, '%dL(1h,0)+%dL(1h,1w)', $nPages * 2, $nPages * 2 + 1);
                     } else {
-                        push(@spec, '%dR(0,1w)+%dR(0,2w)', $npages * 2, $npages * 2 + 1);
+                        push(@spec, '%dR(0,1w)+%dR(0,2w)', $nPages * 2, $nPages * 2 + 1);
                     }
                 }
                 $spec .= join(',', @spec);
@@ -212,7 +212,7 @@ sub convertPS2upNpage {
 sub convertPDF4upNpage {
     my $self = shift;
 
-    my ($from, $to, $npages) = @_;
+    my ($from, $to, $nPages) = @_;
     $self->tempFileOperation(
         $to, sub {
             my $temp = shift;
@@ -222,7 +222,7 @@ sub convertPDF4upNpage {
             my $inputHeight = $self->paper->yy('height');
             my $outputWidth = 2 * $inputWidth;
             my $outputHeight = 2 * $inputHeight;
-            foreach my $page (0 .. ($npages - 1)) {
+            foreach my $page (0 .. ($nPages - 1)) {
                 my $outputPage = $outputPDF->page();
                 $outputPage->mediabox(0, 0, $outputWidth, $outputHeight);
                 my $xo = $outputPDF->importPageIntoForm($inputPDF, 1);
@@ -243,7 +243,7 @@ sub convertPDF4upNpage {
 sub convertPS4upNpage {
     my $self = shift;
 
-    my ($from, $to, $npages) = @_;
+    my ($from, $to, $nPages) = @_;
     my $inputWidth = $self->paper->xx('width');
     my $inputHeight = $self->paper->yy('height');
     my $outputWidth  = 2 * $inputWidth;
@@ -251,7 +251,7 @@ sub convertPS4upNpage {
     $self->tempFileOperation(
         $to, sub {
             my $temp = shift;
-            my $pages = join(',', ('1,1,1,1' x $npages));
+            my $pages = join(',', ('1,1,1,1' x $nPages));
             my $psselect = ['psselect', $pages, $from];
             my $spec = '4:0(0,1h)+1(1w,1h)+2U(1w,1h)+3U(2w,1h)';
             my $pstops = ['pstops',
