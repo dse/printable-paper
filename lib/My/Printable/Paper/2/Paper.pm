@@ -169,6 +169,7 @@ sub drawGrid {
     my $x = $args{x};           # number, string, or PointSeries
     my $y = $args{y};           # number, string, or PointSeries
     my $lineTypeId = $args{lineTypeId};
+    my $lineType = defined $lineTypeId ? $self->lineTypeHash->{$lineTypeId} : undef;
     my $isClosed = $args{isClosed};
     my $parentId = $args{parentId};
     my $id = $args{id};
@@ -213,13 +214,8 @@ sub drawGrid {
         $isExtendedVertically   = $isExtendedAbove || $isExtendedBelow;
     }
 
-    my $lineStyle = eval { $self->lineTypeHash->{$lineTypeId}->style; };
-    my $isDashed = eval { $lineStyle eq 'dashed' };
-    my $isDotted = eval { $lineStyle eq 'dotted' };
-    my $isDashedOrDotted = $isDashed || $isDotted;
-
-    my $dashes = eval { $self->lineTypeHash->{$lineTypeId}->dashes; } || 1;
-    my $dots   = eval { $self->lineTypeHash->{$lineTypeId}->dots;   } || 1;
+    my $dashes = $lineType ? $lineType->dashes : 1;
+    my $dots   = $lineType ? $lineType->dots   : 1;
 
     my $hDashLength;
     my $vDashLength;
@@ -229,12 +225,12 @@ sub drawGrid {
     my $vDashLineStart;
     my $hDashCenterAt;
     my $vDashCenterAt;
-    if ($isDashedOrDotted) {
-        if ($isDashed) {
+    if ($lineType && $lineType->isDashedOrDotted) {
+        if ($lineType->isDashed) {
             $hDashLength = $spacingX / 2;
             $vDashLength = $spacingY / 2;
         }
-        if ($isDotted) {
+        if ($lineType->isDotted) {
             $hDashLength = 0;
             $vDashLength = 0;
         }
@@ -246,13 +242,13 @@ sub drawGrid {
             $vDashLineStart = $y1;
             $vDashCenterAt = $yPt[0];
         }
-        if ($isDashed) {
+        if ($lineType->isDashed) {
             $hDashSpacing /= $dashes;
             $vDashSpacing /= $dashes;
             $hDashLength  /= $dashes;
             $vDashLength  /= $dashes;
         }
-        if ($isDotted) {
+        if ($lineType->isDotted) {
             $hDashSpacing /= $dots;
             $vDashSpacing /= $dots;
             $hDashLength  /= $dots;
@@ -260,17 +256,18 @@ sub drawGrid {
         }
     }
 
-    my ($x1, $x2, $isExtendedHorizontally) = $self->getGridStartEnd(
-        axis => 'x',
-        coordinates => $x,
-        isClosed => $isClosed,
-    );
-    my ($y1, $y2, $isExtendedVertically) = $self->getGridStartEnd(
-        axis => 'y',
-        coordinates => $y,
-        isClosed => $isClosed,
-    );
-    my $isExtended = $isExtendedHorizontally || $isExtendedVertically;
+    my %hDashArgs = ($lineType && $lineType->isDashedOrDotted) ? (
+        dashLength    => $hDashLength,
+        dashSpacing   => $hDashSpacing,
+        dashLineStart => $hDashLineStart,
+        dashCenterAt  => $hDashCenterAt,
+    ) : ();
+    my %vDashArgs = ($lineType && $lineType->isDashedOrDotted) ? (
+        dashLength    => $vDashLength,
+        dashSpacing   => $vDashSpacing,
+        dashLineStart => $vDashLineStart,
+        dashCenterAt  => $vDashCenterAt,
+    ) : ();
 
     my $drawVerticalLines = sub {
         foreach my $x (@xPt) {
@@ -294,8 +291,7 @@ sub drawGrid {
         }
     };
 
-    # optimization: avoid drawing duplicates
-    if ($lineType->isDotted && $lineType->dots == 1) {
+    if ($lineType && $lineType->isDotted && $dots == 1) {
         if ($isClosed || !$isExtended) {
             $drawVerticalLines->();
             return;
@@ -751,19 +747,10 @@ sub coordinate {
     if ($value =~ m{^\s*$RE{num}{real}}) {
         return My::Printable::Paper::2::Coordinate::parse($value, $axis, $self);
     }
-    if ($value =~ m{\|}) {
-        my $xName = $`;
-        my $yName = $';
-        if (!defined $axis) {
-            die("coordinate: $value must have axis specified");
-        } elsif ($axis eq 'x') {
-            $value = $xName;
-        } elsif ($axis eq 'y') {
-            $value = $yName;
-        } else {
-            die("coordinate: invalid axis $axis");
-        }
-    }
+    $value = 'gridSpacingX' if $value eq 'gridSpacing' && $axis eq 'x';
+    $value = 'gridSpacingY' if $value eq 'gridSpacing' && $axis eq 'y';
+    $value = 'originX'      if $value eq 'origin'      && $axis eq 'x';
+    $value = 'originY'      if $value eq 'origin'      && $axis eq 'y';
     if ($self->can($value)) {
         return $self->coordinate($self->$value, $axis);
     }
