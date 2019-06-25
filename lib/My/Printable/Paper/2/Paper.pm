@@ -460,17 +460,17 @@ sub pointSeries {
     return $pointSeries;
 }
 
-sub xPointSeries {
+sub addXPointSeries {
     my $self = shift;
     return $self->pointSeries(axis => 'x', @_);
 }
 
-sub yPointSeries {
+sub addYPointSeries {
     my $self = shift;
     return $self->pointSeries(axis => 'y', @_);
 }
 
-sub lineType {
+sub addLineType {
     my $self = shift;
     if (scalar @_ == 1) {
         my $lineType = shift;
