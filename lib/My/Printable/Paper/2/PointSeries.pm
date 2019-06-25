@@ -15,7 +15,7 @@ has to                       => (is => 'rw', default => '0pt from end');
 has origin                   => (is => 'rw', default => '50%');
 has step                     => (is => 'rw', default => '1 grid');
 has center                   => (is => 'rw', default => 0);
-has shiftPoints              => (is => 'rw', default => 0);
+has canShiftPoints           => (is => 'rw', default => 0);
 has extend                   => (is => 'rw', default => 0);
 has paper                    => (is => 'rw');
 has computedOrigin           => (is => 'rw');
@@ -66,7 +66,7 @@ sub compute {
         @pts = map { $_ + $shift } @pts;
         $origin += $shift;
     }
-    if ($self->shiftPoints) {
+    if ($self->canShiftPoints) {
         my $fromStart = $pts[0];
         my $fromEnd   = $size - $pts[scalar(@pts) - 1];
         if ($self->shiftPointsUsingClipPath) {

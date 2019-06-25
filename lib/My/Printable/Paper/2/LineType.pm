@@ -11,9 +11,24 @@ has style   => (is => 'rw', default => 'solid'); # solid, dashed, dotted
 has stroke  => (is => 'rw', default => 'blue');
 has fill    => (is => 'rw');
 has paper   => (is => 'rw');
-has dashes  => (is => 'rw', default => 1);
-has dots    => (is => 'rw', default => 1);
+has dashes  => (is => 'rw', default => 1); # per grid unit
+has dots    => (is => 'rw', default => 1); # per grid unit
 has opacity => (is => 'rw');
+
+sub isDashed {
+    my $self = shift;
+    return $self->style eq 'dashed';
+}
+
+sub isDotted {
+    my $self = shift;
+    return $self->style eq 'dotted';
+}
+
+sub isDashedOrDotted {
+    my $self = shift;
+    return $self->isDashed || $self->isDotted;
+}
 
 sub getComputedCSS {
     my $self = shift;
@@ -61,19 +76,22 @@ sub parseColor {
     return $value;
 }
 
-sub isDashed {
+# stub
+sub strokeDashArray {
     my $self = shift;
-    return $self->style eq 'dashed';
+    return undef if !$self->isDashedOrDotted;
+    my %args = @_;
+    my $paper = $args{paper};
+    my $axis  = $args{axis};
 }
 
-sub isDotted {
+# stub
+sub strokeDashOffset {
     my $self = shift;
-    return $self->style eq 'dotted';
-}
-
-sub isDashedOrDotted {
-    my $self = shift;
-    return $self->isDashed || $self->isDotted;
+    return undef if !$self->isDashedOrDotted;
+    my %args = @_;
+    my $paper = $args{paper};
+    my $axis  = $args{axis};
 }
 
 1;
