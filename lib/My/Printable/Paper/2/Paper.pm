@@ -174,85 +174,48 @@ sub drawGrid {
     my $parentId = $args{parentId};
     my $id = $args{id};
 
-    my ($hStrokeDashArray, $hStrokeDashOffset) = $self->getStrokeDashArrayAndOffset(
-        axis => 'x',
-        coordinates => $x,
-        lineType => $lineType,
-        isClosed => $isClosed,
-    );
-    my ($vStrokeDashArray, $vStrokeDashOffset) = $self->getStrokeDashArrayAndOffset(
-        axis => 'x',
-        coordinates => $x,
-        lineType => $lineType,
-        isClosed => $isClosed,
-    );
-
     my @xPt = $self->xx($x);
     my @yPt = $self->yy($y);
 
+    my $xIsPointSeries = eval { $x->isa('My::Printable::Paper::2::PointSeries') };
+    my $yIsPointSeries = eval { $y->isa('My::Printable::Paper::2::PointSeries') };
+
+    my $spacingX = $xIsPointSeries ? $self->xx($x->step) : $self->xx('gridSpacingX');
+    my $spacingY = $yIsPointSeries ? $self->yy($y->step) : $self->yy('gridSpacingY');
+
     my $group = $self->svgGroupElement(id => $id, parentId => $parentId);
-    my $x1 = 0;
-    my $x2 = $self->xx('width');
-    my $y1 = 0;
-    my $y2 = $self->yy('height');
-    my $isExtended             = 0;
-    my $isExtendedHorizontally = 0;
-    my $isExtendedVertically   = 0;
-    if ($isClosed) {
-        $x1 = $xPt[0];
-        $x2 = $xPt[$#xPt];
-        $y1 = $yPt[0];
-        $y2 = $yPt[$#yPt];
-    } else {
-        my $isExtendedLeft  = $x1 <= $xPt[0]     - $spacingX;
-        my $isExtendedRight = $x2 >= $xPt[$#xPt] + $spacingX;
-        my $isExtendedAbove = $y1 <= $yPt[0]     - $spacingY;
-        my $isExtendedBelow = $y2 >= $yPt[$#yPt] + $spacingY;
-        $isExtended = $isExtendedLeft || $isExtendedRight ||
-            $isExtendedAbove || $isExtendedBelow;
-        $isExtendedHorizontally = $isExtendedLeft  || $isExtendedRight;
-        $isExtendedVertically   = $isExtendedAbove || $isExtendedBelow;
-    }
 
-    my $dashes = $lineType ? $lineType->dashes : 1;
-    my $dots   = $lineType ? $lineType->dots   : 1;
+    my ($x1, $x2, $isExtendedHorizontally) = $self->getGridStartEnd(
+        axis => 'x',
+        coordinates => $x,
+        isClosed => $isClosed,
+    );
+    my ($y1, $y2, $isExtendedVertically) = $self->getGridStartEnd(
+        axis => 'y',
+        coordinates => $y,
+        isClosed => $isClosed,
+    );
+    my $isExtended = $isExtendedHorizontally || $isExtendedVertically;
 
-    my $hDashLength;
-    my $vDashLength;
-    my $hDashSpacing;
-    my $vDashSpacing;
-    my $hDashLineStart;
-    my $vDashLineStart;
-    my $hDashCenterAt;
-    my $vDashCenterAt;
-    if ($lineType && $lineType->isDashedOrDotted) {
+    my $hDashLength    = $lineType ? ($lineType->isDashed ? ($spacingX / 2) : ($lineType->isDotted ? 0 : undef)) : undef;
+    my $vDashLength    = $lineType ? ($lineType->isDashed ? ($spacingY / 2) : ($lineType->isDotted ? 0 : undef)) : undef;
+    my $hDashSpacing   = $lineType ? ($lineType->isDashedOrDotted ? $spacingX : undef) : undef;
+    my $vDashSpacing   = $lineType ? ($lineType->isDashedOrDotted ? $spacingY : undef) : undef;
+    my $hDashLineStart = $lineType ? ($isClosed ? $x1 : undef) : undef;
+    my $vDashLineStart = $lineType ? ($isClosed ? $y1 : undef) : undef;
+    my $hDashCenterAt  = $lineType ? ($isClosed ? $xPt[0] : undef) : undef;
+    my $vDashCenterAt  = $lineType ? ($isClosed ? $yPt[0] : undef) : undef;
+    if ($lineType) {
         if ($lineType->isDashed) {
-            $hDashLength = $spacingX / 2;
-            $vDashLength = $spacingY / 2;
-        }
-        if ($lineType->isDotted) {
-            $hDashLength = 0;
-            $vDashLength = 0;
-        }
-        $hDashSpacing = $spacingX;
-        $vDashSpacing = $spacingY;
-        if (!$isClosed) {
-            $hDashLineStart = $x1;
-            $hDashCenterAt = $xPt[0];
-            $vDashLineStart = $y1;
-            $vDashCenterAt = $yPt[0];
-        }
-        if ($lineType->isDashed) {
-            $hDashSpacing /= $dashes;
-            $vDashSpacing /= $dashes;
-            $hDashLength  /= $dashes;
-            $vDashLength  /= $dashes;
-        }
-        if ($lineType->isDotted) {
-            $hDashSpacing /= $dots;
-            $vDashSpacing /= $dots;
-            $hDashLength  /= $dots;
-            $vDashLength  /= $dots;
+            $hDashLength /= $lineType->dashes;
+            $vDashLength /= $lineType->dashes;
+            $hDashSpacing /= $lineType->dashes;
+            $vDashSpacing /= $lineType->dashes;
+        } elsif ($lineType->isDotted) {
+            $hDashLength /= $lineType->dots;
+            $vDashLength /= $lineType->dots;
+            $hDashSpacing /= $lineType->dots;
+            $vDashSpacing /= $lineType->dots;
         }
     }
 
@@ -262,6 +225,7 @@ sub drawGrid {
         dashLineStart => $hDashLineStart,
         dashCenterAt  => $hDashCenterAt,
     ) : ();
+
     my %vDashArgs = ($lineType && $lineType->isDashedOrDotted) ? (
         dashLength    => $vDashLength,
         dashSpacing   => $vDashSpacing,
@@ -275,6 +239,7 @@ sub drawGrid {
                 $self->createSVGLine(
                     x => $x, y1 => $y1, y2 => $y2, lineTypeId => $lineTypeId,
                     useStrokeDashCSSClasses => 1,
+                    %hDashArgs,
                 )
             );
         }
@@ -286,12 +251,14 @@ sub drawGrid {
                 $self->createSVGLine(
                     y => $y, x1 => $x1, x2 => $x2, lineTypeId => $lineTypeId,
                     useStrokeDashCSSClasses => 1,
+                    %vDashArgs,
                 )
             );
         }
     };
 
-    if ($lineType && $lineType->isDotted && $dots == 1) {
+    # optimization: avoid drawing duplicate grids twice
+    if ($lineType && $lineType->isDotted && $lineType->dots == 1) {
         if ($isClosed || !$isExtended) {
             $drawVerticalLines->();
             return;
@@ -313,7 +280,7 @@ sub drawGrid {
 sub drawHorizontalLines {
     my $self = shift;
     my %args = @_;
-    my $y  = $args{y};          # number, string, or PointSeries
+    my $y  = $args{y};                      # number, string, or PointSeries
     my $x1 = $args{x1} // '0pt from start'; # number or string
     my $x2 = $args{x2} // '0pt from end';   # number or string
     my $lineTypeId = $args{lineTypeId};
@@ -337,7 +304,7 @@ sub drawHorizontalLines {
 sub drawVerticalLines {
     my $self = shift;
     my %args = @_;
-    my $x  = $args{x};          # number, string, or PointSeries
+    my $x  = $args{x};                      # number, string, or PointSeries
     my $y1 = $args{y1} // '0pt from start'; # number or string
     my $y2 = $args{y2} // '0pt from end';   # number or string
     my $lineTypeId = $args{lineTypeId};
@@ -602,7 +569,7 @@ END
 END
             foreach my $property (nsort keys %$hash) {
                 my $value = $hash->{$property};
-            $result .= <<"END";
+                $result .= <<"END";
             ${property}: ${value};
 END
             }
@@ -681,6 +648,7 @@ sub createSVGLine {
     my $y1 = $args{y1} // $args{y};
     my $y2 = $args{y2} // $args{y};
     my $lineTypeId = $args{lineTypeId};
+    my $lineType = defined $lineTypeId ? $self->lineTypeHash->{$lineTypeId} : undef;
     my $attr = $args{attr};
     my $line = $self->svgDocument->createElement('line');
     my $useStrokeDashCSSClasses = $args{useStrokeDashCSSClasses};
@@ -689,11 +657,12 @@ sub createSVGLine {
     $line->setAttribute('y1', sprintf('%.3f', $self->yy($y1)));
     $line->setAttribute('y2', sprintf('%.3f', $self->yy($y2)));
     if (defined $lineTypeId) {
+        my @cssClass = ($lineType->id);
         my $cssClass = $lineTypeId;
-        my $lineType = $self->lineTypeHash->{$lineTypeId};
         if ($lineType && $lineType->isDashedOrDotted) {
             my $strokeDashArray = strokeDashArray(%args);
             my $strokeDashOffset = strokeDashOffset(%args);
+            printf STDERR ("createSVGLine: args: %s\n", join(' ', @{[%args]}));
             if ($useStrokeDashCSSClasses) {
                 my $sdaClassName = $self->getStrokeDashArrayClassName($strokeDashArray);
                 my $sdoClassName = $self->getStrokeDashOffsetClassName($strokeDashOffset);
@@ -703,11 +672,12 @@ sub createSVGLine {
                 $line->setAttribute('stroke-dasharray', $strokeDashArray);
                 $line->setAttribute('stroke-dashoffset', $strokeDashOffset);
             }
-            $cssClass .= ' dashed' if $lineType->isDashed;
-            $cssClass .= ' dotted' if $lineType->isDotted;
+            push(@cssClass, 'dashed') if $lineType->isDashed;
+            push(@cssClass, 'dotted') if $lineType->isDotted;
         }
+        $line->setAttribute('class', join(' ', @cssClass)) if scalar @cssClass;
+    }
 
-    $line->setAttribute('class', join(' ', @cssClass)) if scalar @cssClass;
     if (eval { ref $attr eq 'HASH' }) {
         foreach my $name (sort keys %$attr) {
             $line->setAttribute($name, $attr->{$name});
@@ -751,6 +721,19 @@ sub coordinate {
     $value = 'gridSpacingY' if $value eq 'gridSpacing' && $axis eq 'y';
     $value = 'originX'      if $value eq 'origin'      && $axis eq 'x';
     $value = 'originY'      if $value eq 'origin'      && $axis eq 'y';
+    if ($value =~ m{\|}) {
+        my $xName = $`;
+        my $yName = $';
+        if (!defined $axis) {
+            die("coordinate: $value must have axis specified");
+        } elsif ($axis eq 'x') {
+            $value = $xName;
+        } elsif ($axis eq 'y') {
+            $value = $yName;
+        } else {
+            die("coordinate: invalid axis $axis");
+        }
+    }
     if ($self->can($value)) {
         return $self->coordinate($self->$value, $axis);
     }
@@ -767,7 +750,6 @@ sub getStrokeDashArrayAndOffset {
     my $axis        = $args{axis};
     my $coordinates = $args{coordinates};
     my $lineType    = $args{lineType};
-    $lineType = $self->lineType($lineType);
     my $isClosed    = $args{isClosed};
 
     return undef if !$lineType->isDashedOrDotted;
