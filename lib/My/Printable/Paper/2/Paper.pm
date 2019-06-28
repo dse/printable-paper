@@ -258,7 +258,8 @@ sub drawGrid {
     };
 
     # optimization: avoid drawing duplicate grids twice
-    if ($lineType && $lineType->isDotted && $lineType->dots == 1) {
+    if ($lineType && $lineType->isDotted && $lineType->dots == 1 &&
+            !eval { $x->mustExclude } && !eval { $y->mustExclude }) {
         if ($isClosed || !$isExtended) {
             $drawVerticalLines->();
             return;
