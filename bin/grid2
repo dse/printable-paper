@@ -89,15 +89,3 @@ $paper->endSVG();
 
 $paper->writeSVG();
 $paper->writePDF(nUp => 2, nPages => 2);
-# $paper->writePS(1, 1);
-# $paper->writePS(1, 2);
-# $paper->writePS(2, 1);
-# $paper->writePS(2, 2);
-# $paper->writePS(4, 1);
-# $paper->writePS(4, 2);
-# $paper->writePDF(1, 1);
-# $paper->writePDF(1, 2);
-# $paper->writePDF(2, 1);
-# $paper->writePDF(2, 2);
-# $paper->writePDF(4, 1);
-# $paper->writePDF(4, 2);
