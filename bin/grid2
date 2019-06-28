@@ -49,11 +49,13 @@ my $minorGridX = $paper->addXPointSeries(
     id => 'minor-x',
     step => '1/3 gridunit',
     origin => $majorGridX->computedOrigin,
+    canExclude => $majorGridX,
 );
 my $minorGridY = $paper->addYPointSeries(
     id => 'minor-y',
     step => '1/3 gridunit',
     origin => $majorGridY->computedOrigin,
+    canExclude => $majorGridY,
 );
 $minorGridX->compute();
 $minorGridY->compute();
