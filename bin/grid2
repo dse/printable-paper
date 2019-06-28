@@ -19,7 +19,7 @@ $paper->clipBottom(13.5);
 
 my $majorLineType = $paper->addLineType(
     id => 'major',
-    width => '1.5 printerdots',
+    width => '1 printerdots',
 );
 my $minorLineType = $paper->addLineType(
     id => 'minor',
