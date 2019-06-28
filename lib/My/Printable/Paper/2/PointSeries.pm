@@ -6,6 +6,9 @@ use v5.10.0;
 use lib "$ENV{HOME}/git/dse.d/printable-paper/lib";
 use My::Printable::Paper::2::Util qw(:snap);
 
+use POSIX qw(round);
+use List::Util qw(min max);
+
 use Moo;
 
 has id                       => (is => 'rw');
@@ -22,6 +25,11 @@ has computedOrigin           => (is => 'rw');
 has computedPoints           => (is => 'rw');
 has centerUsingClipPath      => (is => 'rw', default => 1);
 has shiftPointsUsingClipPath => (is => 'rw', default => 1);
+has canExclude               => (is => 'rw');
+has mustExclude              => (is => 'rw');
+has actualStart              => (is => 'rw');
+has actualEnd                => (is => 'rw');
+has actualStep               => (is => 'rw');
 
 sub compute {
     my $self = shift;
@@ -101,6 +109,9 @@ sub compute {
             unshift(@pts, $pt);
         }
     }
+    $self->actualStart(min(@pts));
+    $self->actualEnd(max(@pts));
+    $self->actualStep($step);
     $self->computedOrigin($origin);
     $self->computedPoints(\@pts);
 }
@@ -108,7 +119,14 @@ sub compute {
 sub getPoints {
     my $self = shift;
     $self->compute();
-    return @{$self->computedPoints};
+    my @points = @{$self->computedPoints};
+    if ($self->canExclude) {
+        @points = grep { !$self->canExclude->includes($_) } @points;
+    }
+    if ($self->mustExclude) {
+        @points = grep { !$self->mustExclude->includes($_) } @points;
+    }
+    return @points;
 }
 
 sub getOrigin {
@@ -120,19 +138,35 @@ sub getOrigin {
 sub nearest {
     my $self = shift;
     my $value = shift;
-    use constant INDEX => 0;
-    use constant VALUE => 1;
-    use constant DIST  => 2;
     $value = $self->paper->coordinate($value, $self->axis);
-    my @pts = $self->getPoints();
-    my @dist = map {
-        my $pt = $pts[$_];
-        [$_, $pt, abs($value - $pt)]
-    } (0 .. $#pts);
-    @dist = sort {
-        $a->[DIST] <=> $b->[DIST] || $a->[INDEX] <=> $b->[INDEX]
-    } @dist;
-    return $dist[0][VALUE];
+    my $start = $self->actualStart;
+    my $step = $self->actualStep;
+    my $end = $self->actualEnd;
+    my $nearest = $start + round(($value - $start) / $step) * $step;
+    if (snapcmp($nearest, $start) < 0) {
+        return $start;
+    }
+    if (snapcmp($nearest, $end) > 0) {
+        return $end;
+    }
+    return $nearest;
+}
+
+sub includes {
+    my $self = shift;
+    my $value = shift;
+    $value = $self->paper->coordinate($value, $self->axis);
+    my $start = $self->actualStart;
+    my $step = $self->actualStep;
+    my $end = $self->actualEnd;
+    my $nearest = $start + round(($value - $start) / $step) * $step;
+    if (snapcmp($nearest, $start) < 0) {
+        return 0;
+    }
+    if (snapcmp($nearest, $end) > 0) {
+        return 0;
+    }
+    return snapcmp($nearest, $value) == 0;
 }
 
 1;
