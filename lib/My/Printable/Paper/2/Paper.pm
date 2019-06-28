@@ -257,7 +257,7 @@ sub drawGrid {
         }
     };
 
-    # optimization: avoid drawing duplicate grids twice
+    # optimization: avoid drawing dot grids twice
     if ($lineType && $lineType->isDotted && $lineType->dots == 1 &&
             !eval { $x->mustExclude } && !eval { $y->mustExclude }) {
         if ($isClosed || !$isExtended) {
