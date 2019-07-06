@@ -663,7 +663,6 @@ sub createSVGLine {
         if ($lineType && $lineType->isDashedOrDotted) {
             my $strokeDashArray = strokeDashArray(%args);
             my $strokeDashOffset = strokeDashOffset(%args);
-            printf STDERR ("createSVGLine: args: %s\n", join(' ', @{[%args]}));
             if ($useStrokeDashCSSClasses) {
                 my $sdaClassName = $self->getStrokeDashArrayClassName($strokeDashArray);
                 my $sdoClassName = $self->getStrokeDashOffsetClassName($strokeDashOffset);
