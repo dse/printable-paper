@@ -8,84 +8,117 @@ use lib "${FindBin::Bin}/../lib";
 
 use My::Printable::Paper::2::Paper;
 
-my $paper = My::Printable::Paper::2::Paper->new(
-    size => 'half-letter',
-    basename => 'paper',
-);
-$paper->clipLeft(13.5);
-$paper->clipRight(13.5);
-$paper->clipTop(13.5);
-$paper->clipBottom(13.5);
-
-my $majorLineType = $paper->addLineType(
-    id => 'major',
-    width => '1 printerdots',
-);
-my $minorLineType = $paper->addLineType(
-    id => 'minor',
-    width => '1 printerdot',
-    style => 'dashed',
-    dots => 4,
-    dashes => 4,
-);
-my $marginLineType = $paper->addLineType(
-    id => 'margin',
-    width => '4 printerdots',
-    stroke => 'red',
+my @profiles = (
+    {
+        size => 'half-letter',
+        basename => 'paper-half-letter',
+        clip => 13.5,
+        writePDF => {
+            nUp => 2, nPages => 2
+        },
+        marginLine => '0.75in'
+    },
+    {
+        size => 'letter',
+        basename => 'paper-letter',
+        clip => 13.5,
+        writePDF => {
+            nUp => 1, nPages => 2
+        },
+        marginLine => '0.75in'
+    }
 );
 
-my $majorGridX = $paper->addXPointSeries(
-    id => 'major-x',
-    canShiftPoints => 1,
-);
-my $majorGridY = $paper->addYPointSeries(
-    id => 'major-y',
-    canShiftPoints => 1,
-);
-$majorGridX->compute();
-$majorGridY->compute();
+foreach my $profile (@profiles) {
+    my $paper = My::Printable::Paper::2::Paper->new(
+        size => $profile->{size},
+        basename => $profile->{basename},
+    );
+    $paper->clipLeft($profile->{clip});
+    $paper->clipRight($profile->{clip});
+    $paper->clipTop($profile->{clip});
+    $paper->clipBottom($profile->{clip});
 
-my $minorGridX = $paper->addXPointSeries(
-    id => 'minor-x',
-    step => '1/3 gridunit',
-    origin => $majorGridX->computedOrigin,
-    canExclude => $majorGridX,
-);
-my $minorGridY = $paper->addYPointSeries(
-    id => 'minor-y',
-    step => '1/3 gridunit',
-    origin => $majorGridY->computedOrigin,
-    canExclude => $majorGridY,
-);
-$minorGridX->compute();
-$minorGridY->compute();
+    my $majorLineType = $paper->addLineType(
+        id => 'major',
+        width => '1 printerdots',
+    );
+    my $minorLineType = $paper->addLineType(
+        id => 'minor',
+        width => '1 printerdot',
+        style => 'dashed',
+        dashes => 3,            # 2   3   4
+        dashLength => 3/8,      # 1/4 3/8 1/2
+    );
+    my $marginLineType = $paper->addLineType(
+        id => 'margin',
+        width => '4 printerdots',
+        stroke => 'red',
+    );
 
-$paper->startSVG();
+    my $majorGridX = $paper->addXPointSeries(
+        id => 'major-x',
+        canShiftPoints => 1,
+    );
+    my $majorGridY = $paper->addYPointSeries(
+        id => 'major-y',
+        canShiftPoints => 1,
+    );
+    $majorGridX->compute();
+    $majorGridY->compute();
 
-$paper->drawGrid(
-    id => 'major-grid',
-    x => $majorGridX,
-    y => $majorGridY,
-    lineTypeId => 'major',
-);
-$paper->drawGrid(
-    id => 'minor-grid',
-    x => $minorGridX,
-    y => $minorGridY,
-    lineTypeId => 'minor',
-);
-$paper->drawVerticalLines(
-    id => 'left-margin-line',
-    x => $majorGridX->nearest('0.75in'),
-    lineTypeId => 'margin',
-);
-$paper->drawHorizontalLines(
-    id => 'top-margin-line',
-    y => $majorGridY->nearest('0.75in'),
-    lineTypeId => 'margin',
-);
+    my $minorGridX = $paper->addXPointSeries(
+        id => 'minor-x',
+        step => '1/3 gridunit',
+        origin => $majorGridX->computedOrigin,
+        canExclude => $majorGridX,
+    );
+    my $minorGridY = $paper->addYPointSeries(
+        id => 'minor-y',
+        step => '1/3 gridunit',
+        origin => $majorGridY->computedOrigin,
+        canExclude => $majorGridY,
+    );
+    $minorGridX->compute();
+    $minorGridY->compute();
 
-$paper->endSVG();
+    $paper->startSVG();
 
-$paper->writeSVG();
-$paper->writePDF(nUp => 2, nPages => 2);
+    $paper->drawGrid(
+        id => 'major-grid',
+        x => $majorGridX,
+        y => $majorGridY,
+        lineTypeId => 'major',
+    );
+    $paper->drawGrid(
+        id => 'minor-grid',
+        x => $minorGridX,
+        y => $minorGridY,
+        lineTypeId => 'minor',
+    );
+    $paper->drawVerticalLines(
+        id => 'left-margin-line',
+        x => $majorGridX->nearest($profile->{marginLine}),
+        lineTypeId => 'margin',
+    );
+    $paper->drawHorizontalLines(
+        id => 'top-margin-line',
+        y => $majorGridY->nearest($profile->{marginLine}),
+        lineTypeId => 'margin',
+    );
+    $paper->drawVerticalLines(
+        id => 'right-margin-line',
+        x => $majorGridX->nearest($profile->{marginLine} . ' from right'),
+        lineTypeId => 'margin',
+    );
+    $paper->drawHorizontalLines(
+        id => 'bottom-margin-line',
+        y => $majorGridY->nearest($profile->{marginLine} . ' from bottom'),
+        lineTypeId => 'margin',
+    );
+
+    $paper->endSVG();
+
+    $paper->writeSVG();
+    $paper->writePDF(%{$profile->{writePDF}});
+}
