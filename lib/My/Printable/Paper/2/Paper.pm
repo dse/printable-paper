@@ -197,8 +197,8 @@ sub drawGrid {
     );
     my $isExtended = $isExtendedHorizontally || $isExtendedVertically;
 
-    my $hDashLength    = $lineType ? ($lineType->isDashed ? ($spacingX / 2) : ($lineType->isDotted ? 0 : undef)) : undef;
-    my $vDashLength    = $lineType ? ($lineType->isDashed ? ($spacingY / 2) : ($lineType->isDotted ? 0 : undef)) : undef;
+    my $hDashLength    = $lineType ? ($lineType->isDashed ? ($spacingX * $lineType->dashLength) : ($lineType->isDotted ? 0 : undef)) : undef;
+    my $vDashLength    = $lineType ? ($lineType->isDashed ? ($spacingY * $lineType->dashLength) : ($lineType->isDotted ? 0 : undef)) : undef;
     my $hDashSpacing   = $lineType ? ($lineType->isDashedOrDotted ? $spacingX : undef) : undef;
     my $vDashSpacing   = $lineType ? ($lineType->isDashedOrDotted ? $spacingY : undef) : undef;
     my $hDashLineStart = $lineType ? ($isClosed ? $x1 : undef) : undef;
