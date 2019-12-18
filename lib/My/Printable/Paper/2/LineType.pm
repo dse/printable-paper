@@ -16,6 +16,56 @@ has dots       => (is => 'rw', default => 1); # per grid unit
 has opacity    => (is => 'rw');
 has dashLength => (is => 'rw', default => 0.5);
 
+sub getDashArguments {
+    my ($self, %args) = @_;
+
+    return () unless $self->isDashedOrDotted;
+
+    my $point    = $args{point};
+    my $axis     = $args{axis};
+    my $isClosed = $args{isClosed};
+    my $parentId = $args{parentId};
+    my $id       = $args{id};
+    my $spacing  = $args{spacing};
+
+    my @points = $self->coordinate($point, $axis);
+    my $isPointSeries = eval { $point->isa('My::Printable::Paper::2::PointSeries') };
+    if ($isPointSeries) {
+        $spacing = $self->coordinate($spacing // $point->step);
+    } else {
+        $spacing = $self->coordinate($spacing);
+    }
+    my $group = $self->svgGroupElement(id => $id, parentId => $parentId);
+    my ($point1, $point2, $isExtended) = $self->getGridStartEnd(
+        axis => $args{axis},
+        coordinates => $point,
+        isClosed => $args{isClosed},
+    );
+    my $dashLength = $self->isDashed ? ($spacing * $self->dashLength) : 0;
+    my $dashSpacing = $spacing;
+    my $dashLineStart = $point1;
+    my $dashCenterAt = $isClosed ? $points[0] : undef;
+    if ($self->isDashed) {
+        $dashLength /= $self->dashes;
+        $dashSpacing /= $self->dashes;
+    } elsif ($self->isDotted) {
+        $dashLength /= $self->dots;
+        $dashSpacing /= $self->dots;
+    }
+    my %dashArgs = (
+        dashLength    => $dashLength,
+        dashSpacing   => $dashSpacing,
+        dashLineStart => $dashLineStart,
+        dashCenterAt  => $dashCenterAt,
+        point1        => $point1,
+        point2        => $point2,
+        points        => \@points,
+        isExtended    => $isExtended,
+        spacing       => $spacing,
+    );
+    return %dashArgs;
+}
+
 sub isDashed {
     my $self = shift;
     return $self->style eq 'dashed';
@@ -47,9 +97,15 @@ END
     $result .= <<"END" if defined $stroke;
             stroke: ${stroke};
 END
-    $result .= <<"END" if defined $fill;
+    if (defined $fill) {
+        $result .= <<"END";
             fill: ${fill};
 END
+    } else {
+        $result .= <<"END";
+            fill: none;
+END
+    }
     $result .= <<"END" if defined $opacity;
             opacity: ${opacity};
 END
