@@ -9,24 +9,8 @@ use lib "${FindBin::Bin}/../lib";
 use My::Printable::Paper::2::Paper;
 
 my @profiles = (
-    {
-        size => 'half-letter',
-        basename => 'paper-half-letter',
-        clip => 13.5,
-        writePDF => {
-            nUp => 2, nPages => 2
-        },
-        marginLine => '0.75in'
-    },
-    {
-        size => 'letter',
-        basename => 'paper-letter',
-        clip => 13.5,
-        writePDF => {
-            nUp => 1, nPages => 2
-        },
-        marginLine => '0.75in'
-    }
+    { size => 'half-letter', basename => 'paper-half-letter', clip => 13.5, writePDF => { nUp => 2, nPages => 2 }, marginLine => '0.75in', },
+    { size => 'letter',      basename => 'paper-letter',      clip => 13.5, writePDF => { nUp => 1, nPages => 2 }, marginLine => '0.75in', },
 );
 
 foreach my $profile (@profiles) {
