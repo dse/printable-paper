@@ -1,0 +1,48 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use v5.10.0;
+
+use FindBin;
+use lib "${FindBin::Bin}/../lib";
+
+use My::Printable::Paper::2::Paper;
+
+my $paper = My::Printable::Paper::2::Paper->new(
+    size => 'letter',
+    basename => 'polar-letter'
+);
+$paper->clipLeft('13.5pt');
+$paper->clipRight('13.5pt');
+$paper->clipTop('13.5pt');
+$paper->clipBottom('13.5pt');
+my $majorLineType = $paper->addLineType(
+    id => 'major',
+    width => '1 printerdots',
+);
+my $minorLineType = $paper->addLineType(
+    id => 'minor',
+    width => '1 printerdot',
+    style => 'dashed',
+    dashes => 3,            # 2   3   4
+    dashLength => 3/8,      # 1/4 3/8 1/2
+);
+
+$paper->startSVG();
+for (my $r = 0; $r <= $paper->maxWidthHeight; $r += $paper->coordinate('0.25in')) {
+    $paper->drawCircle(
+        r => $r,
+        lineTypeId => 'minor',
+        dashSpacing => '1/12in',
+    );
+}
+for (my $deg = 0; $deg < 180; $deg += 6) {
+    $paper->drawLine(
+        rotate => $deg,
+        lineTypeId => 'minor',
+        dashSpacing => '1/12in',
+    );
+}
+$paper->endSVG();
+$paper->writeSVG();
+$paper->writePDF(nUp => 1, nPages => 2);
