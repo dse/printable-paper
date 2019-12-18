@@ -16,6 +16,7 @@ use File::Slurp qw(write_file);
 use XML::LibXML;
 use Sort::Naturally qw(nsort);
 use Regexp::Common qw(number);
+use Math::Trig qw(:pi);
 
 use Moo;
 
@@ -174,9 +175,6 @@ sub drawGrid {
     my $parentId = $args{parentId};
     my $id = $args{id};
 
-    my @xPt = $self->xx($x);
-    my @yPt = $self->yy($y);
-
     my $xIsPointSeries = eval { $x->isa('My::Printable::Paper::2::PointSeries') };
     my $yIsPointSeries = eval { $y->isa('My::Printable::Paper::2::PointSeries') };
 
@@ -185,53 +183,34 @@ sub drawGrid {
 
     my $group = $self->svgGroupElement(id => $id, parentId => $parentId);
 
-    my ($x1, $x2, $isExtendedHorizontally) = $self->getGridStartEnd(
+    my %hDashArgs = $lineType->getDashArguments(
         axis => 'x',
         coordinates => $x,
         isClosed => $isClosed,
+        id => $id,
+        parentId => $parentId,
+        spacing => $spacingX,
     );
-    my ($y1, $y2, $isExtendedVertically) = $self->getGridStartEnd(
+
+    my %vDashArgs = $lineType->getDashArguments(
         axis => 'y',
         coordinates => $y,
         isClosed => $isClosed,
+        id => $id,
+        parentId => $parentId,
+        spacing => $spacingY,
     );
-    my $isExtended = $isExtendedHorizontally || $isExtendedVertically;
 
-    my $hDashLength    = $lineType ? ($lineType->isDashed ? ($spacingX * $lineType->dashLength) : ($lineType->isDotted ? 0 : undef)) : undef;
-    my $vDashLength    = $lineType ? ($lineType->isDashed ? ($spacingY * $lineType->dashLength) : ($lineType->isDotted ? 0 : undef)) : undef;
-    my $hDashSpacing   = $lineType ? ($lineType->isDashedOrDotted ? $spacingX : undef) : undef;
-    my $vDashSpacing   = $lineType ? ($lineType->isDashedOrDotted ? $spacingY : undef) : undef;
-    my $hDashLineStart = $lineType ? ($isClosed ? $x1 : undef) : undef;
-    my $vDashLineStart = $lineType ? ($isClosed ? $y1 : undef) : undef;
-    my $hDashCenterAt  = $lineType ? ($isClosed ? $xPt[0] : undef) : undef;
-    my $vDashCenterAt  = $lineType ? ($isClosed ? $yPt[0] : undef) : undef;
-    if ($lineType) {
-        if ($lineType->isDashed) {
-            $hDashLength /= $lineType->dashes;
-            $vDashLength /= $lineType->dashes;
-            $hDashSpacing /= $lineType->dashes;
-            $vDashSpacing /= $lineType->dashes;
-        } elsif ($lineType->isDotted) {
-            $hDashLength /= $lineType->dots;
-            $vDashLength /= $lineType->dots;
-            $hDashSpacing /= $lineType->dots;
-            $vDashSpacing /= $lineType->dots;
-        }
-    }
+    my $x1  = $hDashArgs{point1};
+    my $x2  = $hDashArgs{point2};
+    my $y1  = $vDashArgs{point1};
+    my $y2  = $vDashArgs{point2};
+    my @xPt = @{$hDashArgs{points}};
+    my @yPt = @{$vDashArgs{points}};
 
-    my %hDashArgs = ($lineType && $lineType->isDashedOrDotted) ? (
-        dashLength    => $hDashLength,
-        dashSpacing   => $hDashSpacing,
-        dashLineStart => $hDashLineStart,
-        dashCenterAt  => $hDashCenterAt,
-    ) : ();
-
-    my %vDashArgs = ($lineType && $lineType->isDashedOrDotted) ? (
-        dashLength    => $vDashLength,
-        dashSpacing   => $vDashSpacing,
-        dashLineStart => $vDashLineStart,
-        dashCenterAt  => $vDashCenterAt,
-    ) : ();
+    my $isExtended             = $hDashArgs{isExtended} || $vDashArgs{isExtended};
+    my $isExtendedHorizontally = $hDashArgs{isExtended};
+    my $isExtendedVertically   = $vDashArgs{isExtended};
 
     my $drawVerticalLines = sub {
         foreach my $x (@xPt) {
@@ -641,26 +620,149 @@ sub getStrokeDashOffsetClassName {
     return $self->getCSSClassNameByValue('sdo', 'stroke-dashoffset', $value);
 }
 
-sub createSVGLine {
+sub drawCircle {
+    my ($self, %args) = @_;
+    my $group = $self->svgGroupElement(%args);
+    $group->appendChild($self->createSVGCircle(%args));
+}
+
+sub drawLine {
+    my ($self, %args) = @_;
+    my $group = $self->svgGroupElement(%args);
+    $group->appendChild($self->createSVGLine(%args));
+}
+
+sub createSVGCircle {
     my $self = shift;
     my %args = @_;
-    my $x1 = $args{x1} // $args{x};
-    my $x2 = $args{x2} // $args{x};
-    my $y1 = $args{y1} // $args{y};
-    my $y2 = $args{y2} // $args{y};
+    my $x = $args{x}; $x //= $self->width / 2;
+    my $y = $args{y}; $y //= $self->height / 2;
+    my $r = $args{r};
+
     my $lineTypeId = $args{lineTypeId};
     my $lineType = defined $lineTypeId ? $self->lineTypeHash->{$lineTypeId} : undef;
     my $attr = $args{attr};
-    my $line = $self->svgDocument->createElement('line');
     my $useStrokeDashCSSClasses = $args{useStrokeDashCSSClasses};
-    $line->setAttribute('x1', sprintf('%.3f', $self->xx($x1)));
-    $line->setAttribute('x2', sprintf('%.3f', $self->xx($x2)));
-    $line->setAttribute('y1', sprintf('%.3f', $self->yy($y1)));
-    $line->setAttribute('y2', sprintf('%.3f', $self->yy($y2)));
+
+    my $circle = $self->svgDocument->createElement('circle');
+    $circle->setAttribute('cx', sprintf('%.3f', $self->xx($x)));
+    $circle->setAttribute('cy', sprintf('%.3f', $self->yy($y)));
+    $circle->setAttribute('r',  sprintf('%.3f', $self->coordinate($r)));
+
+    my $circumference = $self->coordinate($r) * pi2;
+    my $nPoints;
+    if (defined $args{dashSpacing}) {
+        $nPoints = int(0.5 + $circumference / $self->coordinate($args{dashSpacing}));
+        if ($nPoints) {
+            $args{dashSpacing} = $circumference / $nPoints;
+        } else {
+            delete $args{dashSpacing};
+        }
+    }
+
     if (defined $lineTypeId) {
         my @cssClass = ($lineType->id);
         my $cssClass = $lineTypeId;
-        if ($lineType && $lineType->isDashedOrDotted) {
+        if ($lineType && $lineType->isDashedOrDotted && defined $args{dashSpacing}) {
+            my $strokeDashArray = strokeDashArray(%args);
+            my $strokeDashOffset = strokeDashOffset(%args);
+            if ($useStrokeDashCSSClasses) {
+                my $sdaClassName = $self->getStrokeDashArrayClassName($strokeDashArray);
+                my $sdoClassName = $self->getStrokeDashOffsetClassName($strokeDashOffset);
+                push(@cssClass, $sdaClassName) if defined $sdaClassName;
+                push(@cssClass, $sdoClassName) if defined $sdoClassName;
+            } else {
+                $circle->setAttribute('stroke-dasharray', $strokeDashArray);
+                $circle->setAttribute('stroke-dashoffset', $strokeDashOffset);
+            }
+            push(@cssClass, 'dashed') if $lineType->isDashed;
+            push(@cssClass, 'dotted') if $lineType->isDotted;
+        }
+        $circle->setAttribute('class', join(' ', @cssClass)) if scalar @cssClass;
+    }
+
+    if (eval { ref $attr eq 'HASH' }) {
+        foreach my $name (sort keys %$attr) {
+            $circle->setAttribute($name, $attr->{$name});
+        }
+    }
+    return $circle;
+}
+
+sub createSVGLine {
+    my $self = shift;
+    my %args = @_;
+    my $x1 = $args{x1} // $args{x} // ($self->width / 2);
+    my $x2 = $args{x2} // $args{x} // ($self->width / 2);
+    my $y1 = $args{y1} // $args{y} // ($self->height / 2);
+    my $y2 = $args{y2} // $args{y} // ($self->height / 2);
+
+    $x1 = $self->xx($x1);
+    $x2 = $self->xx($x2);
+    $y1 = $self->yy($y1);
+    $y2 = $self->yy($y2);
+
+    my $cx = $args{cx} // (($x1 + $x2) / 2);
+    my $cy = $args{cy} // (($y1 + $y2) / 2);
+    my $rotate = $args{rotate};
+    my $length = $args{length};
+
+    $cx = $self->xx($cx);
+    $cy = $self->yy($cy);
+    $length = $self->coordinate($args{length}) if defined $length;
+
+    if (defined $rotate) {
+        my $theta = $rotate * pi / 180;
+        my $sin = sin($theta);
+        my $cos = cos($theta);
+        if ($x1 == $x2 && $y1 == $y2) { # a point
+            my $x = $x1;
+            my $y = $y1;
+            $x -= $cx;
+            $y -= $cy;
+            ($x, $y) = ($x * $cos - $y * $sin, $x * $sin + $y * $cos);
+            $x += $cx;
+            $y += $cy;
+            my $r = sqrt($self->width ** 2 + $self->height ** 2);
+            if (defined $length) {
+                $r = $length / 2;
+            }
+            $x1 = $x + $r * $sin;
+            $y1 = $y - $r * $cos;
+            $x2 = $x - $r * $sin;
+            $y2 = $y + $r * $cos;
+        } else {                # a line segment of nonzero length
+            $x1 -= $cx;
+            $y1 -= $cy;
+            $x2 -= $cx;
+            $y2 -= $cy;
+            ($x1, $y1) = ($x1 * $cos - $y1 * $sin, $x1 * $sin + $y1 * $cos);
+            ($x2, $y2) = ($x2 * $cos - $y2 * $sin, $x2 * $sin + $y2 * $cos);
+            $x1 += $cx;
+            $y1 += $cy;
+            $x2 += $cx;
+            $y2 += $cy;
+        }
+    }
+
+    my $lineTypeId = $args{lineTypeId};
+    my $lineType = defined $lineTypeId ? $self->lineTypeHash->{$lineTypeId} : undef;
+    my $attr = $args{attr};
+    my $useStrokeDashCSSClasses = $args{useStrokeDashCSSClasses};
+
+    my $line = $self->svgDocument->createElement('line');
+    $line->setAttribute('x1', sprintf('%.3f', $x1));
+    $line->setAttribute('x2', sprintf('%.3f', $x2));
+    $line->setAttribute('y1', sprintf('%.3f', $y1));
+    $line->setAttribute('y2', sprintf('%.3f', $y2));
+
+    $args{dashSpacing} = $self->coordinate($args{dashSpacing}) if defined $args{dashSpacing};
+    $args{dashCenterAt} = sqrt(($y2 - $y1) ** 2 + ($x2 - $x1) ** 2) / 2;
+
+    if (defined $lineTypeId) {
+        my @cssClass = ($lineType->id);
+        my $cssClass = $lineTypeId;
+        if ($lineType && $lineType->isDashedOrDotted && defined $args{dashSpacing}) {
             my $strokeDashArray = strokeDashArray(%args);
             my $strokeDashOffset = strokeDashOffset(%args);
             if ($useStrokeDashCSSClasses) {
@@ -840,6 +942,16 @@ sub getGridStartEnd {
         $isExtended = $isExtendedStart || $isExtendedEnd;
     }
     return ($start, $end, $isExtended);
+}
+
+sub minWidthHeight {
+    my ($self) = @_;
+    return min($self->width, $self->height);
+}
+
+sub maxWidthHeight {
+    my ($self) = @_;
+    return max($self->width, $self->height);
 }
 
 1;
