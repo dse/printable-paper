@@ -183,7 +183,7 @@ sub drawGrid {
 
     my $group = $self->svgGroupElement(id => $id, parentId => $parentId);
 
-    my %hDashArgs = $lineType->getDashArguments(
+    my %hDashArgs = $lineType->getGridDashArguments(
         axis => 'x',
         coordinates => $x,
         isClosed => $isClosed,
@@ -192,7 +192,7 @@ sub drawGrid {
         spacing => $spacingX,
     );
 
-    my %vDashArgs = $lineType->getDashArguments(
+    my %vDashArgs = $lineType->getGridDashArguments(
         axis => 'y',
         coordinates => $y,
         isClosed => $isClosed,

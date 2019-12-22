@@ -16,7 +16,7 @@ has dots       => (is => 'rw', default => 1); # per grid unit
 has opacity    => (is => 'rw');
 has dashLength => (is => 'rw', default => 0.5);
 
-sub getDashArguments {
+sub getGridDashArguments {
     my ($self, %args) = @_;
 
     my $coordinates    = $args{coordinates};
