@@ -19,28 +19,37 @@ has dashLength => (is => 'rw', default => 0.5);
 sub getDashArguments {
     my ($self, %args) = @_;
 
-    return () unless $self->isDashedOrDotted;
-
-    my $point    = $args{point};
+    my $coordinates    = $args{coordinates};
     my $axis     = $args{axis};
     my $isClosed = $args{isClosed};
     my $parentId = $args{parentId};
     my $id       = $args{id};
     my $spacing  = $args{spacing};
 
-    my @points = $self->coordinate($point, $axis);
-    my $isPointSeries = eval { $point->isa('My::Printable::Paper::2::PointSeries') };
+    my @points = $self->paper->coordinate($coordinates, $axis);
+    my $isPointSeries = eval { $coordinates->isa('My::Printable::Paper::2::PointSeries') };
     if ($isPointSeries) {
-        $spacing = $self->coordinate($spacing // $point->step);
+        $spacing = $self->paper->coordinate($spacing // $coordinates->step);
     } else {
-        $spacing = $self->coordinate($spacing);
+        $spacing = $self->paper->coordinate($spacing);
     }
-    my $group = $self->svgGroupElement(id => $id, parentId => $parentId);
-    my ($point1, $point2, $isExtended) = $self->getGridStartEnd(
+    my $group = $self->paper->svgGroupElement(id => $id, parentId => $parentId);
+    my ($point1, $point2, $isExtended) = $self->paper->getGridStartEnd(
         axis => $args{axis},
-        coordinates => $point,
+        coordinates => $coordinates,
         isClosed => $args{isClosed},
     );
+
+    if (!$self->isDashedOrDotted) {
+        return (
+            point1        => $point1,
+            point2        => $point2,
+            points        => \@points,
+            isExtended    => $isExtended,
+            spacing       => $spacing,
+        );
+    }
+
     my $dashLength = $self->isDashed ? ($spacing * $self->dashLength) : 0;
     my $dashSpacing = $spacing;
     my $dashLineStart = $point1;

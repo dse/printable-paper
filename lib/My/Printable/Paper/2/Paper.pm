@@ -201,16 +201,22 @@ sub drawGrid {
         spacing => $spacingY,
     );
 
+    my @xPt = $self->xx($x);
+    my @yPt = $self->yy($y);
+
     my $x1  = $hDashArgs{point1};
     my $x2  = $hDashArgs{point2};
     my $y1  = $vDashArgs{point1};
     my $y2  = $vDashArgs{point2};
-    my @xPt = @{$hDashArgs{points}};
-    my @yPt = @{$vDashArgs{points}};
 
     my $isExtended             = $hDashArgs{isExtended} || $vDashArgs{isExtended};
     my $isExtendedHorizontally = $hDashArgs{isExtended};
     my $isExtendedVertically   = $vDashArgs{isExtended};
+
+    if (!$lineType->isDashedOrDotted) {
+        say scalar @xPt;
+        say scalar @yPt;
+    }
 
     my $drawVerticalLines = sub {
         foreach my $x (@xPt) {
