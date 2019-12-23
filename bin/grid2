@@ -9,15 +9,14 @@ use lib "${FindBin::Bin}/../lib";
 use My::Printable::Paper::2::Paper;
 
 my @profiles = (
-    { size => 'half-letter', basename => 'paper-half-letter', clip => 13.5, writePDF => { nUp => 2, nPages => 2 }, marginLine => '0.75in', },
-    { size => 'letter',      basename => 'paper-letter',      clip => 13.5, writePDF => { nUp => 1, nPages => 2 }, marginLine => '0.75in', },
+    { paper => { size => 'half-letter', basename => 'paper-half-letter',                                     }, clip => 13.5, writePDF => [{ nUp => 2, nPages => 1 }, { nUp => 2, nPages => 2 }], marginLine => '0.75in', },
+    { paper => { size => 'letter',      basename => 'paper-letter',                                          }, clip => 13.5, writePDF => { nUp => 1, nPages => 2 },                              marginLine => '0.75in', },
+    { paper => { size => 'a5',          basename => 'paper-a5', gridSpacingX => '6mm', gridSpacingY => '6mm' }, clip => 13.5, writePDF => [{ nUp => 2, nPages => 1 }, { nUp => 2, nPages => 2 }], marginLine => '18mm', },
+    { paper => { size => 'a4',          basename => 'paper-a4', gridSpacingX => '6mm', gridSpacingY => '6mm' }, clip => 13.5, writePDF => { nUp => 1, nPages => 2 },                              marginLine => '18mm', },
 );
 
 foreach my $profile (@profiles) {
-    my $paper = My::Printable::Paper::2::Paper->new(
-        size => $profile->{size},
-        basename => $profile->{basename},
-    );
+    my $paper = My::Printable::Paper::2::Paper->new(%{$profile->{paper}});
     $paper->clipLeft($profile->{clip});
     $paper->clipRight($profile->{clip});
     $paper->clipTop($profile->{clip});
@@ -104,5 +103,11 @@ foreach my $profile (@profiles) {
     $paper->endSVG();
 
     $paper->writeSVG();
-    $paper->writePDF(%{$profile->{writePDF}});
+    if (ref $profile->{writePDF} eq 'ARRAY') {
+	foreach my $writePDF (@{$profile->{writePDF}}) {
+	    $paper->writePDF(%$writePDF);
+	}
+    } elsif (ref $profile->{writePDF} eq 'HASH') {
+	$paper->writePDF(%{$profile->{writePDF}});
+    }
 }
