@@ -23,7 +23,7 @@ sub getGridDashArguments {
     my $axis     = $args{axis};
     my $isClosed = $args{isClosed};
     my $parentId = $args{parentId};
-    my $id       = $args{id};
+    my $groupId     = $args{groupId};
     my $spacing  = $args{spacing};
 
     my @points = $self->paper->coordinate($coordinates, $axis);
@@ -33,7 +33,7 @@ sub getGridDashArguments {
     } else {
         $spacing = $self->paper->coordinate($spacing);
     }
-    my $group = $self->paper->svgGroupElement(id => $id, parentId => $parentId);
+    my $group = $self->paper->svgGroupElement(id => $groupId, parentId => $parentId);
     my ($point1, $point2, $isExtended) = $self->paper->getGridStartEnd(
         axis => $args{axis},
         coordinates => $coordinates,

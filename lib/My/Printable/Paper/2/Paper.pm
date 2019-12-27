@@ -174,7 +174,7 @@ sub drawGrid {
 
     my $isClosed = $args{isClosed};
     my $parentId = $args{parentId};
-    my $id = $args{id};
+    my $groupId = $args{groupId};
 
     my $xIsPointSeries = eval { $x->isa('My::Printable::Paper::2::PointSeries') };
     my $yIsPointSeries = eval { $y->isa('My::Printable::Paper::2::PointSeries') };
@@ -182,13 +182,13 @@ sub drawGrid {
     my $spacingX = $xIsPointSeries ? $self->xx($x->step) : $self->xx('gridSpacingX');
     my $spacingY = $yIsPointSeries ? $self->yy($y->step) : $self->yy('gridSpacingY');
 
-    my $group = $self->svgGroupElement(id => $id, parentId => $parentId);
+    my $group = $self->svgGroupElement(groupId => $groupId, parentId => $parentId);
 
     my %hDashArgs = $lineType->getGridDashArguments(
         axis => 'x',
         coordinates => $x,
         isClosed => $isClosed,
-        id => $id,
+        groupId => $groupId,
         parentId => $parentId,
         spacing => $spacingX,
     );
@@ -197,7 +197,7 @@ sub drawGrid {
         axis => 'y',
         coordinates => $y,
         isClosed => $isClosed,
-        id => $id,
+        groupId => $groupId,
         parentId => $parentId,
         spacing => $spacingY,
     );
@@ -266,7 +266,7 @@ sub drawHorizontalLines {
     my $x1 = $args{x1} // '0pt from start'; # number or string
     my $x2 = $args{x2} // '0pt from end';   # number or string
     my $parentId = $args{parentId};
-    my $id = $args{id};
+    my $groupId = $args{groupId};
 
     my $lineType = $self->getLineTypeFromArgs(%args, lineTypeRequired => 1);
 
@@ -274,7 +274,7 @@ sub drawHorizontalLines {
     my $x1Pt = $self->xx($x1);
     my $x2Pt = $self->xx($x2);
 
-    my $group = $self->svgGroupElement(id => $id, parentId => $parentId);
+    my $group = $self->svgGroupElement(groupId => $groupId, parentId => $parentId);
     foreach my $y (@yPt) {
         $group->appendChild(
             $self->createSVGLine(
@@ -291,7 +291,7 @@ sub drawVerticalLines {
     my $y1 = $args{y1} // '0pt from start'; # number or string
     my $y2 = $args{y2} // '0pt from end';   # number or string
     my $parentId = $args{parentId};
-    my $id = $args{id};
+    my $groupId = $args{groupId};
 
     my $lineType = $self->getLineTypeFromArgs(%args, lineTypeRequired => 1);
 
@@ -299,7 +299,7 @@ sub drawVerticalLines {
     my $y1Pt = $self->yy($y1);
     my $y2Pt = $self->yy($y2);
 
-    my $group = $self->svgGroupElement(id => $id, parentId => $parentId);
+    my $group = $self->svgGroupElement(groupId => $groupId, parentId => $parentId);
     foreach my $x (@xPt) {
         $group->appendChild(
             $self->createSVGLine(
