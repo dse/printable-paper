@@ -19,12 +19,12 @@ has dashLength => (is => 'rw', default => 0.5);
 sub getGridDashArguments {
     my ($self, %args) = @_;
 
-    my $coordinates    = $args{coordinates};
-    my $axis     = $args{axis};
-    my $isClosed = $args{isClosed};
-    my $parentId = $args{parentId};
+    my $coordinates = $args{coordinates};
+    my $axis        = $args{axis};
+    my $isClosed    = $args{isClosed};
+    my $parentId    = $args{parentId};
     my $groupId     = $args{groupId};
-    my $spacing  = $args{spacing};
+    my $spacing     = $args{spacing};
 
     my @points = $self->paper->coordinate($coordinates, $axis);
     my $isPointSeries = eval { $coordinates->isa('My::Printable::Paper::2::PointSeries') };
