@@ -169,8 +169,9 @@ sub drawGrid {
     my %args = @_;
     my $x = $args{x};           # number, string, or PointSeries
     my $y = $args{y};           # number, string, or PointSeries
-    my $lineTypeId = $args{lineTypeId};
-    my $lineType = defined $lineTypeId ? $self->lineTypeHash->{$lineTypeId} : undef;
+
+    my $lineType = $self->getLineTypeFromArgs(%args, lineTypeRequired => 1);
+
     my $isClosed = $args{isClosed};
     my $parentId = $args{parentId};
     my $id = $args{id};
@@ -217,7 +218,7 @@ sub drawGrid {
         foreach my $x (@xPt) {
             $group->appendChild(
                 $self->createSVGLine(
-                    x => $x, y1 => $y1, y2 => $y2, lineTypeId => $lineTypeId,
+                    x => $x, y1 => $y1, y2 => $y2, lineType => $lineType,
                     useStrokeDashCSSClasses => 1,
                     %hDashArgs,
                 )
@@ -229,7 +230,7 @@ sub drawGrid {
         foreach my $y (@yPt) {
             $group->appendChild(
                 $self->createSVGLine(
-                    y => $y, x1 => $x1, x2 => $x2, lineTypeId => $lineTypeId,
+                    y => $y, x1 => $x1, x2 => $x2, lineType => $lineType,
                     useStrokeDashCSSClasses => 1,
                     %vDashArgs,
                 )
@@ -264,9 +265,10 @@ sub drawHorizontalLines {
     my $y  = $args{y};                      # number, string, or PointSeries
     my $x1 = $args{x1} // '0pt from start'; # number or string
     my $x2 = $args{x2} // '0pt from end';   # number or string
-    my $lineTypeId = $args{lineTypeId};
     my $parentId = $args{parentId};
     my $id = $args{id};
+
+    my $lineType = $self->getLineTypeFromArgs(%args, lineTypeRequired => 1);
 
     my @yPt  = $self->yy($y);
     my $x1Pt = $self->xx($x1);
@@ -276,7 +278,7 @@ sub drawHorizontalLines {
     foreach my $y (@yPt) {
         $group->appendChild(
             $self->createSVGLine(
-                y => $y, x1 => $x1, x2 => $x2, lineTypeId => $lineTypeId,
+                y => $y, x1 => $x1, x2 => $x2, lineType => $lineType,
             )
         );
     }
@@ -288,9 +290,10 @@ sub drawVerticalLines {
     my $x  = $args{x};                      # number, string, or PointSeries
     my $y1 = $args{y1} // '0pt from start'; # number or string
     my $y2 = $args{y2} // '0pt from end';   # number or string
-    my $lineTypeId = $args{lineTypeId};
     my $parentId = $args{parentId};
     my $id = $args{id};
+
+    my $lineType = $self->getLineTypeFromArgs(%args, lineTypeRequired => 1);
 
     my @xPt  = $self->xx($x);
     my $y1Pt = $self->yy($y1);
@@ -300,7 +303,7 @@ sub drawVerticalLines {
     foreach my $x (@xPt) {
         $group->appendChild(
             $self->createSVGLine(
-                x => $x, y1 => $y1, y2 => $y2, lineTypeId => $lineTypeId,
+                x => $x, y1 => $y1, y2 => $y2, lineType => $lineType,
             )
         );
     }
@@ -480,10 +483,15 @@ sub addLineType {
     if (scalar @_ == 1) {
         my $lineType = shift;
         if (eval { $lineType->isa('My::Printable::Paper::2::LineType') }) {
+            my $lineTypeId = $lineType->id;
+            if (defined $lineTypeId && !exists $self->lineTypeHash->{$lineTypeId}) {
+                $self->lineTypeHash->{$lineTypeId} = $lineType;
+            }
             return $lineType;
         }
-        return $self->lineTypeHash->{$lineType}
-            if exists $self->lineTypeHash->{$lineType};
+        if (exists $self->lineTypeHash->{$lineType}) {
+            return $self->lineTypeHash->{$lineType};
+        }
         die("no such line type: '$lineType'");
     }
     my %args = @_;
@@ -640,8 +648,8 @@ sub createSVGCircle {
     my $y = $args{y}; $y //= $self->height / 2;
     my $r = $args{r};
 
-    my $lineTypeId = $args{lineTypeId};
-    my $lineType = defined $lineTypeId ? $self->lineTypeHash->{$lineTypeId} : undef;
+    my ($lineType, $lineTypeId) = $self->getLineTypeFromArgs(%args, lineTypeRequired => 1);
+
     my $attr = $args{attr};
     my $useStrokeDashCSSClasses = $args{useStrokeDashCSSClasses};
 
@@ -662,7 +670,7 @@ sub createSVGCircle {
     }
 
     if (defined $lineTypeId) {
-        my @cssClass = ($lineType->id);
+        my @cssClass = ($lineTypeId);
         my $cssClass = $lineTypeId;
         if ($lineType && $lineType->isDashedOrDotted && defined $args{dashSpacing}) {
             my $strokeDashArray = strokeDashArray(%args);
@@ -746,8 +754,8 @@ sub createSVGLine {
         }
     }
 
-    my $lineTypeId = $args{lineTypeId};
-    my $lineType = defined $lineTypeId ? $self->lineTypeHash->{$lineTypeId} : undef;
+    my ($lineType, $lineTypeId) = $self->getLineTypeFromArgs(%args, lineTypeRequired => 1);
+
     my $attr = $args{attr};
     my $useStrokeDashCSSClasses = $args{useStrokeDashCSSClasses};
 
@@ -761,7 +769,7 @@ sub createSVGLine {
     $args{dashCenterAt} = sqrt(($y2 - $y1) ** 2 + ($x2 - $x1) ** 2) / 2;
 
     if (defined $lineTypeId) {
-        my @cssClass = ($lineType->id);
+        my @cssClass = ($lineTypeId);
         my $cssClass = $lineTypeId;
         if ($lineType && $lineType->isDashedOrDotted && defined $args{dashSpacing}) {
             my $strokeDashArray = strokeDashArray(%args);
@@ -852,10 +860,12 @@ sub getStrokeDashArrayAndOffset {
     my ($self, %args) = @_;
     my $axis        = $args{axis};
     my $coordinates = $args{coordinates};
-    my $lineType    = $args{lineType};
     my $isClosed    = $args{isClosed};
 
-    return undef if !$lineType->isDashedOrDotted;
+    my $lineType = $self->getLineTypeFromArgs(%args);
+
+    return if !$lineType;
+    return if !$lineType->isDashedOrDotted;
 
     my $isPointSeries = eval {
         $coordinates->isa('My::Printable::Paper::2::PointSeries')
@@ -953,6 +963,36 @@ sub minWidthHeight {
 sub maxWidthHeight {
     my ($self) = @_;
     return max($self->width, $self->height);
+}
+
+sub getLineTypeFromArgs {
+    my ($self, %args) = @_;
+    my $lineTypeId = $args{lineTypeId};
+    my $lineType   = $args{lineType};
+
+    # if (lineType => 'foo') is passed
+    if (defined $lineType && !ref $lineType) {
+        $lineTypeId //= $lineType;
+        undef $lineType;
+    }
+
+    if (defined $lineType) {
+        $lineTypeId = $lineType->id;
+        return ($lineType, $lineTypeId) if wantarray;
+        return $lineType;
+    }
+
+    if (defined $lineTypeId) {
+        $lineType = $self->lineTypeHash->{$lineTypeId};
+        if (defined $lineType) {
+            return ($lineType, $lineTypeId) if wantarray;
+            return $lineType;
+        }
+    }
+
+    if ($args{lineTypeRequired}) {
+        die("$self: no such line type: '$lineTypeId'");
+    }
 }
 
 1;
