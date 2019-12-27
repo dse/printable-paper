@@ -3,111 +3,56 @@ use warnings;
 use strict;
 use v5.10.0;
 
+BEGIN { if (exists $ENV{CARP} && lc $ENV{CARP} eq 'always') { require Carp::Always; import Carp::Always qw(); } }
+
 use FindBin;
 use lib "${FindBin::Bin}/../../../lib";
 
 use My::Printable::Paper::2::Paper;
+use My::Printable::Paper::2::Paper::DarrensGrid;
 
-my @profiles = (
-    { paper => { size => 'half-letter', basename => 'paper-half-letter',                                     }, clip => 13.5, writePDF => [{ nUp => 2, nPages => 1 }, { nUp => 2, nPages => 2 }], marginLine => '0.75in', },
-    { paper => { size => 'letter',      basename => 'paper-letter',                                          }, clip => 13.5, writePDF => { nUp => 1, nPages => 2 },                              marginLine => '0.75in', },
-    { paper => { size => 'a5',          basename => 'paper-a5', gridSpacingX => '6mm', gridSpacingY => '6mm' }, clip => 13.5, writePDF => [{ nUp => 2, nPages => 1 }, { nUp => 2, nPages => 2 }], marginLine => '18mm', },
-    { paper => { size => 'a4',          basename => 'paper-a4', gridSpacingX => '6mm', gridSpacingY => '6mm' }, clip => 13.5, writePDF => { nUp => 1, nPages => 2 },                              marginLine => '18mm', },
+my $halfLetter = My::Printable::Paper::2::Paper::DarrensGrid->new(
+    size => 'half-letter',
+    basename => 'darrens-grid-half-letter',
+    gridSpacing => '1/4in',
+    marginLine => '0.75in',
 );
+$halfLetter->draw();
+$halfLetter->writeSVG();
+$halfLetter->writePDF(nUp => 1, nPages => 1);
+$halfLetter->writePDF(nUp => 1, nPages => 2);
+$halfLetter->writePDF(nUp => 2, nPages => 2);
 
-foreach my $profile (@profiles) {
-    my $paper = My::Printable::Paper::2::Paper->new(%{$profile->{paper}});
-    $paper->clipLeft($profile->{clip});
-    $paper->clipRight($profile->{clip});
-    $paper->clipTop($profile->{clip});
-    $paper->clipBottom($profile->{clip});
+my $letter = My::Printable::Paper::2::Paper::DarrensGrid->new(
+    size => 'letter',
+    basename => 'darrens-grid-letter',
+    gridSpacing => '1/4in',
+    marginLine => '0.75in',
+);
+$letter->draw();
+$letter->writeSVG();
+$letter->writePDF(nUp => 1, nPages => 1);
+$letter->writePDF(nUp => 1, nPages => 2);
 
-    my $majorLineType = $paper->addLineType(
-        id => 'major',
-        width => '1 printerdots',
-    );
-    my $minorLineType = $paper->addLineType(
-        id => 'minor',
-        width => '1 printerdot',
-        style => 'dashed',
-        dashes => 3,            # 2   3   4
-        dashLength => 3/8,      # 1/4 3/8 1/2
-    );
-    my $marginLineType = $paper->addLineType(
-        id => 'margin',
-        width => '4 printerdots',
-        stroke => 'red',
-    );
+my $a5 = My::Printable::Paper::2::Paper::DarrensGrid->new(
+    size => 'a5',
+    basename => 'darrens-grid-a5',
+    gridSpacing => '6mm',
+    marginLine => '18mm',
+);
+$a5->draw();
+$a5->writeSVG();
+$a5->writePDF(nUp => 1, nPages => 1);
+$a5->writePDF(nUp => 1, nPages => 2);
+$a5->writePDF(nUp => 2, nPages => 2);
 
-    my $majorGridX = $paper->addXPointSeries(
-        id => 'major-x',
-        canShiftPoints => 1,
-    );
-    my $majorGridY = $paper->addYPointSeries(
-        id => 'major-y',
-        canShiftPoints => 1,
-    );
-    $majorGridX->compute();
-    $majorGridY->compute();
-
-    my $minorGridX = $paper->addXPointSeries(
-        id => 'minor-x',
-        step => '1/3 gridunit',
-        origin => $majorGridX->computedOrigin,
-        canExclude => $majorGridX,
-    );
-    my $minorGridY = $paper->addYPointSeries(
-        id => 'minor-y',
-        step => '1/3 gridunit',
-        origin => $majorGridY->computedOrigin,
-        canExclude => $majorGridY,
-    );
-    $minorGridX->compute();
-    $minorGridY->compute();
-
-    $paper->startSVG();
-
-    $paper->drawGrid(
-        id => 'major-grid',
-        x => $majorGridX,
-        y => $majorGridY,
-        lineTypeId => 'major',
-    );
-    $paper->drawGrid(
-        id => 'minor-grid',
-        x => $minorGridX,
-        y => $minorGridY,
-        lineTypeId => 'minor',
-    );
-    $paper->drawVerticalLines(
-        id => 'left-margin-line',
-        x => $majorGridX->nearest($profile->{marginLine}),
-        lineTypeId => 'margin',
-    );
-    $paper->drawHorizontalLines(
-        id => 'top-margin-line',
-        y => $majorGridY->nearest($profile->{marginLine}),
-        lineTypeId => 'margin',
-    );
-    $paper->drawVerticalLines(
-        id => 'right-margin-line',
-        x => $majorGridX->nearest($profile->{marginLine} . ' from right'),
-        lineTypeId => 'margin',
-    );
-    $paper->drawHorizontalLines(
-        id => 'bottom-margin-line',
-        y => $majorGridY->nearest($profile->{marginLine} . ' from bottom'),
-        lineTypeId => 'margin',
-    );
-
-    $paper->endSVG();
-
-    $paper->writeSVG();
-    if (ref $profile->{writePDF} eq 'ARRAY') {
-	foreach my $writePDF (@{$profile->{writePDF}}) {
-	    $paper->writePDF(%$writePDF);
-	}
-    } elsif (ref $profile->{writePDF} eq 'HASH') {
-	$paper->writePDF(%{$profile->{writePDF}});
-    }
-}
+my $a4 = My::Printable::Paper::2::Paper::DarrensGrid->new(
+    size => 'a4',
+    basename => 'darrens-grid-a4',
+    gridSpacing => '6mm',
+    marginLine => '18mm',
+);
+$a4->draw();
+$a4->writeSVG();
+$a4->writePDF(nUp => 1, nPages => 1);
+$a4->writePDF(nUp => 1, nPages => 2);
