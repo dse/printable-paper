@@ -164,6 +164,27 @@ sub updateClipPathElement {
     }
 }
 
+around BUILDARGS => sub {
+    my ($orig, $class, @args) = @_;
+    if (scalar(@args) % 2 == 0) {
+        my %args = @args;
+        if (defined $args{gridSpacing}) {
+            $args{gridSpacingX} = $args{gridSpacing};
+            $args{gridSpacingY} = $args{gridSpacing};
+            delete $args{gridSpacing};
+        }
+        if (defined $args{clip}) {
+            $args{clipLeft} = $args{clip};
+            $args{clipRight} = $args{clip};
+            $args{clipTop} = $args{clip};
+            $args{clipBottom} = $args{clip};
+            delete $args{clip};
+        }
+        @args = %args;
+    }
+    return $class->$orig(@args);
+};
+
 sub drawGrid {
     my $self = shift;
     my %args = @_;
