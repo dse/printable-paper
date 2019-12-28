@@ -1,0 +1,35 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use v5.10.0;
+
+BEGIN { if (exists $ENV{CARP} && lc $ENV{CARP} eq 'always') { require Carp::Always; import Carp::Always qw(); } }
+
+use FindBin;
+use lib "${FindBin::Bin}/../../../lib";
+
+use My::Printable::Paper::2::Paper;
+use My::Printable::Paper::2::Paper::FrenchRuled;
+
+my $frenchA4 = My::Printable::Paper::2::Paper::FrenchRuled->new(
+    size => 'a4',
+    basename => 'french-ruled-a4',
+    gridSpacing => '8mm',
+);
+$frenchA4->draw();
+$frenchA4->writeSVG();
+$frenchA4->writePDF(nUp => 1, nPages => 1);
+$frenchA4->writePDF(nUp => 1, nPages => 2);
+
+my $frenchLetter = My::Printable::Paper::2::Paper::FrenchRuled->new(
+    size => 'letter',
+    basename => 'french-ruled-letter',
+    gridSpacing => '5/16in',
+    leftMarginLine => '1.25in from left',
+    topHorizontalLine => '1.5in from top',
+    bottomHorizontalLine => '1in from bottom',
+);
+$frenchLetter->draw();
+$frenchLetter->writeSVG();
+$frenchLetter->writePDF(nUp => 1, nPages => 1);
+$frenchLetter->writePDF(nUp => 1, nPages => 2);
