@@ -69,6 +69,7 @@ has 'gridX' => (
             id => 'gx',
             origin => $self->leftMarginLine,
             step => $self->gridSpacing,
+            from => $self->leftMarginLine,
         );
     }
 );
