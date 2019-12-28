@@ -1,0 +1,58 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use v5.10.0;
+
+BEGIN { if (exists $ENV{CARP} && lc $ENV{CARP} eq 'always') { require Carp::Always; import Carp::Always qw(); } }
+
+use FindBin;
+use lib "${FindBin::Bin}/../../../lib";
+
+use My::Printable::Paper::2::Paper;
+use My::Printable::Paper::2::Paper::DarrensGrid;
+
+my $halfLetter = My::Printable::Paper::2::Paper::DarrensGrid->new(
+    size => 'half-letter',
+    basename => 'darrens-grid-half-letter',
+    gridSpacing => '1/4in',
+    marginLine => '0.75in',
+);
+$halfLetter->draw();
+$halfLetter->writeSVG();
+$halfLetter->writePDF(nUp => 1, nPages => 1);
+$halfLetter->writePDF(nUp => 1, nPages => 2);
+$halfLetter->writePDF(nUp => 2, nPages => 2);
+
+my $letter = My::Printable::Paper::2::Paper::DarrensGrid->new(
+    size => 'letter',
+    basename => 'darrens-grid-letter',
+    gridSpacing => '1/4in',
+    marginLine => '0.75in',
+);
+$letter->draw();
+$letter->writeSVG();
+$letter->writePDF(nUp => 1, nPages => 1);
+$letter->writePDF(nUp => 1, nPages => 2);
+
+my $a5 = My::Printable::Paper::2::Paper::DarrensGrid->new(
+    size => 'a5',
+    basename => 'darrens-grid-a5',
+    gridSpacing => '6mm',
+    marginLine => '18mm',
+);
+$a5->draw();
+$a5->writeSVG();
+$a5->writePDF(nUp => 1, nPages => 1);
+$a5->writePDF(nUp => 1, nPages => 2);
+$a5->writePDF(nUp => 2, nPages => 2);
+
+my $a4 = My::Printable::Paper::2::Paper::DarrensGrid->new(
+    size => 'a4',
+    basename => 'darrens-grid-a4',
+    gridSpacing => '6mm',
+    marginLine => '18mm',
+);
+$a4->draw();
+$a4->writeSVG();
+$a4->writePDF(nUp => 1, nPages => 1);
+$a4->writePDF(nUp => 1, nPages => 2);
