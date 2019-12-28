@@ -6,8 +6,6 @@ use Moo;
 
 extends 'My::Printable::Paper::2::Paper';
 
-has 'gridSpacing'      => (is => 'rw', default => '1/4in');
-has 'clip'             => (is => 'rw', default => '13.5pt');
 has 'marginLine'       => (is => 'rw', default => '1in');
 has 'marginLineLeft'   => (is => 'rw');
 has 'marginLineRight'  => (is => 'rw');
@@ -52,6 +50,7 @@ has 'majorGridX' => (
         return $self->addXPointSeries(
             id => 'major-x',
             canShiftPoints => 1,
+            step => $self->gridSpacingX,
         );
     }
 );
@@ -61,6 +60,7 @@ has 'majorGridY' => (
         return $self->addYPointSeries(
             id => 'major-y',
             canShiftPoints => 1,
+            step => $self->gridSpacingY,
         );
     }
 );
@@ -90,12 +90,6 @@ has 'minorGridY' => (
 
 sub draw {
     my ($self) = @_;
-    if (defined $self->clip) {
-        $self->clipLeft($self->clip);
-        $self->clipRight($self->clip);
-        $self->clipTop($self->clip);
-        $self->clipBottom($self->clip);
-    }
     $self->majorGridX->compute();
     $self->majorGridY->compute();
     $self->minorGridX->compute();
