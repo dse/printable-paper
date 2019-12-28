@@ -16,7 +16,6 @@ has 'marginLineBottom' => (is => 'rw');
 
 has 'majorLineType' => (
     is => 'rw', lazy => 1, default => sub {
-        warn("majorLineType lazy default");
         my ($self) = @_;
         return $self->addLineType(
             id => 'major',
