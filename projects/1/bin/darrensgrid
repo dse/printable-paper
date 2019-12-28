@@ -16,6 +16,7 @@ my $halfLetter = My::Printable::Paper::2::Paper::DarrensGrid->new(
     basename => 'darrens-grid-half-letter',
     gridSpacing => '1/4in',
     marginLine => '0.75in',
+    clip => '13.5pt',
 );
 $halfLetter->draw();
 $halfLetter->writeSVG();
@@ -28,6 +29,7 @@ my $letter = My::Printable::Paper::2::Paper::DarrensGrid->new(
     basename => 'darrens-grid-letter',
     gridSpacing => '1/4in',
     marginLine => '0.75in',
+    clip => '13.5pt',
 );
 $letter->draw();
 $letter->writeSVG();
@@ -39,6 +41,7 @@ my $a5 = My::Printable::Paper::2::Paper::DarrensGrid->new(
     basename => 'darrens-grid-a5',
     gridSpacing => '6mm',
     marginLine => '18mm',
+    clip => '13.5pt',
 );
 $a5->draw();
 $a5->writeSVG();
@@ -51,6 +54,7 @@ my $a4 = My::Printable::Paper::2::Paper::DarrensGrid->new(
     basename => 'darrens-grid-a4',
     gridSpacing => '6mm',
     marginLine => '18mm',
+    clip => '13.5pt',
 );
 $a4->draw();
 $a4->writeSVG();
