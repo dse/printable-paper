@@ -31,6 +31,45 @@ has actualStart              => (is => 'rw');
 has actualEnd                => (is => 'rw');
 has actualStep               => (is => 'rw');
 
+sub toString {
+    my ($self) = @_;
+    my $result = $self->id // '<PointSeries>';
+
+    my $axis   = $self->axis;
+    my $from   = $self->from;
+    my $to     = $self->to;
+    my $origin = $self->origin;
+    my $step   = $self->step;
+    my $center = $self->center;
+    my $canShiftPoints = $self->canShiftPoints;
+    my $extend         = $self->extend;
+
+    my $actualStart = $self->actualStart;
+    my $actualEnd = $self->actualEnd;
+    my $actualStep = $self->actualStep;
+    my $computedOrigin = $self->computedOrigin;
+
+    $result .= sprintf(' axis(%s)', $axis) if defined $axis;
+    $result .= sprintf(' from(%s)', $from) if defined $from;
+    $result .= sprintf(' to(%s)', $to) if defined $to;
+    $result .= sprintf(' origin(%s)', $origin) if defined $origin;
+    $result .= sprintf(' step(%s)', $step) if defined $step;
+    $result .= sprintf(' center(%s)', $center) if defined $center;
+    $result .= ' canShiftPoints' if $self->canShiftPoints;
+    $result .= ' extend' if $self->extend;
+
+    $result .= ' =>';
+
+    $result .= sprintf(' actualStart(%.3f)', $actualStart) if defined $actualStart;
+    $result .= sprintf(' actualEnd(%.3f)', $actualEnd) if defined $actualEnd;
+    $result .= sprintf(' actualStep(%.3f)', $actualStep) if defined $actualStep;
+    $result .= sprintf(' computedOrigin(%.3f)', $computedOrigin) if defined $computedOrigin;
+
+    $result .= "\n  " . join(', ', map { sprintf('%.3f', $_) } @{$self->computedPoints});
+
+    return $result;
+}
+
 sub compute {
     my $self = shift;
     my $size;
@@ -50,10 +89,10 @@ sub compute {
                                           $self->axis);
     my @pts = ($origin);
     my $pt;
-    for ($pt = $origin + $step; snapcmp($pt, $toPt) < 0; $pt += $step) {
+    for ($pt = $origin + $step; snapcmp($pt, $toPt) <= 0; $pt += $step) {
         push(@pts, $pt);
     }
-    for ($pt = $origin - $step; snapcmp($pt, $fromPt) > 0; $pt -= $step) {
+    for ($pt = $origin - $step; snapcmp($pt, $fromPt) >= 0; $pt -= $step) {
         unshift(@pts, $pt);
     }
     if ($self->center) {
