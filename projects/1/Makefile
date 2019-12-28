@@ -8,8 +8,8 @@ PNGS = \
 
 default:
 	mkdir -p downloads
-	cd downloads && ../bin/darrensgrid
-	cd downloads && ../bin/frenchruled
+	cd downloads && ../bin/darrens-grid
+	cd downloads && ../bin/french-ruled
 	make png rsync
 
 png: $(PNGS)
