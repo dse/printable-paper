@@ -115,19 +115,7 @@ sub draw {
     $self->feintGridX->compute();
     $self->feintGridY->compute();
     $self->startSVG();
-    $self->drawGrid(
-        groupId => 'major',
-        x => $self->majorGridX,
-        y => $self->majorGridY,
-        lineType => $self->majorLineType
-    );
     if ($self->majorGradiations) {
-        $self->drawGrid(
-            groupId => 'minor',
-            x => $self->minorGridX,
-            y => $self->minorGridY,
-            lineType => $self->minorLineType
-        );
         if ($self->minorGradiations) {
             $self->drawGrid(
                 groupId => 'feint',
@@ -136,7 +124,19 @@ sub draw {
                 lineType => $self->feintLineType
             );
         }
+        $self->drawGrid(
+            groupId => 'minor',
+            x => $self->minorGridX,
+            y => $self->minorGridY,
+            lineType => $self->minorLineType
+        );
     }
+    $self->drawGrid(
+        groupId => 'major',
+        x => $self->majorGridX,
+        y => $self->majorGridY,
+        lineType => $self->majorLineType
+    );
     $self->endSVG();
 }
 
