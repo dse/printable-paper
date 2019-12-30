@@ -125,6 +125,8 @@ END
     return $result;
 }
 
+use List::Util qw(any);
+
 sub parseColor {
     my $self = shift;
     my $value = shift;
