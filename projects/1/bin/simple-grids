@@ -1,0 +1,58 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use v5.10.0;
+
+BEGIN { if (exists $ENV{CARP} && lc $ENV{CARP} eq 'always') { require Carp::Always; import Carp::Always qw(); } }
+
+use FindBin;
+use lib "${FindBin::Bin}/../../../lib";
+
+use My::Printable::Paper::2::Paper;
+use My::Printable::Paper::2::Paper::Grid;
+
+{
+    my $grid = My::Printable::Paper::2::Paper::Grid->new(
+        size => 'letter',
+        basename => 'sixteenth-inch-grid-letter',
+        gridSpacing => '1in',
+        majorGradiations => 4,
+        minorGradiations => 4,
+    );
+    $grid->majorLineType->stroke('black');
+    $grid->minorLineType->stroke('black');
+    $grid->feintLineType->stroke('#808080');
+    $grid->draw();
+    $grid->writeSVG();
+    $grid->writePDF(nUp => 1, nPages => 1);
+}
+{
+    my $grid = My::Printable::Paper::2::Paper::Grid->new(
+        size => 'letter',
+        basename => 'tenth-inch-grid-letter',
+        gridSpacing => '1in',
+        majorGradiations => 2,
+        minorGradiations => 5,
+    );
+    $grid->majorLineType->stroke('black');
+    $grid->minorLineType->stroke('black');
+    $grid->feintLineType->stroke('#808080');
+    $grid->draw();
+    $grid->writeSVG();
+    $grid->writePDF(nUp => 1, nPages => 1);
+}
+{
+    my $grid = My::Printable::Paper::2::Paper::Grid->new(
+        size => 'letter',
+        basename => 'millimeter-grid-letter',
+        gridSpacing => '1cm',
+        majorGradiations => 2,
+        minorGradiations => 5,
+    );
+    $grid->majorLineType->stroke('black');
+    $grid->minorLineType->stroke('black');
+    $grid->feintLineType->stroke('#808080');
+    $grid->draw();
+    $grid->writeSVG();
+    $grid->writePDF(nUp => 1, nPages => 1);
+}
