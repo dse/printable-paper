@@ -95,18 +95,21 @@ sub draw {
     $self->minorGridX->compute();
     $self->minorGridY->compute();
     $self->startSVG();
-    $self->drawGrid(
-        groupId => 'major',
-        x => $self->majorGridX,
-        y => $self->majorGridY,
-        lineType => $self->majorLineType
-    );
+
     $self->drawGrid(
         groupId => 'minor',
         x => $self->minorGridX,
         y => $self->minorGridY,
         lineType => $self->minorLineType
     );
+
+    $self->drawGrid(
+        groupId => 'major',
+        x => $self->majorGridX,
+        y => $self->majorGridY,
+        lineType => $self->majorLineType
+    );
+
     $self->drawVerticalLines(
         groupId => 'left-margin-line',
         x => $self->majorGridX->nearest($self->marginLineLeft // $self->marginLine),
@@ -127,6 +130,7 @@ sub draw {
         y => $self->majorGridY->nearest(($self->marginLineBottom // $self->marginLine) . ' from bottom'),
         lineType => $self->marginLineType
     );
+
     $self->endSVG();
 }
 
