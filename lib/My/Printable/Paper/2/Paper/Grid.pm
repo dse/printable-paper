@@ -7,8 +7,6 @@ use Moo;
 
 extends 'My::Printable::Paper::2::Paper';
 
-has 'color' => (is => 'rw');
-
 has majorGradiations => (is => 'rw', default => 5);
 has minorGradiations => (is => 'rw', default => 0);
 
@@ -116,11 +114,6 @@ sub draw {
     $self->minorGridY->compute();
     $self->feintGridX->compute();
     $self->feintGridY->compute();
-    if (defined $self->color) {
-        $self->majorLineType->stroke($self->color);
-        $self->minorLineType->stroke($self->color);
-        $self->feintLineType->stroke($self->color);
-    }
     $self->startSVG();
     $self->drawGrid(
         groupId => 'major',
