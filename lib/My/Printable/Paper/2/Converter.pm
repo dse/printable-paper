@@ -11,8 +11,16 @@ use File::Basename qw(dirname);
 use String::ShellQuote qw(shell_quote);
 use Cwd qw(realpath);
 use File::Which qw(which);
+use IPC::Run qw(run);
+use PDF::API2;
 
 use Moo;
+
+use vars qw($useInkscapeShell);
+
+BEGIN {
+    $useInkscapeShell = 1;
+}
 
 has paper => (is => 'rw');
 has inkscapeShell => (
@@ -21,6 +29,12 @@ has inkscapeShell => (
     },
 );
 has verbose => (is => 'rw', default => 0);
+has useInkscapeShell => (
+    is => 'rw', default => sub {
+        warn("$useInkscapeShell\n");
+        return $useInkscapeShell;
+    }
+);
 
 sub globalInkscapeShell {
     state $inkscapeShell;
@@ -48,14 +62,23 @@ sub exportSVG {
                 $temp = realpath($temp);
                 $to   = realpath($to);
             }
-            my $cmd = sprintf(
-                "%s --export-dpi=600 --export-%s=%s",
-                shell_quote($from),
-                $format,
-                shell_quote($temp),
-            );
-            $self->inkscapeShell->verbose($self->verbose);
-            $self->inkscapeShell->cmd($cmd);
+            if ($self->useInkscapeShell) {
+                my $cmd = sprintf(
+                    "%s --export-dpi=600 --export-file=%s",
+                    shell_quote($from),
+                    shell_quote($temp),
+                );
+                $self->inkscapeShell->verbose($self->verbose);
+                $self->inkscapeShell->cmd($cmd);
+            } else {
+                my $cmd = ['inkscape',
+                           $from,
+                           sprintf('--export-file=%s', $temp)];
+                my $status = run $cmd;
+                if (!$status) {
+                    unlink($temp);
+                }
+            }
         }
     );
 }
@@ -84,7 +107,6 @@ sub convertPS {
     return $self->convertPS4upNpage($from, $to, $nPages) if $nUp == 4;
 }
 
-use PDF::API2;
 
 sub convertPDFNpage {
     my $self = shift;
@@ -166,8 +188,6 @@ sub convertPDF2upNpage {
         }
     );
 }
-
-use IPC::Run qw(run);
 
 sub convertPS2upNpage {
     my $self = shift;
