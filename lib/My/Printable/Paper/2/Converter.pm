@@ -10,6 +10,7 @@ use File::Path qw(make_path);
 use File::Basename qw(dirname);
 use String::ShellQuote qw(shell_quote);
 use Cwd qw(realpath);
+use File::Which qw(which);
 
 use Moo;
 
@@ -19,6 +20,7 @@ has inkscapeShell => (
         return globalInkscapeShell();
     },
 );
+has verbose => (is => 'rw', default => 0);
 
 sub globalInkscapeShell {
     state $inkscapeShell;
@@ -52,6 +54,7 @@ sub exportSVG {
                 $format,
                 shell_quote($temp),
             );
+            $self->inkscapeShell->verbose($self->verbose);
             $self->inkscapeShell->cmd($cmd);
         }
     );
@@ -169,6 +172,17 @@ use IPC::Run qw(run);
 sub convertPS2upNpage {
     my $self = shift;
 
+    my @fail;
+    if (!which('pstops')) {
+        push(@fail, 'pstops utility not installed');
+    }
+    if (!which('psselect')) {
+        push(@fail, 'psselect utility not installed');
+    }
+    if (scalar @fail) {
+        die(join('; ', @fail) . "\n");
+    }
+
     my ($from, $to, $nPages) = @_;
     my $inputWidth = $self->paper->xx('width');
     my $inputHeight = $self->paper->yy('height');
@@ -242,6 +256,17 @@ sub convertPDF4upNpage {
 
 sub convertPS4upNpage {
     my $self = shift;
+
+    my @fail;
+    if (!which('pstops')) {
+        push(@fail, 'pstops utility not installed');
+    }
+    if (!which('psselect')) {
+        push(@fail, 'psselect utility not installed');
+    }
+    if (scalar @fail) {
+        die(join('; ', @fail) . "\n");
+    }
 
     my ($from, $to, $nPages) = @_;
     my $inputWidth = $self->paper->xx('width');
