@@ -17,10 +17,14 @@ has expect => (
         return $expect;
     },
 );
+has verbose => (is => 'rw', default => 0);
 
 sub cmd {
     my ($self, $cmd) = @_;
     $cmd =~ s{\R\z}{};          # safer chomp
+    if ($self->verbose) {
+        printf STDERR ("Running $cmd in Inkscape shell.\n");
+    }
     $self->expect->send("$cmd\n");
     $self->expect->expect(60, ">");
     print "\n";
