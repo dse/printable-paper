@@ -5,15 +5,16 @@ use v5.10.0;
 
 use Moo;
 
-has id      => (is => 'rw');
-has width   => (is => 'rw', default => '1 dot');
-has style   => (is => 'rw', default => 'solid'); # solid, dashed, dotted
-has stroke  => (is => 'rw', default => 'blue');
-has fill    => (is => 'rw');
-has paper   => (is => 'rw');
-has dashes  => (is => 'rw', default => 1); # per grid unit
-has dots    => (is => 'rw', default => 1); # per grid unit
-has opacity => (is => 'rw');
+has id         => (is => 'rw');
+has width      => (is => 'rw', default => '1 dot');
+has style      => (is => 'rw', default => 'solid'); # solid, dashed, dotted
+has stroke     => (is => 'rw', default => 'blue');
+has fill       => (is => 'rw');
+has paper      => (is => 'rw');
+has dashes     => (is => 'rw', default => 1); # per grid unit
+has dots       => (is => 'rw', default => 1); # per grid unit
+has opacity    => (is => 'rw');
+has dashLength => (is => 'rw', default => 1);
 
 sub isDashed {
     my $self = shift;

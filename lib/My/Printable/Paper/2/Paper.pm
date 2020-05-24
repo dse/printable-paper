@@ -61,11 +61,12 @@ has size => (
 has lineTypeHash    => (is => 'rw', default => sub { return {}; });
 has pointSeriesHash => (is => 'rw', default => sub { return {}; });
 has dpi             => (is => 'rw', default => 600);
+has verbose => (is => 'rw', default => 0);
 
 has converter => (
     is => 'rw', lazy => 1, default => sub {
         my $self = shift;
-        return My::Printable::Paper::2::Converter->new(paper => $self);
+        return My::Printable::Paper::2::Converter->new(paper => $self, verbose => $self->verbose);
     },
 );
 
@@ -197,8 +198,8 @@ sub drawGrid {
     );
     my $isExtended = $isExtendedHorizontally || $isExtendedVertically;
 
-    my $hDashLength    = $lineType ? ($lineType->isDashed ? ($spacingX / 2) : ($lineType->isDotted ? 0 : undef)) : undef;
-    my $vDashLength    = $lineType ? ($lineType->isDashed ? ($spacingY / 2) : ($lineType->isDotted ? 0 : undef)) : undef;
+    my $hDashLength    = $lineType ? ($lineType->isDashed ? ($spacingX * $lineType->dashLength / 2) : ($lineType->isDotted ? 0 : undef)) : undef;
+    my $vDashLength    = $lineType ? ($lineType->isDashed ? ($spacingY * $lineType->dashLength / 2) : ($lineType->isDotted ? 0 : undef)) : undef;
     my $hDashSpacing   = $lineType ? ($lineType->isDashedOrDotted ? $spacingX : undef) : undef;
     my $vDashSpacing   = $lineType ? ($lineType->isDashedOrDotted ? $spacingY : undef) : undef;
     my $hDashLineStart = $lineType ? ($isClosed ? $x1 : undef) : undef;
