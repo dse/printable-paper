@@ -31,6 +31,19 @@ has actualStart              => (is => 'rw');
 has actualEnd                => (is => 'rw');
 has actualStep               => (is => 'rw');
 
+our $idCounter;
+BEGIN {
+    $idCounter = 1;
+}
+
+sub BUILD {
+    my ($self, $args) = @_;
+    if (!defined $args->{id}) {
+        $args->{id} = 'point-series-' . $idCounter;
+        $idCounter += 1;
+    }
+}
+
 sub compute {
     my $self = shift;
     my $size;
@@ -166,6 +179,24 @@ sub includes {
         return 0;
     }
     return snapcmp($nearest, $value) == 0;
+}
+
+sub divide {
+    my $self = shift;
+    my $n    = shift;
+    my %args = @_;
+    $self->compute();
+    my $ps = My::Printable::Paper::2::PointSeries->new(
+        id     => $args{id},
+        axis   => $self->axis,
+        from   => $self->actualStart,
+        to     => $self->actualEnd,
+        step   => $self->actualStep / $n,
+        origin => $self->computedOrigin,
+        paper  => $self->paper,
+        canExclude => $self,
+    );
+    return $ps;
 }
 
 1;
