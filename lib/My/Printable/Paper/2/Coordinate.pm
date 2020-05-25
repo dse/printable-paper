@@ -33,7 +33,6 @@ sub parse {
         $resultPt *= My::Printable::Paper::2::Unit::parse($unit, axis => $axis, paper => $paper);
     } else {
         if (defined $defaultUnit) {
-            warn("defaultUnit\n");
             $resultPt *= My::Printable::Paper::2::Coordinate::parse($defaultUnit, axis => $axis, paper => $paper);
         }
     }

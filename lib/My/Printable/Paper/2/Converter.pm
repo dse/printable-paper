@@ -31,7 +31,6 @@ has inkscapeShell => (
 has verbose => (is => 'rw', default => 0);
 has useInkscapeShell => (
     is => 'rw', default => sub {
-        warn("$useInkscapeShell\n");
         return $useInkscapeShell;
     }
 );
@@ -229,7 +228,6 @@ sub convertPS2upNpage {
                     }
                 }
                 $spec .= join(',', @spec);
-                warn $spec;
             }
             my $pstops = ['pstops',
                           sprintf('-w%g', $outputWidth),

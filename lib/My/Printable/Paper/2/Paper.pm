@@ -174,6 +174,7 @@ sub drawGrid {
 
     my $isClosed = $args{isClosed};
     my $parentId = $args{parentId};
+
     my $id = $args{id};
 
     my @xPt = $self->xx($x);
@@ -221,7 +222,6 @@ sub drawGrid {
         if ($lineType->isDashed) {
             $hDashLength = $self->xx($dashLength, defaultUnit => $hDashSpacing / 2);
             $vDashLength = $self->yy($dashLength, defaultUnit => $vDashSpacing / 2);
-            warn("$dashLength => $hDashLength, $vDashLength\n");
         } else {                # isDotted
             $hDashLength = 0;
             $vDashLength = 0;
@@ -678,13 +678,6 @@ sub createSVGLine {
         if ($lineType && $lineType->isDashedOrDotted) {
             my $strokeDashArray = strokeDashArray(%args);
             my $strokeDashOffset = strokeDashOffset(%args);
-            {
-                no warnings 'uninitialized';
-                my @args = %args;
-                warn("@args:\n");
-                warn("    dash array: $strokeDashArray\n");
-                warn("    dash offset: $strokeDashOffset\n");
-            }
             if ($useStrokeDashCSSClasses) {
                 my $sdaClassName = $self->getStrokeDashArrayClassName($strokeDashArray);
                 my $sdoClassName = $self->getStrokeDashOffsetClassName($strokeDashOffset);
