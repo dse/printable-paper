@@ -198,25 +198,32 @@ sub drawGrid {
     );
     my $isExtended = $isExtendedHorizontally || $isExtendedVertically;
 
-    my $hDashLength    = $lineType ? ($lineType->isDashed ? ($spacingX * $lineType->dashLength / 2) : ($lineType->isDotted ? 0 : undef)) : undef;
-    my $vDashLength    = $lineType ? ($lineType->isDashed ? ($spacingY * $lineType->dashLength / 2) : ($lineType->isDotted ? 0 : undef)) : undef;
     my $hDashSpacing   = $lineType ? ($lineType->isDashedOrDotted ? $spacingX : undef) : undef;
     my $vDashSpacing   = $lineType ? ($lineType->isDashedOrDotted ? $spacingY : undef) : undef;
     my $hDashLineStart = $lineType ? ($isClosed ? $x1 : undef) : undef;
     my $vDashLineStart = $lineType ? ($isClosed ? $y1 : undef) : undef;
     my $hDashCenterAt  = $lineType ? ($isClosed ? $xPt[0] : undef) : undef;
     my $vDashCenterAt  = $lineType ? ($isClosed ? $yPt[0] : undef) : undef;
+    my $hDashLength;
+    my $vDashLength;
     if ($lineType) {
         if ($lineType->isDashed) {
-            $hDashLength /= $lineType->dashes;
-            $vDashLength /= $lineType->dashes;
             $hDashSpacing /= $lineType->dashes;
             $vDashSpacing /= $lineType->dashes;
         } elsif ($lineType->isDotted) {
-            $hDashLength /= $lineType->dots;
-            $vDashLength /= $lineType->dots;
             $hDashSpacing /= $lineType->dots;
             $vDashSpacing /= $lineType->dots;
+        }
+    }
+    if ($lineType) {
+        my $dashLength = $lineType->dashLength;
+        if ($lineType->isDashed) {
+            $hDashLength = $self->xx($dashLength, defaultUnit => $hDashSpacing / 2);
+            $vDashLength = $self->yy($dashLength, defaultUnit => $vDashSpacing / 2);
+            warn("$dashLength => $hDashLength, $vDashLength\n");
+        } else {                # isDotted
+            $hDashLength = 0;
+            $vDashLength = 0;
         }
     }
 
@@ -664,6 +671,13 @@ sub createSVGLine {
         if ($lineType && $lineType->isDashedOrDotted) {
             my $strokeDashArray = strokeDashArray(%args);
             my $strokeDashOffset = strokeDashOffset(%args);
+            {
+                no warnings 'uninitialized';
+                my @args = %args;
+                warn("@args:\n");
+                warn("    dash array: $strokeDashArray\n");
+                warn("    dash offset: $strokeDashOffset\n");
+            }
             if ($useStrokeDashCSSClasses) {
                 my $sdaClassName = $self->getStrokeDashArrayClassName($strokeDashArray);
                 my $sdoClassName = $self->getStrokeDashOffsetClassName($strokeDashOffset);
@@ -690,19 +704,26 @@ sub createSVGLine {
 sub xx {
     my $self = shift;
     my $value = shift;
-    return $self->coordinate($value, 'x');
+    my %args = @_;
+    $args{axis} = 'x';
+    return $self->coordinate($value, %args);
 }
 
 sub yy {
     my $self = shift;
     my $value = shift;
-    return $self->coordinate($value, 'y');
+    my %args = @_;
+    $args{axis} = 'y';
+    return $self->coordinate($value, %args);
 }
 
 sub coordinate {
     my $self = shift;
     my $value = shift;
-    my $axis = shift;
+    my %args = @_;
+    my $axis = $args{axis};
+    my $defaultUnit = $args{defaultUnit};
+
     my $multiple = 0;
     die("undefined coordinate") if !defined $value;
     if (eval { $value->isa('My::Printable::Paper::2::PointSeries') }) {
@@ -711,12 +732,12 @@ sub coordinate {
         return \@points;
     }
     if (eval { ref $value eq 'ARRAY' }) {
-        my @points = map { $self->coordinate($_, $axis) } @$value;
+        my @points = map { $self->coordinate($_, %args) } @$value;
         return @points if wantarray;
         return \@points;
     }
     if ($value =~ m{^\s*$RE{num}{real}}) {
-        return My::Printable::Paper::2::Coordinate::parse($value, $axis, $self);
+        return My::Printable::Paper::2::Coordinate::parse($value, axis => $axis, paper => $self, defaultUnit => $defaultUnit);
     }
     $value = 'gridSpacingX' if $value eq 'gridSpacing' && $axis eq 'x';
     $value = 'gridSpacingY' if $value eq 'gridSpacing' && $axis eq 'y';
@@ -736,7 +757,7 @@ sub coordinate {
         }
     }
     if ($self->can($value)) {
-        return $self->coordinate($self->$value, $axis);
+        return $self->coordinate($self->$value, %args);
     }
     die("can't parse '$value' as coordinate(s)");
 }
@@ -759,14 +780,14 @@ sub getStrokeDashArrayAndOffset {
         $coordinates->isa('My::Printable::Paper::2::PointSeries')
     };
 
-    my @pt = $self->coordinate($coordinates, $axis);
+    my @pt = $self->coordinate($coordinates, axis => $axis);
 
     my $spacing = $isPointSeries ?
-        $self->coordinate($coordinates->step, $axis) :
-        $self->coordinate('gridSpacingX|gridSpacingY', $axis);
+        $self->coordinate($coordinates->step, axis => $axis) :
+        $self->coordinate('gridSpacingX|gridSpacingY', axis => $axis);
 
     my $start = 0;
-    my $end   = $self->coordinate('width|height', $axis);
+    my $end   = $self->coordinate('width|height', axis => $axis);
     my $isExtended             = 0;
     my $isExtendedHorizontally = 0;
     my $isExtendedVertically   = 0;
@@ -825,12 +846,12 @@ sub getGridStartEnd {
     my $isPointSeries = eval {
         $coordinates->isa('My::Printable::Paper::2::PointSeries')
     };
-    my @pt = $self->coordinate($coordinates, $axis);
+    my @pt = $self->coordinate($coordinates, axis => $axis);
     my $spacing = $isPointSeries ?
-        $self->coordinate($coordinates->step, $axis) :
-        $self->coordinate('gridSpacingX|gridSpacingY', $axis);
+        $self->coordinate($coordinates->step, axis => $axis) :
+        $self->coordinate('gridSpacingX|gridSpacingY', axis => $axis);
     my $start = 0;
-    my $end = $self->coordinate('width|height', $axis);
+    my $end = $self->coordinate('width|height', axis => $axis);
     my $isExtended = 0;
     if ($isClosed) {
         $start = $pt[0];

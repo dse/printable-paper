@@ -43,11 +43,10 @@ sub compute {
     } else {
         die("getPoints: axis must be 'x' or 'y'");
     }
-    my $fromPt = $self->paper->coordinate($self->from, $self->axis);
-    my $toPt   = $self->paper->coordinate($self->to, $self->axis);
-    my $step   = $self->paper->coordinate($self->step, $self->axis);
-    my $origin = $self->paper->coordinate($self->origin // $self->from,
-                                          $self->axis);
+    my $fromPt = $self->paper->coordinate($self->from, axis => $self->axis);
+    my $toPt   = $self->paper->coordinate($self->to, axis => $self->axis);
+    my $step   = $self->paper->coordinate($self->step, axis => $self->axis);
+    my $origin = $self->paper->coordinate($self->origin // $self->from, axis => $self->axis);
     my @pts = ($origin);
     my $pt;
     for ($pt = $origin + $step; snapcmp($pt, $toPt) < 0; $pt += $step) {
@@ -138,7 +137,7 @@ sub getOrigin {
 sub nearest {
     my $self = shift;
     my $value = shift;
-    $value = $self->paper->coordinate($value, $self->axis);
+    $value = $self->paper->coordinate($value, axis => $self->axis);
     my $start = $self->actualStart;
     my $step = $self->actualStep;
     my $end = $self->actualEnd;
@@ -155,7 +154,7 @@ sub nearest {
 sub includes {
     my $self = shift;
     my $value = shift;
-    $value = $self->paper->coordinate($value, $self->axis);
+    $value = $self->paper->coordinate($value, axis => $self->axis);
     my $start = $self->actualStart;
     my $step = $self->actualStep;
     my $end = $self->actualEnd;

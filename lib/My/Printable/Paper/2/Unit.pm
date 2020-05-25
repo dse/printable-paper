@@ -10,8 +10,10 @@ use List::Util qw(any);
 
 sub parse {
     my $unit = shift;
-    my $axis = shift;
-    my $paper = shift;
+    my %args = @_;
+
+    my $axis = $args{axis};
+    my $paper = $args{paper};
 
     return 1  if !defined $unit || $unit eq '';
     return 1  if any { $_ eq $unit } qw(pt pts point points);

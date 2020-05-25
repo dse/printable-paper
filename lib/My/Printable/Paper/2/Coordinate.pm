@@ -11,8 +11,10 @@ use List::Util qw(any);
 
 sub parse {
     my $value = shift;
-    my $axis = shift;
-    my $paper = shift;
+    my %args = @_;
+    my $axis = $args{axis};
+    my $paper = $args{paper};
+    my $defaultUnit = $args{defaultUnit};
 
     if (!defined $value) {
         die("value must be specified");
@@ -28,7 +30,12 @@ sub parse {
     my $boundary = $+{boundary} // 'edge'; # side, edge, clip
     my $resultPt = parseMixedFraction($+{mixed}, $+{numer}, $+{denom});
     if (defined $unit) {
-        $resultPt *= My::Printable::Paper::2::Unit::parse($unit, $axis, $paper);
+        $resultPt *= My::Printable::Paper::2::Unit::parse($unit, axis => $axis, paper => $paper);
+    } else {
+        if (defined $defaultUnit) {
+            warn("defaultUnit\n");
+            $resultPt *= My::Printable::Paper::2::Coordinate::parse($defaultUnit, axis => $axis, paper => $paper);
+        }
     }
     if (defined $side) {
         if (!defined $paper) {
@@ -38,13 +45,9 @@ sub parse {
         if (!defined $axis) {
             die("axis must be 'x' or 'y' to use side-based coordinate");
         } elsif ($axis eq 'x') {
-            $sizePt = My::Printable::Paper::2::Coordinate::parse(
-                $paper->width, 'x', $paper
-            );
+            $sizePt = My::Printable::Paper::2::Coordinate::parse($paper->width, axis => 'x', paper => $paper);
         } elsif ($axis eq 'y') {
-            $sizePt = My::Printable::Paper::2::Coordinate::parse(
-                $paper->height, 'y', $paper
-            );
+            $sizePt = My::Printable::Paper::2::Coordinate::parse($paper->height, axis => 'y', paper => $paper);
         } else {
             die("invalid axis '$axis'");
         }

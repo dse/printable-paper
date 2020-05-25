@@ -91,7 +91,7 @@ sub strokeDashArray {
 
     if (defined $paper && defined $axis) {
         foreach my $d ($dashLength, $dashSpacing) {
-            $d = $paper->coordinate($d, $axis) if defined $d;
+            $d = $paper->coordinate($d, axis => $axis) if defined $d;
         }
     }
     if (defined $dashSpacing && !defined $dashLength) {
@@ -119,7 +119,7 @@ sub strokeDashOffset {
 
     if (defined $paper && defined $axis) {
         foreach my $d ($dashLength, $dashSpacing) {
-            $d = $paper->coordinate($d, $axis) if defined $d;
+            $d = $paper->coordinate($d, axis => $axis) if defined $d;
         }
     }
     if (defined $dashSpacing && !defined $dashLength) {
