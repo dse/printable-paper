@@ -16,6 +16,19 @@ has dots       => (is => 'rw', default => 1); # per grid unit
 has opacity    => (is => 'rw');
 has dashLength => (is => 'rw', default => 1);
 
+our $idCounter;
+BEGIN {
+    $idCounter = 1;
+}
+
+sub BUILD {
+    my ($self, $args) = @_;
+    if (!defined $args->{id}) {
+        $args->{id} = 'line-type-' . $idCounter;
+        $idCounter += 1;
+    }
+}
+
 sub isDashed {
     my $self = shift;
     return $self->style eq 'dashed';

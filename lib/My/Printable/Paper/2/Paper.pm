@@ -169,8 +169,9 @@ sub drawGrid {
     my %args = @_;
     my $x = $args{x};           # number, string, or PointSeries
     my $y = $args{y};           # number, string, or PointSeries
-    my $lineTypeId = $args{lineTypeId};
-    my $lineType = defined $lineTypeId ? $self->lineTypeHash->{$lineTypeId} : undef;
+
+    my $lineType = $self->lineTypeArgument(%args);
+
     my $isClosed = $args{isClosed};
     my $parentId = $args{parentId};
     my $id = $args{id};
@@ -245,7 +246,7 @@ sub drawGrid {
         foreach my $x (@xPt) {
             $group->appendChild(
                 $self->createSVGLine(
-                    x => $x, y1 => $y1, y2 => $y2, lineTypeId => $lineTypeId,
+                    x => $x, y1 => $y1, y2 => $y2, lineType => $lineType,
                     useStrokeDashCSSClasses => 1,
                     %hDashArgs,
                 )
@@ -257,7 +258,7 @@ sub drawGrid {
         foreach my $y (@yPt) {
             $group->appendChild(
                 $self->createSVGLine(
-                    y => $y, x1 => $x1, x2 => $x2, lineTypeId => $lineTypeId,
+                    y => $y, x1 => $x1, x2 => $x2, lineType => $lineType,
                     useStrokeDashCSSClasses => 1,
                     %vDashArgs,
                 )
@@ -292,7 +293,9 @@ sub drawHorizontalLines {
     my $y  = $args{y};                      # number, string, or PointSeries
     my $x1 = $args{x1} // '0pt from start'; # number or string
     my $x2 = $args{x2} // '0pt from end';   # number or string
-    my $lineTypeId = $args{lineTypeId};
+
+    my $lineType = $self->lineTypeArgument(%args);
+
     my $parentId = $args{parentId};
     my $id = $args{id};
 
@@ -304,7 +307,7 @@ sub drawHorizontalLines {
     foreach my $y (@yPt) {
         $group->appendChild(
             $self->createSVGLine(
-                y => $y, x1 => $x1, x2 => $x2, lineTypeId => $lineTypeId,
+                y => $y, x1 => $x1, x2 => $x2, lineType => $lineType,
             )
         );
     }
@@ -316,7 +319,9 @@ sub drawVerticalLines {
     my $x  = $args{x};                      # number, string, or PointSeries
     my $y1 = $args{y1} // '0pt from start'; # number or string
     my $y2 = $args{y2} // '0pt from end';   # number or string
-    my $lineTypeId = $args{lineTypeId};
+
+    my $lineType = $self->lineTypeArgument(%args);
+
     my $parentId = $args{parentId};
     my $id = $args{id};
 
@@ -328,7 +333,7 @@ sub drawVerticalLines {
     foreach my $x (@xPt) {
         $group->appendChild(
             $self->createSVGLine(
-                x => $x, y1 => $y1, y2 => $y2, lineTypeId => $lineTypeId,
+                x => $x, y1 => $y1, y2 => $y2, lineType => $lineType,
             )
         );
     }
@@ -656,8 +661,10 @@ sub createSVGLine {
     my $x2 = $args{x2} // $args{x};
     my $y1 = $args{y1} // $args{y};
     my $y2 = $args{y2} // $args{y};
-    my $lineTypeId = $args{lineTypeId};
-    my $lineType = defined $lineTypeId ? $self->lineTypeHash->{$lineTypeId} : undef;
+
+    my $lineType = $self->lineTypeArgument(%args);
+    my $lineTypeId = $lineType->id;
+
     my $attr = $args{attr};
     my $line = $self->svgDocument->createElement('line');
     my $useStrokeDashCSSClasses = $args{useStrokeDashCSSClasses};
@@ -666,7 +673,7 @@ sub createSVGLine {
     $line->setAttribute('y1', sprintf('%.3f', $self->yy($y1)));
     $line->setAttribute('y2', sprintf('%.3f', $self->yy($y2)));
     if (defined $lineTypeId) {
-        my @cssClass = ($lineType->id);
+        my @cssClass = ($lineTypeId);
         my $cssClass = $lineTypeId;
         if ($lineType && $lineType->isDashedOrDotted) {
             my $strokeDashArray = strokeDashArray(%args);
@@ -771,9 +778,11 @@ sub getStrokeDashArrayAndOffset {
     my ($self, %args) = @_;
     my $axis        = $args{axis};
     my $coordinates = $args{coordinates};
-    my $lineType    = $args{lineType};
     my $isClosed    = $args{isClosed};
 
+    my $lineType = $self->lineTypeArgument(%args);
+
+    return undef if !$lineType;
     return undef if !$lineType->isDashedOrDotted;
 
     my $isPointSeries = eval {
@@ -862,6 +871,36 @@ sub getGridStartEnd {
         $isExtended = $isExtendedStart || $isExtendedEnd;
     }
     return ($start, $end, $isExtended);
+}
+
+sub lineTypeArgument {
+    my ($self, %args) = @_;
+    my $lineTypeId = delete $args{lineTypeId};
+    my $lineType   = delete $args{lineType};
+    if (defined $lineType) {
+        if (eval { $lineType->isa('My::Printable::Paper::2::LineType') }) {
+            return $lineType;
+        }
+        if (eval { ref $lineType eq 'ARRAY' }) {
+            my %lineType = @$lineType;
+            $lineType{id} = $lineTypeId if defined $lineTypeId;
+            return $self->addLineType(%lineType);
+        }
+        if (eval { ref $lineType eq 'HASH' }) {
+            my %lineType = %$lineType;
+            $lineType{id} = $lineTypeId if defined $lineTypeId;
+            return $self->addLineType(%lineType);
+        }
+        if ($self->lineTypeHash->{$lineType}) {
+            return $self->lineTypeHash->{$lineType};
+        }
+    }
+    if (defined $lineTypeId) {
+        if ($self->lineTypeHash->{$lineTypeId}) {
+            return $self->lineTypeHash->{$lineTypeId};
+        }
+    }
+    return;
 }
 
 1;
