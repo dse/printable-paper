@@ -1,0 +1,3 @@
+[submodule "fonts/OswaldFont"]
+	path = fonts/OswaldFont
+	url = https://github.com/googlefonts/OswaldFont
