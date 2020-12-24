@@ -62,13 +62,8 @@ sub exportSVG {
                 $to   = realpath($to);
             }
             if ($self->useInkscapeShell) {
-                my $cmd = sprintf(
-                    "%s --export-dpi=600 --export-file=%s",
-                    shell_quote($from),
-                    shell_quote($temp),
-                );
                 $self->inkscapeShell->verbose($self->verbose);
-                $self->inkscapeShell->cmd($cmd);
+                $self->inkscapeShell->export($from, $temp);
             } else {
                 my $cmd = ['inkscape',
                            $from,

@@ -6,11 +6,25 @@ use v5.10.0;
 use FindBin;
 use lib "${FindBin::Bin}/../lib";
 
+use Getopt::Long;
 use My::Printable::Paper::2::Paper;
+use My::Printable::Paper::2::Converter;
+
+our $verbose = 0;
+
+Getopt::Long::Configure('bundling', 'gnu_compat', 'no_ignore_case');
+Getopt::Long::GetOptions(
+    'v|verbose+' => \$verbose,
+    'no-inkscape-shell' => sub {
+        no warnings 'once';
+        $My::Printable::Paper::2::Converter::useInkscapeShell = 0;
+    },
+) or die(":-(\n");
 
 my $paper = My::Printable::Paper::2::Paper->new(
     size => 'half-letter',
     basename => 'paper',
+    verbose => $verbose,
 );
 $paper->clipLeft(13.5);
 $paper->clipRight(13.5);
