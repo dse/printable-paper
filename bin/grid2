@@ -39,8 +39,9 @@ my $minorLineType = $paper->addLineType(
     id => 'minor',
     width => '1 printerdot',
     style => 'dashed',
-    dots => 4,
-    dashes => 4,
+    dots => 2,
+    dashes => 2,
+    dashLength => 1/4,
 );
 my $marginLineType = $paper->addLineType(
     id => 'margin',
