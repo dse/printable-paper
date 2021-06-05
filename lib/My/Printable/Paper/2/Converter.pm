@@ -13,6 +13,8 @@ use Cwd qw(realpath);
 
 use Moo;
 
+our $useInkscapeShell = 0;
+
 has paper => (is => 'rw');
 has inkscapeShell => (
     is => 'rw', lazy => 1, default => sub {
@@ -26,6 +28,44 @@ sub globalInkscapeShell {
 }
 
 sub exportSVG {
+    my ($self, $from, $to, @args) = @_;
+    if ($useInkscapeShell) {
+        $self->exportSVGUsingInkscapeShell($from, $to, @args);
+    } else {
+        $self->exportSVGUsingInkscape($from, $to, @args);
+    }
+}
+
+sub exportSVGUsingInkscape {
+    my ($self, $from, $to, @args) = @_;
+    my $format;
+    if ($to =~ m{\.pdf\z}i) {
+        $format = 'pdf';
+    } elsif ($to =~ m{\.ps\z}i) {
+        $format = 'ps';
+    } else {
+        die("exportSVGTo: only pdf and ps supported");
+    }
+    $self->tempFileOperation(
+        $to, sub {
+            my $temp = shift;
+            my ($from, $to) = ($from, $to);
+            if ($^O =~ m{^darwin}) {
+                $from = realpath($from);
+                $temp = realpath($temp);
+                $to   = realpath($to);
+            }
+            my $cmd = sprintf(
+                "inkscape --export-dpi=600 --export-filename=%s %s",
+                shell_quote($temp),
+                shell_quote($from),
+            );
+            system($cmd);
+        }
+    );
+}
+
+sub exportSVGUsingInkscapeShell {
     my $self = shift;
     my $from = shift;
     my $to = shift;
