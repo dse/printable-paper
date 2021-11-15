@@ -30,6 +30,7 @@ has clipLeft     => (is => 'rw', default => 0);
 has clipRight    => (is => 'rw', default => 0);
 has clipTop      => (is => 'rw', default => 0);
 has clipBottom   => (is => 'rw', default => 0);
+has olderInkscapeVersion => (is => 'rw', default => 0);
 has size => (
     is => 'rw',
     default => sub {
@@ -66,7 +67,10 @@ has dpi             => (is => 'rw', default => 600);
 has converter => (
     is => 'rw', lazy => 1, default => sub {
         my $self = shift;
-        return My::Printable::Paper::2::Converter->new(paper => $self);
+        return My::Printable::Paper::2::Converter->new(
+            paper => $self,
+            olderInkscapeVersion => $self->olderInkscapeVersion,
+        );
     },
 );
 
@@ -652,13 +656,13 @@ sub getStrokeDashOffsetClassName {
 
 sub drawCircle {
     my ($self, %args) = @_;
-    my $group = $self->svgGroupElement(%args);
+    my $group = $args{group} // $self->svgGroupElement(%args);
     $group->appendChild($self->createSVGCircle(%args));
 }
 
 sub drawLine {
     my ($self, %args) = @_;
-    my $group = $self->svgGroupElement(%args);
+    my $group = $args{group} // $self->svgGroupElement(%args);
     $group->appendChild($self->createSVGLine(%args));
 }
 
