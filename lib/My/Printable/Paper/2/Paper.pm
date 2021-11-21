@@ -675,9 +675,9 @@ sub createSVGCircle {
     my $useStrokeDashCSSClasses = $args{useStrokeDashCSSClasses};
 
     my $circle = $self->svgDocument->createElement('circle');
-    $circle->setAttribute('cx', sprintf('%.3f', $self->xx($x)));
-    $circle->setAttribute('cy', sprintf('%.3f', $self->yy($y)));
-    $circle->setAttribute('r',  sprintf('%.3f', $self->coordinate($r)));
+    $circle->setAttribute('cx', sprintf('%.3f', $self->xx($x))) if defined $x;
+    $circle->setAttribute('cy', sprintf('%.3f', $self->yy($y))) if defined $y;
+    $circle->setAttribute('r',  sprintf('%.3f', $self->coordinate($r))) if defined $r;
 
     my $circumference = $self->coordinate($r) * pi2;
     my $nPoints;
