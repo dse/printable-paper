@@ -15,6 +15,7 @@ has dashes     => (is => 'rw', default => 1); # per grid unit
 has dots       => (is => 'rw', default => 1); # per grid unit
 has opacity    => (is => 'rw');
 has dashLength => (is => 'rw', default => 0.5);
+has r          => (is => 'rw');
 
 sub getGridDashArguments {
     my ($self, %args) = @_;
@@ -98,6 +99,7 @@ sub getComputedCSS {
     my $width   = $self->paper->coordinate($self->width);
     my $id      = $self->id;
     my $opacity = $self->opacity;
+    my $r       = $self->r;
 
     my $result = '';
     $result .= <<"END";
@@ -117,6 +119,9 @@ END
     }
     $result .= <<"END" if defined $opacity;
             opacity: ${opacity};
+END
+    $result .= <<"END" if defined $r;
+            r: ${r};
 END
     $result .= <<"END";
             stroke-width: ${width}pt;
