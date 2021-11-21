@@ -21,6 +21,7 @@ has inkscapeShell => (
         return globalInkscapeShell();
     },
 );
+has olderInkscapeVersion => (is => 'rw', default => 0);
 
 sub globalInkscapeShell {
     state $inkscapeShell;
@@ -60,6 +61,13 @@ sub exportSVGUsingInkscape {
                 shell_quote($temp),
                 shell_quote($from),
             );
+            if ($self->olderInkscapeVersion) {
+                $cmd = sprintf(
+                    "inkscape --export-dpi=600 --export-pdf=%s %s",
+                    shell_quote($temp),
+                    shell_quote($from),
+                );
+            }
             system($cmd);
         }
     );
