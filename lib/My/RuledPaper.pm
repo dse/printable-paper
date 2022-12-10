@@ -13,10 +13,12 @@ use Scalar::Util qw(looks_like_number);
 
 sub add {
     my ($self, $name, %attr) = @_;
-    push(@{$self->{objects}}, {
+    my $object = {
         name => $name,
         attr => \%attr,
-    });
+    };
+    push(@{$self->{objects}}, $object);
+    return $object;
 }
 
 sub svg {
@@ -26,6 +28,7 @@ sub svg {
     my $width = $self->{width};
     my $height = $self->{height};
     my $viewbox = sprintf('%.3f %.3f %.3f %.3f', 0, 0, $self->{width}, $self->{height});
+    $root->setAttribute('version', '1.1');
     $root->setAttribute('width', sprintf('%.3fpx', $self->{width}));
     $root->setAttribute('height', sprintf('%.3fpx', $self->{height}));
     $root->setAttribute('viewBox', $viewbox);
@@ -43,14 +46,20 @@ sub svg {
         my $name = $object->{name};
         my $attr = $object->{attr};
         my $elt = $doc->createElement($name);
-        foreach my $name (sort { $a cmp $b } keys %$attr) {
+        foreach my $name (sort { $a cmp $b } grep { !/^_/ } keys %$attr) {
             my $value = $attr->{$name};
             next if !defined $value;
+            my $attrName = $name;
+            $attrName =~ s{_}{-}g;
             if (looks_like_number($value)) {
                 $elt->setAttribute($name, sprintf('%.3f', $value));
             } else {
                 $elt->setAttribute($name, $value);
             }
+        }
+        my $text = $attr->{_content};
+        if (defined $text) {
+            $elt->appendText($text);
         }
         $g->appendChild($elt);
     }
