@@ -110,6 +110,7 @@ sub dotGrid {
 }
 
 my $spacing = 1/5 * IN;
+# my $spacing = 5 * MM;
 my $xDotMult = 3;
 my $yDotMult = 3;
 my $xDots = 24;
