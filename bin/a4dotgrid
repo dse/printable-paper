@@ -1,0 +1,62 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use open qw(locale);
+
+use FindBin;
+use lib "${FindBin::Bin}/../lib";
+
+use My::RuledPaper;
+
+use constant MM => 96 / 25.4;
+use constant IN => 96;
+use constant A4_WIDTH_PX  => 250 / sqrt(sqrt(2)) * MM;
+use constant A4_HEIGHT_PX => 250 * sqrt(sqrt(2)) * MM;
+use constant LETTER_WIDTH_PX => 8.5 * IN;
+use constant LETTER_HEIGHT_PX => 11 * IN;
+
+my $p = My::RuledPaper->new(width => A4_WIDTH_PX, height => A4_HEIGHT_PX);
+
+$p->{style} = <<"END";
+.dot {
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke: #cccccc;
+    fill: none;
+    stroke-width: 1pt;
+    opacity: 1;
+}
+END
+
+sub dotGrid {
+    my (%args) = @_;
+    my $centerX = $args{cx};
+    my $centerY = $args{cy};
+    my $dotsWide = $args{xDots};
+    my $dotsHigh = $args{yDots};
+    my $dotSpacing = $args{spacing};
+    my $startX = $centerX - $dotsWide * $dotSpacing / 2;
+    my $startY = $centerY - $dotsHigh * $dotSpacing / 2;
+    my $i = 0;
+    for (my $x = 0; $x <= $dotsWide; $x += 1) {
+        for (my $y = 0; $y <= $dotsHigh; $y += 1) {
+            my $xx = $startX + $dotSpacing * $x;
+            my $yy = $startY + $dotSpacing * $y;
+            $p->add('line', class => 'dot', x1 => $xx, x2 => $xx, y1 => $yy, y2 => $yy);
+            $i += 1;
+        }
+    }
+}
+
+dotGrid(cx => $p->{width} * 1/2, cy => $p->{height} * 1/4,
+        xDots => 36, yDots => 24,
+        spacing => 5 * MM);
+dotGrid(cx => $p->{width} * 1/2, cy => $p->{height} * 3/4,
+        xDots => 36, yDots => 24,
+        spacing => 5 * MM);
+
+print($p->svg());
+
+# Local Variables:
+# after-save-hook: ((lambda () (compile "make")))
+# End:
