@@ -12,7 +12,7 @@ use My::RuledPaper::Constants qw(:all);
 use List::Util qw(all);
 use Scalar::Util qw(looks_like_number);
 
-my $p = My::RuledPaper->new(A4);
+my $p = My::RuledPaper->new(HALF_LETTER);
 
 $p->{style} = <<"END";
 .dot {
@@ -20,8 +20,11 @@ $p->{style} = <<"END";
     stroke-linejoin: round;
     stroke: #cccccc;
     fill: none;
-    stroke-width: 1pt;
+    stroke-width: calc(1in/600 * 10);
     opacity: 1;
+}
+.dot--bold {
+    stroke-width: calc(1in/600 * 20);
 }
 text {
     transform: translateY(0.35em);
@@ -31,23 +34,28 @@ text.legend {
     font-size: 50%;
     fill: #cccccc;
 }
+rect {
+    fill: none;
+    stroke: black;
+}
 END
 
 sub dotGrid {
     my ($cx, $cy, $xDots, $yDots, $spacing);
+    my %args;
     if (scalar @_ >= 5 && all { looks_like_number($_) } @_[0 .. 4]) {
-        ($cx, $cy, $xDots, $yDots, $spacing) = @_;
-    } elsif (scalar @_ % 2 == 0) {
-        my %args = @_;
-        $cx = $args{cx};
-        $cy = $args{cy};
-        $xDots = $args{xDots};
-        $yDots = $args{yDots};
-        $spacing = $args{spacing};
-    } else {
-        die("invalid arguments");
+        ($cx, $cy, $xDots, $yDots, $spacing) = splice(@_, 0, 4);
     }
-    my (%args) = @_;
+    %args = @_;
+    $cx = $args{cx} // $cx;
+    $cy = $args{cy} // $cy;
+    $xDots = $args{xDots} // $xDots;
+    $yDots = $args{yDots} // $yDots;
+    $spacing = $args{spacing} // $spacing;
+
+    my $xDotMult = $args{xDotMult};
+    my $yDotMult = $args{yDotMult};
+
     my $startX = $cx - $xDots * $spacing / 2;
     my $startY = $cy - $yDots * $spacing / 2;
     my $i = 0;
@@ -59,28 +67,69 @@ sub dotGrid {
             $i += 1;
         }
     }
-    for (my $x = 0; $x <= $xDots; $x += 1) {
-        my $xx = $startX + $spacing * $x;
-        my $y1 = $startY + $spacing * -1;
+    if ($args{numerals}) {
+        my $y1 = $startY - $spacing;
         my $y2 = $startY + $spacing * ($yDots + 1);
-        $p->add('text', x => $xx, y => $y1, class => 'legend', _content => $x);
-        $p->add('text', x => $xx, y => $y2, class => 'legend', _content => $x);
-    }
-    for (my $y = 0; $y <= $yDots; $y += 1) {
-        my $yy = $startY + $spacing * $y;
         my $x1 = $startX - $spacing;
         my $x2 = $startX + $spacing * ($xDots + 1);
-        $p->add('text', x => $x1, y => $yy, class => 'legend', _content => $y);
-        $p->add('text', x => $x2, y => $yy, class => 'legend', _content => $y);
+        for (my $x = 0; $x <= $xDots; $x += 1) {
+            my $xx = $startX + $spacing * $x;
+            $p->add('text', x => $xx, y => $y1, class => 'legend', _content => $x);
+            $p->add('text', x => $xx, y => $y2, class => 'legend', _content => $x);
+        }
+        for (my $y = 0; $y <= $yDots; $y += 1) {
+            my $yy = $startY + $spacing * $y;
+            $p->add('text', x => $x1, y => $yy, class => 'legend', _content => $y);
+            $p->add('text', x => $x2, y => $yy, class => 'legend', _content => $y);
+        }
+    }
+    if ($args{majorDots}) {
+        if (defined $xDotMult) {
+            my $y1 = $startY - $spacing/4;
+            my $y2 = $startY + $spacing * ($yDots + 1/4);
+            for (my $x = 0; $x <= $xDots; $x += $xDotMult) {
+                my $xx = $startX + $spacing * $x;
+                my $class = 'dot';
+                $class .= ' dot--bold' if $x == $xDots / 2;
+                $p->add('line', class => $class, x1 => $xx, x2 => $xx, y1 => $y1, y2 => $y1);
+                $p->add('line', class => $class, x1 => $xx, x2 => $xx, y1 => $y2, y2 => $y2);
+            }
+        }
+        if (defined $yDotMult) {
+            my $x1 = $startX - $spacing/4;
+            my $x2 = $startX + $spacing * ($xDots + 1/4);
+            for (my $y = 0; $y <= $yDots; $y += $yDotMult) {
+                my $yy = $startY + $spacing * $y;
+                my $class = 'dot';
+                $class .= ' dot--bold' if $y == $yDots / 2;
+                $p->add('line', class => $class, x1 => $x1, x2 => $x1, y1 => $yy, y2 => $yy);
+                $p->add('line', class => $class, x1 => $x2, x2 => $x2, y1 => $yy, y2 => $yy);
+            }
+        }
     }
 }
 
-dotGrid(cx => $p->{width} * 1/2, cy => $p->{height} * 1/4,
-        xDots => 36, yDots => 24,
-        spacing => 5 * MM);
-dotGrid(cx => $p->{width} * 1/2, cy => $p->{height} * 3/4,
-        xDots => 36, yDots => 24,
-        spacing => 5 * MM);
+my $spacing = 1/5 * IN;
+my $xDotMult = 3;
+my $yDotMult = 3;
+my $xDots = 24;
+my $yDots = 36;
+my $yDotsExtra = 2;
+my $xDotsExtra = 2;
+my $cx = $p->{width} * 1/2;
+my $cy = $p->{height} * 1/2 + ($yDotsExtra / 2) * $spacing;
+
+dotGrid(cx => $cx, cy => $cy,
+        xDots => $xDots, yDots => $yDots,
+        xDotMult => $xDotMult, yDotMult => $yDotMult,
+        spacing => $spacing,
+        majorDots => 1,
+        numerals => 1);
+dotGrid(cx => $cx, cy => $cy - ($yDots/2 + 1.5 + $yDotsExtra/2) * $spacing,
+        xDots => $xDots + $xDotsExtra, yDots => $yDotsExtra - 1,
+        spacing => $spacing);
+
+$p->add('rect', x => 0, y => 0, width => $p->{width}, height => $p->{height});
 
 print($p->svg());
 
