@@ -9,6 +9,9 @@ use lib "${FindBin::Bin}/../lib";
 use My::RuledPaper;
 use My::RuledPaper::Constants qw(:all);
 
+use List::Util qw(all);
+use Scalar::Util qw(looks_like_number);
+
 my $p = My::RuledPaper->new(A4);
 
 $p->{style} = <<"END";
@@ -20,25 +23,55 @@ $p->{style} = <<"END";
     stroke-width: 1pt;
     opacity: 1;
 }
+text {
+    transform: translateY(0.35em);
+    text-anchor: middle;
+}
+text.legend {
+    font-size: 50%;
+    fill: #cccccc;
+}
 END
 
 sub dotGrid {
+    my ($cx, $cy, $xDots, $yDots, $spacing);
+    if (scalar @_ >= 5 && all { looks_like_number($_) } @_[0 .. 4]) {
+        ($cx, $cy, $xDots, $yDots, $spacing) = @_;
+    } elsif (scalar @_ % 2 == 0) {
+        my %args = @_;
+        $cx = $args{cx};
+        $cy = $args{cy};
+        $xDots = $args{xDots};
+        $yDots = $args{yDots};
+        $spacing = $args{spacing};
+    } else {
+        die("invalid arguments");
+    }
     my (%args) = @_;
-    my $centerX = $args{cx};
-    my $centerY = $args{cy};
-    my $dotsWide = $args{xDots};
-    my $dotsHigh = $args{yDots};
-    my $dotSpacing = $args{spacing};
-    my $startX = $centerX - $dotsWide * $dotSpacing / 2;
-    my $startY = $centerY - $dotsHigh * $dotSpacing / 2;
+    my $startX = $cx - $xDots * $spacing / 2;
+    my $startY = $cy - $yDots * $spacing / 2;
     my $i = 0;
-    for (my $x = 0; $x <= $dotsWide; $x += 1) {
-        for (my $y = 0; $y <= $dotsHigh; $y += 1) {
-            my $xx = $startX + $dotSpacing * $x;
-            my $yy = $startY + $dotSpacing * $y;
+    for (my $x = 0; $x <= $xDots; $x += 1) {
+        for (my $y = 0; $y <= $yDots; $y += 1) {
+            my $xx = $startX + $spacing * $x;
+            my $yy = $startY + $spacing * $y;
             $p->add('line', class => 'dot', x1 => $xx, x2 => $xx, y1 => $yy, y2 => $yy);
             $i += 1;
         }
+    }
+    for (my $x = 0; $x <= $xDots; $x += 1) {
+        my $xx = $startX + $spacing * $x;
+        my $y1 = $startY + $spacing * -1;
+        my $y2 = $startY + $spacing * ($yDots + 1);
+        $p->add('text', x => $xx, y => $y1, class => 'legend', _content => $x);
+        $p->add('text', x => $xx, y => $y2, class => 'legend', _content => $x);
+    }
+    for (my $y = 0; $y <= $yDots; $y += 1) {
+        my $yy = $startY + $spacing * $y;
+        my $x1 = $startX - $spacing;
+        my $x2 = $startX + $spacing * ($xDots + 1);
+        $p->add('text', x => $x1, y => $yy, class => 'legend', _content => $y);
+        $p->add('text', x => $x2, y => $yy, class => 'legend', _content => $y);
     }
 }
 
