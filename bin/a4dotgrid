@@ -9,7 +9,7 @@ use lib "${FindBin::Bin}/../lib";
 use My::RuledPaper;
 use My::RuledPaper::Constants qw(:all);
 
-my $p = My::RuledPaper->new(width => A4_WIDTH_PX, height => A4_HEIGHT_PX);
+my $p = My::RuledPaper->new(A4);
 
 $p->{style} = <<"END";
 .dot {
