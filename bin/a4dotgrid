@@ -7,13 +7,7 @@ use FindBin;
 use lib "${FindBin::Bin}/../lib";
 
 use My::RuledPaper;
-
-use constant MM => 96 / 25.4;
-use constant IN => 96;
-use constant A4_WIDTH_PX  => 250 / sqrt(sqrt(2)) * MM;
-use constant A4_HEIGHT_PX => 250 * sqrt(sqrt(2)) * MM;
-use constant LETTER_WIDTH_PX => 8.5 * IN;
-use constant LETTER_HEIGHT_PX => 11 * IN;
+use My::RuledPaper::Constants qw(:all);
 
 my $p = My::RuledPaper->new(width => A4_WIDTH_PX, height => A4_HEIGHT_PX);
 
@@ -58,5 +52,5 @@ dotGrid(cx => $p->{width} * 1/2, cy => $p->{height} * 3/4,
 print($p->svg());
 
 # Local Variables:
-# after-save-hook: ((lambda () (compile "make")))
+# after-save-hook: ((lambda () (shell-command "make")))
 # End:
