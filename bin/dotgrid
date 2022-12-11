@@ -56,61 +56,55 @@ sub dotGrid {
             $i += 1;
         }
     }
-    if ($args{numerals}) {
-        my $FACTOR = 1;
-        my $y1 = $startY - $spacing * $FACTOR;
-        my $y2 = $startY + $spacing * ($yDots + $FACTOR);
-        my $x1 = $startX - $spacing * $FACTOR;
-        my $x2 = $startX + $spacing * ($xDots + $FACTOR);
-        for (my $x = 0; $x <= $xDots; $x += $args{numerals}) {
+
+    my $dxNumerals = 0.6;
+    my $dyNumerals = 0.5;
+
+    my $xNumerals = $args{xNumerals} // $args{numerals};
+    my $yNumerals = $args{yNumerals} // $args{numerals};
+
+    if ($xNumerals) {
+        my $y1 = $startY - $spacing * $dyNumerals;            # top
+        my $y2 = $startY + $spacing * ($yDots + $dyNumerals); # bottom
+        for (my $x = 0; $x <= $xDots; $x += $xNumerals) {
             my $xx = $startX + $spacing * $x;
             $p->add('text', x => $xx, y => $y1 + $TEXT_DOWN, _content => $x); # top
             $p->add('text', x => $xx, y => $y2 + $TEXT_DOWN, _content => $x); # bottom
         }
-        for (my $y = 0; $y <= $yDots; $y += $args{numerals}) {
+    }
+    if ($yNumerals) {
+        my $x1 = $startX - $spacing * $dxNumerals;            # left
+        my $x2 = $startX + $spacing * ($xDots + $dxNumerals); # right
+        for (my $y = 0; $y <= $yDots; $y += $yNumerals) {
             my $yy = $startY + $spacing * $y;
             $p->add('text', x => $x1, y => $yy + $TEXT_DOWN, _content => $y, style => 'text-anchor: middle'); # left
             $p->add('text', x => $x2, y => $yy + $TEXT_DOWN, _content => $y, style => 'text-anchor: middle'); # right
         }
     }
-    if ($args{majorDots}) {
-        for (my $mod = 2; $mod <= 3; $mod += 1) {
-            for (my $i = 1; $i < $mod; $i += 1) { # dots away from left or bottom side
-                for (my $j = 1; $j < $mod; $j += 1) {
-                    my $FACTOR = 0.15;
-                    my $x1 = $startX - $j * $FACTOR * $spacing;
-                    my $y1 = $startY - $j * $FACTOR * $spacing;
-                    my $x3 = $startX + ($xDots + $j * $FACTOR) * $spacing;
-                    my $y3 = $startY + ($yDots + $j * $FACTOR) * $spacing;
-                    my $x2 = $startX + $xDots / $mod * $i * $spacing;
-                    my $y2 = $startY + $yDots / $mod * $i * $spacing;
-                    $p->add('circle', cx => $x1, cy => $y2, r => 1); # left
-                    $p->add('circle', cx => $x3, cy => $y2, r => 1); # right
-                    $p->add('circle', cx => $x2, cy => $y1, r => 1); # top
-                    $p->add('circle', cx => $x2, cy => $y3, r => 1); # bottom
-                }
-            }
-        }
-    }
 }
+
+my $shiftUp = (LETTER_WIDTH_PX - A4_WIDTH_PX) / 2;
+
+my $yDotsExtra = 3;
+my $yDotsExtraStartAt = 1;
 
 my $spacing = 1/5 * IN;
 my $xDots = 24;
 my $yDots = 36;
-my $yDotsExtra = 2;
-my $xDotsExtra = 2;
 my $cx = $p->{width} * 1/2;
-my $cy = $p->{height} * 1/2 + ($yDotsExtra / 2) * $spacing;
+my $cy = $p->{height} * 1/2 + $yDotsExtra * $spacing / 2 - $shiftUp;
+$cy = $cy - $spacing / 4 - $TEXT_DOWN / 2;
 
 dotGrid(cx => $cx, cy => $cy,
         xDots => $xDots, yDots => $yDots,
         spacing => $spacing,
-        majorDots => 1,
-        numerals => 6);
+        xNumerals => 4, yNumerals => 6);
 
-dotGrid(cx => $cx, cy => $cy - ($yDots/2 + 1.5 + $yDotsExtra/2) * $spacing,
-        xDots => $xDots + $xDotsExtra,
-        yDots => $yDotsExtra - 1,
+my $cy2 = $cy - ($yDots + $yDotsExtra + $yDotsExtraStartAt) / 2 * $spacing;
+
+dotGrid(cx => $cx, cy => $cy2,
+        xDots => $xDots,
+        yDots => $yDotsExtra - $yDotsExtraStartAt,
         spacing => $spacing);
 
 print($p->svg());
