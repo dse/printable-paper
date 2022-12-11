@@ -17,7 +17,17 @@ our @EXPORT_OK = qw(MM IN PT CM PC PX
                     LETTER_WIDTH_PX
                     LETTER_HEIGHT_PX
                     HALF_LETTER_WIDTH_PX
-                    HALF_LETTER_HEIGHT_PX);
+                    HALF_LETTER_HEIGHT_PX
+                    COLOR_BLUE
+                    COLOR_GREEN
+                    COLOR_RED
+                    COLOR_GRAY
+                    COLOR_ORANGE
+                    COLOR_MAGENTA
+                    COLOR_CYAN
+                    COLOR_YELLOW
+                    COLOR_BLACK
+                    COLOR_NON_REPRO_BLUE);
 our %EXPORT_TAGS = (
     'all' => [@EXPORT_OK]
 );
@@ -43,5 +53,16 @@ use constant A4          => (width => A4_WIDTH_PX,          height => A4_HEIGHT_
 use constant A5          => (width => A5_WIDTH_PX,          height => A5_HEIGHT_PX);
 use constant LETTER      => (width => LETTER_WIDTH_PX,      height => LETTER_HEIGHT_PX);
 use constant HALF_LETTER => (width => HALF_LETTER_WIDTH_PX, height => HALF_LETTER_HEIGHT_PX);
+
+use constant COLOR_BLUE           => '#b3b3ff';
+use constant COLOR_GREEN          => '#5aff5a';
+use constant COLOR_RED            => '#ff9e9e';
+use constant COLOR_GRAY           => '#bbbbbb';
+use constant COLOR_ORANGE         => '#ffab57';
+use constant COLOR_MAGENTA        => '#ff8cff';
+use constant COLOR_CYAN           => '#1cffff';
+use constant COLOR_YELLOW         => '#ffff00'; # higher luminance
+use constant COLOR_BLACK          => '#000000';
+use constant COLOR_NON_REPRO_BLUE => '#95c9d7';
 
 1;
