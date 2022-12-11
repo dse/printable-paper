@@ -57,7 +57,7 @@ sub dotGrid {
         }
     }
     if ($args{numerals}) {
-        my $FACTOR = 0.6;
+        my $FACTOR = 1;
         my $y1 = $startY - $spacing * $FACTOR;
         my $y2 = $startY + $spacing * ($yDots + $FACTOR);
         my $x1 = $startX - $spacing * $FACTOR;
