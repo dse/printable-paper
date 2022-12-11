@@ -88,7 +88,7 @@ my $shiftUp = (LETTER_WIDTH_PX - A4_WIDTH_PX) / 2;
 my $yDotsExtra = 3;
 my $yDotsExtraStartAt = 1;
 
-my $spacing = 1/5 * IN;
+my $spacing = 5 * MM;
 my $xDots = 24;
 my $yDots = 36;
 my $cx = $p->{width} * 1/2;
