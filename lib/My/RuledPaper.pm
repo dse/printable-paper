@@ -49,8 +49,7 @@ sub svg {
         foreach my $name (sort { $a cmp $b } grep { !/^_/ } keys %$attr) {
             my $value = $attr->{$name};
             next if !defined $value;
-            my $attrName = $name;
-            $attrName =~ s{_}{-}g;
+            $name =~ s{_}{-}g;
             if (looks_like_number($value)) {
                 $elt->setAttribute($name, sprintf('%.3f', $value));
             } else {
