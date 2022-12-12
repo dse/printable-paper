@@ -2,15 +2,29 @@ DOTGRID_SVG = dotgrid.svg
 LINEGRID10_SVG = linegrid10.svg
 LINEGRID12_SVG = linegrid12.svg
 LINEGRID412_SVG = linegrid412.svg
-SVG = dotgrid.svg linegrid10.svg linegrid12.svg linegrid412.svg
-PDF = dotgrid.pdf linegrid10.pdf linegrid12.pdf linegrid412.pdf
-PDF2UP2PAGE = dotgrid.2up2page.pdf linegrid10.2up2page.pdf linegrid12.2up2page.pdf linegrid412.2up2page.pdf
 
 DOTGRID = bin/dotgrid
 LINEGRID = bin/linegrid
 TWOUPTWOPAGE = bin/2up2page
 
-default: $(SVG) $(PDF) $(PDF2UP2PAGE)
+SVG =   dotgrid.svg \
+	linegrid10.svg \
+	linegrid12.svg \
+	linegrid412.svg
+PDF         = $(patsubst %.svg,%.pdf,$(SVG))
+PDF2UP2PAGE = $(patsubst %.svg,%.2up2page.pdf,$(SVG))
+
+ALLPDF      = $(PDF) $(PDF2UP2PAGE)
+ALLPS       = $(patsubst %.pdf,%.ps,$(ALLPDF))
+
+default: $(SVG) $(PDF) $(PDF2UP2PAGE) $(ALLPS)
+
+echo:
+	@echo SVG $(SVG)
+	@echo PDF $(PDF)
+	@echo PDF2UP2PAGE $(PDF2UP2PAGE)
+	@echo ALLPDF $(ALLPDF)
+	@echo ALLPS $(ALLPS)
 
 $(DOTGRID_SVG): $(DOTGRID) Makefile
 	$(DOTGRID) >"$@.tmp"
@@ -29,10 +43,15 @@ $(LINEGRID412_SVG): $(LINEGRID) Makefile
 	mv "$@.tmp" "$@"
 
 %.pdf: %.svg Makefile
-	inkscape "$<" --export-dpi=600 -o "$@"
+	inkscape "$<" --export-dpi=600 -o "$@.tmp.pdf"
+	mv "$@.tmp.pdf" "$@"
+
+%.ps: %.pdf Makefile
+	pdf2ps "$<" "$@.tmp.ps"
+	mv "$@.tmp.ps" "$@"
 
 %.2up2page.pdf: %.pdf Makefile $(TWOUPTWOPAGE)
 	$(TWOUPTWOPAGE) "$<"
 
 clean:
-	rm $(SVG) $(PDF) $(PDF2UP2PAGE) || true
+	rm $(ALLPS) $(ALLPDF) $(SVG) 2>/dev/null || true
