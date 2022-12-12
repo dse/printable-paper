@@ -1,21 +1,21 @@
-DOTGRID_SVG = dotgrid.svg
-LINEGRID10_SVG = linegrid10.svg
-LINEGRID12_SVG = linegrid12.svg
-LINEGRID412_SVG = linegrid412.svg
+DOTGRID_SVG	= paper/dotgrid.svg
+LINEGRID10_SVG	= paper/linegrid10.svg
+LINEGRID12_SVG	= paper/linegrid12.svg
+LINEGRID412_SVG = paper/linegrid412.svg
 
-DOTGRID = bin/dotgrid
-LINEGRID = bin/linegrid
-TWOUPTWOPAGE = bin/2up2page
+DOTGRID		= bin/dotgrid
+LINEGRID	= bin/linegrid
+TWOUPTWOPAGE	= bin/2up2page
 
-SVG =   dotgrid.svg \
-	linegrid10.svg \
-	linegrid12.svg \
-	linegrid412.svg
-PDF         = $(patsubst %.svg,%.pdf,$(SVG))
-PDF2UP2PAGE = $(patsubst %.svg,%.2up2page.pdf,$(SVG))
+SVG             = paper/dotgrid.svg \
+		  paper/linegrid10.svg \
+		  paper/linegrid12.svg \
+		  paper/linegrid412.svg
+PDF             = $(patsubst %.svg,%.pdf,$(SVG))
+PDF2UP2PAGE     = $(patsubst %.svg,%.2up2page.pdf,$(SVG))
 
-ALLPDF      = $(PDF) $(PDF2UP2PAGE)
-ALLPS       = $(patsubst %.pdf,%.ps,$(ALLPDF))
+ALLPDF          = $(PDF) $(PDF2UP2PAGE)
+ALLPS           = $(patsubst %.pdf,%.ps,$(ALLPDF))
 
 default: $(SVG) $(PDF) $(PDF2UP2PAGE) $(ALLPS)
 
