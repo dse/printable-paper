@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -o errexit
+set -o pipefail
+set -o nounset
+shopt -s lastpipe
+
+for filename in "$@" ; do
+    pdffilename="${filename%.svg}.pdf"
+    inkscape "${filename}" --export-dpi=600 -o "${pdffilename}"
+done

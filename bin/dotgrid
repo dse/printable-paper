@@ -1,0 +1,114 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use open qw(locale);
+
+use FindBin;
+use lib "${FindBin::Bin}/../lib";
+
+use My::RuledPaper;
+use My::RuledPaper::Constants qw(:all);
+
+use List::Util qw(all);
+use Scalar::Util qw(looks_like_number);
+
+my $FONT_SIZE = 6 * PT;
+my $TEXT_DOWN = 0.3 * $FONT_SIZE; # inkscape svg->pdf does not support css transform
+
+my $p = My::RuledPaper->new(HALF_LETTER);
+
+$p->{style} = <<"END";
+text {
+    text-anchor: middle;
+    font-family: 'Times New Roman', 'Times Roman', serif;
+    font-size: ${FONT_SIZE}px;
+    fill: #cccccc;
+}
+circle {
+    fill: #cccccc;
+}
+END
+
+sub dotGrid {
+    my ($cx, $cy, $xDots, $yDots, $spacing);
+    my %args;
+    if (scalar @_ >= 5 && all { looks_like_number($_) } @_[0 .. 4]) {
+        ($cx, $cy, $xDots, $yDots, $spacing) = splice(@_, 0, 4);
+    }
+    %args = @_;
+    $cx = $args{cx} // $cx;
+    $cy = $args{cy} // $cy;
+    $xDots = $args{xDots} // $xDots;
+    $yDots = $args{yDots} // $yDots;
+    $spacing = $args{spacing} // $spacing;
+
+    my $xDotMult = $args{xDotMult};
+    my $yDotMult = $args{yDotMult};
+
+    my $startX = $cx - $xDots * $spacing / 2;
+    my $startY = $cy - $yDots * $spacing / 2;
+    my $i = 0;
+    for (my $x = 0; $x <= $xDots; $x += 1) {
+        for (my $y = 0; $y <= $yDots; $y += 1) {
+            my $xx = $startX + $spacing * $x;
+            my $yy = $startY + $spacing * $y;
+            $p->add('circle', cx => $xx, cy => $yy, r => 1);
+            $i += 1;
+        }
+    }
+
+    my $dxNumerals = 0.6;
+    my $dyNumerals = 0.5;
+
+    my $xNumerals = $args{xNumerals} // $args{numerals};
+    my $yNumerals = $args{yNumerals} // $args{numerals};
+
+    if ($xNumerals) {
+        my $y1 = $startY - $spacing * $dyNumerals;            # top
+        my $y2 = $startY + $spacing * ($yDots + $dyNumerals); # bottom
+        for (my $x = 0; $x <= $xDots; $x += $xNumerals) {
+            my $xx = $startX + $spacing * $x;
+            $p->add('text', x => $xx, y => $y1 + $TEXT_DOWN, _content => $x); # top
+            $p->add('text', x => $xx, y => $y2 + $TEXT_DOWN, _content => $x); # bottom
+        }
+    }
+    if ($yNumerals) {
+        my $x1 = $startX - $spacing * $dxNumerals;            # left
+        my $x2 = $startX + $spacing * ($xDots + $dxNumerals); # right
+        for (my $y = 0; $y <= $yDots; $y += $yNumerals) {
+            my $yy = $startY + $spacing * $y;
+            $p->add('text', x => $x1, y => $yy + $TEXT_DOWN, _content => $y, style => 'text-anchor: middle'); # left
+            $p->add('text', x => $x2, y => $yy + $TEXT_DOWN, _content => $y, style => 'text-anchor: middle'); # right
+        }
+    }
+}
+
+my $shiftUp = (LETTER_WIDTH_PX - A4_WIDTH_PX) / 2;
+
+my $yDotsExtra = 3;
+my $yDotsExtraStartAt = 1;
+
+my $spacing = 5 * MM;
+my $xDots = 24;
+my $yDots = 36;
+my $cx = $p->{width} * 1/2;
+my $cy = $p->{height} * 1/2 + $yDotsExtra * $spacing / 2 - $shiftUp;
+$cy = $cy - $spacing / 4 - $TEXT_DOWN / 2;
+
+dotGrid(cx => $cx, cy => $cy,
+        xDots => $xDots, yDots => $yDots,
+        spacing => $spacing,
+        xNumerals => 4, yNumerals => 6);
+
+my $cy2 = $cy - ($yDots + $yDotsExtra + $yDotsExtraStartAt) / 2 * $spacing;
+
+dotGrid(cx => $cx, cy => $cy2,
+        xDots => $xDots,
+        yDots => $yDotsExtra - $yDotsExtraStartAt,
+        spacing => $spacing);
+
+print($p->svg());
+
+# Local Variables:
+# after-save-hook: ((lambda () (shell-command "cd .. && make")))
+# End:

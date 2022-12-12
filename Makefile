@@ -1,77 +1,38 @@
-SHELL = bash
-INKSCAPE = inkscape
+DOTGRID_SVG = dotgrid.svg
+LINEGRID10_SVG = linegrid10.svg
+LINEGRID12_SVG = linegrid12.svg
+LINEGRID412_SVG = linegrid412.svg
+SVG = dotgrid.svg linegrid10.svg linegrid12.svg linegrid412.svg
+PDF = dotgrid.pdf linegrid10.pdf linegrid12.pdf linegrid412.pdf
+PDF2UP2PAGE = dotgrid.2up2page.pdf linegrid10.2up2page.pdf linegrid12.2up2page.pdf linegrid412.2up2page.pdf
 
-# darwin: inkscape invokes an app installed in /Applications which
-# changes the working directory before being invoked.
-PATHNAME = $(shell \
-	if [[ "$$OSTYPE" = "darwin"* ]] ; then \
-		echo realpath ; \
-	else \
-		echo echo ; \
-	fi \
-)
+DOTGRID = bin/dotgrid
+LINEGRID = bin/linegrid
+TWOUPTWOPAGE = bin/2up2page
 
-default:
-	makebin/makeprintable
+default: $(SVG) $(PDF) $(PDF2UP2PAGE)
 
-# file formats
-ps:
-	makebin/makeprintable ps
-pdf:
-	makebin/makeprintable pdf
-svg:
-	makebin/makeprintable svg
+$(DOTGRID_SVG): $(DOTGRID) Makefile
+	$(DOTGRID) >"$@.tmp"
+	mv "$@.tmp" "$@"
 
-# specialties
-2-up:
-	makebin/makeprintable 2-up
+$(LINEGRID10_SVG): $(LINEGRID) Makefile
+	$(LINEGRID) 10 >"$@.tmp"
+	mv "$@.tmp" "$@"
 
-# paper sizes
-a4:
-	makebin/makeprintable a4
-a5:
-	makebin/makeprintable a5
-a6:
-	makebin/makeprintable a6
-letter:
-	makebin/makeprintable letter
-halfletter:
-	makebin/makeprintable half-letter
-quarterletter:
-	makebin/makeprintable quarter-letter
+$(LINEGRID12_SVG): $(LINEGRID) Makefile
+	$(LINEGRID) 12 >"$@.tmp"
+	mv "$@.tmp" "$@"
 
-# rulings
-dot-grid:
-	makebin/makeprintable dot-grid
-line-dot-grid:
-	makebin/makeprintable line-dot-grid
-line-dot-graph:
-	makebin/makeprintable line-dot-graph
-seyes:
-	makebin/makeprintable seyes
-quadrille:
-	makebin/makeprintable quadrille
+$(LINEGRID412_SVG): $(LINEGRID) Makefile
+	$(LINEGRID) 412 >"$@.tmp"
+	mv "$@.tmp" "$@"
 
-# actions
+%.pdf: %.svg Makefile
+	inkscape "$<" --export-dpi=600 -o "$@"
+
+%.2up2page.pdf: %.pdf Makefile $(TWOUPTWOPAGE)
+	$(TWOUPTWOPAGE) "$<"
+
 clean:
-	makebin/makeprintable CLEAN
-clean-svg:
-	makebin/makeprintable CLEAN svg
-list:
-	makebin/makeprintable LIST
-list-svg:
-	makebin/makeprintable LIST svg
-
-%.pdf: makebin/makeprintable bin/printable-paper Makefile
-	makebin/makeprintable "$@"
-%.svg: makebin/makeprintable bin/printable-paper Makefile
-	makebin/makeprintable "$@"
-%.ps: makebin/makeprintable bin/printable-paper Makefile
-	makebin/makeprintable "$@"
-
-perftest:
-	make clean-svg
-	perl -d:NYTProf makebin/makeprintable oasis letter svg
-	/usr/local/Cellar/perl/5.28.0/bin/nytprofhtml --open
-
-.PHONY: ps pdf svg 2-up a4 a5 a6 letter halfletter quarterletter dot-grid line-dot-grid line-dot-graph seyes clean list clean-svg list-svg perftest
+	rm $(SVG) $(PDF) $(PDF2UP2PAGE) || true
