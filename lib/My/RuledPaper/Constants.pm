@@ -4,32 +4,38 @@ use strict;
 
 use base 'Exporter';
 
+our @EXPORT_COLORS      = qw(COLOR_BLUE
+                             COLOR_GREEN
+                             COLOR_RED
+                             COLOR_GRAY
+                             COLOR_ORANGE
+                             COLOR_MAGENTA
+                             COLOR_CYAN
+                             COLOR_YELLOW
+                             COLOR_BLACK
+                             COLOR_NON_REPRO_BLUE);
+our @EXPORT_UNITS       = qw(MM IN PT CM PC PX);
+our @EXPORT_SIZES       = qw(A4 A5 LETTER HALF_LETTER);
+our @EXPORT_SIZE_DIMENS = qw(A4_WIDTH_PX
+                             A4_HEIGHT_PX
+                             A5_WIDTH_PX
+                             A5_HEIGHT_PX
+                             LETTER_WIDTH_PX
+                             LETTER_HEIGHT_PX
+                             HALF_LETTER_WIDTH_PX
+                             HALF_LETTER_HEIGHT_PX);
+
 our @EXPORT = qw();
-our @EXPORT_OK = qw(MM IN PT CM PC PX
-                    A4
-                    A5
-                    LETTER
-                    HALF_LETTER
-                    A4_WIDTH_PX
-                    A4_HEIGHT_PX
-                    A5_WIDTH_PX
-                    A5_HEIGHT_PX
-                    LETTER_WIDTH_PX
-                    LETTER_HEIGHT_PX
-                    HALF_LETTER_WIDTH_PX
-                    HALF_LETTER_HEIGHT_PX
-                    COLOR_BLUE
-                    COLOR_GREEN
-                    COLOR_RED
-                    COLOR_GRAY
-                    COLOR_ORANGE
-                    COLOR_MAGENTA
-                    COLOR_CYAN
-                    COLOR_YELLOW
-                    COLOR_BLACK
-                    COLOR_NON_REPRO_BLUE);
+our @EXPORT_OK = (@EXPORT_COLORS,
+                  @EXPORT_UNITS,
+                  @EXPORT_SIZES,
+                  @EXPORT_SIZE_DIMENS);
 our %EXPORT_TAGS = (
-    'all' => [@EXPORT_OK]
+    'all'         => [@EXPORT_OK],
+    'colors'      => [@EXPORT_COLORS],
+    'units'       => [@EXPORT_UNITS],
+    'sizes'       => [@EXPORT_SIZES],
+    'size_dimens' => [@EXPORT_SIZE_DIMENS],
 );
 
 # 96 / however many of each unit is in an inch
