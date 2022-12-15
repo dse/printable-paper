@@ -2,6 +2,7 @@ DOTGRID_SVG	= paper/dotgrid.svg
 LINEGRID10_SVG	= paper/linegrid10.svg
 LINEGRID12_SVG	= paper/linegrid12.svg
 LINEGRID412_SVG = paper/linegrid412.svg
+LINEGRID416_SVG = paper/linegrid416.svg
 
 DOTGRID		= bin/dotgrid
 LINEGRID	= bin/linegrid
@@ -10,15 +11,13 @@ TWOUPTWOPAGE	= bin/2up2page
 SVG             = paper/dotgrid.svg \
 		  paper/linegrid10.svg \
 		  paper/linegrid12.svg \
-		  paper/linegrid412.svg
+		  paper/linegrid412.svg \
+		  paper/linegrid416.svg
 PDF             = $(patsubst %.svg,%.pdf,$(SVG))
 PDF2UP2PAGE     = $(patsubst %.svg,%.2up2page.pdf,$(SVG))
 
 ALLPDF          = $(PDF) $(PDF2UP2PAGE)
 ALLPS           = $(patsubst %.pdf,%.ps,$(ALLPDF))
-
-export GRID_CLASS = black
-export GRID_COLOR = \#666666
 
 default: $(SVG) $(PDF) $(PDF2UP2PAGE) $(ALLPS)
 
@@ -32,20 +31,29 @@ echo:
 env:
 	env
 
+LINEGRID10  = $(LINEGRID) --spacing=1/10in,1/2in,1in   --color='\#000000' --stroke-width=2/600in,4/600in,8/600in --dash-array=2/600in,6/600in --dy=0.125in
+LINEGRID12  = $(LINEGRID) --spacing=1/12in,1/2in,1in   --color='\#000000' --stroke-width=2/600in,4/600in,8/600in --dash-array=2/600in,6/600in --dy=0.125in
+LINEGRID412 = $(LINEGRID) --spacing=1/12in,1/4in,1in   --color='\#000000' --stroke-width=2/600in,4/600in,8/600in --dash-array=2/600in,6/600in --dy=0.125in
+LINEGRID416 = $(LINEGRID) --spacing=1/12in,1/3in,4/3in --color='\#000000' --stroke-width=2/600in,4/600in,8/600in --dash-array=2/600in,6/600in --dy=0.125in
+
 $(DOTGRID_SVG): $(DOTGRID) Makefile
 	$(DOTGRID) >"$@.tmp"
 	mv "$@.tmp" "$@"
 
 $(LINEGRID10_SVG): $(LINEGRID) Makefile
-	$(LINEGRID) 10 >"$@.tmp"
+	$(LINEGRID10) >"$@.tmp"
 	mv "$@.tmp" "$@"
 
 $(LINEGRID12_SVG): $(LINEGRID) Makefile
-	$(LINEGRID) 12 >"$@.tmp"
+	$(LINEGRID12) >"$@.tmp"
 	mv "$@.tmp" "$@"
 
 $(LINEGRID412_SVG): $(LINEGRID) Makefile
-	$(LINEGRID) 412 >"$@.tmp"
+	$(LINEGRID412) >"$@.tmp"
+	mv "$@.tmp" "$@"
+
+$(LINEGRID416_SVG): $(LINEGRID) Makefile
+	$(LINEGRID416) >"$@.tmp"
 	mv "$@.tmp" "$@"
 
 %.pdf: %.svg Makefile

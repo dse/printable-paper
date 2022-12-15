@@ -3,38 +3,33 @@ use warnings;
 use strict;
 use open qw(locale);
 
-# TODO
-#     --spacing=1/10in,1/2in,1in
-#     --spacing=1mm,5mm,10mm
-
-our $strokeWidth = '1/600in';
-our $dashArray;
-our $color = '#000000';
-our $paperSize = 'halfletter';
-our $spacing = '5mm';
-our $major = '3, 4';
-our $dx;
-our $dy;
+our $optStrokeWidth = '1/600in';
+our $optDashArray;
+our $optColor = '#000000';
+our $optPaperSize = 'halfletter';
+our $optSpacing = '5mm';
+our $optDx;
+our $optDy;
 
 use Getopt::Long;
 Getopt::Long::Configure(qw(getopt_compat bundling no_ignore_case));
 Getopt::Long::GetOptions(
-    'w|stroke-width=s' => \$strokeWidth,
-    'd|dash-array=s' => \$dashArray,
-    'c|color=s' => \$color,
-    'p|paper-size=s' => \$paperSize,
-    's|spacing=s' => \$spacing,
-    'm|major=s' => \$major,
-    'dx=s' => \$dx,
-    'dy=s' => \$dy,
+    'w|stroke-width=s' => \$optStrokeWidth,
+    'd|dash-array=s' => \$optDashArray,
+    'c|color=s' => \$optColor,
+    'p|paper-size=s' => \$optPaperSize,
+    's|spacing=s' => \$optSpacing,
+    'dx=s' => \$optDx,
+    'dy=s' => \$optDy,
 ) or die();
 
-our @strokeWidth = defined $strokeWidth ? (map { parseDimen($_) } split(/[,\s]+/, $strokeWidth)) : (parseDimen('4/600in'));
-our @dashArray   = defined $dashArray   ? (map { parseDimen($_) } split(/[,\s]+/, $dashArray))   : ();
-our @major       = defined $major       ? (map { 0 + $_ }         split(/[,\s]+/, $major))       : ();
-$spacing = defined $spacing ? parseDimen($spacing) : parseDimen('6mm');
-$dx      = defined $dx ? parseDimen($dx) : 0;
-$dy      = defined $dy ? parseDimen($dy) : 0;
+our @strokeWidth = defined $optStrokeWidth ? (map { parseDimen($_) } split(/[,\s]+/, $optStrokeWidth)) : (parseDimen('4/600in'));
+our @dashArray   = defined $optDashArray   ? (map { parseDimen($_) } split(/[,\s]+/, $optDashArray))   : ();
+our @spacing     = defined $optSpacing     ? (map { parseDimen($_) } split(/[,\s]+/, $optSpacing))     : parseDimen('6mm');
+our $spacing     = $spacing[0];
+our @divisions   = map { round($_ / $spacing[0]) } @spacing;
+our $dx          = defined $optDx ? parseDimen($optDx) : 0;
+our $dy          = defined $optDy ? parseDimen($optDy) : 0;
 
 use FindBin;
 use lib "${FindBin::Bin}/../lib";
@@ -44,11 +39,11 @@ use My::RuledPaper::Constants qw(:all);
 use My::RuledPaper::Dimen qw(parseDimen);
 use My::RuledPaper::MonkeyPatch::Drawing;
 
-use POSIX qw(floor);
+use POSIX qw(floor round);
 use List::Util qw(all);
 use Scalar::Util qw(looks_like_number);
 
-my $GRID_COLOR = $color // COLOR_NON_REPRO_BLUE;
+my $GRID_COLOR = $optColor // COLOR_NON_REPRO_BLUE;
 
 my $STROKE_WIDTH_0 = $strokeWidth[0];
 my $STROKE_WIDTH_1 = $strokeWidth[1];
@@ -101,22 +96,20 @@ my $yLines = floor( ($p->{height} / 2 - $margin) / $spacing );
 
 my $centerX = 0;
 my $centerY = 0;
-my $bigMajor = defined $major[1] ? $major[0] * $major[1] : $major[0];
-if (defined $bigMajor && $bigMajor % 2 == 0) {
-    # may have to shift the major grid divisions over to maximize the
-    # number of them.
-    if ($xLines % $bigMajor >= $bigMajor / 2) {
-        $centerX = $bigMajor / 2;
-    }
-    if ($yLines % $bigMajor >= $bigMajor / 2) {
-        $centerY = $bigMajor / 2;
+my $bigSpacing = $spacing[2] // $spacing[1] // $spacing[0];
+if (defined $spacing[1]) {
+    my $bigDivisions = $divisions[2] // $divisions[1];
+    if (defined $bigDivisions && $bigDivisions % 2 == 0) {
+        # may have to shift the divisions grid divisions over to maximize the
+        # number of them.
+        if ($xLines % $bigDivisions >= $bigDivisions / 2) {
+            $centerX = $bigDivisions / 2;
+        }
+        if ($yLines % $bigDivisions >= $bigDivisions / 2) {
+            $centerY = $bigDivisions / 2;
+        }
     }
 }
-warn("bigMajor is $bigMajor\n");
-warn("xLines is $xLines\n");
-warn("yLines is $yLines\n");
-warn("centerX is $centerX\n");
-warn("centerY is $centerY\n");
 
 my $full = 1;
 
@@ -128,9 +121,9 @@ my $endYY   = $full ? $p->{height} : $cy + $endY   * $spacing;
 for (my $x = $startX; $x <= $endX; $x += 1) {
     my $xx = $cx + $x * $spacing;
     my $class = 'strokeA';
-    if (defined $major[1] && ($x + $centerX) % ($major[0] * $major[1]) == 0) {
+    if (defined $divisions[2] && ($x + $centerX) % $divisions[2] == 0) {
         $class = 'strokeC';
-    } elsif (defined $major[0] && ($x + $centerX) % $major[0] == 0) {
+    } elsif (defined $divisions[1] && ($x + $centerX) % $divisions[1] == 0) {
         $class = 'strokeB';
     }
     $p->line($xx, $startYY, $xx, $endYY, class => $class);
@@ -138,9 +131,9 @@ for (my $x = $startX; $x <= $endX; $x += 1) {
 for (my $y = $startY; $y <= $endY; $y += 1) {
     my $yy = $cy + $y * $spacing;
     my $class = 'strokeA';
-    if (defined $major[1] && ($y + $centerY) % ($major[0] * $major[1]) == 0) {
+    if (defined $divisions[2] && ($y + $centerY) % ($divisions[2]) == 0) {
         $class = 'strokeC';
-    } elsif (defined $major[0] && ($y + $centerY) % $major[0] == 0) {
+    } elsif (defined $divisions[1] && ($y + $centerY) % $divisions[1] == 0) {
         $class = 'strokeB';
     }
     $p->line($startXX, $yy, $endXX, $yy, class => $class);
