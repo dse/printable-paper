@@ -13,11 +13,16 @@ use My::RuledPaper::MonkeyPatch::Drawing;
 use List::Util qw(all);
 use Scalar::Util qw(looks_like_number);
 
-my $NON_REPRO_BLUE = COLOR_NON_REPRO_BLUE;
+my $GRID_COLOR = $ENV{GRID_COLOR} // COLOR_NON_REPRO_BLUE;
 
 my $FEINT_STROKE_WIDTH = 1/600 * IN;
 my $MINOR_STROKE_WIDTH = 2/600 * IN;
 my $MAJOR_STROKE_WIDTH = 4/600 * IN;
+
+my @BLACK_STROKE_DASH_ARRAY = (1, 5);
+my $BLACK_STROKE_DASH_ARRAY = join(' ', map { ($FEINT_STROKE_WIDTH * $_) . 'px' } @BLACK_STROKE_DASH_ARRAY);
+warn("@BLACK_STROKE_DASH_ARRAY\n");
+warn("$BLACK_STROKE_DASH_ARRAY\n");
 
 my $style = shift(@ARGV) // '10';
 
@@ -27,7 +32,7 @@ $p->{style} = <<"END";
 line, rect {
     fill: none;
     stroke-width: ${FEINT_STROKE_WIDTH}px;
-    stroke: ${NON_REPRO_BLUE};
+    stroke: ${GRID_COLOR};
     stroke-linecap: round;
     stroke-linejoin: round;
 }
@@ -36,6 +41,12 @@ line, rect {
 }
 .major {
     stroke-width: ${MAJOR_STROKE_WIDTH}px;
+}
+.black {
+    stroke-linecap: butt;
+    stroke-linejoin: miter;
+    stroke: black;
+    stroke-dasharray: ${BLACK_STROKE_DASH_ARRAY};
 }
 END
 
@@ -90,6 +101,7 @@ for (my $x = $startX; $x <= $endX; $x += 1) {
     } elsif ($minor && (($x + $centerX) % $minor == 0)) {
         $class = 'minor';
     }
+    $class .= " $ENV{GRID_CLASS}" if defined $ENV{GRID_CLASS};
     $p->line($xx, $startYY, $xx, $endYY, class => $class);
 }
 for (my $y = $startY; $y <= $endY; $y += 1) {
@@ -100,11 +112,8 @@ for (my $y = $startY; $y <= $endY; $y += 1) {
     } elsif ($minor && (($y + $centerY) % $minor == 0)) {
         $class = 'minor';
     }
+    $class .= " $ENV{GRID_CLASS}" if defined $ENV{GRID_CLASS};
     $p->line($startXX, $yy, $endXX, $yy, class => $class);
 }
 
 print($p->svg());
-
-# Local Variables:
-# after-save-hook: ((lambda () (shell-command "cd .. && make")))
-# End:
