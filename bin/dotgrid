@@ -12,8 +12,10 @@ use My::RuledPaper::Constants qw(:all);
 use List::Util qw(all);
 use Scalar::Util qw(looks_like_number);
 
-my $FONT_SIZE = 6 * PT;
+my $FONT_SIZE = 8 * PT;
 my $TEXT_DOWN = 0.3 * $FONT_SIZE; # inkscape svg->pdf does not support css transform
+
+my $GRID_COLOR = $ENV{GRID_COLOR} // COLOR_NON_REPRO_BLUE;
 
 my $p = My::RuledPaper->new(HALF_LETTER);
 
@@ -22,10 +24,10 @@ text {
     text-anchor: middle;
     font-family: 'Times New Roman', 'Times Roman', serif;
     font-size: ${FONT_SIZE}px;
-    fill: #cccccc;
+    fill: ${GRID_COLOR};
 }
 circle {
-    fill: #cccccc;
+    fill: ${GRID_COLOR};
 }
 END
 
@@ -108,7 +110,3 @@ dotGrid(cx => $cx, cy => $cy2,
         spacing => $spacing);
 
 print($p->svg());
-
-# Local Variables:
-# after-save-hook: ((lambda () (shell-command "cd .. && make")))
-# End:
