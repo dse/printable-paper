@@ -3,26 +3,59 @@ use warnings;
 use strict;
 use open qw(locale);
 
+# TODO
+#     --spacing=1/10in,1/2in,1in
+#     --spacing=1mm,5mm,10mm
+
+our $strokeWidth = '1/600in';
+our $dashArray;
+our $color = '#000000';
+our $paperSize = 'halfletter';
+our $spacing = '5mm';
+our $major = '3, 4';
+our $dx;
+our $dy;
+
+use Getopt::Long;
+Getopt::Long::Configure(qw(getopt_compat bundling no_ignore_case));
+Getopt::Long::GetOptions(
+    'w|stroke-width=s' => \$strokeWidth,
+    'd|dash-array=s' => \$dashArray,
+    'c|color=s' => \$color,
+    'p|paper-size=s' => \$paperSize,
+    's|spacing=s' => \$spacing,
+    'm|major=s' => \$major,
+    'dx=s' => \$dx,
+    'dy=s' => \$dy,
+) or die();
+
+our @strokeWidth = defined $strokeWidth ? (map { parseDimen($_) } split(/[,\s]+/, $strokeWidth)) : (parseDimen('4/600in'));
+our @dashArray   = defined $dashArray   ? (map { parseDimen($_) } split(/[,\s]+/, $dashArray))   : ();
+our @major       = defined $major       ? (map { 0 + $_ }         split(/[,\s]+/, $major))       : ();
+$spacing = defined $spacing ? parseDimen($spacing) : parseDimen('6mm');
+$dx      = defined $dx ? parseDimen($dx) : 0;
+$dy      = defined $dy ? parseDimen($dy) : 0;
+
 use FindBin;
 use lib "${FindBin::Bin}/../lib";
 
 use My::RuledPaper;
 use My::RuledPaper::Constants qw(:all);
+use My::RuledPaper::Dimen qw(parseDimen);
 use My::RuledPaper::MonkeyPatch::Drawing;
 
+use POSIX qw(floor);
 use List::Util qw(all);
 use Scalar::Util qw(looks_like_number);
 
-my $GRID_COLOR = $ENV{GRID_COLOR} // COLOR_NON_REPRO_BLUE;
+my $GRID_COLOR = $color // COLOR_NON_REPRO_BLUE;
 
-my $FEINT_STROKE_WIDTH = 1/600 * IN;
-my $MINOR_STROKE_WIDTH = 2/600 * IN;
-my $MAJOR_STROKE_WIDTH = 4/600 * IN;
+my $STROKE_WIDTH_0 = $strokeWidth[0];
+my $STROKE_WIDTH_1 = $strokeWidth[1];
+my $STROKE_WIDTH_2 = $strokeWidth[2];
 
-my @BLACK_STROKE_DASH_ARRAY = (1, 5);
-my $BLACK_STROKE_DASH_ARRAY = join(' ', map { ($FEINT_STROKE_WIDTH * $_) . 'px' } @BLACK_STROKE_DASH_ARRAY);
-warn("@BLACK_STROKE_DASH_ARRAY\n");
-warn("$BLACK_STROKE_DASH_ARRAY\n");
+my @STROKE_DASH_ARRAY = @dashArray;
+my $STROKE_DASH_ARRAY = scalar @dashArray ? join(' ', @STROKE_DASH_ARRAY) : 'none';
 
 my $style = shift(@ARGV) // '10';
 
@@ -31,88 +64,85 @@ my $p = My::RuledPaper->new(HALF_LETTER);
 $p->{style} = <<"END";
 line, rect {
     fill: none;
-    stroke-width: ${FEINT_STROKE_WIDTH}px;
     stroke: ${GRID_COLOR};
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-.minor {
-    stroke-width: ${MINOR_STROKE_WIDTH}px;
-}
-.major {
-    stroke-width: ${MAJOR_STROKE_WIDTH}px;
-}
-.black {
     stroke-linecap: butt;
     stroke-linejoin: miter;
-    stroke: black;
-    stroke-dasharray: ${BLACK_STROKE_DASH_ARRAY};
+    stroke-dasharray: ${STROKE_DASH_ARRAY};
+}
+.strokeA {
+    stroke-width: ${STROKE_WIDTH_0}px;
+}
+.strokeB {
+    stroke-width: ${STROKE_WIDTH_1}px;
+}
+.strokeC {
+    stroke-width: ${STROKE_WIDTH_2}px;
 }
 END
 
 use POSIX qw(floor);
 
-my $shiftUp = (HALF_LETTER_HEIGHT_PX - A5_HEIGHT_PX) / 2;
+my $cx = $p->{width} / 2 + $dx;
+my $cy = $p->{height} / 2 + $dy;
 
-my $cx = $p->{width} / 2;
-my $cy = $p->{height} / 2 - $shiftUp;
+my $startX = -floor($p->{width}  / 2 / $spacing);
+my $endX   =  floor($p->{width}  / 2 / $spacing);
+my $startY = -floor($p->{height} / 2 / $spacing);
+my $endY   =  floor($p->{height} / 2 / $spacing);
 
-my ($spacing, $major, $startX, $endX, $startY, $endY, $minor);
-if ($style eq '12') {
-    ($spacing, $major) = (2 * MM, 12);
-    ($startX, $endX) = (-30, 30);
-    ($startY, $endY) = (-50, 50);
-} elsif ($style eq '412') {
-    ($spacing, $major) = (2 * MM, 12);
-    ($startX, $endX) = (-30, 30);
-    ($startY, $endY) = (-50, 50);
-    $minor = 3;
-} elsif ($style eq '10') {
-    ($spacing, $major) = (2.5 * MM, 10);
-    ($startX, $endX) = (-25, 25);
-    ($startY, $endY) = (-40, 40);
-} else {
-    die("invalid linegrid style: $style\n");
-}
+my $x1 = 0;
+my $x2 = $p->{width};
+my $y1 = 0;
+my $y2 = $p->{height};
+
+my $margin = 0.25 * IN;
+my $xLines = floor( ($p->{width}  / 2 - $margin) / $spacing );
+my $yLines = floor( ($p->{height} / 2 - $margin) / $spacing );
 
 my $centerX = 0;
 my $centerY = 0;
-if ($major && ($major % 2 == 0)) {
-    if ($endX % $major >= ($major / 2)) {
-        $centerX = $major / 2;
+my $bigMajor = defined $major[1] ? $major[0] * $major[1] : $major[0];
+if (defined $bigMajor && $bigMajor % 2 == 0) {
+    # may have to shift the major grid divisions over to maximize the
+    # number of them.
+    if ($xLines % $bigMajor >= $bigMajor / 2) {
+        $centerX = $bigMajor / 2;
+    }
+    if ($yLines % $bigMajor >= $bigMajor / 2) {
+        $centerY = $bigMajor / 2;
     }
 }
-if ($minor && ($minor % 2 == 0)) {
-    if ($endY % $major >= ($major / 2)) {
-        $centerY = $major / 2;
-    }
-}
+warn("bigMajor is $bigMajor\n");
+warn("xLines is $xLines\n");
+warn("yLines is $yLines\n");
+warn("centerX is $centerX\n");
+warn("centerY is $centerY\n");
 
-my $startXX = $cx + $startX * $spacing;
-my $endXX   = $cx + $endX   * $spacing;
-my $startYY = $cy + $startY * $spacing;
-my $endYY   = $cy + $endY   * $spacing;
+my $full = 1;
+
+my $startXX = $full ? 0            : $cx + $startX * $spacing;
+my $endXX   = $full ? $p->{width}  : $cx + $endX   * $spacing;
+my $startYY = $full ? 0            : $cy + $startY * $spacing;
+my $endYY   = $full ? $p->{height} : $cy + $endY   * $spacing;
 
 for (my $x = $startX; $x <= $endX; $x += 1) {
     my $xx = $cx + $x * $spacing;
-    my $class = 'feint';
-    if (($x + $centerX) % $major == 0) {
-        $class = 'major';
-    } elsif ($minor && (($x + $centerX) % $minor == 0)) {
-        $class = 'minor';
+    my $class = 'strokeA';
+    if (defined $major[1] && ($x + $centerX) % ($major[0] * $major[1]) == 0) {
+        $class = 'strokeC';
+    } elsif (defined $major[0] && ($x + $centerX) % $major[0] == 0) {
+        $class = 'strokeB';
     }
-    $class .= " $ENV{GRID_CLASS}" if defined $ENV{GRID_CLASS};
     $p->line($xx, $startYY, $xx, $endYY, class => $class);
 }
 for (my $y = $startY; $y <= $endY; $y += 1) {
     my $yy = $cy + $y * $spacing;
-    my $class = 'feint';
-    if (($y + $centerY) % $major == 0) {
-        $class = 'major';
-    } elsif ($minor && (($y + $centerY) % $minor == 0)) {
-        $class = 'minor';
+    my $class = 'strokeA';
+    if (defined $major[1] && ($y + $centerY) % ($major[0] * $major[1]) == 0) {
+        $class = 'strokeC';
+    } elsif (defined $major[0] && ($y + $centerY) % $major[0] == 0) {
+        $class = 'strokeB';
     }
-    $class .= " $ENV{GRID_CLASS}" if defined $ENV{GRID_CLASS};
     $p->line($startXX, $yy, $endXX, $yy, class => $class);
 }
 
