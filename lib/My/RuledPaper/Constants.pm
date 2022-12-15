@@ -14,7 +14,7 @@ our @EXPORT_COLORS      = qw(COLOR_BLUE
                              COLOR_YELLOW
                              COLOR_BLACK
                              COLOR_NON_REPRO_BLUE);
-our @EXPORT_UNITS       = qw(MM IN PT CM PC PX);
+our @EXPORT_UNITS       = qw(MM IN PT CM PC PX %UNITS $RE_UNIT $RE_NUM);
 our @EXPORT_SIZES       = qw(A4 A5 LETTER HALF_LETTER);
 our @EXPORT_SIZE_DIMENS = qw(A4_WIDTH_PX
                              A4_HEIGHT_PX
@@ -38,13 +38,30 @@ our %EXPORT_TAGS = (
     'size_dimens' => [@EXPORT_SIZE_DIMENS],
 );
 
-# 96 / however many of each unit is in an inch
-use constant MM => 96 / 25.4;
-use constant IN => 96;
-use constant PT => 96 / 72;
-use constant CM => 96 / 2.54;
-use constant PC => 96 / 6;
-use constant PX => 1;
+our %UNITS;
+our $RE_UNIT;
+our $RE_NUM;
+BEGIN {
+    %UNITS = (
+        'mm' => 96 / 25.4,
+        'in' => 96,
+        'pt' => 96 / 72,
+        'cm' => 96 / 2.54,
+        'pc' => 96 / 6,
+        'px' => 1,
+    );
+    $RE_UNIT = '(?:' . join('|', map { quotemeta($_) } sort keys %UNITS) . ')';
+    $RE_UNIT = qr($RE_UNIT)i;
+    $RE_NUM = qr{(?:[-+]?(?:[.]\d+|\d+(?:[.]\d*)?)(?:e[-+]?\d+)?)}xi;
+}
+
+# 96 divided by however many of each unit is in an inch
+use constant MM => $UNITS{mm};
+use constant IN => $UNITS{in};
+use constant PT => $UNITS{pt};
+use constant CM => $UNITS{cm};
+use constant PC => $UNITS{pc};
+use constant PX => $UNITS{px};
 
 use constant A4_WIDTH_PX           => 250 / sqrt(sqrt(2)) * MM;
 use constant A4_HEIGHT_PX          => 250 * sqrt(sqrt(2)) * MM;
