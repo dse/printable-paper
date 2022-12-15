@@ -17,6 +17,9 @@ PDF2UP2PAGE     = $(patsubst %.svg,%.2up2page.pdf,$(SVG))
 ALLPDF          = $(PDF) $(PDF2UP2PAGE)
 ALLPS           = $(patsubst %.pdf,%.ps,$(ALLPDF))
 
+export GRID_CLASS = black
+export GRID_COLOR = \#666666
+
 default: $(SVG) $(PDF) $(PDF2UP2PAGE) $(ALLPS)
 
 echo:
@@ -25,6 +28,9 @@ echo:
 	@echo PDF2UP2PAGE $(PDF2UP2PAGE)
 	@echo ALLPDF $(ALLPDF)
 	@echo ALLPS $(ALLPS)
+
+env:
+	env
 
 $(DOTGRID_SVG): $(DOTGRID) Makefile
 	$(DOTGRID) >"$@.tmp"
