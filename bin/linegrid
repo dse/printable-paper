@@ -90,7 +90,6 @@ for (my $x = $startX; $x <= $endX; $x += 1) {
     } elsif ($minor && (($x + $centerX) % $minor == 0)) {
         $class = 'minor';
     }
-    warn("x $x $class\n");
     $p->line($xx, $startYY, $xx, $endYY, class => $class);
 }
 for (my $y = $startY; $y <= $endY; $y += 1) {
@@ -101,7 +100,6 @@ for (my $y = $startY; $y <= $endY; $y += 1) {
     } elsif ($minor && (($y + $centerY) % $minor == 0)) {
         $class = 'minor';
     }
-    warn("y $y $class\n");
     $p->line($startXX, $yy, $endXX, $yy, class => $class);
 }
 

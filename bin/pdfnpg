@@ -1,0 +1,61 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+
+use File::Basename qw(basename);
+our $PROGNAME = basename($0);
+
+our $npages = 2;
+our $flipAlternatePages = 0;
+
+use Getopt::Long;
+Getopt::Long::Configure('bundling', 'gnu_compat', 'no_ignore_case');
+Getopt::Long::GetOptions(
+    'n|pages=i' => \$npages,
+    'f|flip-alternate-pages' => \$flipAlternatePages,
+) or die("Type '${PROGNAME} --help' for help.\n");
+
+sub usage { print <<END; }
+usage:
+    $PROGNAME [<option> ...] <filename> ...
+options:
+    -n, --pages=<int>
+    -f, --flip-alternate-pages
+END
+
+#------------------------------------------------------------------------------
+
+use PDF::API2;
+use Data::Dumper qw(Dumper);
+
+foreach my $filename (@ARGV) {
+    my $pdfSource = PDF::API2->open($filename);
+    my $pdfDest   = PDF::API2->new();
+
+    my $pageCount = $pdfSource->page_count();
+    for (my $i = 1; $i <= $pageCount; $i += 1) {
+        my $pageSource = $pdfSource->open_page($i);
+        my ($x1, $y1, $x2, $y2) = $pageSource->size();
+        my $width = $x2 - $x1;
+        my $height = $y2 - $y1;
+        my ($x3, $y3, $x4, $y4) = (0, 0, $width, $height);
+
+        for (my $j = 1; $j <= $npages; $j += 1) {
+            my $pageDest = $pdfDest->page();
+            $pageDest->size([$x3, $y3, $x4, $y4]);
+            my $xo = $pdfDest->embed_page($pdfSource, $i);
+            my $gfx = $pageDest->gfx();
+            if ($j % 2 == 0 && $flipAlternatePages) {
+                $gfx->formimage($xo, $width, $height, -1);
+            } else {
+                $gfx->formimage($xo, 0, 0, 1);
+            }
+        }
+    }
+
+    my $newFilename = $filename;
+    $newFilename =~ s{\.pdf$}{}i;
+    $newFilename .= "-npg.pdf";
+
+    $pdfDest->saveas($newFilename);
+}

@@ -1,0 +1,123 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+
+use File::Basename qw(basename);
+our $PROGNAME = basename($0);
+
+our $rotate = 0;
+our $nupx = 2;
+our $nupy = 1;
+our $flipAlternateRows    = 0;
+our $flipAlternateColumns = 0;
+
+use Getopt::Long;
+Getopt::Long::Configure('bundling', 'gnu_compat', 'no_ignore_case');
+Getopt::Long::GetOptions(
+    'r|rotate=i' => \$rotate,
+    'x|columns=i' => \$nupx,
+    'y|rows=i' => \$nupy,
+    'C|flip-alternate-columns' => \$flipAlternateColumns,
+    'R|flip-alternate-rows'    => \$flipAlternateRows,
+    'h|help' => sub { usage(); exit(0); },
+) or die("Type '${PROGNAME} --help' for help.\n");
+
+sub usage { print <<END; }
+usage:
+    $PROGNAME [<option> ...] <filename> ...
+options:
+    -r, --rotate=<int>      rotate <int> degrees (90 = ccw, 270 = cw)
+    -x, --rows=<int>        number of rows to repeat
+    -y, --columns=<int>     number of columns to repeat
+    -R, --flip-alternate-rows
+    -C, --flip-alternate-columns
+END
+
+#------------------------------------------------------------------------------
+
+use POSIX qw(round);
+use PDF::API2;
+use Data::Dumper qw(Dumper);
+use Math::Trig qw(pi);
+
+$nupx   = round($nupx);
+$nupy   = round($nupy);
+$rotate = round(($rotate / 90) % 4) * 90;
+our $sin = round(sin($rotate * pi / 180));
+our $cos = round(cos($rotate * pi / 180));
+if ($rotate == 90 || $rotate == 270) {
+    ($nupx, $nupy) = ($nupy, $nupx);
+}
+
+foreach my $filename (@ARGV) {
+    my $pdfSource = PDF::API2->open($filename);
+    my $pdfDest   = PDF::API2->new();
+
+    my $pageCount = $pdfSource->page_count();
+    for (my $i = 1; $i <= $pageCount; $i += 1) {
+        my $pageSource = $pdfSource->open_page($i);
+        my ($x1, $y1, $x2, $y2) = $pageSource->size();
+        my $width = $x2 - $x1;
+        my $height = $y2 - $y1;
+
+        my $pageDest = $pdfDest->page();
+        my ($ww, $hh) = ($width * $nupx, $height * $nupy);
+        my $www = abs($ww * $cos) + abs($hh * $sin);
+        my $hhh = abs($hh * $cos) + abs($ww * $sin);
+        $pageDest->size([0, 0, $www, $hhh]);
+
+        my $xo = $pdfDest->embed_page($pdfSource, $i);
+        my $gfx = $pageDest->gfx();
+        $gfx->rotate($rotate);
+
+        my @images;
+        for (my $x = 0; $x < $nupx; $x += 1) {
+            for (my $y = 0; $y < $nupy; $y += 1) {
+                my $xx = $x;
+                my $yy = $y;
+
+                my $flipColumn = 0;
+                my $flipRow = 0;
+                if ($flipAlternateColumns) {
+                    if ($rotate == 0 || $rotate == 180) {
+                        $flipColumn = $x % 2;
+                    } else {
+                        $flipColumn = $y % 2;
+                    }
+                }
+                if ($flipAlternateRows) {
+                    if ($rotate == 0 || $rotate == 180) {
+                        $flipRow = $y % 2;
+                    } else {
+                        $flipRow = $x % 2;
+                    }
+                }
+                my $flip = $flipRow != $flipColumn;
+
+                my $scale = 1;
+                if ($flip) {
+                    $xx += 1;
+                    $yy += 1;
+                    $scale = -1;
+                }
+                my $xxx = $xx * $width;
+                my $yyy = $yy * $height;
+                if ($rotate == 90) {
+                    $yyy -= $www;
+                } elsif ($rotate == 180) {
+                    $xxx -= $www;
+                    $yyy -= $hhh;
+                } elsif ($rotate == 270) {
+                    $xxx -= $hhh;
+                }
+                $gfx->formimage($xo, $xxx, $yyy, $scale);
+            }
+        }
+    }
+
+    my $newFilename = $filename;
+    $newFilename =~ s{\.pdf$}{}i;
+    $newFilename .= "-nup.pdf";
+
+    $pdfDest->saveas($newFilename);
+}
