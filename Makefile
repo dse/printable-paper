@@ -1,60 +1,45 @@
-DOTGRID_SVG	= paper/dotgrid.svg
-LINEGRID10_SVG	= paper/linegrid10.svg
-LINEGRID12_SVG	= paper/linegrid12.svg
-LINEGRID412_SVG = paper/linegrid412-letter.svg
-LINEGRID4_SVG   = paper/linegrid4-letter.svg
+DOTGRID_HALF_LETTER_SVG		= paper/dotgrid-half-letter.svg
+LINEGRID4_HALF_LETTER_SVG	= paper/linegrid4-half-letter.svg
+LINEGRID3_HALF_LETTER_SVG	= paper/linegrid3-half-letter.svg
+DOTGRID_LETTER_SVG		= paper/dotgrid-letter.svg
+LINEGRID4_LETTER_SVG		= paper/linegrid4-letter.svg
+LINEGRID3_LETTER_SVG		= paper/linegrid3-letter.svg
 
 DOTGRID		= bin/dotgrid
 LINEGRID	= bin/linegrid
 TWOUPTWOPAGE	= bin/2up2page
+TWOUP      	= bin/2up
 
-SVG_LETTER      = paper/linegrid412-letter.svg \
-                  paper/linegrid4-letter.svg
+SVG_LETTER      = $(DOTGRID_LETTER_SVG)      $(LINEGRID4_LETTER_SVG)      $(LINEGRID3_LETTER_SVG)
+SVG_HALF_LETTER = $(DOTGRID_HALF_LETTER_SVG) $(LINEGRID4_HALF_LETTER_SVG) $(LINEGRID3_HALF_LETTER_SVG)
+
 PDF_LETTER      = $(patsubst %.svg,%.pdf,$(SVG_LETTER))
+PDF_HALF_LETTER = $(patsubst %.svg,%.pdf,$(SVG_HALF_LETTER))
 
-SVG             = paper/dotgrid.svg \
-		  paper/linegrid10.svg \
-		  paper/linegrid12.svg \
-		  paper/linegrid412-letter.svg
-PDF             = $(patsubst %.svg,%.pdf,$(SVG))
-PDF2UP2PAGE     = $(patsubst %.svg,%.2up2page.pdf,$(SVG))
+SVG             = $(SVG_LETTER) $(SVG_HALF_LETTER)
+PDF             = $(PDF_LETTER) $(PDF_HALF_LETTER)
 
-ALLPDF          = $(PDF) $(PDF2UP2PAGE)
+PDF2UP          = $(patsubst %.pdf,%.2up.pdf,$(PDF_HALF_LETTER))
+PDF2UP2PAGE     = $(patsubst %.pdf,%.2up2page.pdf,$(PDF_HALF_LETTER))
+
+ALLPDF          = $(PDF) $(PDF2UP) $(PDF2UP2PAGE)
 ALLPS           = $(patsubst %.pdf,%.ps,$(ALLPDF))
 
 INKSCAPE_OPTIONS =
 PDF2PS_OPTIONS   = 
 
-default: $(SVG) $(PDF) $(PDF2UP2PAGE) $(ALLPS)
-pdf: $(SVG) $(PDF) $(PDF2UP2PAGE)
+default: letter halfletter 2up 2up2page
 letter: $(SVG_LETTER) $(PDF_LETTER)
+halfletter: $(SVG_HALF_LETTER) $(PDF_HALF_LETTER)
+2up: $(PDF2UP)
+2up2page: $(PDF2UP2PAGE)
 
-echo:
-	@echo SVG $(SVG)
-	@echo PDF $(PDF)
-	@echo PDF2UP2PAGE $(PDF2UP2PAGE)
-	@echo ALLPDF $(ALLPDF)
-	@echo ALLPS $(ALLPS)
-
-$(DOTGRID_SVG): $(DOTGRID) Makefile
-	$(DOTGRID) >"$@.tmp"
-	mv "$@.tmp" "$@"
-
-$(LINEGRID10_SVG): $(LINEGRID) Makefile
-	$(LINEGRID) --style=2.5mm,10 >"$@.tmp"
-	mv "$@.tmp" "$@"
-
-$(LINEGRID12_SVG): $(LINEGRID) Makefile
-	$(LINEGRID) --style=2mm,12 >"$@.tmp"
-	mv "$@.tmp" "$@"
-
-$(LINEGRID412_SVG): $(LINEGRID) Makefile
-	$(LINEGRID) --letter --style=2mm,4,12 >"$@.tmp"
-	mv "$@.tmp" "$@"
-
-$(LINEGRID4_SVG): $(LINEGRID) Makefile
-	$(LINEGRID) --letter --style=2mm,4 >"$@.tmp"
-	mv "$@.tmp" "$@"
+$(DOTGRID_HALF_LETTER_SVG):   $(LINEGRID) Makefile ; $(LINEGRID) --dot-grid --grid-style=5mm   --page-size=half-letter > "$@.tmp" && mv "$@.tmp" "$@"
+$(LINEGRID4_HALF_LETTER_SVG): $(LINEGRID) Makefile ; $(LINEGRID)            --grid-style=2mm,4 --page-size=half-letter > "$@.tmp" && mv "$@.tmp" "$@"
+$(LINEGRID3_HALF_LETTER_SVG): $(LINEGRID) Makefile ; $(LINEGRID)            --grid-style=2mm,3 --page-size=half-letter > "$@.tmp" && mv "$@.tmp" "$@"
+$(DOTGRID_LETTER_SVG):        $(LINEGRID) Makefile ; $(LINEGRID) --dot-grid --grid-style=5mm   --page-size=letter      > "$@.tmp" && mv "$@.tmp" "$@"
+$(LINEGRID4_LETTER_SVG):      $(LINEGRID) Makefile ; $(LINEGRID)            --grid-style=2mm,4 --page-size=letter      > "$@.tmp" && mv "$@.tmp" "$@"
+$(LINEGRID3_LETTER_SVG):      $(LINEGRID) Makefile ; $(LINEGRID)            --grid-style=2mm,3 --page-size=letter      > "$@.tmp" && mv "$@.tmp" "$@"
 
 %.pdf: %.svg Makefile
 	inkscape $(INKSCAPE_OPTIONS) --export-dpi=600 --export-filename="$@.tmp.pdf" "$<"
@@ -66,6 +51,8 @@ $(LINEGRID4_SVG): $(LINEGRID) Makefile
 
 %.2up2page.pdf: %.pdf Makefile $(TWOUPTWOPAGE)
 	$(TWOUPTWOPAGE) "$<"
+%.2up.pdf: %.pdf Makefile $(TWOUP)
+	$(TWOUP) "$<"
 
 clean:
 	rm $(ALLPS) $(ALLPDF) $(SVG) 2>/dev/null || true
