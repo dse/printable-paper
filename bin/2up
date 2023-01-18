@@ -1,0 +1,39 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use open qw(:locale);
+
+use PDF::Builder;
+use Carp::Always;
+use Data::Dumper;
+
+foreach my $filename (@ARGV) {
+
+    my $outFilename = $filename;
+    $outFilename =~ s{\.pdf$}{}i;
+    $outFilename .= ".2up.pdf";
+
+    my $source = PDF::Builder->open($filename);
+    my $sourcePage1 = $source->open_page(1);
+    my ($llx, $lly, $urx, $ury) = $sourcePage1->mediabox();
+    my $width = $urx - $llx;
+    my $height = $ury - $lly;
+    my $newHeight = $width * 2;
+    my $newWidth  = $height;
+
+    my $dest = PDF::Builder->new();
+    my $destPage1 = $dest->page();
+    $destPage1->mediabox(0, 0, $newWidth, $newHeight);
+
+    my $gfx = $destPage1->gfx();
+    my $xo = $dest->importPageIntoForm($source, 1);
+    $gfx->rotate(90);
+    $gfx->translate(0, -$height);
+    $gfx->formimage($xo, 0, 0, 1);
+    $gfx->save();
+    $gfx->translate($width, 0);
+    $gfx->formimage($xo, 0, 0, 1);
+    $gfx->save();
+
+    $dest->saveas($outFilename);
+}
