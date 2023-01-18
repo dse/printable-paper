@@ -1,4 +1,4 @@
-package My::RuledPaper::Parse::Dimension;
+package My::RuledPaper::Parse::PaperSize;
 use warnings;
 use strict;
 
