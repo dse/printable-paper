@@ -2,6 +2,9 @@
 use warnings;
 use strict;
 use open qw(:locale);
+use File::Basename qw(basename);
+our $PROGNAME = basename($0);
+$PROGNAME =~ s{\.pl$}{};
 
 use FindBin;
 use lib "${FindBin::Bin}/../lib";
@@ -9,9 +12,31 @@ use lib "${FindBin::Bin}/../lib";
 use My::RuledPaper;
 use My::RuledPaper::Constants qw(:all);
 use My::RuledPaper::MonkeyPatch::Drawing;
+use My::RuledPaper::Parse::Dimension qw(parseDimension);
+use My::RuledPaper::Parse::GridStyle qw(parseGridStyle);
+use My::RuledPaper::Parse::PaperSize qw(parsePaperSize);
 
+use POSIX qw(floor);
 use List::Util qw(all);
 use Scalar::Util qw(looks_like_number);
+use Data::Dumper qw(Dumper);
+
+our @paperSize;
+our $gridStyle;
+our $gridType = $PROGNAME;
+
+use Getopt::Long;
+Getopt::Long::Configure(qw(gnu_compat bundling no_ignore_case));
+Getopt::Long::GetOptions(
+    'page-size|paper-size|size=s'  => sub { @paperSize = parsePaperSize($_[1]); },
+    'grid-style|style=s' => sub { $gridStyle = $_[1]; },
+    'letter'      => sub { @paperSize = LETTER; },
+    'half-letter' => sub { @paperSize = HALF_LETTER; },
+    'a5'          => sub { @paperSize = A5; },
+    'a4'          => sub { @paperSize = A4; },
+    'dot|dot-grid' => sub { $gridType = 'dotgrid'; },
+    'line|line-grid' => sub { $gridType = 'linegrid'; },
+) or die();
 
 my $NON_REPRO_BLUE = COLOR_NON_REPRO_BLUE;
 
@@ -19,9 +44,26 @@ my $FEINT_STROKE_WIDTH = 1/600 * IN;
 my $MINOR_STROKE_WIDTH = 2/600 * IN;
 my $MAJOR_STROKE_WIDTH = 4/600 * IN;
 
-my $style = shift(@ARGV) // '10';
+my $FEINT_DOT_WIDTH = 6/600 * IN;
+my $MINOR_DOT_WIDTH = 8/600 * IN;
+my $MAJOR_DOT_WIDTH = 10/600 * IN;
 
-my $p = My::RuledPaper->new(HALF_LETTER);
+my $FONT_SIZE = 6 * PT;
+my $TEXT_DOWN = 0.3 * $FONT_SIZE; # inkscape svg->pdf does not support css transform
+
+if (!defined $gridStyle) {
+    $gridStyle = '2.5mm,10';
+}
+
+$gridStyle = '2mm,12'   if $gridStyle eq '12';
+$gridStyle = '2mm,4,12' if $gridStyle eq '412';
+$gridStyle = '2mm,3,12' if $gridStyle eq '312';
+$gridStyle = '2.5mm,10' if $gridStyle eq '10';
+
+my ($spacing, $minor, $major) = parseGridStyle($gridStyle);
+my $p = My::RuledPaper->new();
+$p->{width} = $paperSize[0];
+$p->{height} = $paperSize[1];
 
 $p->{style} = <<"END";
 line, rect {
@@ -31,80 +73,84 @@ line, rect {
     stroke-linecap: round;
     stroke-linejoin: round;
 }
-.minor {
+line.minor, rect.minor {
     stroke-width: ${MINOR_STROKE_WIDTH}px;
 }
-.major {
+line.major, rect.major {
     stroke-width: ${MAJOR_STROKE_WIDTH}px;
+}
+text {
+    text-anchor: middle;
+    font-family: 'Times New Roman', 'Times Roman', serif;
+    font-size: ${FONT_SIZE}px;
+    fill: ${NON_REPRO_BLUE};
+}
+circle {
+    fill: ${NON_REPRO_BLUE};
 }
 END
 
 use POSIX qw(floor);
 
-my $shiftUp = (HALF_LETTER_HEIGHT_PX - A5_HEIGHT_PX) / 2;
-
 my $cx = $p->{width} / 2;
-my $cy = $p->{height} / 2 - $shiftUp;
+my $cy = $p->{height} / 2;
+my $xTicks = floor($cx / $spacing);
+my $yTicks = floor($cy / $spacing);
+my ($startXTicks, $endXTicks) = (-$xTicks, $xTicks);
+my ($startYTicks, $endYTicks) = (-$yTicks, $yTicks);
+my $centerXTicks = 0;
+my $centerYTicks = 0;
 
-my ($spacing, $major, $startX, $endX, $startY, $endY, $minor);
-if ($style eq '12') {
-    ($spacing, $major) = (2 * MM, 12);
-    ($startX, $endX) = (-30, 30);
-    ($startY, $endY) = (-50, 50);
-} elsif ($style eq '412') {
-    ($spacing, $major) = (2 * MM, 12);
-    ($startX, $endX) = (-30, 30);
-    ($startY, $endY) = (-50, 50);
-    $minor = 3;
-} elsif ($style eq '10') {
-    ($spacing, $major) = (2.5 * MM, 10);
-    ($startX, $endX) = (-25, 25);
-    ($startY, $endY) = (-40, 40);
-} else {
-    die("invalid linegrid style: $style\n");
-}
-
-my $centerX = 0;
-my $centerY = 0;
-if ($major && ($major % 2 == 0)) {
-    if ($endX % $major >= ($major / 2)) {
-        $centerX = $major / 2;
+# more major divisions if possible
+if (defined $major && $major && ($major % 2 == 0)) {
+    if ($endXTicks % $major >= ($major / 2)) {
+        $centerXTicks = $major / 2;
     }
-}
-if ($minor && ($minor % 2 == 0)) {
-    if ($endY % $major >= ($major / 2)) {
-        $centerY = $major / 2;
+    if ($endYTicks % $major >= ($major / 2)) {
+        $centerYTicks = $major / 2;
     }
 }
 
-my $startXX = $cx + $startX * $spacing;
-my $endXX   = $cx + $endX   * $spacing;
-my $startYY = $cy + $startY * $spacing;
-my $endYY   = $cy + $endY   * $spacing;
+my $startXX = $cx + $startXTicks * $spacing;
+my $endXX   = $cx + $endXTicks   * $spacing;
+my $startYY = $cy + $startYTicks * $spacing;
+my $endYY   = $cy + $endYTicks   * $spacing;
 
-for (my $x = $startX; $x <= $endX; $x += 1) {
-    my $xx = $cx + $x * $spacing;
-    my $class = 'feint';
-    if (($x + $centerX) % $major == 0) {
-        $class = 'major';
-    } elsif ($minor && (($x + $centerX) % $minor == 0)) {
-        $class = 'minor';
+if ($gridType eq 'linegrid') {
+    for (my $x = $startXTicks; $x <= $endXTicks; $x += 1) {
+        my $xIsMajor = defined $major && ($x + $centerXTicks) % $major == 0;
+        my $xIsMinor = defined $minor && ($x + $centerXTicks) % $minor == 0;
+        my $xx = $cx + $x * $spacing;
+        my $class = $xIsMajor ? 'major' : $xIsMinor ? 'minor' : 'feint';
+        $p->line($xx, $startYY, $xx, $endYY, class => $class);
     }
-    $p->line($xx, $startYY, $xx, $endYY, class => $class);
-}
-for (my $y = $startY; $y <= $endY; $y += 1) {
-    my $yy = $cy + $y * $spacing;
-    my $class = 'feint';
-    if (($y + $centerY) % $major == 0) {
-        $class = 'major';
-    } elsif ($minor && (($y + $centerY) % $minor == 0)) {
-        $class = 'minor';
+    for (my $y = $startYTicks; $y <= $endYTicks; $y += 1) {
+        my $yIsMajor = defined $major && ($y + $centerYTicks) % $major == 0;
+        my $yIsMinor = defined $minor && ($y + $centerYTicks) % $minor == 0;
+        my $yy = $cy + $y * $spacing;
+        my $class = $yIsMajor ? 'major' : $yIsMinor ? 'minor' : 'feint';
+        $p->line($startXX, $yy, $endXX, $yy, class => $class);
     }
-    $p->line($startXX, $yy, $endXX, $yy, class => $class);
+} elsif ($gridType eq 'dotgrid') {
+    for (my $x = $startXTicks; $x <= $endXTicks; $x += 1) {
+        my $xx = $cx + $x * $spacing;
+        for (my $y = $startYTicks; $y <= $endYTicks; $y += 1) {
+            my $yy = $cy + $y * $spacing;
+            my $xIsMajor = defined $major && ($x + $centerXTicks) % $major == 0;
+            my $yIsMajor = defined $major && ($y + $centerYTicks) % $major == 0;
+            my $xIsMinor = defined $minor && ($x + $centerXTicks) % $minor == 0;
+            my $yIsMinor = defined $minor && ($y + $centerYTicks) % $minor == 0;
+            my $class = 'feint';
+            if (defined $major && $xIsMajor && $yIsMajor) {
+                $class = 'major';
+            } elsif (defined $minor && $xIsMinor && $yIsMinor) {
+                $class = 'minor';
+            }
+            my $r = $class eq 'major' ? $MAJOR_DOT_WIDTH : $class eq 'minor' ? $MINOR_DOT_WIDTH : $FEINT_DOT_WIDTH;
+            $p->add('circle', cx => $xx, cy => $yy, r => $r);
+        }
+    }
 }
+
 
 print($p->svg());
-
-# Local Variables:
-# after-save-hook: ((lambda () (shell-command "cd .. && make")))
-# End:
