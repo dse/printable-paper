@@ -29,22 +29,26 @@ our $strokeWidths = ["1/600in", "2/600in", "4/600in"];
 use Getopt::Long;
 Getopt::Long::Configure(qw(gnu_compat bundling no_ignore_case));
 Getopt::Long::GetOptions(
-    'page-size|paper-size|size=s'  => sub { @paperSize = parsePaperSize($_[1]); },
-    'grid-style|style=s' => sub { $gridStyle = $_[1]; },
-    'letter'      => sub { @paperSize = LETTER; },
-    'half-letter' => sub { @paperSize = HALF_LETTER; },
-    'a5'          => sub { @paperSize = A5; },
-    'a4'          => sub { @paperSize = A4; },
-    'dot|dot-grid' => sub { $gridType = 'dotgrid'; },
-    'line|line-grid' => sub { $gridType = 'linegrid'; },
-    'stroke-widths=s'  => \$strokeWidths,
+    'page-size|paper-size|size=s' => sub { @paperSize = parsePaperSize($_[1]); },
+    'grid-style|style=s'          => sub { $gridStyle = $_[1]; },
+    'letter'                      => sub { @paperSize = LETTER; },
+    'half-letter'                 => sub { @paperSize = HALF_LETTER; },
+    'a5'                          => sub { @paperSize = A5; },
+    'a4'                          => sub { @paperSize = A4; },
+    'dot|dot-grid'                => sub { $gridType = 'dotgrid'; },
+    'line|line-grid'              => sub { $gridType = 'linegrid'; },
+    'stroke-widths=s'             => \$strokeWidths,
 ) or die();
+
+if (!scalar @paperSize) {
+    @paperSize = parsePaperSize('letter');
+}
 
 if (ref $strokeWidths eq '') {
     $strokeWidths = [split(/[\s,]+/, $strokeWidths)];
     $strokeWidths = [grep { /\S/ } @$strokeWidths];
-    $strokeWidths = [map { parseDimension($_) } @$strokeWidths];
 }
+$strokeWidths = [map { parseDimension($_) } @$strokeWidths];
 
 my $NON_REPRO_BLUE = COLOR_NON_REPRO_BLUE;
 
@@ -69,6 +73,40 @@ $gridStyle = '2mm,3,12' if $gridStyle eq '312';
 $gridStyle = '2.5mm,10' if $gridStyle eq '10';
 
 my ($spacing, $minor, $major) = parseGridStyle($gridStyle);
+
+if (scalar @$strokeWidths < 3 && defined $major) {
+    die("not enough stroke widths\n");
+}
+if (scalar @$strokeWidths < 2 && defined $minor) {
+    die("not enough stroke widths\n");
+}
+
+for (my $i = 0; $i < $#$strokeWidths; $i += 1) {
+    my $j = $i + 1;
+    if (lessThanOrNearEqual($strokeWidths->[$j], $strokeWidths->[$i])) {
+        die("invalid set of stroke widths\n");
+    }
+}
+if (defined $minor && $minor <= 1) {
+    die("minor grid number must be greater than one");
+}
+if (defined $major && $major <= 1) {
+    die("major grid number must be greater than one");
+}
+if (defined $major && defined $minor && ($major <= $minor || $major % $minor != 0)) {
+    die("major grid number must be a multiple of, and greater than,  minor grid number\n");
+}
+
+# account for floating point rounding errors
+sub greaterThanOrNearEqual {
+    my ($a, $b) = @_;
+    return abs($a - $b) < 0.000001 || $a > $b;
+}
+sub lessThanOrNearEqual {
+    my ($a, $b) = @_;
+    return $a < $b || abs($a - $b) < 0.000001;
+}
+
 my $p = My::RuledPaper->new();
 $p->{width} = $paperSize[0];
 $p->{height} = $paperSize[1];
