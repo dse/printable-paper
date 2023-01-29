@@ -24,6 +24,7 @@ use Data::Dumper qw(Dumper);
 our @paperSize;
 our $gridStyle;
 our $gridType = $PROGNAME;
+our $strokeWidths = ["1/600in", "2/600in", "4/600in"];
 
 use Getopt::Long;
 Getopt::Long::Configure(qw(gnu_compat bundling no_ignore_case));
@@ -36,13 +37,20 @@ Getopt::Long::GetOptions(
     'a4'          => sub { @paperSize = A4; },
     'dot|dot-grid' => sub { $gridType = 'dotgrid'; },
     'line|line-grid' => sub { $gridType = 'linegrid'; },
+    'stroke-widths=s'  => \$strokeWidths,
 ) or die();
+
+if (ref $strokeWidths eq '') {
+    $strokeWidths = [split(/[\s,]+/, $strokeWidths)];
+    $strokeWidths = [grep { /\S/ } @$strokeWidths];
+    $strokeWidths = [map { parseDimension($_) } @$strokeWidths];
+}
 
 my $NON_REPRO_BLUE = COLOR_NON_REPRO_BLUE;
 
-my $FEINT_STROKE_WIDTH = 1/600 * IN;
-my $MINOR_STROKE_WIDTH = 2/600 * IN;
-my $MAJOR_STROKE_WIDTH = 4/600 * IN;
+my $FEINT_STROKE_WIDTH = $strokeWidths->[0];
+my $MINOR_STROKE_WIDTH = $strokeWidths->[1];
+my $MAJOR_STROKE_WIDTH = $strokeWidths->[2];
 
 my $FEINT_DOT_WIDTH = 6/600 * IN;
 my $MINOR_DOT_WIDTH = 8/600 * IN;
