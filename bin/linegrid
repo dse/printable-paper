@@ -147,12 +147,17 @@ my ($startYTicks, $endYTicks) = (-$yTicks, $yTicks);
 my $centerXTicks = 0;
 my $centerYTicks = 0;
 
+my $marginX = 5/16 * IN;
+my $marginY = 4/16 * IN;
+my $marginTicksX = floor(($cx - $marginX) / $spacing);
+my $marginTicksY = floor(($cy - $marginY) / $spacing);
+
 # more major divisions if possible
 if (defined $major && $major && ($major % 2 == 0)) {
-    if ($endXTicks % $major >= ($major / 2)) {
+    if ($marginTicksX % $major >= ($major / 2)) {
         $centerXTicks = $major / 2;
     }
-    if ($endYTicks % $major >= ($major / 2)) {
+    if ($marginTicksY % $major >= ($major / 2)) {
         $centerYTicks = $major / 2;
     }
 }
