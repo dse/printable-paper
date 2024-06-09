@@ -3,12 +3,14 @@ use warnings;
 use strict;
 
 # example:
-#     2mm,3,12
+#     "2mm,3,12"
+# means:
 #     feint lines every 2mm
 #     minor lines every 3 feint lines
 #     major lines every 12 feint lines
 # example 2:
-#     2mm,4
+#     "2mm,4"
+# means:
 #     feint lines every 2mm
 #     **major** lines every 4 feint lines
 
