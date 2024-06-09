@@ -1,0 +1,71 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use FindBin;
+use lib "${FindBin::Bin}/../lib";
+
+use My::RuledPaper;
+use My::RuledPaper::MonkeyPatch::Drawing;
+use My::RuledPaper::Constants qw(:all);
+use POSIX qw(floor);
+
+draw_paper();
+
+sub draw_paper {
+    my $non_repro_blue = COLOR_NON_REPRO_BLUE;
+    my %paper_size = LETTER;
+    my $minor_stroke_width = 2/600 * IN;
+    my $major_stroke_width = 10/600 * IN;
+
+    my $p = My::RuledPaper->new();
+    $p->{width} = $paper_size{width};
+    $p->{height} = $paper_size{height};
+    $p->{style} = <<"END";
+        line, rect {
+            fill: none;
+            stroke-width: ${minor_stroke_width}px;
+            stroke: ${non_repro_blue};
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .major {
+            stroke-width: ${major_stroke_width}px;
+        }
+        circle {
+            fill: ${non_repro_blue};
+        }
+END
+
+    our $x_groups = floor($p->{width} / (1 * IN));
+    our $y_groups = floor($p->{height} / (1 * IN));
+    our $x0 = $p->{width} / 2 - ($x_groups * 1 * IN) / 2;
+    our $y0 = $p->{height} / 2 - ($y_groups * 1 * IN) / 2;
+
+    # minor lines
+    for (my $x_minor = -5; $x_minor <= ($x_groups + 1) * 5; $x_minor += 1) {
+        next if $x_minor % 5 == 0;
+        my $x = $x0 + $x_minor * (1 * IN) / 5;
+        next if $x < 0 || $x > $p->{width};
+        $p->line($x, 0, $x, $p->{height}, class => 'minor');
+    }
+    for (my $y_minor = -5; $y_minor <= ($y_groups + 1) * 5; $y_minor += 1) {
+        next if $y_minor % 5 == 0;
+        my $y = $y0 + $y_minor * (1 * IN) / 5;
+        next if $y < 0 || $y > $p->{height};
+        $p->line(0, $y, $p->{width}, $y, class => 'minor');
+    }
+
+    # major lines
+    for (my $x_major = -1; $x_major < ($x_groups + 1); $x_major += 1) {
+        my $x = $x0 + $x_major * (1 * IN);
+        next if $x < 0 || $x > $p->{width};
+        $p->line($x, 0, $x, $p->{height}, class => 'major');
+    }
+    for (my $y_major = -1; $y_major < ($y_groups + 1); $y_major += 1) {
+        my $y = $y0 + $y_major * (1 * IN);
+        next if $y < 0 || $y > $p->{height};
+        $p->line(0, $y, $p->{width}, $y, class => 'major');
+    }
+
+    print($p->svg());
+}
