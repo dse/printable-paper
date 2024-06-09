@@ -77,13 +77,9 @@ END
 
     my @x_minor_only;
     my @y_minor_only;
-    my @x_minor;
-    my @y_minor;
     if (defined $minor_per_major) {
         @x_minor_only = map { $x0 + $_ * ($major_spacing / $minor_per_major) } grep { $_ % $minor_per_major != 0 } @x2;
         @y_minor_only = map { $y0 + $_ * ($major_spacing / $minor_per_major) } grep { $_ % $minor_per_major != 0 } @y2;
-        @x_minor      = map { $x0 + $_ * ($major_spacing / $minor_per_major) } @x2;
-        @y_minor      = map { $y0 + $_ * ($major_spacing / $minor_per_major) } @y2;
     }
     my @x_major = map { $x0 + $_ * $major_spacing } @x1;
     my @y_major = map { $y0 + $_ * $major_spacing } @y1;
@@ -91,11 +87,9 @@ END
     if (defined $minor_per_major) {
         @x_minor_only = grep { $_ >= 0 && $_ <= $p->{width}  } @x_minor_only;
         @y_minor_only = grep { $_ >= 0 && $_ <= $p->{height} } @y_minor_only;
-        @x_minor      = grep { $_ >= 0 && $_ <= $p->{width}  } @x_minor;
-        @y_minor      = grep { $_ >= 0 && $_ <= $p->{height} } @y_minor;
     }
-    @x_major      = grep { $_ >= 0 && $_ <= $p->{width}  } @x_major;
-    @y_major      = grep { $_ >= 0 && $_ <= $p->{height} } @y_major;
+    @x_major = grep { $_ >= 0 && $_ <= $p->{width}  } @x_major;
+    @y_major = grep { $_ >= 0 && $_ <= $p->{height} } @y_major;
 
     # minor dot or line grid
     if (defined $minor_per_major) {
