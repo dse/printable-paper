@@ -11,10 +11,10 @@ use My::RuledPaper::MonkeyPatch::Drawing;
 use My::RuledPaper::Constants qw(:all);
 use POSIX qw(floor);
 
-draw_paper(feints => 5,
+draw_paper(minor_per_major => 5,
            major_spacing => 1 * IN,
            margin => 0.16 * IN,
-           is_dot_grid => 1,
+           minor_is_dots => 1,
            paper_size => {LETTER});
 
 sub draw_paper {
@@ -22,12 +22,12 @@ sub draw_paper {
 
     my $non_repro_blue = COLOR_NON_REPRO_BLUE;
     my %paper_size = %{$args{paper_size}};
-    my $is_dot_grid = $args{is_dot_grid};
+    my $minor_is_dots = $args{minor_is_dots};
 
     my $major_pen_width;
     my $minor_pen_width;
 
-    if ($is_dot_grid) {
+    if ($minor_is_dots) {
         $major_pen_width = 4/600 * IN;
         $minor_pen_width = 10/600 * IN;
     } else {
@@ -36,7 +36,7 @@ sub draw_paper {
     }
 
     my $major_spacing = $args{major_spacing};
-    my $feints = $args{feints};
+    my $minor_per_major = $args{minor_per_major};
     my $margin = $args{margin};
 
     my $p = My::RuledPaper->new();
@@ -68,37 +68,50 @@ END
 
     my @x1 = -1 .. ($x_groups + 1);
     my @y1 = -1 .. ($y_groups + 1);
-    my @x2 = 1 - $feints .. (($x_groups + 1) * $feints - 1);
-    my @y2 = 1 - $feints .. (($y_groups + 1) * $feints - 1);
+    my @x2;
+    my @y2;
+    if (defined $minor_per_major) {
+        @x2 = 1 - $minor_per_major .. (($x_groups + 1) * $minor_per_major - 1);
+        @y2 = 1 - $minor_per_major .. (($y_groups + 1) * $minor_per_major - 1);
+    }
 
-    my @x_minor_only = map { $x0 + $_ * ($major_spacing / $feints) } grep { $_ % $feints != 0 } @x2;
-    my @y_minor_only = map { $y0 + $_ * ($major_spacing / $feints) } grep { $_ % $feints != 0 } @y2;
-    my @x_minor      = map { $x0 + $_ * ($major_spacing / $feints) } @x2;
-    my @y_minor      = map { $y0 + $_ * ($major_spacing / $feints) } @y2;
-    my @x_major      = map { $x0 + $_ * $major_spacing } @x1;
-    my @y_major      = map { $y0 + $_ * $major_spacing } @y1;
+    my @x_minor_only;
+    my @y_minor_only;
+    my @x_minor;
+    my @y_minor;
+    if (defined $minor_per_major) {
+        @x_minor_only = map { $x0 + $_ * ($major_spacing / $minor_per_major) } grep { $_ % $minor_per_major != 0 } @x2;
+        @y_minor_only = map { $y0 + $_ * ($major_spacing / $minor_per_major) } grep { $_ % $minor_per_major != 0 } @y2;
+        @x_minor      = map { $x0 + $_ * ($major_spacing / $minor_per_major) } @x2;
+        @y_minor      = map { $y0 + $_ * ($major_spacing / $minor_per_major) } @y2;
+    }
+    my @x_major = map { $x0 + $_ * $major_spacing } @x1;
+    my @y_major = map { $y0 + $_ * $major_spacing } @y1;
 
-    @x_minor_only = grep { $_ >= 0 && $_ <= $p->{width}  } @x_minor_only;
-    @y_minor_only = grep { $_ >= 0 && $_ <= $p->{height} } @y_minor_only;
-    @x_minor      = grep { $_ >= 0 && $_ <= $p->{width}  } @x_minor;
-    @y_minor      = grep { $_ >= 0 && $_ <= $p->{height} } @y_minor;
+    if (defined $minor_per_major) {
+        @x_minor_only = grep { $_ >= 0 && $_ <= $p->{width}  } @x_minor_only;
+        @y_minor_only = grep { $_ >= 0 && $_ <= $p->{height} } @y_minor_only;
+        @x_minor      = grep { $_ >= 0 && $_ <= $p->{width}  } @x_minor;
+        @y_minor      = grep { $_ >= 0 && $_ <= $p->{height} } @y_minor;
+    }
     @x_major      = grep { $_ >= 0 && $_ <= $p->{width}  } @x_major;
     @y_major      = grep { $_ >= 0 && $_ <= $p->{height} } @y_major;
 
-    if ($is_dot_grid) {
-        # minor dot grid
-        foreach my $x (@x_minor_only) {
-            foreach my $y (@y_minor_only) {
-                $p->circle($x, $y, $minor_pen_width / 2, class => 'fill');
+    # minor dot or line grid
+    if (defined $minor_per_major) {
+        if ($minor_is_dots) {
+            foreach my $x (@x_minor_only) {
+                foreach my $y (@y_minor_only) {
+                    $p->circle($x, $y, $minor_pen_width / 2, class => 'fill');
+                }
             }
-        }
-    } else {
-        # minor line grid
-        foreach my $x (@x_minor_only) {
-            $p->line($x, 0, $x, $p->{height}, class => 'minor');
-        }
-        foreach my $y (@y_minor_only) {
-            $p->line(0, $y, $p->{width}, $y, class => 'minor');
+        } else {
+            foreach my $x (@x_minor_only) {
+                $p->line($x, 0, $x, $p->{height}, class => 'minor');
+            }
+            foreach my $y (@y_minor_only) {
+                $p->line(0, $y, $p->{width}, $y, class => 'minor');
+            }
         }
     }
 
