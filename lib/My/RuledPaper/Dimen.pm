@@ -15,6 +15,7 @@ use My::RuledPaper::Constants qw($RE_UNIT $RE_NUM %UNITS);
 
 sub parseDimen {
     my ($str) = @_;
+    return if !defined $str;
     if ($str =~ m{^
                   (?<num>$RE_NUM)
                   (?:
