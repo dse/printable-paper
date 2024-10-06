@@ -86,6 +86,7 @@ use constant COLOR_MAGENTA        => '#ff8cff';
 use constant COLOR_CYAN           => '#1cffff';
 use constant COLOR_YELLOW         => '#ffff00'; # higher luminance
 use constant COLOR_BLACK          => '#000000';
-use constant COLOR_NON_REPRO_BLUE => '#95c9d7';
+# use constant COLOR_NON_REPRO_BLUE => '#95c9d7';
+use constant COLOR_NON_REPRO_BLUE => '#a4dded';
 
 1;
