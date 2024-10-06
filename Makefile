@@ -31,10 +31,13 @@ echo:
 env:
 	env
 
-LINEGRID10  = $(LINEGRID) --spacing=1/10in,1/2in,1in   --color='\#000000' --stroke-width=2/600in,4/600in,8/600in --dash-array=2/600in,6/600in --dy=0.125in
-LINEGRID12  = $(LINEGRID) --spacing=1/12in,1/2in,1in   --color='\#000000' --stroke-width=2/600in,4/600in,8/600in --dash-array=2/600in,6/600in --dy=0.125in
-LINEGRID412 = $(LINEGRID) --spacing=1/12in,1/4in,1in   --color='\#000000' --stroke-width=2/600in,4/600in,8/600in --dash-array=2/600in,6/600in --dy=0.125in
-LINEGRID416 = $(LINEGRID) --spacing=1/12in,1/3in,4/3in --color='\#000000' --stroke-width=2/600in,4/600in,8/600in --dash-array=2/600in,6/600in --dy=0.125in
+# LINEGRID_COLOR = --color='\#000000' --dash-array=2/600in,6/600in
+LINEGRID_COLOR =
+
+LINEGRID10  = $(LINEGRID) $(LINEGRID_COLOR) --spacing=1/10in,1/2in,1in   --stroke-width=2/600in,4/600in,8/600in --dy=0.125in
+LINEGRID12  = $(LINEGRID) $(LINEGRID_COLOR) --spacing=1/12in,1/2in,1in   --stroke-width=2/600in,4/600in,8/600in --dy=0.125in
+LINEGRID412 = $(LINEGRID) $(LINEGRID_COLOR) --spacing=1/12in,1/4in,1in   --stroke-width=2/600in,4/600in,8/600in --dy=0.125in
+LINEGRID416 = $(LINEGRID) $(LINEGRID_COLOR) --spacing=1/12in,1/3in,4/3in --stroke-width=2/600in,4/600in,8/600in --dy=0.125in
 
 $(DOTGRID_SVG): $(DOTGRID) Makefile
 	$(DOTGRID) >"$@.tmp"
