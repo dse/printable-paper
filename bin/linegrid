@@ -5,7 +5,7 @@ use open qw(locale);
 
 our $optStrokeWidth = '1/600in';
 our $optDashArray;
-our $optColor = '#000000';
+our $optColor;
 our $optPaperSize = 'halfletter';
 our $optSpacing = '5mm';
 our $optDx;
