@@ -1,7 +1,11 @@
 #!/usr/bin/env perl
 use warnings;
 use strict;
-use open qw(locale);
+use open IO => ':locale';
+
+use File::Basename qw(basename);
+our $PROGNAME = basename($0);
+$PROGNAME =~ s{\.pl$}{};
 
 our $optStrokeWidth = '1/600in';
 our $optDashArray;
@@ -38,10 +42,43 @@ use My::RuledPaper;
 use My::RuledPaper::Constants qw(:all);
 use My::RuledPaper::Dimen qw(parseDimen);
 use My::RuledPaper::MonkeyPatch::Drawing;
+use My::RuledPaper::Parse::Dimension qw(parseDimension);
+use My::RuledPaper::Parse::GridStyle qw(parseGridStyle);
+use My::RuledPaper::Parse::PaperSize qw(parsePaperSize);
 
 use POSIX qw(floor round);
 use List::Util qw(all);
 use Scalar::Util qw(looks_like_number);
+use Data::Dumper qw(Dumper);
+
+our @paperSize;
+our $gridStyle;
+our $gridType = $PROGNAME;
+our $strokeWidths = ["1/600in", "2/600in", "4/600in"];
+
+use Getopt::Long;
+Getopt::Long::Configure(qw(gnu_compat bundling no_ignore_case));
+Getopt::Long::GetOptions(
+    'page-size|paper-size|size=s' => sub { @paperSize = parsePaperSize($_[1]); },
+    'grid-style|style=s'          => sub { $gridStyle = $_[1]; },
+    'letter'                      => sub { @paperSize = LETTER; },
+    'half-letter'                 => sub { @paperSize = HALF_LETTER; },
+    'a5'                          => sub { @paperSize = A5; },
+    'a4'                          => sub { @paperSize = A4; },
+    'dot|dot-grid'                => sub { $gridType = 'dotgrid'; },
+    'line|line-grid'              => sub { $gridType = 'linegrid'; },
+    'stroke-widths=s'             => \$strokeWidths,
+) or die();
+
+if (!scalar @paperSize) {
+    @paperSize = parsePaperSize('letter');
+}
+
+if (ref $strokeWidths eq '') {
+    $strokeWidths = [split(/[\s,]+/, $strokeWidths)];
+    $strokeWidths = [grep { /\S/ } @$strokeWidths];
+}
+$strokeWidths = [map { parseDimension($_) } @$strokeWidths];
 
 my $GRID_COLOR = $optColor // COLOR_NON_REPRO_BLUE;
 
@@ -52,9 +89,60 @@ my $STROKE_WIDTH_2 = $strokeWidth[2];
 my @STROKE_DASH_ARRAY = @dashArray;
 my $STROKE_DASH_ARRAY = scalar @dashArray ? join(' ', @STROKE_DASH_ARRAY) : 'none';
 
-my $style = shift(@ARGV) // '10';
+my $FEINT_DOT_WIDTH = 6/600 * IN;
+my $MINOR_DOT_WIDTH = 8/600 * IN;
+my $MAJOR_DOT_WIDTH = 10/600 * IN;
 
-my $p = My::RuledPaper->new(HALF_LETTER);
+my $FONT_SIZE = 6 * PT;
+my $TEXT_DOWN = 0.3 * $FONT_SIZE; # inkscape svg->pdf does not support css transform
+
+if (!defined $gridStyle) {
+    $gridStyle = '2.5mm,10';
+}
+
+$gridStyle = '2mm,12'   if $gridStyle eq '12';
+$gridStyle = '2mm,4,12' if $gridStyle eq '412';
+$gridStyle = '2mm,3,12' if $gridStyle eq '312';
+$gridStyle = '2.5mm,10' if $gridStyle eq '10';
+
+my ($spacing, $minor, $major) = parseGridStyle($gridStyle);
+
+if (scalar @$strokeWidths < 3 && defined $major) {
+    die("not enough stroke widths\n");
+}
+if (scalar @$strokeWidths < 2 && defined $minor) {
+    die("not enough stroke widths\n");
+}
+
+for (my $i = 0; $i < $#$strokeWidths; $i += 1) {
+    my $j = $i + 1;
+    if (lessThanOrNearEqual($strokeWidths->[$j], $strokeWidths->[$i])) {
+        die("invalid set of stroke widths\n");
+    }
+}
+if (defined $minor && $minor <= 1) {
+    die("minor grid number must be greater than one");
+}
+if (defined $major && $major <= 1) {
+    die("major grid number must be greater than one");
+}
+if (defined $major && defined $minor && ($major <= $minor || $major % $minor != 0)) {
+    die("major grid number must be a multiple of, and greater than,  minor grid number\n");
+}
+
+# account for floating point rounding errors
+sub greaterThanOrNearEqual {
+    my ($a, $b) = @_;
+    return abs($a - $b) < 0.000001 || $a > $b;
+}
+sub lessThanOrNearEqual {
+    my ($a, $b) = @_;
+    return $a < $b || abs($a - $b) < 0.000001;
+}
+
+my $p = My::RuledPaper->new();
+$p->{width} = $paperSize[0];
+$p->{height} = $paperSize[1];
 
 $p->{style} = <<"END";
 line, rect {
@@ -72,6 +160,15 @@ line, rect {
 }
 .strokeC {
     stroke-width: ${STROKE_WIDTH_2}px;
+}
+text {
+    text-anchor: middle;
+    font-family: 'Times New Roman', 'Times Roman', serif;
+    font-size: ${FONT_SIZE}px;
+    fill: ${NON_REPRO_BLUE};
+}
+circle {
+    fill: ${NON_REPRO_BLUE};
 }
 END
 
@@ -136,7 +233,7 @@ for (my $y = $startY; $y <= $endY; $y += 1) {
     } elsif (defined $divisions[1] && ($y + $centerY) % $divisions[1] == 0) {
         $class = 'strokeB';
     }
-    $p->line($startXX, $yy, $endXX, $yy, class => $class);
 }
+
 
 print($p->svg());

@@ -60,15 +60,15 @@ $(LINEGRID416_SVG): $(LINEGRID) Makefile
 	mv "$@.tmp" "$@"
 
 %.pdf: %.svg Makefile
-	inkscape "$<" --export-dpi=600 -o "$@.tmp.pdf"
+	inkscape $(INKSCAPE_OPTIONS) --export-dpi=600 --export-filename="$@.tmp.pdf" "$<"
 	mv "$@.tmp.pdf" "$@"
-
 %.ps: %.pdf Makefile
-	pdf2ps "$<" "$@.tmp.ps"
+	pdf2ps $(PDF2PS_OPTIONS) "$<" "$@.tmp.ps"
 	mv "$@.tmp.ps" "$@"
-
 %.2up2page.pdf: %.pdf Makefile $(TWOUPTWOPAGE)
 	$(TWOUPTWOPAGE) "$<"
+%.2up.pdf: %.pdf Makefile $(TWOUP)
+	$(TWOUP) "$<"
 
 clean:
 	rm $(ALLPS) $(ALLPDF) $(SVG) 2>/dev/null || true

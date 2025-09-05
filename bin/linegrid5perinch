@@ -1,0 +1,121 @@
+#!/usr/bin/env perl
+use warnings;
+use strict;
+use open IO => ':locale';
+
+use FindBin;
+use lib "${FindBin::Bin}/../lib";
+
+use My::RuledPaper;
+use My::RuledPaper::MonkeyPatch::Drawing;
+use My::RuledPaper::Constants qw(:all);
+use POSIX qw(floor);
+
+draw_paper(minor_per_major => 5,
+           major_spacing => 1 * IN,
+           margin => 0.16 * IN,
+           minor_is_dots => 1,
+           paper_size => {LETTER});
+
+sub draw_paper {
+    my %args = @_;
+
+    my $non_repro_blue = COLOR_NON_REPRO_BLUE;
+    my %paper_size = %{$args{paper_size}};
+    my $minor_is_dots = $args{minor_is_dots};
+
+    my $major_pen_width;
+    my $minor_pen_width;
+
+    if ($minor_is_dots) {
+        $major_pen_width = 4/600 * IN;
+        $minor_pen_width = 10/600 * IN;
+    } else {
+        $major_pen_width = 10/600 * IN;
+        $minor_pen_width = 2/600 * IN;
+    }
+
+    my $major_spacing = $args{major_spacing};
+    my $minor_per_major = $args{minor_per_major};
+    my $margin = $args{margin};
+
+    my $p = My::RuledPaper->new();
+    $p->{width} = $paper_size{width};
+    $p->{height} = $paper_size{height};
+    $p->{style} = <<"END";
+        line, rect {
+            fill: none;
+            stroke-width: ${minor_pen_width}px;
+            stroke: ${non_repro_blue};
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .major {
+            stroke-width: ${major_pen_width}px;
+        }
+        .fill {
+            fill: ${non_repro_blue};
+        }
+        circle {
+            fill: ${non_repro_blue};
+        }
+END
+
+    our $x_groups = floor(($p->{width} - 2 * $margin) / $major_spacing);
+    our $y_groups = floor(($p->{height} - 2 * $margin) / $major_spacing);
+    our $x0 = $p->{width} / 2 - ($x_groups * $major_spacing) / 2;
+    our $y0 = $p->{height} / 2 - ($y_groups * $major_spacing) / 2;
+
+    my @x1 = -1 .. ($x_groups + 1);
+    my @y1 = -1 .. ($y_groups + 1);
+    my @x2;
+    my @y2;
+    if (defined $minor_per_major) {
+        @x2 = 1 - $minor_per_major .. (($x_groups + 1) * $minor_per_major - 1);
+        @y2 = 1 - $minor_per_major .. (($y_groups + 1) * $minor_per_major - 1);
+    }
+
+    my @x_minor_only;
+    my @y_minor_only;
+    if (defined $minor_per_major) {
+        @x_minor_only = map { $x0 + $_ * ($major_spacing / $minor_per_major) } grep { $_ % $minor_per_major != 0 } @x2;
+        @y_minor_only = map { $y0 + $_ * ($major_spacing / $minor_per_major) } grep { $_ % $minor_per_major != 0 } @y2;
+    }
+    my @x_major = map { $x0 + $_ * $major_spacing } @x1;
+    my @y_major = map { $y0 + $_ * $major_spacing } @y1;
+
+    if (defined $minor_per_major) {
+        @x_minor_only = grep { $_ >= 0 && $_ <= $p->{width}  } @x_minor_only;
+        @y_minor_only = grep { $_ >= 0 && $_ <= $p->{height} } @y_minor_only;
+    }
+    @x_major = grep { $_ >= 0 && $_ <= $p->{width}  } @x_major;
+    @y_major = grep { $_ >= 0 && $_ <= $p->{height} } @y_major;
+
+    # minor dot or line grid
+    if (defined $minor_per_major) {
+        if ($minor_is_dots) {
+            foreach my $x (@x_minor_only) {
+                foreach my $y (@y_minor_only) {
+                    $p->circle($x, $y, $minor_pen_width / 2, class => 'fill');
+                }
+            }
+        } else {
+            foreach my $x (@x_minor_only) {
+                $p->line($x, 0, $x, $p->{height}, class => 'minor');
+            }
+            foreach my $y (@y_minor_only) {
+                $p->line(0, $y, $p->{width}, $y, class => 'minor');
+            }
+        }
+    }
+
+    # major line grid
+    foreach my $x (@x_major) {
+        $p->line($x, 0, $x, $p->{height}, class => 'major');
+    }
+    foreach my $y (@y_major) {
+        $p->line(0, $y, $p->{width}, $y, class => 'major');
+    }
+
+    print($p->svg());
+}
